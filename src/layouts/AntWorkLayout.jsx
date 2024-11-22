@@ -17,7 +17,7 @@ const AntWorkLayout = ({ children }) => {
       <main>
         <Navigator />
         <Aside asideVisible={isAsideVisible} />
-        {children}
+        <section className="main-content">{children}</section>
       </main>
     </div>
   );
