@@ -6,10 +6,10 @@ export default function ChattingAside() {
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
 
   return (
-    <aside className="bg-white h-screen p-4 text-gray-800 flex flex-col w-80 shadow-xl rounded-2xl border border-gray-200">
+    <aside className="h-screen p-4 text-gray-800 flex flex-col w-96 shadow-xl rounded-2xl border border-gray-200 bg-gradient-to-b from-blue-50 via-white to-gray-50">
       {/* Header */}
       <div className="pb-4 border-b border-gray-200 mb-4">
-        <h1 className="text-2xl font-extrabold text-black-500">💬 채팅</h1>
+        <h1 className="text-2xl font-extrabold text-black">💬 채팅</h1>
         <div className="mt-3">
           <input
             type="text"
@@ -22,19 +22,30 @@ export default function ChattingAside() {
       {/* 개인 채팅 섹션 */}
       <div className="mt-4">
         <div
-          className="flex items-center justify-between cursor-pointer mb-3"
+          className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
           onClick={() => setIsPersonalOpen(!isPersonalOpen)}
         >
-          <span className="text-base font-semibold text-black-500">
-            👤 개인 채팅
-          </span>
-          <img
-            src="path/to/arrow-icon.svg"
-            alt="Toggle"
-            className={`w-4 h-4 transform ${
+          <span className="text-lg font-semibold text-black">👤 개인 채팅</span>
+          <span
+            className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer transition-transform ${
               isPersonalOpen ? "rotate-180" : "rotate-0"
-            } transition-transform`}
-          />
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-blue-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </span>
         </div>
         <div
           className={`overflow-hidden transition-all duration-300 ${
@@ -42,7 +53,7 @@ export default function ChattingAside() {
           }`}
         >
           <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
               <img
                 src="path/to/avatar1.jpg"
                 alt="User"
@@ -59,7 +70,7 @@ export default function ChattingAside() {
               </div>
               <span className="text-sm text-gray-400">11:30</span>
             </li>
-            <li className="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
               <img
                 src="path/to/avatar2.jpg"
                 alt="User"
@@ -81,19 +92,32 @@ export default function ChattingAside() {
       {/* 채널 섹션 */}
       <div className="mt-6">
         <div
-          className="flex items-center justify-between cursor-pointer mb-3"
+          className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
           onClick={() => setIsChannelOpen(!isChannelOpen)}
         >
-          <span className="text-base font-semibold text-black-500">
+          <span className="text-lg font-semibold text-black">
             📢 채널 (단체 채팅)
           </span>
-          <img
-            src="path/to/arrow-icon.svg"
-            alt="Toggle"
-            className={`w-4 h-4 transform ${
+          <span
+            className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer transition-transform ${
               isChannelOpen ? "rotate-180" : "rotate-0"
-            } transition-transform`}
-          />
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-blue-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </span>
         </div>
         <div
           className={`overflow-hidden transition-all duration-300 ${
@@ -101,7 +125,7 @@ export default function ChattingAside() {
           }`}
         >
           <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
               <img
                 src="path/to/group-icon.svg"
                 alt="Group"
@@ -114,7 +138,7 @@ export default function ChattingAside() {
                 3
               </div>
             </li>
-            <li className="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
               <img
                 src="path/to/group-icon.svg"
                 alt="Group"
