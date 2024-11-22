@@ -1,7 +1,7 @@
-export default function PageAside() {
+export default function Aside({ asideVisible }) {
   return (
     <>
-      <aside className="sidebar">
+      <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
         <div className="logo">
           <span className="sub-title">Notice Board</span>
           <button className="image-button-css" aria-label="등록"></button>

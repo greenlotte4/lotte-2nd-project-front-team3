@@ -1,15 +1,22 @@
-export default function Header() {
+export default function Header({ onToggleAside }) {
   return (
     <>
       <header>
         <div className="header leftside">
-          <a href="#" id="openSidebarBtn">
+          {/* Sidebar Toggle 버튼 */}
+          <a
+            href="#"
+            id="openSidebarBtn"
+            onClick={(e) => {
+              e.preventDefault(); // 기본 동작 방지
+              onToggleAside(); // 상태 변경 함수 호출
+            }}
+          >
             <img
               src="../../../public/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="menu"
             />
           </a>
-
           <h1 className="hlogo">AntWork</h1>
         </div>
         <div className="header rightside">
