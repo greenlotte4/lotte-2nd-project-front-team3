@@ -1,12 +1,22 @@
-import Header from "./../components/common/header";
-import Navigator from "./../components/common/navigator";
-// eslint-disable-next-line react/prop-types
+import { useState } from "react";
+
+import Aside from "../components/common/aside";
+import Header from "../components/common/header";
+import Navigator from "../components/common/navigator";
+
 const AntWorkLayout = ({ children }) => {
+  const [isAsideVisible, setIsAsideVisible] = useState(true);
+
+  const toggleAside = () => {
+    setIsAsideVisible((prev) => !prev);
+  };
+
   return (
-    <div id="main_container">
-      <Header />
+    <div id="main-container">
+      <Header onToggleAside={toggleAside} />
       <main>
         <Navigator />
+        <Aside asideVisible={isAsideVisible} />
         {children}
       </main>
     </div>

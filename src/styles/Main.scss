@@ -303,9 +303,9 @@ aside h3 {
 /* ////////////////////////////////////////////////////////////// */
 
 .main-content {
+  width: 100%;
   margin-top: 45px;
-  margin-left: 45px;
-  width: calc(100% - 7.5%);
+  margin-left: 295px;
   box-sizing: border-box;
   padding: 25px;
   overflow-y: auto;
@@ -316,8 +316,8 @@ aside h3 {
 /* ////////////////////////////////////////////////////////////// */
 /* aside가 숨겨졌을 때 main-content 여백 조정 */
 aside.hidden + .main-content {
-  margin-left: 60px; /* nav-menu 너비만큼만 */
-  width: calc(100% - 7.5%);
+  width: 100%;
+  margin-left: 50px; /* nav-menu 너비만큼만 */
   transition: all 0.3s;
 }
 /* ////////////////////////////////////////////////////////////// */
