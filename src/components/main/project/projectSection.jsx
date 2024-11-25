@@ -9,11 +9,11 @@ export default function ProjectSection() {
               <p className="text-sm text-gray-500"> 내가 참여중인 프로젝트</p>
             </div>
 
-            <div className="relative mb-6">
+            <div className="relative mb-6 flex items-center">
               <input
                 type="text"
                 placeholder="Search"
-                className="w-[300px] pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-[1380px] pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <svg
@@ -29,159 +29,97 @@ export default function ProjectSection() {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
+
+              <div className="ml-4">
+                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                  <img
+                    src="../../../public/images/Antwork/project/project_sort.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
-                  <div className="flex flex-col">
-                    <a href="#" className="font-medium text-[16px]">
+              <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
+                <div className="flex items-center space-x-8">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <img
+                      src="../../../public/images/Antwork/project/project.png"
+                      alt="Description"
+                      className="w-full h-full object-cover mr-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="font-medium text-[20px]">
                       Project Name
                     </a>
-                    <span className="text-[11px] text-[#6b7280]">
-                      ID updated last week
+                    <span className="text-[14px] text-[#6b7280]">
+                      #2 updated last week
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex -space-x-2">
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 1"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 2"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 3"
-                    />
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs">
-                      +2
-                    </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                      />
-                    </svg>
-                  </button>
+                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                  <img
+                    src="../../../public/images/Antwork/project/project_delete.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
-                  <div className="flex flex-col">
-                    <a href="#" className="font-medium text-[16px]">
+              <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
+                <div className="flex items-center space-x-8">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <img
+                      src="../../../public/images/Antwork/project/project.png"
+                      alt="Description"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="font-medium text-[20px]">
                       Project Name
                     </a>
-                    <span className="text-[11px] text-[#6b7280]">
-                      ID updated last week
+                    <span className="text-[14px] text-[#6b7280]">
+                      #2 updated last week
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex -space-x-2">
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 1"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 2"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 3"
-                    />
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs">
-                      +2
-                    </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                      />
-                    </svg>
-                  </button>
+                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                  <img
+                    src="../../../public/images/Antwork/project/project_delete.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
-                  <div className="flex flex-col">
-                    <a href="#" className="font-medium text-[16px]">
+              <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
+                <div className="flex items-center space-x-8">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <img
+                      src="../../../public/images/Antwork/project/project.png"
+                      alt="Description"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="font-medium text-[20px]">
                       Project Name
                     </a>
-                    <span className="text-[11px] text-[#6b7280]">
-                      ID updated last week
+                    <span className="text-[14px] text-[#6b7280]">
+                      #2 updated last week
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex -space-x-2">
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 1"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 2"
-                    />
-                    <img
-                      src="/api/placeholder/32/32"
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                      alt="User 3"
-                    />
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs">
-                      +2
-                    </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                      />
-                    </svg>
-                  </button>
+                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                  <img
+                    src="../../../public/images/Antwork/project/project_delete.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
