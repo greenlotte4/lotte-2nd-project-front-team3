@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function PagingSection() {
   return (
     <>
@@ -8,15 +10,25 @@ export default function PagingSection() {
 
           <article className="page-list !mt-5">
             <div className="content-header">
-              <h1> 개인 페이지</h1>
-              <p>공유 멤버가 없는 페이지 입니다.</p>
-              <p></p>
+              <div className="!inline-flex">
+                <h1 className="!text-[19px]"> 개인 페이지</h1>{" "}
+                <Link to="/antwork/page/mypage" className="!ml-3 text-gray-500">
+                  더보기
+                </Link>
+              </div>
+              <p className="!text-[14px]">공유 멤버가 없는 페이지 입니다.</p>
             </div>
+
             <div className="page-grid">
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[15px] !mb-3">🌹 업무일지</h3>
+                    <Link
+                      to="/antwork/page/view"
+                      className="!text-[15px] !mb-3 !font-normal"
+                    >
+                      🌹 업무일지
+                    </Link>
                     <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
@@ -32,7 +44,9 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[15px] !mb-3">✔ CheckList</h3>
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      ✔ CheckList
+                    </h3>
                     <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
@@ -48,7 +62,9 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[15px]">❓ Question</h3>
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      ❓ Question
+                    </h3>
                     <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
@@ -64,7 +80,9 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[14px]">🎞 Movie Review</h3>
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      🎞 Movie Review
+                    </h3>
                     <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
@@ -79,11 +97,69 @@ export default function PagingSection() {
               </div>
             </div>
           </article>
-
+          <article className="page-list !mt-5">
+            <div className="content-header">
+              <div className="!inline-flex">
+                <h1 className="!text-[19px]"> 공유 페이지</h1>{" "}
+                <Link to="/antwork/page/mypage" className="!ml-3 text-gray-500">
+                  더보기
+                </Link>
+              </div>
+              <p className="!text-[14px]">내가 공유 멤버인 페이지 입니다.</p>
+            </div>
+            <div className="page-grid">
+              <div className="page-card">
+                <div className="card-content">
+                  <div className="user-details ">
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      📃 OO병원 업무일지
+                    </h3>
+                    <div className="user-info !ml-3">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
+                    </div>
+                  </div>
+                  <button className="options-btn">⋮</button>
+                </div>
+              </div>
+              <div className="page-card">
+                <div className="card-content">
+                  <div className="user-details ">
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      📃 OO학교 CheckList
+                    </h3>
+                    <div className="user-info !ml-3">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
+                    </div>
+                  </div>
+                  <button className="options-btn">⋮</button>
+                </div>
+              </div>
+            </div>
+          </article>
           <article className="page-list">
             <div className="content-header">
-              <h1>✔ CheckList</h1>
-              <p> 미리보기 </p>
+              <div className="content-header">
+                <div className="!inline-flex">
+                  <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>{" "}
+                  <Link
+                    to="/antwork/page/mypage"
+                    className="!ml-3 text-gray-500"
+                  >
+                    더보기
+                  </Link>
+                </div>
+                <p className="!text-[14px]">제일 최근 수정된 페이지 입니다.</p>
+              </div>
               <div className="page-card !h-80">
                 <span>여기에 미리보기로 보이면 될 듯</span>
               </div>
@@ -92,46 +168,29 @@ export default function PagingSection() {
 
           <article className="page-list">
             <div className="content-header">
-              <h1>❓ Question</h1>
-              <p>나의 페이지 목록입니다.</p>
-            </div>
-            <div className="page-grid">
-              <div className="page-card">
-                <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details">
-                      <h3>페이지 예시1</h3>
-                      <p>관리자</p>
-                    </div>
-                  </div>
-                  <button className="options-btn">⋮</button>
-                </div>
+              <div className="!inline-flex">
+                <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>{" "}
+                <Link to="/antwork/page/mypage" className="!ml-3 text-gray-500">
+                  더보기
+                </Link>
               </div>
-            </div>
-          </article>
-
-          <article className="page-list">
-            <div className="content-header">
-              <h1>🎞 MovieReview</h1>
-              <p>나의 페이지 목록입니다.</p>
+              <p className="!text-[14px]">최근 7일 내 삭제된 목록입니다.</p>
             </div>
             <div className="page-grid">
+              {" "}
               <div className="page-card">
                 <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details">
-                      <h3>어벤져스</h3>
-                      <p>관리자</p>
+                  <div className="user-details ">
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      📃 OO학교 CheckList
+                    </h3>
+                    <div className="user-info !ml-3">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
                     </div>
                   </div>
                   <button className="options-btn">⋮</button>
