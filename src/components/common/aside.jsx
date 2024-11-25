@@ -60,10 +60,11 @@ export default function Aside({ asideVisible }) {
         >
           <div className="logo">
             <span className="sub-title">Shared Page</span>
-            <button
+            <Link
+              to="/antwork/page/write"
               className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')]"
               aria-label="등록"
-            ></button>
+            ></Link>
             <span className="title">Page</span>
           </div>
           <ul className="lnb inline-grid">
@@ -108,7 +109,7 @@ export default function Aside({ asideVisible }) {
               {toggles.personalPages && (
                 <ol>
                   <li>
-                    <a href="#">🌹&nbsp;&nbsp;업무일지</a>
+                    <Link to="/antwork/page/view">🌹&nbsp;&nbsp;업무일지</Link>
                   </li>
                   <li>
                     <a href="#">✔&nbsp;&nbsp;CheckList</a>
