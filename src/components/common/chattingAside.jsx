@@ -1,22 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useInviteModal } from "./../../hooks/chatting/invitemodal";
+import useModalStore from "./../../store/modalStore";
 
 export default function ChattingAside() {
   const [isDMOpen, setIsDMOpen] = useState(true);
   const [isChannelOpen, setIsChannelOpen] = useState(true);
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
-
+  const openModal = useModalStore((state) => state.openModal);
+  const inviteModalProps = useInviteModal(); // 여기서 호출
+  useEffect(() => {
+    console.log("==============");
+  }, [inviteModalProps]);
   return (
-    <aside className="h-screen p-4 text-gray-800 flex flex-col w-96 shadow-xl rounded-2xl border border-gray-200 bg-gradient-to-b from-blue-50 via-white to-gray-50">
+    <aside className="h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200">
       {/* Header */}
-      <div className="pb-4 border-b border-gray-200 mb-4">
+      <div className="pb-4 border-b border-gray-200 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-black">💬 채팅</h1>
-        <div className="mt-3">
-          <input
-            type="text"
-            placeholder="채팅방 검색"
-            className="w-full p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-          />
-        </div>
+        {/* 플러스 버튼 */}
+        <button
+          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
+          onClick={() => {
+            console.log("Modal Props:", inviteModalProps); // 로그 추가
+            openModal("invite", { ...inviteModalProps });
+          }}
+        >
+          +
+        </button>
+      </div>
+
+      {/* 채팅방 검색 */}
+      <div className="mt-3">
+        <input
+          type="text"
+          placeholder="채팅방 검색"
+          className="w-full p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+        />
       </div>
 
       {/* 개인 채팅 섹션 */}
@@ -27,7 +45,7 @@ export default function ChattingAside() {
         >
           <span className="text-lg font-semibold text-black">👤 개인 채팅</span>
           <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer transition-transform ${
+            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
               isPersonalOpen ? "rotate-180" : "rotate-0"
             }`}
           >
@@ -53,7 +71,7 @@ export default function ChattingAside() {
           }`}
         >
           <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
               <img
                 src="path/to/avatar1.jpg"
                 alt="User"
@@ -70,7 +88,7 @@ export default function ChattingAside() {
               </div>
               <span className="text-sm text-gray-400">11:30</span>
             </li>
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
               <img
                 src="path/to/avatar2.jpg"
                 alt="User"
@@ -99,7 +117,7 @@ export default function ChattingAside() {
             📢 채널 (단체 채팅)
           </span>
           <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 cursor-pointer transition-transform ${
+            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
               isChannelOpen ? "rotate-180" : "rotate-0"
             }`}
           >
@@ -125,7 +143,7 @@ export default function ChattingAside() {
           }`}
         >
           <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
               <img
                 src="path/to/group-icon.svg"
                 alt="Group"
@@ -138,7 +156,7 @@ export default function ChattingAside() {
                 3
               </div>
             </li>
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer shadow-md transition">
+            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
               <img
                 src="path/to/group-icon.svg"
                 alt="Group"

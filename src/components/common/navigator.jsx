@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function Navigator() {
   return (
     <>
-      <nav className="nav-menu">
+      <nav className="nav-menu ">
         <div className="nav-item">
           <Link to="/antwork/">
             <img
