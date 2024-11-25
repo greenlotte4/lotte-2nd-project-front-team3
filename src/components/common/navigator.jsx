@@ -46,12 +46,12 @@ export default function Navigator() {
           </Link>
         </div>
         <div className="nav-item">
-          <a href="#">
+          <Link to="/antwork/project">
             <img
               src="../../../public/images/ico/group_add_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="project"
             />
-          </a>
+          </Link>
         </div>
         <div className="nav-item">
           <a href="#">
