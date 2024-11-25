@@ -8,6 +8,15 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
 import ProjectPage from "../pages/Main/project/projectPage";
+import { lazy, Suspense } from "react";
+
+// 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
+const ProjectMainPage = lazy(() =>
+  import("../pages/Main/project/projectMainPage")
+);
+const ProjectViewPage = lazy(() =>
+  import("../pages/Main/project/projectViewPage")
+);
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -18,12 +27,26 @@ const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> }, // 회원가입
   { path: "/terms", element: <TermsPage /> }, // 회원가입
 
-  // 메인 페이지 (antwork)
-  { path: "/antwork", element: <MainPage /> }, // antwork 메인
-  { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
-  { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
-  { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-  { path: "/antwork/project", element: <ProjectPage /> }, // antwork 페이지
+  // 메인 페이지 (Antwork)
+  { path: "/antwork", element: <MainPage /> }, // Antwork 메인
+  { path: "/antWork/page", element: <PagingPage /> }, // Antwork 페이지
+  { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 페이지
+  {
+    path: "/antWork/project/main",
+    element: (
+      <Suspense>
+        <ProjectMainPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/antWork/project/view",
+    element: (
+      <Suspense>
+        <ProjectViewPage />
+      </Suspense>
+    ),
+  },
 ]);
 // 라우터 내보내기
 export default router;

@@ -6,10 +6,7 @@ export default function ProjectAside({ asideVisible }) {
           <span className="sub-title">My Projects</span>
 
           <span className="title">Projects</span>
-          <button
-            className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 mt-6 h-14"
-            style={{ backgroundColor: "#D9E8FF" }}
-          >
+          <button className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 mt-6 h-14 bg-[#D9E8FF]">
             <svg
               className="w-6 h-6"
               fill="none"
