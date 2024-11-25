@@ -1,13 +1,54 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome import
 
 export default function DriveSection() {
+  const [isChecked, setIsChecked] = useState(false);
   const [isStarFilled, setIsStarFilled] = useState(false);
+
+  const [menuVisible, setMenuVisible] = useState(false); // 컨텍스트 메뉴 표시 상태
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
+
+  // 메뉴 외부 클릭을 감지할 ref
+  const menuRef = useRef(null);
+
+  // 컨텍스트 메뉴 이벤트 처리
+  const handleContextMenu = (event) => {
+    event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
+    const { clientX, clientY } = event; // 클릭한 위치 좌표
+    setMenuPosition({ x: clientX, y: clientY });
+    setMenuVisible(true); // 커스텀 메뉴 열기
+  };
+
+  // 커스텀 메뉴 닫기
+  const handleCloseMenu = () => {
+    setMenuVisible(false);
+  };
+
+  const handleRowClick = () => {
+    setIsChecked(!isChecked); // 체크 상태를 반전
+  };
 
   // 클릭 시 별 상태를 토글하는 함수
   const toggleStar = () => {
     setIsStarFilled(!isStarFilled);
   };
+
+  // 메뉴 외부 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        handleCloseMenu(); // 메뉴 외부 클릭 시 닫기
+      }
+    };
+
+    // 문서에서 클릭 이벤트 리스너 추가
+    document.addEventListener("click", handleClickOutside);
+
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   //   // 여러 행에 대한 별 상태를 관리하기 위해 배열로 관리
   //   const [stars, setStars] = useState([false, false, false]); // 예시로 3개의 행
@@ -25,6 +66,41 @@ export default function DriveSection() {
   //     }`}
   //   ></i>
   // </button>
+
+  //   const [data, setData] = useState([]); // 데이터 상태
+  //   const [checkedRows, setCheckedRows] = useState({}); // 각 행의 체크 상태 관리
+
+  //   // 데이터베이스에서 데이터를 불러오는 함수 (예시)
+  //   useEffect(() => {
+  //     // 예시로 데이터베이스에서 데이터를 가져오는 부분을 mock 데이터로 대체
+  //     const fetchData = async () => {
+  //       const response = await fetch("/api/data"); // 실제 API 호출로 대체
+  //       const result = await response.json();
+  //       setData(result); // 데이터를 상태에 설정
+  //     };
+  //     fetchData();
+  //   }, []);
+
+  //   const handleRowClick = (id) => {
+  //     setCheckedRows((prevState) => ({
+  //       ...prevState,
+  //       [id]: !prevState[id], // 해당 id의 체크 상태 반전
+  //     }));
+  //   };
+  // {data.length > 0 ? (
+  //     data.map((row) => (
+  //       <tr
+  //         key={row.id}
+  //         className="text-center align-middle h-16 border-t hover:bg-gray-100 cursor-pointer"
+  //         onClick={() => handleRowClick(row.id)} // 각 행을 클릭할 때 해당 id로 상태 변경
+  //       >
+  //         <td>
+  //           <input
+  //             type="checkbox"
+  //             checked={!!checkedRows[row.id]} // 해당 id의 체크 상태에 맞게 체크박스 상태
+  //             onChange={() => handleRowClick(row.id)} // 상태 변경 함수 호출
+  //           />
+  //         </td>
 
   return (
     <>
@@ -119,9 +195,16 @@ export default function DriveSection() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-center align-middle h-16 border-t">
+                <tr
+                  className="text-center align-middle h-16 border-t hover:bg-gray-100"
+                  onContextMenu={handleContextMenu} // 오른쪽 클릭 시
+                >
                   <td className="w-[3%]">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={handleRowClick}
+                    />
                   </td>
                   <td className="w-[3%]">
                     <button onClick={toggleStar}>
@@ -133,14 +216,23 @@ export default function DriveSection() {
                     </button>
                   </td>
                   <td className="w-[5%]">폴더</td>
-                  <td className="w-[30%]">자동 올리기</td>
+
+                  <td className="w-[30%]">
+                    <a href="#" className="hover:underline">
+                      자동 올리기
+                    </a>
+                  </td>
                   <td className="w-[10%]">3MB</td>
                   <td className="w-[10%]">챱챱김</td>
                   <td className="w-[10%]">2024.01.01</td>
                 </tr>
-                <tr className="text-center align-middle h-16 border-t">
+                <tr className="text-center align-middle h-16 border-t hover:bg-gray-100">
                   <td className="w-[3%]">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={handleRowClick}
+                    />
                   </td>
                   <td className="w-[3%]">
                     <button onClick={toggleStar}>
@@ -152,7 +244,12 @@ export default function DriveSection() {
                     </button>
                   </td>
                   <td className="w-[5%]">폴더</td>
-                  <td className="w-[30%]">자동 올리기</td>
+
+                  <td className="w-[30%]">
+                    <a href="#" className="hover:underline">
+                      자동 올리기
+                    </a>
+                  </td>
                   <td className="w-[10%]">3MB</td>
                   <td className="w-[10%]">챱챱김</td>
                   <td className="w-[10%]">2024.01.01</td>
@@ -161,6 +258,36 @@ export default function DriveSection() {
             </table>
           </div>
         </article>
+
+        {menuVisible && (
+          <div
+            ref={menuRef}
+            className="absolute bg-white border border-gray-300 shadow-lg z-50"
+            style={{ left: `${menuPosition.x}px`, top: `${menuPosition.y}px` }}
+            onClick={handleCloseMenu} // 메뉴 외부 클릭 시 닫기
+          >
+            <ul className="p-2">
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                열기
+              </li>
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                업로드
+              </li>
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                다운로드
+              </li>
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                삭제
+              </li>
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                이동
+              </li>
+              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
+                상세보기
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </>
   );
