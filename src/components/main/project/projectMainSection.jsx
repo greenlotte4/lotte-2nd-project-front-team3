@@ -1,4 +1,6 @@
-export default function ProjectSection() {
+import { Link } from "react-router-dom";
+
+export default function ProjectMainSection() {
   return (
     <>
       <article className="page-list">
@@ -52,9 +54,12 @@ export default function ProjectSection() {
                     />
                   </div>
                   <div className="flex flex-col gap-3">
-                    <a href="#" className="font-medium text-[20px]">
+                    <Link
+                      to={`/antwork/project/view`}
+                      className="font-medium text-[20px]"
+                    >
                       Project Name
-                    </a>
+                    </Link>
                     <span className="text-[14px] text-[#6b7280]">
                       #2 updated last week
                     </span>

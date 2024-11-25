@@ -46,7 +46,7 @@ export default function Navigator() {
           </Link>
         </div>
         <div className="nav-item">
-          <Link to="/antwork/project">
+          <Link to="/antwork/project/main">
             <img
               src="../../../public/images/ico/group_add_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="project"
