@@ -22,11 +22,17 @@ export default function Aside({ asideVisible }) {
   const relativePath = location.pathname.replace(basePath, "");
   const mainPath = relativePath.split("/")[1] || ""; // 첫 번째 경로 추출 (`page`, `project`, `drive` 등)
 
-  // 토글 하위목록 보이도록 (2024/11/25 황수빈 추가 : page - 토글)
-  const [showPersonalPages, setShowPersonalPages] = useState(true);
+  const [toggles, setToggles] = useState({
+    personalPages: true, // 개인 페이지 토글 상태
+    ongoingProjects: true, // 진행중인 프로젝트 토글 상태
+    completedProjects: true, // 완료된 프로젝트 토글 상태
+  });
 
-  const togglePersonalPages = () => {
-    setShowPersonalPages((prev) => !prev);
+  const toggleSection = (section) => {
+    setToggles((prev) => ({
+      ...prev,
+      [section]: !prev[section], // 클릭한 섹션만 상태 반전
+    }));
   };
 
   return (
@@ -80,17 +86,17 @@ export default function Aside({ asideVisible }) {
               </div>
             </li>
 
-            <li className="lnb-item !mt-[15px] !h-[300px] border-b border-[#ddd]">
+            <li className="lnb-item !mt-[15px] !h-[500px] border-b border-[#ddd]">
               {/* 개인 페이지 토글 */}
               <div
                 className="lnb-header cursor-pointer "
-                onClick={togglePersonalPages}
+                onClick={() => toggleSection("personalPages")}
               >
                 <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
                   개인 페이지{" "}
                   <img
                     src={
-                      showPersonalPages
+                      toggles.personalPages
                         ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
                         : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
                     }
@@ -98,7 +104,7 @@ export default function Aside({ asideVisible }) {
                   />
                 </span>
               </div>
-              {showPersonalPages && (
+              {toggles.personalPages && (
                 <ol>
                   <li>
                     <a href="#">🌹&nbsp;&nbsp;Spring</a>
@@ -160,9 +166,10 @@ export default function Aside({ asideVisible }) {
           </ul>
         </aside>
       )}
+
       {mainPath === "project" && (
         <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
-          <div className="logo !border-b-0">
+          <div className="logo !border-b-0 !h-auto">
             <span className="sub-title">My Projects</span>
             <span className="title">Projects</span>
             <button
@@ -185,55 +192,111 @@ export default function Aside({ asideVisible }) {
               <span className="text-xl">New Project</span>
             </button>
           </div>
-          <ul className="a mt-20">
-            <li className="">
-              <a
-                href="#"
-                className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
+          <ul className="lnb inline-grid">
+            <li className="lnb-item !h-auto">
+              <div className="lnb-header !mb-[10px] pt-[15px] border-t border-[#ddd]">
+                <img
+                  src="/images/ico/page_home_22_999999.svg"
+                  className="cate-icon !w-[22px] !h-[22px]"
+                />
+                <Link to="/antwork/project" className="main-cate !text-[16px]">
+                  홈
+                </Link>
+              </div>
+            </li>
+
+            <li className="lnb-item !mt-[15px] !h-[500px] border-b border-[#ddd]">
+              {/* 개인 페이지 토글 */}
+              <div
+                className="lnb-header cursor-pointer "
+                onClick={() => {
+                  toggleSection("ongoingProjects");
+                }}
               >
-                <div className="w-8 h-8 rounded-lg overflow-hidden mr-4">
+                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
+                  진행중인 프로젝트{" "}
                   <img
-                    src="../../../public/images/antwork/project/project_home.png"
-                    alt="Description"
-                    className="w-full h-full object-cover"
+                    src={
+                      toggles.ongoingProjects
+                        ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
+                        : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                    }
+                    alt="toggle"
                   />
-                </div>
-                <span className="main-cate">프로젝트 홈</span>
-              </a>
-            </li>
-            <li className="lnb-item w-[195px] h-auto items-center border-b border-[#d9d9d9] mb-[15px]">
-              <div className="lnb-header">
-                <img
-                  src="../../../public/images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
-                  className="cate-icon"
-                />
-                <span className="main-cate">진행중인 프로젝트</span>
+                </span>
               </div>
-              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
-                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
-                프로젝트1
-              </a>
-              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
-                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
-                프로젝트2
-              </a>
-            </li>
-            <li className="lnb-item w-[195px] h-auto items-center">
-              <div className="lnb-header">
-                <img
-                  src="../../../public/images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
-                  className="cate-icon"
-                />
-                <span className="main-cate">완료한 프로젝트</span>
+              {toggles.ongoingProjects && (
+                <ol>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;OO병원 작업일지</a>
+                  </li>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;OO학교 작업일지</a>
+                  </li>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;OO치과 작업일지</a>
+                  </li>
+                </ol>
+              )}
+              {/* 개인 페이지 토글 */}
+              <div
+                className="lnb-header cursor-pointer "
+                onClick={() => {
+                  toggleSection("completedProjects");
+                }}
+              >
+                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex !mt-7 ">
+                  완료된 프로젝트{" "}
+                  <img
+                    src={
+                      toggles.completedProjects
+                        ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
+                        : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                    }
+                    alt="toggle"
+                  />
+                </span>
               </div>
-              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
-                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
-                프로젝트1
-              </a>
-              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
-                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
-                프로젝트2
-              </a>
+              {toggles.completedProjects && (
+                <ol>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;자바병원 작업일지</a>
+                  </li>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;리액트학교 작업일지</a>
+                  </li>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;CSS치과 작업일지</a>
+                  </li>
+                </ol>
+              )}
+            </li>
+
+            <li className="lnb-item">
+              <div className="lnb-header !mb-[10px]">
+                <img
+                  src="/images/ico/page_delete24_999999.svg"
+                  className="cate-icon !w-[22px] !h-[22px]"
+                />
+                <Link
+                  to="/antwork/project"
+                  className="main-cate !text-[16px] text-[#757575]"
+                >
+                  휴지통
+                </Link>
+              </div>
+              <div className="lnb-header !mb-[10px]">
+                <img
+                  src="/images/ico/page_setting_22_999999.svg"
+                  className="cate-icon !w-[22px] !h-[22px]"
+                />
+                <Link
+                  to="/antwork/project"
+                  className="main-cate !text-[16px] text-[#757575]"
+                >
+                  설정
+                </Link>
+              </div>
             </li>
           </ul>
         </aside>
