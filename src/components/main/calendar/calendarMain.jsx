@@ -1,10 +1,10 @@
 import MyCalendar from "../../../MyCalendar";
 
-export default function CalendarMain() {
+export default function CalendarMain({ currentView }) {
   return (
     <>
       <section className="cal">
-        <MyCalendar />
+        <MyCalendar currentView={currentView} />
       </section>
     </>
   );
