@@ -1,13 +1,13 @@
+import Aside from "../../../components/common/aside";
+import ProjectSection from "../../../components/main/project/projectSection";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
-import PageAside from "./../../../components/common/pageAside";
-import PagingSection from "../../../components/main/paging/pagingSection";
 
-export default function PagingPage() {
+export default function ProjectPage() {
   return (
     <>
       <AntWorkLayout>
-        <PageAside />
-        <PagingSection />
+        <Aside />
+        <ProjectSection />
       </AntWorkLayout>
     </>
   );
