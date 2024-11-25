@@ -24,6 +24,7 @@ export default function Aside({ asideVisible }) {
 
   const [toggles, setToggles] = useState({
     personalPages: true, // 개인 페이지 토글 상태
+    sharedPages: true, // 개인 페이지 토글 상태
     ongoingProjects: true, // 진행중인 프로젝트 토글 상태
     completedProjects: true, // 완료된 프로젝트 토글 상태
   });
@@ -63,7 +64,7 @@ export default function Aside({ asideVisible }) {
               className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')]"
               aria-label="등록"
             ></button>
-            <span className="title">페이지</span>
+            <span className="title">Page</span>
           </div>
           <ul className="lnb inline-grid">
             <li className="lnb-item">
@@ -107,7 +108,7 @@ export default function Aside({ asideVisible }) {
               {toggles.personalPages && (
                 <ol>
                   <li>
-                    <a href="#">🌹&nbsp;&nbsp;Spring</a>
+                    <a href="#">🌹&nbsp;&nbsp;업무일지</a>
                   </li>
                   <li>
                     <a href="#">✔&nbsp;&nbsp;CheckList</a>
@@ -120,6 +121,34 @@ export default function Aside({ asideVisible }) {
                   </li>
                   <li>
                     <a href="#">👗 &nbsp;&nbsp;Shopping List</a>
+                  </li>
+                </ol>
+              )}
+
+              {/* 개인 페이지 토글 */}
+              <div
+                className="lnb-header cursor-pointer "
+                onClick={() => toggleSection("sharedPages")}
+              >
+                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex !mt-[12px] ">
+                  공유중인 페이지{" "}
+                  <img
+                    src={
+                      toggles.sharedPages
+                        ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
+                        : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                    }
+                    alt="toggle"
+                  />
+                </span>
+              </div>
+              {toggles.sharedPages && (
+                <ol>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;OO병원 사이트맵</a>
+                  </li>
+                  <li>
+                    <a href="#">📃&nbsp;&nbsp;OO학교 사이트맵</a>
                   </li>
                 </ol>
               )}
@@ -213,7 +242,7 @@ export default function Aside({ asideVisible }) {
                   toggleSection("ongoingProjects");
                 }}
               >
-                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
+                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex !mt-[7px] ">
                   진행중인 프로젝트{" "}
                   <img
                     src={

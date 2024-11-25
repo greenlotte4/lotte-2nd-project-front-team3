@@ -8,20 +8,21 @@ export default function PagingSection() {
 
           <article className="page-list !mt-5">
             <div className="content-header">
-              <h1>🌹 Spring</h1>
+              <h1> 개인 페이지</h1>
+              <p>공유 멤버가 없는 페이지 입니다.</p>
               <p></p>
             </div>
             <div className="page-grid">
               <div className="page-card">
                 <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details ">
-                      <h3 className="!text-[14px]">CH01. Spring 개요</h3>
+                  <div className="user-details ">
+                    <h3 className="!text-[15px] !mb-3">🌹 업무일지</h3>
+                    <div className="user-info !ml-3">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
                       <p className="!text-[13px]">황수빈</p>
                     </div>
                   </div>
@@ -30,14 +31,14 @@ export default function PagingSection() {
               </div>
               <div className="page-card">
                 <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details ">
-                      <h3 className="!text-[14px]">CH01. Spring 개요</h3>
+                  <div className="user-details ">
+                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
+                    <div className="user-info">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
                       <p className="!text-[13px]">황수빈</p>
                     </div>
                   </div>
@@ -46,15 +47,15 @@ export default function PagingSection() {
               </div>
               <div className="page-card">
                 <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details ">
-                      <h3 className="!text-[14px]">Spring 하위 페이지</h3>
-                      <p className="!text-[13px]">작성자</p>
+                  <div className="user-details ">
+                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
+                    <div className="user-info">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
                     </div>
                   </div>
                   <button className="options-btn">⋮</button>
@@ -62,15 +63,15 @@ export default function PagingSection() {
               </div>
               <div className="page-card">
                 <div className="card-content">
-                  <div className="user-info">
-                    <img
-                      src="/api/placeholder/32/32"
-                      alt="profile"
-                      className="avatar"
-                    />
-                    <div className="user-details ">
-                      <h3 className="!text-[14px]">Spring 하위 페이지</h3>
-                      <p className="!text-[13px]">작성자</p>
+                  <div className="user-details ">
+                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
+                    <div className="user-info">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
                     </div>
                   </div>
                   <button className="options-btn">⋮</button>
