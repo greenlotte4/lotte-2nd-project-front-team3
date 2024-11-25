@@ -32,8 +32,8 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
-                    <div className="user-info">
+                    <h3 className="!text-[15px] !mb-3">✔ CheckList</h3>
+                    <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
                         alt="profile"
@@ -48,8 +48,8 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
-                    <div className="user-info">
+                    <h3 className="!text-[15px]">❓ Question</h3>
+                    <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
                         alt="profile"
@@ -64,8 +64,8 @@ export default function PagingSection() {
               <div className="page-card">
                 <div className="card-content">
                   <div className="user-details ">
-                    <h3 className="!text-[14px]">CH01. Spring 개요</h3>
-                    <div className="user-info">
+                    <h3 className="!text-[14px]">🎞 Movie Review</h3>
+                    <div className="user-info !ml-3">
                       <img
                         src="/api/placeholder/32/32"
                         alt="profile"
