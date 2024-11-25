@@ -4,6 +4,7 @@ import { useState } from "react";
 import Aside from "../components/common/aside";
 import Header from "../components/common/header";
 import Navigator from "../components/common/navigator";
+import CalendarAside from "../components/common/calendarAside";
 
 const AntWorkLayout = ({ children }) => {
   const [isAsideVisible, setIsAsideVisible] = useState(true);
@@ -17,7 +18,7 @@ const AntWorkLayout = ({ children }) => {
       <Header onToggleAside={toggleAside} />
       <main>
         <Navigator />
-        <Aside asideVisible={isAsideVisible} />
+        <CalendarAside />
         <section className="main-content">{children}</section>
       </main>
     </div>
