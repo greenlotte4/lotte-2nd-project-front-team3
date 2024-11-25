@@ -1,12 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // 상호작용을 위한 플러그인
 import listPlugin from "@fullcalendar/list";
 import "./styles/calendar.scss";
+import axios from "axios";
 
-function MyCalendar() {
+function MyCalendar({ currentView }) {
   // useState는 컴포넌트 내부에서 호출
+
+  const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
+
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      const url =
+        "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
+      const queryParams = `?serviceKey=Ga4qgNx2BToVICIp2Vnj8MeBJELIN1prWSVxT8pKAVTGMdtksMcuNH0avVG4rMFeAwPRp1pmUD58vhdtXIT8oA==&solYear=2024`; // 예시로 2024년 1월의 공휴일을 요청
+      const numOfRows = 30;
+      try {
+        const response = await axios.get(url + queryParams, {
+          params: { numOfRows: numOfRows },
+        });
+        const holidayData = response.data.response.body.items.item;
+
+        // 공휴일 데이터를 FullCalendar에 맞게 변환
+        const formattedHolidays = holidayData.map((holiday) => {
+          const locdateStr = String(holiday.locdate); // 숫자일 경우 문자열로 변환
+          const year = locdateStr.substring(0, 4);
+          const month = locdateStr.substring(4, 6);
+          const day = locdateStr.substring(6, 8);
+          const formattedDate = `${year}-${month}-${day}`;
+
+          return {
+            title: holiday.dateName, // 공휴일 이름
+            date: formattedDate, // 공휴일 날짜 (YYYYMMDD 형식)
+            color: "red", // 공휴일 표시 색상
+            textColor: "white", // 공휴일 텍스트 색상
+          };
+        });
+
+        setHolidays(formattedHolidays); // 상태에 공휴일 데이터 저장
+      } catch (error) {
+        console.error("API 호출 오류:", error);
+      }
+    };
+
+    fetchHolidays();
+  }, []); // 컴포넌트가 처음 렌더링될 때만 호출
 
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
@@ -80,9 +120,9 @@ function MyCalendar() {
     <div className="w-full max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden border">
       {/* FullCalendar */}
       <FullCalendar
-        initialView="dayGridMonth"
+        initialView={currentView} // currentView가 없으면 dayGridMonth로 설정
         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-        events={events}
+        events={(events, holidays)}
         locale="ko"
         dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
         eventClick={handleEventClick} // 일정 클릭 시 수정
