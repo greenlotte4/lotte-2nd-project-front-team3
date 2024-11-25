@@ -18,12 +18,12 @@ const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> }, // 회원가입
   { path: "/terms", element: <TermsPage /> }, // 회원가입
 
-  // 메인 페이지 (Antwork)
-  { path: "/antwork", element: <MainPage /> }, // Antwork 메인
-  { path: "/antWork/page", element: <PagingPage /> }, // Antwork 페이지
-  { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 페이지
-  { path: "/antWork/drive", element: <DrivePage /> }, // Antwork 페이지
-  { path: "/antWork/project", element: <ProjectPage /> }, // Antwork 페이지
+  // 메인 페이지 (antwork)
+  { path: "/antwork", element: <MainPage /> }, // antwork 메인
+  { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
+  { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
+  { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
+  { path: "/antwork/project", element: <ProjectPage /> }, // antwork 페이지
 ]);
 // 라우터 내보내기
 export default router;

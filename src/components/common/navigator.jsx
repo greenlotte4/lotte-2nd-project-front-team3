@@ -5,7 +5,7 @@ export default function Navigator() {
     <>
       <nav className="nav-menu">
         <div className="nav-item">
-          <Link to="/antWork/">
+          <Link to="/antwork/">
             <img
               src="../../../public/images/ico/home_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="home"
@@ -38,7 +38,7 @@ export default function Navigator() {
           </a>
         </div>
         <div className="nav-item">
-          <Link to="/antWork/page">
+          <Link to="/antwork/page">
             <img
               src="../../../public/images/ico/edit_document_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="page"

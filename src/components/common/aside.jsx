@@ -18,7 +18,7 @@ export default function Aside({ asideVisible }) {
   const location = useLocation();
 
   // 주소값에서 param 찾기
-  const basePath = "/antWork"; // `/antWork`를 무시
+  const basePath = "/antwork"; // `/antwork`를 무시
   const relativePath = location.pathname.replace(basePath, "");
   const mainPath = relativePath.split("/")[1] || ""; // 첫 번째 경로 추출 (`page`, `project`, `drive` 등)
 
@@ -34,7 +34,7 @@ export default function Aside({ asideVisible }) {
       {mainPath === "" && (
         <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
           <div className="logo">
-            <span className="sub-title">AntWork Home</span>
+            <span className="sub-title">antwork Home</span>
             <button className="image-button-css" aria-label="등록"></button>
             <span className="title">Home</span>
           </div>
@@ -54,7 +54,7 @@ export default function Aside({ asideVisible }) {
           <div className="logo">
             <span className="sub-title">Shared Page</span>
             <button
-              className="image-button-css !bg-[url('../../../public/images/ico/page_write_22_999999.svg')]"
+              className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')]"
               aria-label="등록"
             ></button>
             <span className="title">페이지</span>
@@ -63,17 +63,17 @@ export default function Aside({ asideVisible }) {
             <li className="lnb-item">
               <div className="lnb-header !mb-[10px]">
                 <img
-                  src="../../../public/images/ico/page_home_22_999999.svg"
+                  src="/images/ico/page_home_22_999999.svg"
                   className="cate-icon !w-[22px] !h-[22px]"
                 />
-                <Link to="/antWork/page" className="main-cate !text-[16px]">
+                <Link to="/antwork/page" className="main-cate !text-[16px]">
                   홈
                 </Link>
               </div>
 
               <div className="lnb-header !pb-[15px] border-b border-[#ddd]">
                 <img
-                  src="../../../public/images/ico/page_search_22_999999.svg"
+                  src="/images/ico/page_search_22_999999.svg"
                   className="cate-icon !w-[22px] !h-[22px]"
                 />
                 <span className="main-cate !text-[16px] ">검색</span>
@@ -91,8 +91,8 @@ export default function Aside({ asideVisible }) {
                   <img
                     src={
                       showPersonalPages
-                        ? "../../../public/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
-                        : "../../../public/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                        ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
+                        : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
                     }
                     alt="toggle"
                   />
@@ -121,11 +121,11 @@ export default function Aside({ asideVisible }) {
             <li className="lnb-item">
               <div className="lnb-header !mb-[10px]">
                 <img
-                  src="../../../public/images/ico/page_template_22_999999.svg"
+                  src="/images/ico/page_template_22_999999.svg"
                   className="cate-icon !w-[22px] !h-[22px]"
                 />
                 <Link
-                  to="/antWork/page"
+                  to="/antwork/page"
                   className="main-cate !text-[16px] text-[#757575]"
                 >
                   템플릿
@@ -134,11 +134,11 @@ export default function Aside({ asideVisible }) {
 
               <div className="lnb-header !mb-[10px]">
                 <img
-                  src="../../../public/images/ico/page_delete24_999999.svg"
+                  src="/images/ico/page_delete24_999999.svg"
                   className="cate-icon !w-[22px] !h-[22px]"
                 />
                 <Link
-                  to="/antWork/page"
+                  to="/antwork/page"
                   className="main-cate !text-[16px] text-[#757575]"
                 >
                   휴지통
@@ -146,16 +146,94 @@ export default function Aside({ asideVisible }) {
               </div>
               <div className="lnb-header !mb-[10px]">
                 <img
-                  src="../../../public/images/ico/page_setting_22_999999.svg"
+                  src="/images/ico/page_setting_22_999999.svg"
                   className="cate-icon !w-[22px] !h-[22px]"
                 />
                 <Link
-                  to="/antWork/page"
+                  to="/antwork/page"
                   className="main-cate !text-[16px] text-[#757575]"
                 >
                   설정
                 </Link>
               </div>
+            </li>
+          </ul>
+        </aside>
+      )}
+      {mainPath === "project" && (
+        <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
+          <div className="logo !border-b-0">
+            <span className="sub-title">My Projects</span>
+            <span className="title">Projects</span>
+            <button
+              className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 mt-6 h-14"
+              style={{ backgroundColor: "#D9E8FF" }}
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <span className="text-xl">New Project</span>
+            </button>
+          </div>
+          <ul className="a mt-20">
+            <li className="">
+              <a
+                href="#"
+                className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
+              >
+                <div className="w-8 h-8 rounded-lg overflow-hidden mr-4">
+                  <img
+                    src="../../../public/images/antwork/project/project_home.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="main-cate">프로젝트 홈</span>
+              </a>
+            </li>
+            <li className="lnb-item w-[195px] h-auto items-center border-b border-[#d9d9d9] mb-[15px]">
+              <div className="lnb-header">
+                <img
+                  src="../../../public/images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
+                  className="cate-icon"
+                />
+                <span className="main-cate">진행중인 프로젝트</span>
+              </div>
+              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
+                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
+                프로젝트1
+              </a>
+              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
+                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
+                프로젝트2
+              </a>
+            </li>
+            <li className="lnb-item w-[195px] h-auto items-center">
+              <div className="lnb-header">
+                <img
+                  src="../../../public/images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
+                  className="cate-icon"
+                />
+                <span className="main-cate">완료한 프로젝트</span>
+              </div>
+              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
+                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
+                프로젝트1
+              </a>
+              <a href="#" className="flex ml-[10px] mb-[10px] text-lg">
+                <img src="../../../public/images/ico/subdirectory_arrow_right_20dp_CCCCCC_FILL0_wght400_GRAD0_opsz20.svg" />
+                프로젝트2
+              </a>
             </li>
           </ul>
         </aside>
