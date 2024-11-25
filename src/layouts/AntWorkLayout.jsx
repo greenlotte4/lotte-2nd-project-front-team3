@@ -18,7 +18,7 @@ const AntWorkLayout = ({ children }) => {
       <Header onToggleAside={toggleAside} />
       <main>
         <Navigator />
-        <CalendarAside />
+        <Aside asideVisible={isAsideVisible} />
         <section className="main-content">{children}</section>
       </main>
     </div>
