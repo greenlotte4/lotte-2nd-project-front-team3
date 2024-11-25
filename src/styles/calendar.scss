@@ -1,0 +1,98 @@
+.cal {
+  width: auto;
+  height: auto;
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+
+  .fc-day.fc-day-sun a {
+    /* 일요일 컬러 */
+    color: red !important;
+  }
+
+  .fc-scrollgrid.fc-scrollgrid-liquid {
+    border-radius: 10px 10px 0 0;
+  }
+
+  .fc-col-header-cell.fc-day.fc-day-sun {
+    border-radius: 8px 0 0 0;
+  }
+  .fc-col-header-cell.fc-day.fc-day-sat {
+    border-radius: 0 8px 0 0;
+  }
+
+  .fc-theme-standard th {
+    border-right: none;
+  }
+
+  .fc-col-header-cell.fc-day {
+    /* 원하는 스타일 */
+    background-color: #b2d1ff;
+    color: #eceef1;
+    text-align: center;
+  }
+  .fc .fc-toolbar.fc-header-toolbar {
+    padding: 10px 10px;
+
+    font-size: 12px;
+    font-weight: 500;
+    background-color: var(--subColor2);
+
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+
+  .fc .fc-button {
+    background-color: #b2d1ff;
+    color: var(--subColor1);
+    border: none;
+    outline: none;
+  }
+
+  /* 버튼들 눌렀을때 보기싫은 outline 정리 */
+  .fc-button:focus,
+  .fc-button:active {
+    box-shadow: none !important; /* 클릭 시 생기는 그림자 제거 */
+    background-color: #b2d1ff !important;
+  }
+
+  /* 포커스된 상태 테두리 없앰 */
+  .fc .fc-button-primary:focus {
+    border: none !important;
+    box-shadow: none;
+  }
+
+  /* 월, 주, 일 배경색 고정시키기 */
+  .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #b2d1ff;
+  }
+
+  /* 클릭 순간 테두리 없애는 중.. */
+  .fc .fc-button-primary:active {
+    box-shadow: none;
+  }
+
+  .fc .fc-today-button {
+    border-radius: 0;
+  }
+
+  /**/
+  .fc .fc-today-button {
+    background-color: #eceef1;
+  }
+
+  /* today 버튼 - 이번 달에 위치할 때 */
+  .fc .fc-today-button:disabled {
+    display: block;
+    background-color: #1e5cb9;
+    color: #fff;
+  }
+
+  .fc
+    .fc-day.fc-day-sun.fc-day-past.fc-daygrid-day
+    > .fc-daygrid-day-frame.fc-scrollgrid-sync-inner,
+  .fc-day.fc-day-sun.fc-day-future.fc-daygrid-day
+    > .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+    background-color: #fce3e3;
+  }
+}

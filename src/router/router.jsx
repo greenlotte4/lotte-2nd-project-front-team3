@@ -7,7 +7,7 @@ import TermsPage from "../pages/Member/TermsPage";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
-import ProjectPage from "../pages/Main/project/projectPage";
+import CalendarPage from "../pages/Main/calendar/CalendarPage";
 import { lazy, Suspense } from "react";
 
 // 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
@@ -26,6 +26,8 @@ const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> }, // 로그인
   { path: "/register", element: <RegisterPage /> }, // 회원가입
   { path: "/terms", element: <TermsPage /> }, // 회원가입
+
+
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
@@ -47,6 +49,9 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
+      { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
+    { path: "/antWork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지
+
 ]);
 // 라우터 내보내기
 export default router;
