@@ -95,4 +95,19 @@
     > .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
     background-color: #fce3e3;
   }
+
+  .fc-toolbar-chunk:nth-child(2) > div {
+    display: flex;
+    gap: 10px;
+    line-height: 25px;
+  }
+
+  .fc-toolbar-chunk:nth-child(2) > div > button {
+    background-color: white;
+  }
+
+  .fc-toolbar-chunk:nth-child(2) > div > button:active {
+    box-shadow: none !important;
+    background-color: white !important;
+  }
 }
