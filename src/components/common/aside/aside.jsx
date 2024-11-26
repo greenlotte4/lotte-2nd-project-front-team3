@@ -7,6 +7,7 @@ import BoardAside from "./boardAside";
 import DriveAside from "./driveAside";
 import ChattingAside from "./chattingAside";
 import CalendarAside from "./calendarAside";
+import AdminAside from "./adminAside";
 
 {
   /*
@@ -15,18 +16,18 @@ import CalendarAside from "./calendarAside";
     내용 : aside.jsx - 주소값에 따라 asdie 바뀌도록 구현
 
     수정 내역 : 
-    예시) 2024/12/01 - 강은경 : ~~~ 를 위해 ~~~ 추가
     2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 
+    2024/11/26 - 황수빈 : AdminAside 추가
   */
 }
 
 export default function Aside({ asideVisible }) {
   const location = useLocation();
 
-  // 주소값에서 param 찾기
-  const basePath = "/antwork"; // `/antwork`를 무시
+  //http://localhost:5137/anwork/_______ 여기 주소값을 찾음
+  const basePath = "/antwork"; // `/antwork`제외
   const relativePath = location.pathname.replace(basePath, "");
-  const mainPath = relativePath.split("/")[1] || ""; // 첫 번째 경로 추출 (`page`, `project`, `drive` 등)
+  const mainPath = relativePath.split("/")[1] || "";
 
   return (
     <>
@@ -52,6 +53,7 @@ export default function Aside({ asideVisible }) {
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
       {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
       {mainPath === "calendar" && <CalendarAside asideVisible={asideVisible} />}
+      {mainPath === "admin" && <AdminAside asideVisible={asideVisible} />}
     </>
   );
 }

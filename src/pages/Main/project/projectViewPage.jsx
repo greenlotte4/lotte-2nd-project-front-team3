@@ -5,7 +5,6 @@ export default function ProjectViewPage() {
   return (
     <>
       <AntWorkLayout>
-        <ProjectAside />
         <ProjectViewSection />
       </AntWorkLayout>
     </>
