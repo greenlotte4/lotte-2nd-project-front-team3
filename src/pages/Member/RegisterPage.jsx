@@ -87,7 +87,7 @@ export default function RegisterPage() {
               />
 
               <div className="register_btn">
-                <Link to="/login" className="register_prev">
+                <Link to="/terms" className="register_prev">
                   prev
                 </Link>
                 <button className="register_sign">sign up</button>

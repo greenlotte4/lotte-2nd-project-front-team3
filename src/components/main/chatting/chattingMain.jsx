@@ -15,7 +15,7 @@ export default function ChattingMain() {
   });
 
   return (
-    <div className="fixed top-30 left-[5%] md:left-[10%] lg:left-[15%] h-[calc(100vh-80px)] w-[90%] md:w-[80%] rounded-3xl shadow-md  z-20 overflow-hidden">
+    <div className=" w-[100%] rounded-3xl shadow-md  z-20 overflow-hidden">
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
         <div
