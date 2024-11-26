@@ -107,12 +107,12 @@ export default function PagingWrite() {
   }, []);
 
   return (
-    <div className="w-full max-w-5xl mx-4">
+    <div className="w-full ">
       <article className="page-list">
         <div className="content-header">
           <h1>New Page</h1>
         </div>
-        <article className="page-list !mt-5 !border-none">
+        <article className="page-list !-5mt !border-none">
           <div
             className="content-header flex items-center gap-2"
             onMouseEnter={() => setIsHovering(true)}
