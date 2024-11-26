@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import Header from "../components/common/header";
 import Navigator from "../components/common/navigator";
-import Aside from "./../components/common/aside";
+import ChattingAside from "./../components/common/chattingAside";
 
 const AntWorkLayout = ({ children }) => {
   const [isAsideVisible, setIsAsideVisible] = useState(false);
@@ -17,7 +17,7 @@ const AntWorkLayout = ({ children }) => {
       <Header onToggleAside={toggleAside} />
       <main>
         <Navigator />
-        <Aside />
+        <ChattingAside />
         <section className="main-content">{children}</section>
       </main>
     </div>
