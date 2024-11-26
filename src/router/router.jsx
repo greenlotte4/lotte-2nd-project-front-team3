@@ -8,6 +8,7 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
 import ProjectPage from "../pages/Main/project/projectPage";
+import BoardPage from "../pages/Main/board/\bboardPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/project", element: <ProjectPage /> }, // antwork 페이지
+  { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
 ]);
 // 라우터 내보내기
 export default router;
