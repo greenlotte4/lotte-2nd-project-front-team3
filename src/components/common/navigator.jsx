@@ -22,12 +22,12 @@ export default function Navigator() {
         </div>
 
         <div className="nav-item">
-          <a href="#">
+          <Link to="/antwork/calendar">
             <img
               src="../../../public/images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="calendar"
             />
-          </a>
+          </Link>
         </div>
         <div className="nav-item">
           <Link to="/antwork/chatting">
@@ -60,12 +60,12 @@ export default function Navigator() {
         </div>
 
         <div className="nav-item">
-          <a href="#">
+          <Link to="/antwork/drive">
             <img
               src="../../../public/images/ico/cloud_download_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="drive"
             />
-          </a>
+          </Link>
         </div>
         <div className="nav-item">
           <a href="#">

@@ -1,4 +1,4 @@
-import ProjectAside from "../../../components/common/projectAside";
+import ProjectAside from "../../../components/common/aside/projectAside";
 import ProjectMainSection from "../../../components/main/project/projectMainSection";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
 

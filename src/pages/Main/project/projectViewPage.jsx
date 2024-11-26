@@ -1,4 +1,3 @@
-import ProjectAside from "../../../components/common/projectAside";
 import ProjectViewSection from "../../../components/main/project/projectViewSection";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
 
