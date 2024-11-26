@@ -7,16 +7,14 @@ import TermsPage from "../pages/Member/TermsPage";
 
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
-<<<<<<< HEAD
 import CalendarPage from "../pages/Main/calendar/CalendarPage";
 import { lazy, Suspense } from "react";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWrite";
-=======
+
 import ProjectPage from "../pages/Main/project/projectPage";
-import BoardPage from "../pages/Main/board/\bboardPage";
->>>>>>> 4d9a25f (게시판 메인 화면구현 중)
+import BoardPage from "../pages/Main/board/boardPage";
 
 // 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
 const ProjectMainPage = lazy(() =>
@@ -64,13 +62,8 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-<<<<<<< HEAD
-  { path: "/antwork/project/main", element: <ProjectMainPage /> }, // antwork 페이지
-  { path: "/antwork/project/view", element: <ProjectViewPage /> }, // antwork 페이지
-=======
-  { path: "/antwork/project", element: <ProjectPage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
->>>>>>> 4d9a25f (게시판 메인 화면구현 중)
+
 ]);
 // 라우터 내보내기
 export default router;
