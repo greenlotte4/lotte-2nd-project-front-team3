@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import { useInviteModal } from "./../../hooks/chatting/invitemodal";
 import useModalStore from "./../../store/modalStore";
+import useToggle from "./../../hooks/useToggle";
 
 export default function ChattingAside() {
-  const [isDMOpen, setIsDMOpen] = useState(true);
-  const [isChannelOpen, setIsChannelOpen] = useState(true);
-  const [isPersonalOpen, setIsPersonalOpen] = useState(true);
+  const [toggleStates, toggleState] = useToggle({
+    isDMOpen: true,
+    isChannelOpen: true,
+    isPersonalOpen: true,
+  });
+
   const openModal = useModalStore((state) => state.openModal);
-  const inviteModalProps = useInviteModal(); // 여기서 호출
+  const inviteModalProps = useInviteModal(); // 채팅방 초대 모달 props 호출
   useEffect(() => {
     console.log("==============");
   }, [inviteModalProps]);
+
   return (
     <aside className="h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200">
       {/* Header */}
@@ -41,12 +46,12 @@ export default function ChattingAside() {
       <div className="mt-4">
         <div
           className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
-          onClick={() => setIsPersonalOpen(!isPersonalOpen)}
+          onClick={() => toggleState("isPersonalOpen")}
         >
           <span className="text-lg font-semibold text-black">👤 개인 채팅</span>
           <span
             className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
-              isPersonalOpen ? "rotate-180" : "rotate-0"
+              toggleStates.isPersonalOpen ? "rotate-180" : "rotate-0"
             }`}
           >
             <svg
@@ -67,7 +72,7 @@ export default function ChattingAside() {
         </div>
         <div
           className={`overflow-hidden transition-all duration-300 ${
-            isPersonalOpen ? "max-h-screen" : "max-h-0"
+            toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
           }`}
         >
           <ul className="space-y-4">
@@ -111,14 +116,14 @@ export default function ChattingAside() {
       <div className="mt-6">
         <div
           className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
-          onClick={() => setIsChannelOpen(!isChannelOpen)}
+          onClick={() => toggleState("isChannelOpen")}
         >
           <span className="text-lg font-semibold text-black">
             📢 채널 (단체 채팅)
           </span>
           <span
             className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
-              isChannelOpen ? "rotate-180" : "rotate-0"
+              toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
             }`}
           >
             <svg
@@ -139,7 +144,7 @@ export default function ChattingAside() {
         </div>
         <div
           className={`overflow-hidden transition-all duration-300 ${
-            isChannelOpen ? "max-h-screen" : "max-h-0"
+            toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"
           }`}
         >
           <ul className="space-y-4">

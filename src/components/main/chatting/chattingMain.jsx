@@ -1,21 +1,15 @@
 import { useState } from "react";
+import useToggle from "./../../../hooks/useToggle";
 
 export default function ChattingMain() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바
-  const [isAlarmOn, setIsAlarmOn] = useState(true); // 알림 상태
-  const [isContactOpen, setIsContactOpen] = useState(true); // 대화 상대 토글
-  const [isPhotoOpen, setIsPhotoOpen] = useState(false); // 사진 파일 토글
-  const [isFileOpen, setIsFileOpen] = useState(false); // 첨부 파일 토글
-
-  // 오른쪽 사이드바 토글
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  // 알림 토글
-  const toggleAlarm = () => {
-    setIsAlarmOn(!isAlarmOn);
-  };
+  // useToggle 훅 사용
+  const [toggleStates, toggleState] = useToggle({
+    isSidebarOpen: false, // 사이드바
+    isAlarmOn: true, // 알림 상태
+    isContactOpen: true, // 대화 상대 토글
+    isPhotoOpen: false, // 사진 파일 토글
+    isFileOpen: false, // 첨부 파일 토글
+  });
 
   return (
     <div className="fixed top-30 left-[5%] md:left-[10%] lg:left-[15%] h-[calc(100vh-80px)] w-[90%] md:w-[80%] rounded-3xl shadow-md  z-20 overflow-hidden">
@@ -23,7 +17,7 @@ export default function ChattingMain() {
         {/* 메인 채팅 영역 */}
         <div
           className={`flex flex-col h-full transition-all duration-300 ${
-            isSidebarOpen ? "w-[78%]" : "w-full"
+            toggleStates.isSidebarOpen ? "w-[78%]" : "w-full"
           }`}
         >
           {/* 채팅 헤더 */}
@@ -44,7 +38,7 @@ export default function ChattingMain() {
             <div className="flex items-center space-x-4">
               <button
                 className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
-                onClick={toggleSidebar}
+                onClick={() => toggleState("isSidebarOpen")}
               >
                 <img
                   src="../../../../public/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
@@ -135,7 +129,7 @@ export default function ChattingMain() {
         {/* 오른쪽 토글 패널 */}
         <div
           className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${
-            isSidebarOpen ? "translate-x-0" : "translate-x-full"
+            toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
           } duration-300`}
         >
           {/* 상단 영역 */}
@@ -143,7 +137,7 @@ export default function ChattingMain() {
             {/* 사이드바 닫기 버튼 */}
             <button
               className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
-              onClick={toggleSidebar}
+              onClick={() => toggleState("isSidebarOpen")}
             >
               <img src="../../../../public/images/ico/closechat.svg"></img>
             </button>
@@ -156,11 +150,11 @@ export default function ChattingMain() {
               {/* 알림 아이콘 */}
               <button
                 className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
-                onClick={toggleAlarm}
+                onClick={() => toggleState("isAlarmOn")}
               >
                 <img
                   src={
-                    isAlarmOn
+                    toggleStates.isAlarmOn
                       ? "../../../../public/images/ico/alerm.svg"
                       : "../../../../public/images/ico/alermoff.svg"
                   }
@@ -187,14 +181,14 @@ export default function ChattingMain() {
           <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => setIsContactOpen(!isContactOpen)}
+              onClick={() => toggleState("isContactOpen")}
             >
               <h3 className="text-lg font-semibold mb-2">대화 상대</h3>
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-5 w-5 transform transition-transform ${
-                    isContactOpen ? "rotate-180" : "rotate-0"
+                    toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -209,7 +203,7 @@ export default function ChattingMain() {
                 </svg>
               </button>
             </div>
-            {isContactOpen && (
+            {toggleStates.isContactOpen && (
               <ul className="space-y-4 mt-4">
                 <li className="flex items-center">
                   <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
@@ -235,14 +229,14 @@ export default function ChattingMain() {
           <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => setIsPhotoOpen(!isPhotoOpen)}
+              onClick={() => toggleState("isPhotoOpen")}
             >
               <h3 className="text-lg font-semibold mb-2">사진 파일</h3>
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-5 w-5 transform transition-transform ${
-                    isPhotoOpen ? "rotate-180" : "rotate-0"
+                    toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -257,7 +251,7 @@ export default function ChattingMain() {
                 </svg>
               </button>
             </div>
-            {isPhotoOpen && (
+            {toggleStates.isPhotoOpen && (
               <div className="space-y-4 mt-4">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-4">
@@ -282,14 +276,14 @@ export default function ChattingMain() {
           <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => setIsFileOpen(!isFileOpen)}
+              onClick={() => toggleState("isFileOpen")}
             >
               <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-5 w-5 transform transition-transform ${
-                    isFileOpen ? "rotate-180" : "rotate-0"
+                    toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -304,7 +298,7 @@ export default function ChattingMain() {
                 </svg>
               </button>
             </div>
-            {isFileOpen && (
+            {toggleStates.isFileOpen && (
               <div className="space-y-4 mt-4">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-4">

@@ -13,7 +13,7 @@ export default function ChattingPage() {
     <>
       <AntWorkLayout>
         <ChattingMain />
-        <ChattingModal></ChattingModal>
+        <ChattingModal />
       </AntWorkLayout>
     </>
   );

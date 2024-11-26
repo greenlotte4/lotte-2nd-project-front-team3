@@ -13,7 +13,6 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWrite";
 
-import ProjectPage from "../pages/Main/project/projectPage";
 import BoardPage from "../pages/Main/board/boardPage";
 
 // 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
@@ -63,7 +62,6 @@ const router = createBrowserRouter([
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
-
 ]);
 // 라우터 내보내기
 export default router;
