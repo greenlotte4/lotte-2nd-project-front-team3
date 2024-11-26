@@ -54,12 +54,12 @@ export default function Navigator() {
           </Link>
         </div>
         <div className="nav-item">
-          <a href="#">
+          <Link to="/antwork/board">
             <img
               src="../../../public/images/ico/content_paste_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="board"
             />
-          </a>
+          </Link>
         </div>
 
         <div className="nav-item">
