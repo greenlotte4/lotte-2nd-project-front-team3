@@ -325,19 +325,41 @@ address {
   margin-bottom: 70px;
 }
 
-.footerIn {
-  margin-bottom: 70px;
-}
-
-/* footer */
+/* footer start ----------------------------------------------------------------------------------  */
 #footer {
-  width: 1200px;
-  margin: 0 auto;
+
 }
 
 .footerIn {
-  margin-bottom: 70px;
+  width: 1200px; /* 고정 폭 설정 */
+  height: 100%; /* 부모 높이와 동일하게 설정 */
+  margin: 0 auto; /* 가로 중앙 정렬 */
+  display: flex; /* 내부 요소 정렬을 위한 Flexbox 추가 */
+
 }
+
+.finfo,
+.fmenu {
+  margin-left: 180px;
+  width: 100%;
+  display: flex;
+  gap : 40px;
+}
+
+.flogo img {
+  max-width: 200px; /* 로고 크기 제한 */
+  height: auto; /* 비율 유지 */
+}
+
+.dep1-2{
+  margin-right: 50px;
+}
+
+.right{
+  width: 300px;
+  height: auto;
+  justify-content: flex-end;
+}  
 
 /* 랜딩 페이지 스타일링 끝 */
 /* 유저 페이지 스타일링 */
