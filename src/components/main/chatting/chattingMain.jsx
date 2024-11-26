@@ -2,13 +2,16 @@ import { useState } from "react";
 import useToggle from "./../../../hooks/useToggle";
 
 export default function ChattingMain() {
+  const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
+
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
-    isSidebarOpen: false, // 사이드바
-    isAlarmOn: true, // 알림 상태
+    isSidebarOpen: false, // 오른쪽 사이드바 토글
+    isAlarmOn: true, // 알림 상태 토글
     isContactOpen: true, // 대화 상대 토글
     isPhotoOpen: false, // 사진 파일 토글
     isFileOpen: false, // 첨부 파일 토글
+    isSearchOpen: false, // 검색창 토글
   });
 
   return (
@@ -17,16 +20,19 @@ export default function ChattingMain() {
         {/* 메인 채팅 영역 */}
         <div
           className={`flex flex-col h-full transition-all duration-300 ${
-            toggleStates.isSidebarOpen ? "w-[78%]" : "w-full"
+            toggleStates.isSidebarOpen
+              ? "w-[78%] min-w-[300px]"
+              : "w-full min-w-[300px]"
           }`}
         >
           {/* 채팅 헤더 */}
-          <div className="flex-none px-6 py-4 bg-white border-b border-gray-200 rounded-t-3xl shadow flex items-center justify-between">
+          <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
+            {/* 프로필 섹션 */}
             <div className="flex items-center">
               <img
                 src="https://via.placeholder.com/40"
                 alt="Profile"
-                className="w-16 h-16 rounded-full border border-gray-300"
+                className="w-16 h-16 rounded-full border border-gray-300 shadow-sm"
               />
               <div className="flex items-center ml-4">
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
@@ -35,21 +41,84 @@ export default function ChattingMain() {
                 <span className="ml-2 w-3 h-3 bg-green-400 rounded-full inline-block"></span>
               </div>
             </div>
+
+            {/* 아이콘 섹션 */}
             <div className="flex items-center space-x-4">
+              {/* 고정핀 아이콘 */}
               <button
-                className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+                className="p-2 rounded-full hover:bg-gray-300 focus:outline-none "
+                onClick={() => console.log("고정핀 기능 실행")}
+              >
+                <img
+                  src="../../../../public/images/ico/고정핀.svg"
+                  alt="Pin"
+                  className="w-8 h-8"
+                />
+              </button>
+
+              {/* 검색 아이콘 및 입력창 */}
+              <div className="relative flex items-center">
+                {/* 검색 입력창 */}
+                {toggleStates.isSearchOpen && (
+                  <div className="relative flex items-center ml-2">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      placeholder="검색어를 입력하세요."
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-md transition-all duration-300"
+                      style={{ width: "200px" }}
+                    />
+                    {/* 입력 지우기 버튼 */}
+                    {searchQuery && (
+                      <button
+                        className="absolute right-2 text-gray-500 hover:text-gray-800 focus:outline-none"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M6.707 6.293a1 1 0 00-1.414 1.414L8.586 11l-3.293 3.293a1 1 0 001.414 1.414L11 12.414l3.293 3.293a1 1 0 001.414-1.414L12.414 11l3.293-3.293a1 1 0 00-1.414-1.414L11 9.586 7.707 6.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+                <button
+                  className="p-2 rounded-full hover:bg-gray-300 focus:outline-none transition"
+                  onClick={() => toggleState("isSearchOpen")}
+                >
+                  <img
+                    src="../../../../public/images/ico/돋보기.svg"
+                    alt="Search"
+                    className="w-8 h-8"
+                  />
+                </button>
+              </div>
+
+              {/* 메뉴 아이콘 */}
+              <button
+                className="p-2 rounded-full focus:outline-none "
                 onClick={() => toggleState("isSidebarOpen")}
               >
                 <img
                   src="../../../../public/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                   alt="Menu"
+                  className="w-8 h-8"
                 />
               </button>
             </div>
           </div>
 
           {/* 채팅 본문 */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50">
+          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50 bg-white">
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
@@ -62,7 +131,7 @@ export default function ChattingMain() {
                     <img
                       src="https://via.placeholder.com/50"
                       alt="Profile"
-                      className="w-14 h-14 rounded-full border border-gray-300"
+                      className="w-16 h-16 rounded-full border border-gray-300"
                     />
                     <div className="bg-gray-100 px-6 py-4 rounded-2xl shadow-md max-w-2xl">
                       <p className="text-lg text-gray-800 leading-relaxed">
@@ -81,7 +150,7 @@ export default function ChattingMain() {
                     <img
                       src="https://via.placeholder.com/50"
                       alt="My Profile"
-                      className="w-14 h-14 rounded-full border border-gray-300"
+                      className="w-16 h-16 rounded-full border border-gray-300"
                     />
                     <div className="bg-[#A0C3F7] text-white px-6 py-4 rounded-2xl shadow-md max-w-2xl">
                       <p className="text-lg leading-relaxed">
