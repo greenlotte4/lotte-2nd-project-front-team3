@@ -65,13 +65,57 @@ export default function ProjectMainSection() {
                     </span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
                   <img
                     src="../../../public/images/Antwork/project/project_delete.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
+                </button>
+              </div>
+
+              <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
+                <div className="flex items-center space-x-8">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <img
+                      src="../../../public/images/Antwork/project/project.png"
+                      alt="Description"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="font-medium text-[20px]">
+                      Project Name
+                    </a>
+                    <span className="text-[14px] text-[#6b7280]">
+                      #2 updated last week
+                    </span>
+                  </div>
+                  <div className="absolute top-2 right-2 flex -space-x-4">
+                    <img
+                      src="https://via.placeholder.com/40"
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border border-gray-300 z-10"
+                    />
+                    <img
+                      src="https://via.placeholder.com/40"
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border border-gray-300 z-20"
+                    />
+                    <img
+                      src="https://via.placeholder.com/40"
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border border-gray-300 z-30"
+                    />
+                  </div>
                 </div>
+                <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
+                  <img
+                    src="../../../public/images/Antwork/project/project_delete.png"
+                    alt="Description"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
               </div>
 
               <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
@@ -92,40 +136,13 @@ export default function ProjectMainSection() {
                     </span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
                   <img
                     src="../../../public/images/Antwork/project/project_delete.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
-                </div>
-              </div>
-
-              <div className="bg-white p-8 rounded-lg shadow flex items-center justify-between">
-                <div className="flex items-center space-x-8">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden">
-                    <img
-                      src="../../../public/images/Antwork/project/project.png"
-                      alt="Description"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <a href="#" className="font-medium text-[20px]">
-                      Project Name
-                    </a>
-                    <span className="text-[14px] text-[#6b7280]">
-                      #2 updated last week
-                    </span>
-                  </div>
-                </div>
-                <div className="w-10 h-10 rounded-lg overflow-hidden">
-                  <img
-                    src="../../../public/images/Antwork/project/project_delete.png"
-                    alt="Description"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                </button>
               </div>
             </div>
           </div>
