@@ -13,8 +13,6 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWrite";
 
-import BoardPage from "../pages/Main/board/boardPage";
-
 // 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
 const ProjectMainPage = lazy(() =>
   import("../pages/Main/project/projectMainPage")
@@ -22,6 +20,8 @@ const ProjectMainPage = lazy(() =>
 const ProjectViewPage = lazy(() =>
   import("../pages/Main/project/projectViewPage")
 );
+import AdminLoginPage from "./../pages/Admin/LoginPage";
+
 const router = createBrowserRouter([
   // 랜딩 페이지
   { path: "/", element: <LendingMainPage /> }, // 랜딩 메인
@@ -30,6 +30,9 @@ const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> }, // 로그인
   { path: "/register", element: <RegisterPage /> }, // 회원가입
   { path: "/terms", element: <TermsPage /> }, // 회원가입
+
+  // 관리자 페이지
+  { path: "/admin/login", element: <AdminLoginPage /> }, // 관리자 로그인
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
@@ -61,7 +64,7 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-  { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
+  // { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
 ]);
 // 라우터 내보내기
 export default router;

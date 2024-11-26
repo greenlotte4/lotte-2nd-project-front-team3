@@ -28,10 +28,7 @@ export default function Header({ onToggleAside }) {
             />
           </a>
           <a href="#">
-            <img
-              src="../../../public/images/ico/mail_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
-              alt="message"
-            />
+            <img src="../../../public/images/ico/nav_chat.svg" alt="message" />
           </a>
 
           <div className="user-info headeruser">

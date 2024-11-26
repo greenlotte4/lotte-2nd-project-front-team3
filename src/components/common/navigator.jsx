@@ -30,12 +30,9 @@ export default function Navigator() {
           </a>
         </div>
         <div className="nav-item">
-          <a href="#">
-            <img
-              src="../../../public/images/ico/mail_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
-              alt="message"
-            />
-          </a>
+          <Link to="/antwork/chatting">
+            <img src="../../../public/images/ico/nav_chat.svg" alt="message" />
+          </Link>
         </div>
         <div className="nav-item">
           <Link to="/antwork/page">
