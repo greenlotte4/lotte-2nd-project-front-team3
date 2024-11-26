@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function CalendarAside({ asideVisible }) {
   const [isMyOpen, setIsMyOpen] = useState(false);
@@ -57,7 +58,7 @@ export default function CalendarAside({ asideVisible }) {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="main-cate">내 캘린더</span>
+                <span className="main-cate">캘린더</span>
               </a>
             </div>
             <div
@@ -74,7 +75,7 @@ export default function CalendarAside({ asideVisible }) {
                         alt="#"
                         className="w-7 h-7"
                       />
-                      <span>calendar 1</span>
+                      <Link to="/antwork/calendar">내 캘린더</Link>
                     </div>
                   </a>
                 </li>
@@ -86,7 +87,7 @@ export default function CalendarAside({ asideVisible }) {
                         alt="#"
                         className="w-7 h-7"
                       />
-                      <span>calendar 2</span>
+                      <span>팀 캘린더</span>
                     </div>
                   </a>
                 </li>
@@ -153,9 +154,9 @@ export default function CalendarAside({ asideVisible }) {
                   </a>
                 </li>
                 <li>
-                  <a href="#" onClick={() => onViewChange("dayGridMonth")}>
+                  <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <span>+ 전체보기</span>
+                      <Link to="/antwork/scheduleList">+ 전체보기</Link>
                     </div>
                   </a>
                 </li>

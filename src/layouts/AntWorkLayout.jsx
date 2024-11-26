@@ -3,11 +3,10 @@ import { useState } from "react";
 
 import Header from "../components/common/header";
 import Navigator from "../components/common/navigator";
-import ChattingAside from "../components/common/aside/chattingAside";
 import Aside from "../components/common/aside/aside";
 
 const AntWorkLayout = ({ children }) => {
-  const [isAsideVisible, setIsAsideVisible] = useState(true);
+  const [isAsideVisible, setIsAsideVisible] = useState(false);
 
   const toggleAside = () => {
     setIsAsideVisible((prev) => !prev);
