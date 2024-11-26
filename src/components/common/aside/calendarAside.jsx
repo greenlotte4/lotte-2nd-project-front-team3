@@ -156,7 +156,9 @@ export default function CalendarAside({ asideVisible }) {
                 <li>
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <Link to="/antwork/scheduleList">+ 전체보기</Link>
+                      <Link to="/antwork/calendar/scheduleList">
+                        + 전체보기
+                      </Link>
                     </div>
                   </a>
                 </li>
