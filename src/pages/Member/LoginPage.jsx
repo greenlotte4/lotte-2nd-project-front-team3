@@ -14,7 +14,7 @@ export default function LoginPage() {
             <h1 className="logo">Ant Work</h1>
             <h2 className="welcome">Welcome Back</h2>
             <form className="login_form">
-              <label className="email_lbl">Email</label>
+              <label className="email_lbl">ID</label>
               <input
                 type="email"
                 className="email"
