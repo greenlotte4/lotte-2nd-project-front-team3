@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome import
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function DriveSection() {
-  const [isChecked, setIsChecked] = useState(false);
-  const [isStarFilled, setIsStarFilled] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // 컨텍스트 메뉴 표시 상태
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
-
   const [isListView, setIsListView] = useState(true); // 리스트와 앨범 뷰 전환 상태
 
   const [folderStates, setFolderStates] = useState([
@@ -17,23 +14,23 @@ export default function DriveSection() {
 
   const menuRef = useRef(null);
 
-  const handleContextMenu = (event) => {
+  const handleContextMenu = (event, index) => {
     event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
     const { clientX, clientY } = event; // 클릭한 위치 좌표
     setMenuPosition({ x: clientX, y: clientY });
     setMenuVisible(true); // 커스텀 메뉴 열기
+
+    // 클릭한 폴더만 체크박스 선택, 나머지는 해제
+    setFolderStates((prevStates) =>
+      prevStates.map((state, idx) => ({
+        ...state,
+        isChecked: idx === index, // 클릭한 인덱스만 true
+      }))
+    );
   };
 
   const handleCloseMenu = () => {
     setMenuVisible(false);
-  };
-
-  const handleRowClick = () => {
-    setIsChecked(!isChecked); // 체크 상태를 반전
-  };
-
-  const toggleStar = () => {
-    setIsStarFilled(!isStarFilled);
   };
 
   useEffect(() => {
@@ -52,7 +49,6 @@ export default function DriveSection() {
 
   // 리스트/앨범 뷰 전환 함수
   const toggleView = (viewType) => {
-    // 클릭 시 상태 변경
     if (viewType === "list") {
       setIsListView(true);
     } else if (viewType === "album") {
@@ -120,13 +116,6 @@ export default function DriveSection() {
                 파일유형
               </button>
             </div>
-            <div className="hidden">
-              <button>다운로드</button>
-              <button>공유</button>
-              <button>삭제</button>
-              <button>이름바꾸기</button>
-              <button>이동</button>
-            </div>
             <div>
               <button className="drive_List" onClick={() => toggleView("list")}>
                 <img
@@ -179,6 +168,7 @@ export default function DriveSection() {
                       className={`text-center align-middle h-16 border-t hover:bg-gray-100 ${
                         folder.isChecked ? "bg-blue-50" : ""
                       }`}
+                      onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
                     >
                       <td>
                         <input
@@ -198,10 +188,10 @@ export default function DriveSection() {
                           ></i>
                         </button>
                       </td>
-                      <td>{folder.name}</td>
-                      <td>{folder.size}</td>
-                      <td>{folder.owner}</td>
-                      <td>{folder.date}</td>
+                      <td>폴더 {index + 1}</td>
+                      <td>3MB</td>
+                      <td>사용자</td>
+                      <td>2024-11-26</td>
                     </tr>
                   ))}
                 </tbody>
@@ -217,8 +207,8 @@ export default function DriveSection() {
                         ? "bg-blue-50 border-blue-500"
                         : "hover:bg-gray-100"
                     } transition`}
+                    onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
                   >
-                    {/* 체크박스 */}
                     <div
                       className={`absolute top-2 left-2 w-6 h-6 rounded-md flex items-center justify-center cursor-pointer border ${
                         folder.isChecked
@@ -235,67 +225,61 @@ export default function DriveSection() {
                         <i className="fa-solid fa-check"></i>
                       )}
                     </div>
-
-                    {/* 폴더 아이콘 */}
                     <img
                       src="/images/folder_icon.png"
                       alt={`폴더${index + 1}`}
-                      className="w-[50px] h-[50px] mx-auto mb-2"
+                      className="w-[50px] h-[50px] mx-auto"
                     />
-                    <p>폴더 {index + 1}</p>
-                    <p>3MB</p>
-
-                    {/* 별표 */}
-                    <i
-                      className={`absolute top-2 right-2 fa-regular fa-star cursor-pointer text-xl ${
+                    <div className="text-center mt-2">폴더 {index + 1}</div>
+                    <button
+                      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
                         folder.isStarred
-                          ? "fa-solid text-yellow-500"
-                          : "fa-regular text-gray-300"
-                      } ${
-                        folder.isStarred
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100"
-                      } transition-opacity`}
+                          ? "text-yellow-500"
+                          : "text-gray-300 group-hover:text-gray-500"
+                      }`}
                       onClick={() => toggleFolderStar(index)}
-                    ></i>
+                    >
+                      <i
+                        className={`fa-star ${
+                          folder.isStarred ? "fa-solid" : "fa-regular"
+                        }`}
+                      ></i>
+                    </button>
                   </div>
                 ))}
               </div>
             )}
           </div>
         </article>
-
-        {/* 오른쪽 마우스 버튼클릭시 나오는 외부메뉴 */}
-        {menuVisible && (
-          <div
-            ref={menuRef}
-            className="absolute bg-white border border-gray-300 shadow-lg z-50"
-            style={{ left: `${menuPosition.x}px`, top: `${menuPosition.y}px` }}
-            onClick={handleCloseMenu} // 메뉴 외부 클릭 시 닫기
-          >
-            <ul className="p-2">
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                열기
-              </li>
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                업로드
-              </li>
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                다운로드
-              </li>
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                삭제
-              </li>
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                이동
-              </li>
-              <li className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                상세보기
-              </li>
-            </ul>
-          </div>
-        )}
       </div>
+      {/* 커스텀 메뉴 */}
+      {menuVisible && (
+        <div
+          ref={menuRef}
+          style={{
+            position: "absolute",
+            top: `${menuPosition.y}px`,
+            left: `${menuPosition.x}px`,
+            zIndex: 50,
+          }}
+          className="w-[200px] bg-white shadow-lg border rounded-md py-2"
+        >
+          <ul>
+            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
+              <i className="fa-solid fa-folder-plus mr-2"></i> 새 폴더
+            </li>
+            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
+              <i className="fa-solid fa-file-upload mr-2"></i> 업로드
+            </li>
+            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
+              <i className="fa-solid fa-star mr-2"></i> 즐겨찾기 추가
+            </li>
+            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
+              <i className="fa-solid fa-trash mr-2"></i> 삭제
+            </li>
+          </ul>
+        </div>
+      )}
     </>
   );
 }
