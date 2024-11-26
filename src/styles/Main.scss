@@ -31,9 +31,11 @@ a {
 main {
   display: flex;
   background-color: #eceef1;
-  min-height: 1090px;
 }
-
+.no-scroll main {
+  min-height: auto !important;
+  overflow: visible !important;
+}
 header {
   /* 헤더 고정 */
   position: fixed;
@@ -111,7 +113,7 @@ header .logout {
   text-decoration: none;
 }
 .nav-item a:hover {
-  background-color: #eceef1;
+  background-color: #f7f8f9;
   border-radius: 5px;
 }
 
@@ -122,7 +124,7 @@ header .logout {
   left: 0;
   bottom: 0;
   width: 60px;
-  background-color: white;
+  background-color: #eff6ff;
   border-right: 1px solid #ddd;
   z-index: 100;
 }

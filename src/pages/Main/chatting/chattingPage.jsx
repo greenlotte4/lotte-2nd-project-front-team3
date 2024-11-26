@@ -1,13 +1,19 @@
+import { useEffect, useState } from "react";
 import ChattingMain from "../../../components/main/chatting/chattingMain";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
-import ChattingAside from "./../../../components/common/chattingAside";
+import ChattingModal from "../../../components/common/modal/chattingModal";
 
 export default function ChattingPage() {
+  useEffect(() => {
+    document.body.classList.add("no-scroll");
+    return () => document.body.classList.remove("no-scroll");
+  }, []);
+
   return (
     <>
       <AntWorkLayout>
-        <ChattingAside />
         <ChattingMain />
+        <ChattingModal></ChattingModal>
       </AntWorkLayout>
     </>
   );
