@@ -7,9 +7,7 @@ export default function CalendarPage() {
     <>
       <AntWorkLayout>
         {/* <ScheduleList /> */}
-        <section className="cal">
-          <MyCalendar />
-        </section>
+        <MyCalendar />
       </AntWorkLayout>
     </>
   );

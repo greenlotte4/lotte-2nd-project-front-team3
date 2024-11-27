@@ -2,7 +2,7 @@
 export default function Header({ onToggleAside }) {
   return (
     <>
-      <header>
+      <header className="z-[1000]">
         <div className="header leftside">
           {/* Sidebar Toggle 버튼 */}
           <a
