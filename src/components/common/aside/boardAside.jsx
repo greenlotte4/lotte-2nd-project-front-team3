@@ -1,5 +1,18 @@
 import useToggle from "../../../hooks/useToggle";
 import { Link } from "react-router-dom";
+
+{
+  /*
+    날짜 : 2024/11/26(화)
+    생성자 : 김민희
+    내용 : boardAside.jsx - 카테고리 토글 메뉴 및 검색 추가
+
+    수정 내역 : 
+    2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 토글 메뉴 컴포넌트 분리
+  */
+}
+
+
 export default function BoardAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
     communityList: true,
@@ -70,7 +83,7 @@ export default function BoardAside({ asideVisible }) {
                 </li>
                 <li>
                   <a href="#">🥹&nbsp;&nbsp;억울한 일</a>
-                </li>₩  
+                </li>
 
 
                 

@@ -6,13 +6,36 @@ export default function BoardMain() {
           <h1>자유게시판</h1>
           <p className="!mb-5">여러분의 이야기를 자유롭게 공유해 보세요.</p>
 
+          
+          <div className="flex justify-between mb-4">
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="이름 + 이메일 검색"
+                className="border border-gray-300 rounded py-2 px-4 mr-2"
+              />
+              <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400">
+                검색
+              </button>
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-600">페이지당</span>
+              <select className="border border-gray-300 rounded mx-2">
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+              </select>
+              <span className="text-gray-600">개</span>
+            </div>
+          </div>
+
 
           <section className="main_article flex "> 
 
           <article className="page-list mr-7">
             <div className="content-header">
-              <h1 className="!mb-3 ">🔥 인기급상승 게시물</h1>
-              <p className="" >인기급상승 게시물입니당</p>
+              <h2 className="!mb-3">🔥 인기급상승 게시물</h2>
+              {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
             </div>
 
             <div className="page-grid cursor-pointer">
@@ -110,6 +133,9 @@ export default function BoardMain() {
               </div>
             {/* 인기게시물 끝 2*/}
 
+
+
+
             </div>
 
           </article>
@@ -119,10 +145,39 @@ export default function BoardMain() {
           <article className="page-list">
             <div className="content-header grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
               <h1 className="!mb-3 ">📑 자료실</h1>
-              <p> 자료실 설명글입니다. </p>
-              <div className="page-card !h-80">
+              {/* <p> 자료실 설명글입니다. </p> */}
+
+              {/* <div className="page-card !h-80">
                 <span>자료실 </span>
+              </div> */}
+
+
+              {/* 자료실 컨텐츠 1 */}
+              <div className="page-card bg-slate-500">
+                <div className="card-content">
+
+                  {/* tab */}
+                  
+
+                  <div className="user-details ">
+                    <h3 className="!text-[15px] !mb-3 !font-normal">
+                      OO학교 CheckList
+                    </h3>
+                    <div className="user-info !ml-3">
+                      <img
+                        src="/api/placeholder/32/32"
+                        alt="profile"
+                        className="avatar"
+                      />
+                      <p className="!text-[13px]">황수빈</p>
+                    </div>
+                  </div>
+                  <button className="options-btn">⋮</button>
+                </div>
               </div>
+
+
+
             </div>
           </article>
           {/* 자료실 끝 */}
