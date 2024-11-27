@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import LendingLayout from "../../layouts/LendingLayout";
+import LandingLayout from "../../layouts/LandingLayout";
 import useModalStore from "../../store/modalStore";
-import LendingModal from "../../components/common/modal/lendingModal";
+import LandingModal from "../../components/common/modal/lendingModal";
 
 {
   /*
     날짜 : 2024/11/27(수)
     생성자 : 강은경
-    내용 : LendingSupportPage.jsx 레이아웃 구현
+    내용 : LandingSupportPage.jsx 레이아웃 구현
 
     수정 내역 : 
     예시) 2024/12/01 - 강은경 : ~~~ 를 위해 ~~~ 추가
@@ -15,17 +15,17 @@ import LendingModal from "../../components/common/modal/lendingModal";
   */
 }
 
-export default function LendingSupportPage() {
+export default function LandingSupportPage() {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
   return (
-    <LendingLayout>
-      <LendingModal />
+    <LandingLayout>
+      <LandingModal />
       <div className="flex w-[1200px] mx-auto h-screen">
         <div className="w-1/2 bg-[#A0C3F7] bg-cover flex justify-center items-center relative">
           <div className="absolute top-[80px] left-[40px] transform -translate-x-1/2 -translate-y-1/2">
             <img
-              src="/images/Lending/support1.png"
+              src="/images/Landing/support1.png"
               alt="Confused person"
               className="w-full h-auto max-w-[890px] max-h-[670px] object-contain mt-[57.75rem] ml-[21.5rem]"
             />
@@ -47,7 +47,7 @@ export default function LendingSupportPage() {
             {" "}
             <div className="w-[107px] h-[207px]">
               <img
-                src="../../../public/images/Lending/support2.png"
+                src="../../../public/images/Landing/support2.png"
                 alt="문의 등록 이미지"
                 className="w-full h-auto ml-[3.75rem]"
               />
@@ -80,7 +80,7 @@ export default function LendingSupportPage() {
             <div className="flex items-center ml-auto">
               <div className="w-[336px] h-[207px]">
                 <img
-                  src="../../../public/images/Lending/support3.png"
+                  src="../../../public/images/Landing/support3.png"
                   alt="가이드 이미지"
                   className="w-full h-auto"
                 />
@@ -101,6 +101,6 @@ export default function LendingSupportPage() {
           </div>
         </div>
       </div>
-    </LendingLayout>
+    </LandingLayout>
   );
 }

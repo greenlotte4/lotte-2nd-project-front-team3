@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import LendingMainPage from "../pages/Lending/LendingMainPage";
+import LandingMainPage from "../pages/Landing/LandingMainPage";
 import MainPage from "./../pages/Main/MainPage";
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
@@ -13,7 +13,9 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWritePage";
 import BoardPage from "../pages/Main/board/boardPage";
+import BoardViewPage from "../pages/Main/board/boardViewPage";
 import BoardWritePage from "../pages/Main/board/boardWritePage";
+import BoardListPage from "../pages/Main/board/boardListPage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
@@ -28,22 +30,28 @@ import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
   */
 }
 
-import LendingSupportPage from "../pages/Lending/LendingSupportPage";
+import LandingSupportPage from "../pages/Landing/LandingSupportPage";
+
+// 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
+const ProjectMainPage = lazy(() =>
+  import("../pages/Main/project/projectMainPage")
+);
+const ProjectViewPage = lazy(() =>
+  import("../pages/Main/project/projectViewPage")
+);
+
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
-import BoardListPage from "../pages/Main/board/boardListPage";
-import BoardViewPage from "../pages/Main/board/boardViewPage";
 import DriveSharePage from "../pages/Main/drive/driveSharePage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
-import LendingPayPage from "./../pages/Lending/LendingPayPage";
-import ProjectMainPage from "../pages/Main/project/projectMainPage";
-import ProjectViewPage from "../pages/Main/project/projectViewPage";
-
+import LandingPayPage from "./../pages/Landing/LandingPayPage";
+import LandingFuctionPage from "../pages/Landing/LandingFuctionPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
-  { path: "/", element: <LendingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
-  { path: "/pay", element: <LendingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
-  { path: "/support", element: <LendingSupportPage /> }, // 2024/11/27(수) 강은경 - LendingSupportPage 추가
+  { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LandingMainPage 추가
+  { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LandingPayPage 추가
+  { path: "/support", element: <LandingSupportPage /> }, // 랜딩 지원
+  { path: "/function", element: <LandingFuctionPage /> }, // 랜딩 기능
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
@@ -75,7 +83,7 @@ const router = createBrowserRouter([
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/drive/share", element: <DriveSharePage /> }, // antwork 페이지
   { path: "/antwork/drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
-  { path: "/antwork/board", element: <BoardPage /> }, // 
+  { path: "/antwork/board", element: <BoardPage /> }, //
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
   { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
   { path: "/antwork/board/view", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
