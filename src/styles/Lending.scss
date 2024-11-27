@@ -40,6 +40,7 @@ address {
 #wrap {
   width: 100%;
   height: auto;
+  background-color: #fff;
 }
 
 /* 헤더 */
@@ -47,6 +48,7 @@ address {
   width: 100%;
   height: auto;
   border-bottom: 1px solid #ddd;
+  background-color: #fff;
 }
 
 /* 헤더 inner */
@@ -327,7 +329,6 @@ address {
 
 /* footer start ----------------------------------------------------------------------------------  */
 #footer {
-
 }
 
 .footerIn {
@@ -335,7 +336,6 @@ address {
   height: 100%; /* 부모 높이와 동일하게 설정 */
   margin: 0 auto; /* 가로 중앙 정렬 */
   display: flex; /* 내부 요소 정렬을 위한 Flexbox 추가 */
-
 }
 
 .finfo,
@@ -343,7 +343,7 @@ address {
   margin-left: 180px;
   width: 100%;
   display: flex;
-  gap : 40px;
+  gap: 40px;
 }
 
 .flogo img {
@@ -351,15 +351,15 @@ address {
   height: auto; /* 비율 유지 */
 }
 
-.dep1-2{
+.dep1-2 {
   margin-right: 50px;
 }
 
-.right{
+.right {
   width: 300px;
   height: auto;
   justify-content: flex-end;
-}  
+}
 
 /* 랜딩 페이지 스타일링 끝 */
 /* 유저 페이지 스타일링 */
@@ -535,7 +535,6 @@ address {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #b2d1ff, #92bbf8);
     border-radius: 0 0 15px 15px;
   }
 
@@ -993,5 +992,228 @@ address {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-top: 50px;
+  }
+}
+
+/* 요금 페이지 css */
+.pay-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  padding: 50px 0px;
+
+  .content-left {
+    margin-left: 0; /* Align the container to the left side */
+    padding: 40px 0px;
+    margin-right: 70px;
+  }
+
+  .title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    justify-self: center;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .plans {
+    position: relative;
+    display: flex; /* Arrange the plans in a row */
+    justify-content: center; /* Center the cards horizontally */
+    gap: 20px; /* Add spacing between cards */
+    margin: 40px auto; /* Add vertical margin */
+  }
+
+  .plan-card {
+    background-color: #fff; /* 카드 배경색 추가 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .plan-card h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .plan-card h3 {
+    font-size: 40px;
+    font-weight: 400;
+    color: #434141; /* Blue for price */
+    margin: 10px 0;
+  }
+
+  .plan-card p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  /*  */
+  .plan-card.basic {
+    border: 2px solid #28a745; /* 초록색 테두리 */
+  }
+
+  .plan-card.basic h2 {
+    color: #28a745;
+  }
+
+  /* Professional Plan 색상 강조 */
+  .plan-card.professional {
+    border: 2px solid #007bff; /* 파란색 테두리 */
+  }
+
+  .plan-card.professional h2 {
+    color: #007bff;
+  }
+
+  /* Advanced Plan 색상 강조 */
+  .plan-card.advanced {
+    border: 2px solid #ffc107; /* 노란색 테두리 */
+  }
+
+  .plan-card.advanced h2 {
+    color: #ffc107;
+  }
+
+  /* 혜택 아이콘 */
+  .icon {
+    margin-right: 8px;
+    font-weight: bold;
+  }
+
+  .icon.check {
+    color: #28a745; /* 초록색 체크 */
+  }
+
+  .icon.cross {
+    color: #dc3545; /* 빨간색 금지 */
+  }
+  ul {
+    list-style: none; /* Remove default bullets */
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  ul li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    align-items: center; /* Align icons and text */
+    gap: 10px; /* Add space between icon and text */
+  }
+
+  ul .disabled {
+    color: red; /* Red text for unavailable features */
+    text-decoration: line-through; /* Strikethrough for emphasis */
+  }
+
+  ul .coming-soon {
+    color: #888; /* Gray text for "coming soon" */
+    font-style: italic; /* Italicize for distinction */
+  }
+
+  .plan-card.popular {
+    border: 2px solid #007bff; /* Highlight border for popular plan */
+    position: relative;
+  }
+
+  .plan-card.popular::before {
+    content: "Popular";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #007bff;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+  }
+
+  .trial-button {
+    background-color: #f9d164; /* Yellow button background */
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .trial-button:hover {
+    background-color: #e0ba50; /* Darker yellow on hover */
+  }
+
+  .no-credit {
+    font-size: 12px;
+    color: #555;
+    margin-top: 10px;
+  }
+
+  .footer {
+    margin-top: 200px;
+
+    .plan {
+      font-weight: bold;
+      font-size: 25px;
+    }
+    .payment-methods img {
+      margin-top: 10px;
+    }
+
+    .trial-container {
+      display: flex;
+      align-items: center; /* Vertically center items */
+      justify-content: space-between; /* Space between text and button */
+      padding: 10px 20px;
+      border: 2px solid #007bff; /* Blue border */
+      border-radius: 10px; /* Rounded corners */
+      background-color: #fff; /* White background */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for better visibility */
+      max-width: 700px; /* Optional: Adjust to fit the design */
+      margin: 20px auto; /* Center on the page */
+    }
+    .trial-text {
+      font-size: 14px;
+      color: #333;
+      margin-right: 30px;
+      line-height: 1.5;
+    }
+
+    .trial-button {
+      background-color: #f9d164; /* Light yellow background */
+      color: #333; /* Dark text */
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .trial-button:hover {
+      background-color: #e0ba50; /* Slightly darker yellow on hover */
+    }
   }
 }

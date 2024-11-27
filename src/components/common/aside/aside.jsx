@@ -8,6 +8,7 @@ import DriveAside from "./driveAside";
 import ChattingAside from "./chattingAside";
 import CalendarAside from "./calendarAside";
 import AdminAside from "./adminAside";
+import SettinngAside from "./settingAside";
 
 {
   /*
@@ -54,6 +55,7 @@ export default function Aside({ asideVisible }) {
       {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
       {mainPath === "calendar" && <CalendarAside asideVisible={asideVisible} />}
       {mainPath === "admin" && <AdminAside asideVisible={asideVisible} />}
+      {mainPath === "setting" && <SettinngAside asideVisible={asideVisible} />}
     </>
   );
 }

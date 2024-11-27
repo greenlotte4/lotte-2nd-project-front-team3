@@ -62,7 +62,7 @@ export default function PageAside({ asideVisible }) {
             {toggles.personalPages && (
               <ol>
                 <li>
-                  <Link to="/antwork/page/view">🌹&nbsp;&nbsp;업무일지</Link>
+                  <Link to="/antwork/page/view">📘&nbsp;&nbsp;업무일지</Link>
                 </li>
                 <li>
                   <a href="#">✔&nbsp;&nbsp;CheckList</a>

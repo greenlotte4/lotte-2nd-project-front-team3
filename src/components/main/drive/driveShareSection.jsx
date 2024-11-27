@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 
-export default function DriveSection() {
+export default function DriveShareSection() {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
@@ -84,7 +83,7 @@ export default function DriveSection() {
         <article className="dirve_header">
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
-              <h3>MY DRIVE</h3>
+              <h3>SHARE DRIVE</h3>
             </div>
             <div className="border w-[250px] h-[30px] rounded-[4px]">
               <input
@@ -112,12 +111,6 @@ export default function DriveSection() {
             <div className="drive_active">
               <button className="w-[70px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
                 업로드
-              </button>
-              <button
-                onClick={() => openModal("insert")}
-                className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]"
-              >
-                새폴더
               </button>
               <button className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]">
                 파일유형
@@ -164,8 +157,9 @@ export default function DriveSection() {
                     <th className="w-[3%]">⭐</th>
                     <th className="w-[30%]">이름</th>
                     <th className="w-[10%]">크기</th>
-                    <th className="w-[10%]">소유자</th>
-                    <th className="w-[10%]">날짜</th>
+                    <th className="w-[10%]">공유자</th>
+                    <th className="w-[10%]">공유한날짜</th>
+                    <th className="w-[10%]">수정한날짜</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,7 +191,8 @@ export default function DriveSection() {
                       </td>
                       <td>폴더 {index + 1}</td>
                       <td>3MB</td>
-                      <td>사용자</td>
+                      <td>챱챱김</td>
+                      <td>2022-11-26</td>
                       <td>2024-11-26</td>
                     </tr>
                   ))}
@@ -288,32 +283,11 @@ export default function DriveSection() {
               <i className="fa-solid fa-star mr-2 my-2"></i> 즐겨찾기 추가
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-trash mr-2 my-2"></i> 삭제
-            </li>
-            <li
-              onClick={() => {
-                console.log("asdf");
-                setMenuVisible(false);
-                openModal("share");
-              }}
-              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
-            >
-              <i className="fa-solid fa-users mr-2 my-2"></i> 공유하기
+              <i className="fa-solid fa-right-from-bracket mr-2 my-2"></i>{" "}
+              나가기
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-plane mr-2 my-2"></i> 이동하기
-            </li>
-            <li
-              onClick={() => {
-                setMenuVisible(false);
-                openModal("name");
-              }}
-              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
-            >
-              <i className="fa-solid fa-pen mr-2 my-2"></i> 이름 바꾸기
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-circle-info mr-2"></i> 상세정보
+              <i className="fa-solid fa-circle-info mr-2 mt-2"></i> 상세정보
             </li>
           </ul>
         </div>

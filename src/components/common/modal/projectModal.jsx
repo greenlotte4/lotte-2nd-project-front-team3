@@ -85,7 +85,7 @@ export default function ProjectModal() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block mb-2 font-medium">작업 제목</label>
+                  <label className="block mb-2 font-medium">작업명</label>
                   <input
                     type="text"
                     value={taskTitle}
@@ -211,7 +211,7 @@ export default function ProjectModal() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block mb-2 font-medium">작업 제목</label>
+                  <label className="block mb-2 font-medium">작업명</label>
                   <input
                     type="text"
                     value={taskTitle}

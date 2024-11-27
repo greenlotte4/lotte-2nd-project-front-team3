@@ -60,12 +60,20 @@ export default function Navigator() {
           </Link>
         </div>
         <div className="nav-item">
-          <a href="#">
+          <Link to="/antwork/setting/myinfo">
             <img
               src="../../../public/images/ico/settings_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="setting"
             />
-          </a>
+          </Link>
+        </div>
+        <div className="nav-item">
+          <Link to="/antwork/admin">
+            <img
+              src="../../../public/images/ico/nav_admin_24_666666.svg"
+              alt="admin"
+            />
+          </Link>
         </div>
       </nav>
     </>
