@@ -29,20 +29,14 @@ import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
 
 import LendingSupportPage from "../pages/Lending/LendingSupportPage";
 
-// 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
-const ProjectMainPage = lazy(() =>
-  import("../pages/Main/project/projectMainPage")
-);
-const ProjectViewPage = lazy(() =>
-  import("../pages/Main/project/projectViewPage")
-);
-
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 
 import DriveSharePage from "../pages/Main/drive/driveSharePage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 
 import LendingPayPage from "./../pages/Lending/LendingPayPage";
+import ProjectMainPage from "../pages/Main/project/projectMainPage";
+import ProjectViewPage from "../pages/Main/project/projectViewPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -67,22 +61,6 @@ const router = createBrowserRouter([
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
 
-  {
-    path: "/antWork/project/main",
-    element: (
-      <Suspense>
-        <ProjectMainPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/antWork/project/view",
-    element: (
-      <Suspense>
-        <ProjectViewPage />
-      </Suspense>
-    ),
-  },
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지
   { path: "/antWork/calendar/ScheduleList", element: <ScheduleListPage /> }, // Antwork 캘린더 일정 페이지
@@ -100,6 +78,9 @@ const router = createBrowserRouter([
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판
 
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
+
+  { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
+  { path: "/antwork/project/view", element: <ProjectViewPage /> }, // 2024/11/27(월) 강은경 - Project view 추가
 ]);
 // 라우터 내보내기
 export default router;
