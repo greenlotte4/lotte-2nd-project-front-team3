@@ -17,8 +17,8 @@ import SettinngAside from "./settingAside";
     내용 : aside.jsx - 주소값에 따라 asdie 바뀌도록 구현
 
     수정 내역 : 
-    2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 
-    2024/11/26 - 황수빈 : AdminAside 추가, SettingAside 추가
+    2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 토글 메뉴 컴포넌트 분리
+    2024/11/26 - 황수빈 : AdminAside 추가
   */
 }
 
