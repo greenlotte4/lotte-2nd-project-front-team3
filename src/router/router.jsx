@@ -15,11 +15,14 @@ import BoardPage from "../pages/Main/board/boardPage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
+import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
+import SettingMainPage from "../pages/Main/setting/settingMainPage";
+import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
+
 {
   /*
   작업 이력
-  - 2024/11/26(화) 황수빈 - adminPage 추가
-  
+  - 2024/11/26(화) 황수빈 - adminPage, settingPage 추가
   
   */
 }
@@ -30,9 +33,6 @@ const ProjectMainPage = lazy(() =>
 const ProjectViewPage = lazy(() =>
   import("../pages/Main/project/projectViewPage")
 );
-
-import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
-import ProfilePage from "../pages/Main/profile/profilePage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -50,10 +50,10 @@ const router = createBrowserRouter([
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
-  { path: "/antwork/profile", element: <ProfilePage /> }, // Antwork 메인
-
   { path: "/antWork/page", element: <PagingPage /> }, // Antwork 페이지
   { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 채팅
+  { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
+  { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
   {
     path: "/antWork/project/main",
     element: (

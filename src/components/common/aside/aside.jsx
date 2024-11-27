@@ -8,6 +8,7 @@ import DriveAside from "./driveAside";
 import ChattingAside from "./chattingAside";
 import CalendarAside from "./calendarAside";
 import AdminAside from "./adminAside";
+import SettinngAside from "./settingAside";
 
 {
   /*
@@ -17,7 +18,7 @@ import AdminAside from "./adminAside";
 
     수정 내역 : 
     2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 
-    2024/11/26 - 황수빈 : AdminAside 추가
+    2024/11/26 - 황수빈 : AdminAside 추가, SettingAside 추가
   */
 }
 
@@ -54,6 +55,7 @@ export default function Aside({ asideVisible }) {
       {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
       {mainPath === "calendar" && <CalendarAside asideVisible={asideVisible} />}
       {mainPath === "admin" && <AdminAside asideVisible={asideVisible} />}
+      {mainPath === "setting" && <SettinngAside asideVisible={asideVisible} />}
     </>
   );
 }

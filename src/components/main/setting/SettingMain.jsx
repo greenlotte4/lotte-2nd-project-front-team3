@@ -1,10 +1,10 @@
-export default function AdminMain() {
+export default function SettingMain() {
   return (
     <>
       <article className="page-list">
         <div className="content-header">
-          <h1>관리자 메인</h1>
-          <p className="!mb-5">관리자 설정 페이지 입니다.</p>
+          <h1>Setting</h1>
+          <p className="!mb-5">나의 정보 수정페이지 입니다.</p>
         </div>
         <section className="h-[800px]"></section>
       </article>
