@@ -43,6 +43,20 @@ export default function ProjectAside({ asideVisible }) {
           </button>
         </div>
         <ul className="lnb inline-grid">
+          <li className="lnb-item">
+            <div className="lnb-header !pb-[15px] border-b border-[#ddd]">
+              <img
+                src="/images/ico/page_home_22_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px]"
+              />
+              <Link
+                to="/antwork/project/main"
+                className="main-cate !text-[16px]"
+              >
+                홈
+              </Link>
+            </div>
+          </li>
           <li className="lnb-item !h-auto">
             <div
               className="lnb-header cursor-pointer"
