@@ -57,7 +57,12 @@ export default function ProjectViewSection() {
                         />
                       </button>
                     </div>
-                    <h3 className="text-xl mb-2">REQ-004 공통 프로젝트 설계</h3>
+                    <h3
+                      onClick={() => openModal("task-edit")}
+                      className="text-xl mb-2"
+                    >
+                      REQ-004 공통 프로젝트 설계
+                    </h3>
                     <div className="absolute top-2 right-2 flex -space-x-4">
                       <img
                         src="https://via.placeholder.com/40"
@@ -86,8 +91,7 @@ export default function ProjectViewSection() {
                   </article>
 
                   <button
-                    // 모달 열기 버튼으로 수정
-                    onClick={() => openModal("task")}
+                    onClick={() => openModal("task-create")}
                     className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
                   >
                     <img

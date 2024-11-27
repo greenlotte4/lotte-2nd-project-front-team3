@@ -1,13 +1,11 @@
-/* eslint-disable react/prop-types */
 import { useState } from "react";
 
 import Header from "../components/common/header";
 import Navigator from "../components/common/navigator";
 import Aside from "../components/common/aside/aside";
 
-
 const AntWorkLayout = ({ children }) => {
-  const [isAsideVisible, setIsAsideVisible] = useState(false);
+  const [isAsideVisible, setIsAsideVisible] = useState(true);
 
   const toggleAside = () => {
     setIsAsideVisible((prev) => !prev);
@@ -19,6 +17,7 @@ const AntWorkLayout = ({ children }) => {
       <main>
         <Navigator />
         <Aside asideVisible={isAsideVisible} />
+
         <section className="main-content">{children}</section>
       </main>
     </div>

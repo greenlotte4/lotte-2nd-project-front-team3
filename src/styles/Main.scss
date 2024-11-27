@@ -36,64 +36,68 @@ main {
   min-height: auto !important;
   overflow: visible !important;
 }
-header {
-  /* 헤더 고정 */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  box-sizing: border-box;
-  height: 57px;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-header .leftside,
-.rightside {
-  display: flex;
-  height: 100%;
-}
-header a {
-  padding: 15px;
-}
-header .hlogo {
-  margin-left: 7px;
-  line-height: 57px;
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: 1.25px;
-}
+/* 헤더 속성 Lending 에서도 먹히는거 조정위해 메인 컨테이너 안으로 수정*/
+.main-container {
+  header {
+    /* 헤더 고정 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    height: 57px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-header #openSidebarBtn {
-  padding: 18px;
-}
+  header .leftside,
+  .rightside {
+    display: flex;
+    height: 100%;
+  }
+  header a {
+    padding: 15px;
+  }
+  header .hlogo {
+    margin-left: 7px;
+    line-height: 57px;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1.25px;
+  }
 
-header .asideBtn {
-  width: 45px;
-  border: 1px solid #ddd;
-  background-color: white;
-  margin-right: 10px;
-  cursor: pointer;
-}
+  header #openSidebarBtn {
+    padding: 18px;
+  }
 
-header .headerBtn {
-  cursor: pointer;
-  padding: 6px 10px;
-}
-header .headeruser {
-  margin-left: 5px;
-  padding: 0 10px 0 20px;
-  border-right: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-}
-header .logout {
-  background: black;
-  color: white;
-  border: 1px solid black;
-  border-radius: 5px;
+  header .asideBtn {
+    width: 45px;
+    border: 1px solid #ddd;
+    background-color: white;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  header .headerBtn {
+    cursor: pointer;
+    padding: 6px 10px;
+  }
+  header .headeruser {
+    margin-left: 5px;
+    padding: 0 10px 0 20px;
+    border-right: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+  }
+  header .logout {
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+  }
 }
 
 /* navigator styles */
@@ -255,7 +259,7 @@ aside h3 {
 
 .lnb > li > ol > li {
   margin-bottom: 8px;
-  margin-top: 11px;
+  margin-top: 12px;
   margin-left: 7px;
 }
 
