@@ -11,8 +11,16 @@ export default function LoginPage() {
             className="login_img"
           />
           <div className="login-box">
-            <h1 className="logo">Ant Work</h1>
-            <h2 className="welcome">Welcome Back</h2>
+            <h1 className="logo">
+              <Link to="/">
+                <img
+                  src="../.././../public/images/Lending/antwork_logo.png"
+                  alt="antwork 로고"
+                  className="ml-[7.5rem] w-[146px] h-[47px]"
+                />
+              </Link>
+            </h1>
+
             <form className="login_form">
               <label className="email_lbl">ID</label>
               <input
