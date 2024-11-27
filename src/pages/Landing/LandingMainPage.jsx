@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import LendingLayout from "../../layouts/LendingLayout";
+import LandingLayout from "../../layouts/LandingLayout";
 
 {
   /*
     날짜 : 2024/11/26(화)
     생성자 : 김민희
-    내용 : LendingMainPage.jsx - footer 레이아웃 구현
+    내용 : LandingMainPage.jsx - footer 레이아웃 구현
 
     수정 내역 : 
     예시) 2024/12/01 - 강은경 : ~~~ 를 위해 ~~~ 추가
@@ -13,14 +13,14 @@ import LendingLayout from "../../layouts/LendingLayout";
   */
 }
 
-export default function LendingMainPage() {
+export default function LandingMainPage() {
   return (
-    <LendingLayout>
+    <LandingLayout>
       {/* 메인 컨텐츠 영역 ---------------------------------------------------------------------------------------*/}
       <div id="mainSlider">
         <div className="slider">
           <img
-            src="../../../public/images/Lending/main_img(1920x815).jpg"
+            src="../../../public/images/Landing/main_img(1920x815).jpg"
             alt="메인페이지 1"
           />
         </div>
@@ -65,18 +65,6 @@ export default function LendingMainPage() {
           <Link to="#" className="btnR"></Link>
         </div>
       </div>
-
-      {/* 랜딩페이지 추가 요소를 위해 남겨둠 */}
-      <main id="container">
-        <section className="cont1">
-          <div className="inner">
-            <h3>{/* cont1 */}</h3>
-          </div>
-        </section>
-        <section className="cont2">
-          <div className="inner"></div>
-        </section>
-      </main>
-    </LendingLayout>
+    </LandingLayout>
   );
 }

@@ -4,18 +4,19 @@ import { Link } from "react-router-dom";
   /*
     날짜 : 2024/11/27(수)
     생성자 : 최준혁
-    내용 : Lendingheader 추가
+    내용 : Landingheader 추가
 
   */
 }
-export default function LendingHeader() {
+export default function LandingHeader() {
   return (
     <header id="header">
       <div className="headerIn">
         <h1 className="logo">
           <Link to="/">
             <img
-              src="../.././../public/images/Lending/antwork_logo.png"
+              className="mt-[5px]"
+              src="../.././../public/images/Landing/antwork_logo.png"
               alt=""
             />
           </Link>
@@ -27,7 +28,7 @@ export default function LendingHeader() {
             <li>
               <Link to="#" className="home cursor-pointer">
                 <img
-                  src="../../../public/images/Lending/home.svg"
+                  src="../../../public/images/Landing/home.svg"
                   alt="home ico"
                 />
               </Link>
