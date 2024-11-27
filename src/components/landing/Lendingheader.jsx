@@ -1,13 +1,23 @@
 import { Link } from "react-router-dom";
 
+{
+  /*
+    날짜 : 2024/11/27(수)
+    생성자 : 최준혁
+    내용 : Lendingheader 추가
+
+  */
+}
 export default function LendingHeader() {
   return (
-    <header id="header z-1000 bg-white">
+    <header id="header">
       <div className="headerIn">
         <h1 className="logo">
-          <Link to="#">
-            <img src="#" alt="" />
-            Antwork
+          <Link to="/">
+            <img
+              src="../.././../public/images/Lending/antwork_logo.png"
+              alt=""
+            />
           </Link>
         </h1>
 
@@ -32,7 +42,7 @@ export default function LendingHeader() {
               </Link>
             </li>
             <li>
-              <Link to="#" className="cursor-pointer">
+              <Link to="/pay" className="cursor-pointer">
                 가격 및 혜택
                 <img
                   src="../../../public/images/ico/arrow_drop_down.svg"

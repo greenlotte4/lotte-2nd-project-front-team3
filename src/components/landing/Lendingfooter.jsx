@@ -1,4 +1,12 @@
 import { Link } from "react-router-dom";
+{
+  /*
+    날짜 : 2024/11/27(수)
+    생성자 : 최준혁
+    내용 : Lendingfooter 추가
+
+  */
+}
 export default function LendingFooter() {
   return (
     <footer
@@ -9,8 +17,8 @@ export default function LendingFooter() {
         <div className="flogo flex items-start gap-15 pt-30">
           <Link to="#" className="cursor-pointer">
             <img
-              className="bg-slate-500 w-40 h-20 gap-8"
-              src="../../../public/images/Lending/logo.svg"
+              className="w-40 h-20 gap-8"
+              src="../.././../public/images/Lending/antwork_logo.png"
               alt="Antwork footer logo"
             />
           </Link>

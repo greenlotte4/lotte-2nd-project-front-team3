@@ -15,15 +15,14 @@ import BoardPage from "../pages/Main/board/boardPage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
-import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 import SettingMainPage from "../pages/Main/setting/settingMainPage";
 import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
 
 {
   /*
   작업 이력
+
   - 2024/11/26(화) 황수빈 - adminPage, settingPage 추가
-  
   */
 }
 // 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
@@ -34,9 +33,13 @@ const ProjectViewPage = lazy(() =>
   import("../pages/Main/project/projectViewPage")
 );
 
+import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
+import LendingPayPage from "./../pages/Lending/LendingPayPage";
+
 const router = createBrowserRouter([
   // 랜딩 페이지
-  { path: "/", element: <LendingMainPage /> }, // 랜딩 메인
+  { path: "/", element: <LendingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
+  { path: "/pay", element: <LendingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
@@ -44,7 +47,7 @@ const router = createBrowserRouter([
   { path: "/terms", element: <TermsPage /> }, // 회원가입
 
   // 관리자 페이지
-  { path: "/admin/login", element: <AdminLoginPage /> }, // 관리자 로그인
+  { path: "/admin/login", element: <AdminLoginPage /> }, // 2024/11/26(화) 최준혁 - AdminLoginPage 추가
   { path: "/antwork/admin", element: <AdminPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
   { path: "/antwork/admin/member", element: <AdminMemberPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
 
