@@ -1,3 +1,13 @@
+{
+  /*
+    날짜 : 2024/11/25(월)
+    생성자 : 김민희
+    내용 : BoardMain.jsx - 게시판 메인 홈 페이지 화면구현 (인기급상승 게시물, 자료실 레이아웃)
+
+    수정 내역 : 
+  */
+}
+
 export default function BoardMain() {
   return (
     <>

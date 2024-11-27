@@ -12,6 +12,7 @@ import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWrite";
 import BoardPage from "../pages/Main/board/boardPage";
+import BoardWritePage from "../pages/Main/board/boardWritePage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
@@ -19,6 +20,7 @@ import AdminLoginPage from "../pages/Main/Admin/LoginPage";
   /*
   작업 이력
   - 2024/11/26(화) 황수빈 - adminPage 추가
+  - 2024/11/27(수) 김민희 - board -> List, Write, ViewPage 추가
   
   
   */
@@ -33,6 +35,8 @@ const ProjectViewPage = lazy(() =>
 
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 import ProfilePage from "../pages/Main/profile/profilePage";
+import BoardListPage from "../pages/Main/board/boardListPage";
+import BoardViewPage from "../pages/Main/board/boardViewPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -81,7 +85,10 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-  { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판
+  { path: "/antwork/board", element: <BoardPage /> }, // 
+  { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
+  { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
+  { path: "/antwork/board/view", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
 ]);
 // 라우터 내보내기
 export default router;

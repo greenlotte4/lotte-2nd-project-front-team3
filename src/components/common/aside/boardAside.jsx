@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import useToggle from "../../../hooks/useToggle";
 import { Link } from "react-router-dom";
 
@@ -9,6 +10,7 @@ import { Link } from "react-router-dom";
 
     수정 내역 : 
     2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 토글 메뉴 컴포넌트 분리
+    2024/11/27 - 김민희 : write(글쓰기 아이콘), list(글목록) 링크 연결
   */
 }
 
@@ -24,10 +26,12 @@ export default function BoardAside({ asideVisible }) {
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell`}>
         <div className="logo">
           <span className="sub-title">Notice Board</span>
-          <button
-            className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')]"
-            aria-label="등록"
-          ></button>
+          <Link to="/antwork/board/write">
+            <button
+              className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block"
+              aria-label="글쓰기(작성)"
+            ></button>
+          </Link>
           <span className="title">게시판</span>
         </div>
         <ul className="lnb inline-grid">
@@ -36,7 +40,7 @@ export default function BoardAside({ asideVisible }) {
               <img src="/images/ico/page_home_22_999999.svg"
                 className="cate-icon !w-[22px] !h-[22px] cursor-pointer" 
                 />
-              <Link to="/antwork/page" className="main-cate !text-[16px]">
+              <Link to="/antwork/board" className="main-cate !text-[16px] cursor-pointer">
                 홈 바로가기
               </Link>
 
@@ -79,10 +83,10 @@ export default function BoardAside({ asideVisible }) {
             {toggles.communityList && (
               <ol>
                 <li>
-                  <a href="#">🌈&nbsp;&nbsp;자유게시판</a>
+                  <Link to="/antwork/board/list">🌈&nbsp;&nbsp;자유게시판</Link>
                 </li>
                 <li>
-                  <a href="#">🥹&nbsp;&nbsp;억울한 일</a>
+                  <Link to="#">🥹&nbsp;&nbsp;억울한 일</Link>
                 </li>
 
 
