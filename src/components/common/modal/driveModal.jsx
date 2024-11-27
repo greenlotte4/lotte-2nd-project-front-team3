@@ -5,6 +5,7 @@ export default function DriveModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
   const [folderName, setFolderName] = useState("");
   const [ModifyName, setModfiyName] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   // 모달 열릴 때 초기화
   useEffect(() => {
@@ -143,7 +144,62 @@ export default function DriveModal() {
       case "move":
         return <></>;
       case "share":
-        return <></>;
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-[350px]">
+              <div className="flex justify-between items-center px-7 py-2 border-gray-200 mt-[15px]">
+                <i className="fa-solid fa-folder text-[#5C9CE6] text-[20px]"></i>
+                <h2 className="text-lg font-semibold">머시기 폴더의 링크</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="px-6 pt-4 pb-6">
+                <div className="px-6 py-4 bg-[#F0F7FF] rounded-lg">
+                  <h2 className="font-bold">링크 공유</h2>
+                  <p>
+                    링크가 있는 사용자가
+                    <span
+                      className={isChecked ? "text-blue-500" : "text-gray-500"}
+                    >
+                      {isChecked ? " 편집 " : " 읽기 "}
+                    </span>
+                    가능
+                  </p>
+                  <div className="flex mt-[5px]">
+                    <div className="flex grow shrink basis-auto bg-white border border-gray-300 rounded-lg h-[30px] focus:outline-none focus:ring focus:ring-blue-300">
+                      <a className="grow shrink basis-auto"></a>
+                      <button className="px-2 py-0 border-l">링크복사</button>
+                    </div>
+                    <div className="ml-2 ">
+                      <button className="border rounded-lg h-[30px] px-2 py-0 bg-white">
+                        보내기
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex grow shrink basis-auto mt-[10px]">
+                    <p>편집</p>
+                    <div className="ml-auto">
+                      <label className="relative inline-flex items-center cursor-pointer ">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => setIsChecked(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-500"></div>
+                        <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 peer-checked:translate-x-5"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       case "delete":
         return <></>;
       case "out":

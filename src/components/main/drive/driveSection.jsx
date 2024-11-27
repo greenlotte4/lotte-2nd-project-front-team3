@@ -290,7 +290,14 @@ export default function DriveSection() {
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
               <i className="fa-solid fa-trash mr-2 my-2"></i> 삭제
             </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
+            <li
+              onClick={() => {
+                console.log("asdf");
+                setMenuVisible(false);
+                openModal("share");
+              }}
+              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
+            >
               <i className="fa-solid fa-users mr-2 my-2"></i> 공유하기
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
