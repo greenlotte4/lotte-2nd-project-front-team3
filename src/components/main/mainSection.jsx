@@ -18,7 +18,7 @@ export default function MainSection() {
   };
   return (
     <>
-      <main className="gap-[20px] min-w-[1820px] h-auto mb-5 p-[20px] rounded-lg bg-white flex">
+      <main className="gap-[20px] min-w-[1820px] max-w-[2150px] h-auto mb-5 p-[20px] rounded-lg bg-white flex mx-auto">
         <div className="w-[258px] min-h-[1150px] ">
           <article className="w-[258px] h-[300px] bg-[#eaf0f9] rounded-lg p-[20px]">
             <div className="relative">
