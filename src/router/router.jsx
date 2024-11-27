@@ -11,8 +11,7 @@ import CalendarPage from "../pages/Main/calendar/CalendarPage";
 import { lazy, Suspense } from "react";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
-import PagingWritePage from "../pages/Main/Paging/pagingWrite";
-
+import PagingWritePage from "../pages/Main/Paging/pagingWritePage";
 import BoardPage from "../pages/Main/board/boardPage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
@@ -45,7 +44,6 @@ import DriveSharePage from "../pages/Main/drive/driveSharePage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 
 import LendingPayPage from "./../pages/Lending/LendingPayPage";
-
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -102,7 +100,6 @@ const router = createBrowserRouter([
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판
 
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판 페이지
-
 ]);
 // 라우터 내보내기
 export default router;

@@ -10,6 +10,10 @@ import Link from "@editorjs/link";
 import Code from "@editorjs/code";
 import Table from "@editorjs/table";
 import CheckList from "@editorjs/checklist";
+import Quote from "@editorjs/quote";
+import Embed from "@editorjs/embed";
+import Marker from "@editorjs/marker";
+import Warning from "@editorjs/warning";
 
 export default function PagingWrite() {
   const ejInstance = useRef();
@@ -37,7 +41,7 @@ export default function PagingWrite() {
               class: Header,
               config: {
                 levels: [1, 2, 3, 4],
-                defaultLevel: 2,
+                defaultLevel: 1,
               },
             },
             list: {
@@ -66,7 +70,6 @@ export default function PagingWrite() {
                 },
               },
             },
-
             link: {
               class: Link,
               config: {
@@ -82,6 +85,10 @@ export default function PagingWrite() {
               class: CheckList,
               inlineToolbar: true,
             },
+            quote: Quote,
+            embed: Embed,
+            marker: Marker,
+            warning: Warning,
           },
         });
 
@@ -95,26 +102,26 @@ export default function PagingWrite() {
 
     // cleanup 함수
     return () => {
-      if (
-        ejInstance.current &&
-        typeof ejInstance.current.destroy === "function"
-      ) {
-        ejInstance.current
-          .destroy()
-          .catch((e) => console.error("Editor cleanup failed:", e));
+      if (ejInstance.current) {
+        const destroyPromise = ejInstance.current.destroy();
+        if (destroyPromise && typeof destroyPromise.then === "function") {
+          destroyPromise.catch((e) => {
+            console.error("Editor cleanup failed:", e);
+          });
+        }
       }
     };
   }, []);
 
   return (
-    <div className="w-full ">
-      <article className="page-list">
+    <div className="w-full">
+      <article className="page-list pageWrite content">
         <div className="content-header">
-          <h1>New Page</h1>
+          <h2>New Page</h2>
         </div>
-        <article className="page-list !-5mt !border-none">
+        <article className="page-list !-5mt !border-none w-full">
           <div
-            className="content-header flex items-center gap-2"
+            className="content-header flex  gap-2"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
@@ -139,12 +146,12 @@ export default function PagingWrite() {
 
               {/* 이모지 피커 */}
               {showIconPicker && (
-                <div className="absolute top-0 left-[35px] z-50">
+                <div className="absolute top-0 left-[35px] z-40">
                   <div className="flex items-start">
                     <EmojiPicker
                       onEmojiClick={onEmojiClick}
-                      width={350}
-                      height={400}
+                      width={400}
+                      height={500}
                     />
                     <button
                       onClick={() => setShowIconPicker(false)}
@@ -165,10 +172,7 @@ export default function PagingWrite() {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div
-            id="editorjs"
-            className="content !h-[800px] !mt-14 text-[15px]"
-          ></div>
+          <div id="editorjs" className="editorSection !h-[800px] !mt-14 "></div>
         </article>
       </article>
     </div>
