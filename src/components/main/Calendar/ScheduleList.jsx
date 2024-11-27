@@ -1,6 +1,6 @@
 export default function ScheduleList() {
   return (
-    <article className="w-[900px] min-h-[500px] h-auto bg-white rounded-lg mx-auto p-[20px]">
+    <article className="w-auto min-h-[500px] h-auto bg-white rounded-lg mx-auto p-[20px]">
       <span className="text-3xl font-bold">My Schedule List</span>
       <br />
       <span className="">나의 일정 목록</span>

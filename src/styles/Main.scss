@@ -38,7 +38,7 @@ main {
 }
 
 /* 헤더 속성 Lending 에서도 먹히는거 조정위해 메인 컨테이너 안으로 수정*/
-.main-container {
+#main-container {
   header {
     /* 헤더 고정 */
     position: fixed;

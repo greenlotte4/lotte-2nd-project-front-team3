@@ -158,115 +158,117 @@ function MyCalendar() {
   const allEvents = [...events, ...holidays];
 
   return (
-    <div className="w-full max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden border">
-      {/* FullCalendar */}
-      <FullCalendar
-        ref={calendarRef}
-        initialView="dayGridMonth"
-        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-        events={allEvents}
-        locale="ko"
-        dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
-        eventClick={handleEventClick} // 일정 클릭 시 수정
-        headerToolbar={{
-          start: "prev,next,today", // 이전/다음 버튼
-          center: "customPrevYear,title,customNextYear", // 현재 날짜 제목
-          end: "dayGridMonth,dayGridWeek,dayGridDay,listMonth", // 뷰 전환 버튼
-        }}
-        customButtons={{
-          customPrevYear: {
-            text: "<",
-            click: customPrevYear, // 이전 1년 버튼 클릭 시
-          },
-          customNextYear: {
-            text: ">",
-            click: customNextYear, // 다음 1년 버튼 클릭 시
-          },
-        }}
-        buttonText={{
-          dayGridMonth: "월",
-          dayGridWeek: "주",
-          dayGridDay: "일",
-        }}
-      />
+    <section className="w-auto h-auto bg-white mx-auto">
+      <div className="w-full h-auto ">
+        {/* FullCalendar */}
+        <FullCalendar
+          ref={calendarRef}
+          initialView="dayGridMonth"
+          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+          events={allEvents}
+          locale="ko"
+          dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
+          eventClick={handleEventClick} // 일정 클릭 시 수정
+          headerToolbar={{
+            start: "prev,next,today", // 이전/다음 버튼
+            center: "customPrevYear,title,customNextYear", // 현재 날짜 제목
+            end: "dayGridMonth,dayGridWeek,dayGridDay,listMonth", // 뷰 전환 버튼
+          }}
+          customButtons={{
+            customPrevYear: {
+              text: "<",
+              click: customPrevYear, // 이전 1년 버튼 클릭 시
+            },
+            customNextYear: {
+              text: ">",
+              click: customNextYear, // 다음 1년 버튼 클릭 시
+            },
+          }}
+          buttonText={{
+            dayGridMonth: "월",
+            dayGridWeek: "주",
+            dayGridDay: "일",
+          }}
+        />
 
-      {/* 모달 및 오버레이 */}
-      {showModal && (
-        <>
-          {/* 어두운 배경 오버레이 */}
-          <div
-            className="fixed inset-0 bg-black/50 z-[100] "
-            onClick={() => setShowModal(false)} // 배경 클릭 시 모달 닫기
-          ></div>
+        {/* 모달 및 오버레이 */}
+        {showModal && (
+          <>
+            {/* 어두운 배경 오버레이 */}
+            <div
+              className="fixed inset-0 bg-black/50 z-[100] "
+              onClick={() => setShowModal(false)} // 배경 클릭 시 모달 닫기
+            ></div>
 
-          {/* 모달 창 */}
-          <div className="fixed inset-0 flex items-center justify-center z-[101]">
-            <div className="w-[700px] h-[700px] bg-white shadow-lg p-6 rounded-lg">
-              <h3 className="text-lg font-bold mb-4">
-                {editMode ? "일정 수정" : "일정 추가"}
-              </h3>
+            {/* 모달 창 */}
+            <div className="fixed inset-0 flex items-center justify-center z-[101]">
+              <div className="w-[700px] h-[700px] bg-white shadow-lg p-6 rounded-lg">
+                <h3 className="text-lg font-bold mb-4">
+                  {editMode ? "일정 수정" : "일정 추가"}
+                </h3>
 
-              {/* 제목 입력 */}
-              <input
-                type="text"
-                className="w-full p-2 mb-4 border rounded outline-none"
-                placeholder="제목"
-                value={newEvent.content_title}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, content_title: e.target.value })
-                }
-              />
+                {/* 제목 입력 */}
+                <input
+                  type="text"
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  placeholder="제목"
+                  value={newEvent.content_title}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, content_title: e.target.value })
+                  }
+                />
 
-              {/* 설명 입력 */}
-              <textarea
-                className="w-full p-2 mb-4 border rounded outline-none"
-                placeholder="설명"
-                value={newEvent.description}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, description: e.target.value })
-                }
-              ></textarea>
+                {/* 설명 입력 */}
+                <textarea
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  placeholder="설명"
+                  value={newEvent.description}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, description: e.target.value })
+                  }
+                ></textarea>
 
-              {/* 시작일 입력 */}
-              <input
-                type="datetime-local"
-                className="w-full p-2 mb-4 border rounded outline-none"
-                value={newEvent.start}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, start: e.target.value })
-                }
-              />
+                {/* 시작일 입력 */}
+                <input
+                  type="datetime-local"
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  value={newEvent.start}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, start: e.target.value })
+                  }
+                />
 
-              {/* 종료일 입력 */}
-              <input
-                type="datetime-local"
-                className="w-full p-2 mb-4 border rounded outline-none"
-                value={newEvent.end}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, end: e.target.value })
-                }
-              />
+                {/* 종료일 입력 */}
+                <input
+                  type="datetime-local"
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  value={newEvent.end}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, end: e.target.value })
+                  }
+                />
 
-              {/* 버튼들 */}
-              <div className="flex justify-end space-x-2 outline-none">
-                <button
-                  className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
-                  onClick={handleSave}
-                >
-                  {editMode ? "수정" : "저장"}
-                </button>
-                <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 outline-none"
-                  onClick={() => setShowModal(false)}
-                >
-                  취소
-                </button>
+                {/* 버튼들 */}
+                <div className="flex justify-end space-x-2 outline-none">
+                  <button
+                    className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
+                    onClick={handleSave}
+                  >
+                    {editMode ? "수정" : "저장"}
+                  </button>
+                  <button
+                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 outline-none"
+                    onClick={() => setShowModal(false)}
+                  >
+                    취소
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </section>
   );
 }
 

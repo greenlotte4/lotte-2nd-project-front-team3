@@ -39,7 +39,6 @@ const ProjectViewPage = lazy(() =>
 
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 
-import ProfilePage from "../pages/Main/profile/profilePage";
 import DriveSharePage from "../pages/Main/drive/driveSharePage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 
@@ -85,7 +84,8 @@ const router = createBrowserRouter([
     ),
   },
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-  { path: "/antWork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지
+  { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지
+  { path: "/antWork/calendar/ScheduleList", element: <ScheduleListPage /> }, // Antwork 캘린더 일정 페이지
 
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
