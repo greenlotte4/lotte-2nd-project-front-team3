@@ -10,7 +10,7 @@ export default function PagingView() {
         </div>
         <article className="page-list !mt-5">
           <div className="content-header">
-            <h1 className="!text-[19px] !ml">🌹 업무일지</h1>{" "}
+            <h1 className="!text-[19px] !ml">📘 업무일지</h1>{" "}
           </div>
           <section className="sharedDB content !h-[800px]">
             <p className="text-[15px]">

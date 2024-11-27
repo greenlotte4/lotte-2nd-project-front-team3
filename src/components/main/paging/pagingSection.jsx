@@ -27,7 +27,9 @@ export default function PagingSection() {
                       to="/antwork/page/view"
                       className="!text-[15px] !mb-3 !font-normal"
                     >
-                      🌹 업무일지
+                      <h3 className="!text-[15px] !mb-3 !font-normal">
+                        📘 업무일지
+                      </h3>
                     </Link>
                     <div className="user-info !ml-3">
                       <img
@@ -169,7 +171,7 @@ export default function PagingSection() {
           <article className="page-list">
             <div className="content-header">
               <div className="!inline-flex">
-                <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>{" "}
+                <h1 className="!text-[19px]"> 최근 삭제된 페이지</h1>{" "}
                 <Link to="/antwork/page/mypage" className="!ml-3 text-gray-500">
                   더보기
                 </Link>
