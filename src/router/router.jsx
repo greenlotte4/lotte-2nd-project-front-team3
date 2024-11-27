@@ -33,6 +33,8 @@ const ProjectViewPage = lazy(() =>
 
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 import ProfilePage from "../pages/Main/profile/profilePage";
+import DriveSharePage from "../pages/Main/drive/driveSharePage";
+import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -81,6 +83,8 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
+  { path: "/antwork/drive/share", element: <DriveSharePage /> }, // antwork 페이지
+  { path: "/antwork/drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, // antwork 게시판
 ]);
 // 라우터 내보내기

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 
-export default function DriveSection() {
+export default function DriveRecylceSection() {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
@@ -84,7 +83,7 @@ export default function DriveSection() {
         <article className="dirve_header">
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
-              <h3>MY DRIVE</h3>
+              <h3>휴지통</h3>
             </div>
             <div className="border w-[250px] h-[30px] rounded-[4px]">
               <input
@@ -110,17 +109,8 @@ export default function DriveSection() {
         <article className="drive_update">
           <div className="flex justify-between my-[20px]">
             <div className="drive_active">
-              <button className="w-[70px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
-                업로드
-              </button>
-              <button
-                onClick={() => openModal("insert")}
-                className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]"
-              >
-                새폴더
-              </button>
-              <button className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]">
-                파일유형
+              <button className="w-[90px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
+                휴지통 비우기
               </button>
             </div>
             <div>
@@ -161,11 +151,10 @@ export default function DriveSection() {
                     <th className="w-[3%]">
                       <input type="checkbox" />
                     </th>
-                    <th className="w-[3%]">⭐</th>
                     <th className="w-[30%]">이름</th>
                     <th className="w-[10%]">크기</th>
-                    <th className="w-[10%]">소유자</th>
-                    <th className="w-[10%]">날짜</th>
+                    <th className="w-[10%]">사용자</th>
+                    <th className="w-[10%]">삭제한날짜</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,21 +173,10 @@ export default function DriveSection() {
                           onChange={() => toggleFolderCheck(index)}
                         />
                       </td>
-                      <td>
-                        <button onClick={() => toggleFolderStar(index)}>
-                          <i
-                            className={`fa-star cursor-pointer text-xl ${
-                              folder.isStarred
-                                ? "fa-solid text-yellow-500"
-                                : "fa-regular text-gray-300"
-                            }`}
-                          ></i>
-                        </button>
-                      </td>
                       <td>폴더 {index + 1}</td>
                       <td>3MB</td>
-                      <td>사용자</td>
-                      <td>2024-11-26</td>
+                      <td>챱챱김</td>
+                      <td>2022-11-26</td>
                     </tr>
                   ))}
                 </tbody>
@@ -238,20 +216,6 @@ export default function DriveSection() {
                       className="w-[50px] h-[50px] mx-auto"
                     />
                     <div className="text-center mt-2">폴더 {index + 1}</div>
-                    <button
-                      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                        folder.isStarred
-                          ? "text-yellow-500"
-                          : "text-gray-300 group-hover:text-gray-500"
-                      }`}
-                      onClick={() => toggleFolderStar(index)}
-                    >
-                      <i
-                        className={`fa-star ${
-                          folder.isStarred ? "fa-solid" : "fa-regular"
-                        }`}
-                      ></i>
-                    </button>
                   </div>
                 ))}
               </div>
@@ -273,37 +237,10 @@ export default function DriveSection() {
         >
           <ul>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-folder-open mr-2"></i> 열기
+              <i className="fa-solid fa-folder-plus mr-2"></i> 복원
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-folder-plus mr-2 my-2"></i> 새 폴더
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-file-upload mr-2 my-2"></i> 업로드
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-file-arrow-down mr-2 my-2"></i> 다운로드
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-star mr-2 my-2"></i> 즐겨찾기 추가
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-trash mr-2 my-2"></i> 삭제
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-users mr-2 my-2"></i> 공유하기
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
-              <i className="fa-solid fa-plane mr-2 my-2"></i> 이동하기
-            </li>
-            <li
-              onClick={() => {
-                setMenuVisible(false);
-                openModal("name");
-              }}
-              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
-            >
-              <i className="fa-solid fa-pen mr-2 my-2"></i> 이름 바꾸기
+              <i className="fa-solid fa-trash mr-2"></i> 삭제
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
               <i className="fa-solid fa-circle-info mr-2"></i> 상세정보
