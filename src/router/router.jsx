@@ -48,7 +48,7 @@ const router = createBrowserRouter([
   // 랜딩 페이지
   { path: "/", element: <LendingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
   { path: "/pay", element: <LendingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
-  { path: "/support", element: <LendingSupportPage /> }, // 랜딩 지원
+  { path: "/support", element: <LendingSupportPage /> }, // 2024/11/27(수) 강은경 - LendingSupportPage 추가
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
