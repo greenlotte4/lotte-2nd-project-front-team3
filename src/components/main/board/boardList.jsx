@@ -108,7 +108,7 @@ export default function BoardList() {
           <div className="flex justify-between mb-4">
 
             <div className="flex items-center ">
-            <select className="border border-gray-300 rounded py-2 px-2 mr-2 w-20">
+            <select className="border border-gray-300 rounded py-2 px-2 mr-2 w-20 cursor-pointer">
                 <option>제목</option>
                 <option>작성자</option>
                 <option>제목 + 작성자</option>
