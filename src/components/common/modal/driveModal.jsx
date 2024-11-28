@@ -148,7 +148,7 @@ export default function DriveModal() {
             <div className="bg-white rounded-lg shadow-lg w-96">
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <i className="fa-solid fa-folder text-[#5C9CE6] text-xl"></i>
-                <h2 className="text-lg font-semibold">새 폴더 만들기</h2>
+                <h2 className="text-lg font-semibold">위치 선택</h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -158,13 +158,34 @@ export default function DriveModal() {
               </div>
 
               <div className="px-6 py-4">
-                <input
-                  type="text"
-                  value={folderName}
-                  onChange={(e) => setFolderName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-300"
-                  placeholder="새 폴더"
-                />
+                <div className="border p-[5px]">
+                  <ul>
+                    <li>
+                      <div>
+                        <button>
+                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
+                        </button>
+                        <a className="pl-[3px]">머시기 폴더</a>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <button>
+                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
+                        </button>
+                        <a className="pl-[3px]">머시기 폴더</a>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <button>
+                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
+                        </button>
+                        <a className="pl-[3px]">머시기 폴더</a>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               <div className="flex justify-end gap-4 px-6 py-4 border-t border-gray-200">

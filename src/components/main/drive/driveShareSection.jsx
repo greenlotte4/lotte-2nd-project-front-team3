@@ -112,16 +112,6 @@ export default function DriveShareSection() {
               <button className="w-[70px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
                 업로드
               </button>
-              <button
-                onClick={() => {
-                  console.log("asdf");
-                  setMenuVisible(false);
-                  openModal("c_share");
-                }}
-                className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]"
-              >
-                새로만들기
-              </button>
               <button className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]">
                 파일유형
               </button>
