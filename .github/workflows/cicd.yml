@@ -10,20 +10,35 @@ jobs:
     runs-on: ubuntu-latest  # 최신 Ubuntu 환경에서 실행
 
     steps:
+    # 1. 리포지토리 코드 체크아웃
     - name: Checkout repository
-      uses: actions/checkout@v2  # 리포지토리 코드 체크아웃
+      uses: actions/checkout@v2
 
+    # 2. Node.js 설정
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '16'  # 사용할 Node.js 버전 설정
 
+    # 3. 의존성 설치 전에 캐시 삭제
+    - name: Clear npm cache and remove old files
+      run: |
+        rm -rf node_modules package-lock.json
+        npm cache clean --force
+
+    # 4. 의존성 설치
     - name: Install dependencies
-      run: npm install  # 의존성 설치
+      run: npm install
 
+    # 5. 네이티브 모듈 재빌드
+    - name: Rebuild native modules
+      run: npm rebuild
+
+    # 6. 프로젝트 빌드
     - name: Build the project
-      run: npm run build  # 빌드 명령어 실행
+      run: npm run build
 
+    # 7. EC2로 배포
     - name: Deploy to EC2 via SSH
       env:
         AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}  # EC2 사용자 (GitHub Secrets에 저장)
@@ -36,7 +51,6 @@ jobs:
 
         # SSH를 통해 EC2 서버에 접속하여 기존 파일 삭제 및 Nginx 재시작
         ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_EC2_USER@$AWS_EC2_HOST << EOF
-          # 기존 웹 파일 삭제
           sudo rm -rf /var/www/html/*  # 기존 웹 파일 삭제
         EOF
 
