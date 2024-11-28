@@ -74,34 +74,26 @@ export default function DriveAside({ asideVisible }) {
         <DriveModal />
         <ul className="a mt-20">
           <li className="">
-            <div>
+            <div className="flex items-center border-b border-[#d9d9d9] mb-[10px]">
+              <span
+                className="m-[3px] cursor-pointer"
+                onClick={() => setIsMyOpen(!isMyOpen)}
+              >
+                <img
+                  src={
+                    isMyOpen
+                      ? "../../../public/images/Antwork/main/drive/위화살표.png"
+                      : "../../../public/images/Antwork/main/drive/아래화살표.png"
+                  }
+                  alt="화살표 아이콘"
+                  className="w-4 h-4"
+                />
+              </span>
               <Link
                 to="/antwork/drive"
                 href="#"
-                className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
+                className="w-[195px] h-[40px] flex items-center"
               >
-                <span
-                  className="m-[3px] cursor-pointer"
-                  onClick={() => setIsMyOpen(!isMyOpen)}
-                >
-                  <img
-                    src={
-                      isMyOpen
-                        ? "../../../public/images/Antwork/main/drive/위화살표.png"
-                        : "../../../public/images/Antwork/main/drive/아래화살표.png"
-                    }
-                    alt="화살표 아이콘"
-                    className="w-4 h-4"
-                  />
-                </span>
-
-                <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
-                  <img
-                    src="../../../public/images/Antwork/main/drive/내드라이브.png"
-                    alt="Description"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 <span className="main-cate">내 드라이브</span>
               </Link>
             </div>
@@ -139,34 +131,26 @@ export default function DriveAside({ asideVisible }) {
             </div>
           </li>
           <li className="">
-            <div>
+            <div className="flex items-center border-b border-[#d9d9d9] mb-[10px]">
+              <span
+                className="m-[3px] cursor-pointer"
+                onClick={() => setIsShareOpen(!isShareOpen)}
+              >
+                <img
+                  src={
+                    isShareOpen
+                      ? "../../../public/images/Antwork/main/drive/위화살표.png"
+                      : "../../../public/images/Antwork/main/drive/아래화살표.png"
+                  }
+                  alt="화살표 아이콘"
+                  className="w-4 h-4"
+                />
+              </span>
               <Link
                 to="/antwork/drive/share"
                 href="#"
-                className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
+                className="w-[195px] h-[40px] flex items-center"
               >
-                <span
-                  className="m-[3px] cursor-pointer"
-                  onClick={() => setIsShareOpen(!isShareOpen)}
-                >
-                  <img
-                    src={
-                      isShareOpen
-                        ? "../../../public/images/Antwork/main/drive/위화살표.png"
-                        : "../../../public/images/Antwork/main/drive/아래화살표.png"
-                    }
-                    alt="화살표 아이콘"
-                    className="w-4 h-4"
-                  />
-                </span>
-
-                <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
-                  <img
-                    src="../../../public/images/Antwork/main/drive/공유드라이브.png"
-                    alt="Description"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 <span className="main-cate">공유 드라이브</span>
               </Link>
             </div>
@@ -200,10 +184,34 @@ export default function DriveAside({ asideVisible }) {
                     </div>
                   </a>
                 </li>
+                <li>
+                  <a href="#">
+                    <div className="flex items-start items-center mb-2 space-x-4">
+                      <img
+                        src="../../../public/images/Antwork/main/drive/폴더.png"
+                        alt="#"
+                        className="w-7 h-7"
+                      />
+                      <span>안녕</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <div className="flex items-start items-center mb-2 space-x-4">
+                      <img
+                        src="../../../public/images/Antwork/main/drive/폴더.png"
+                        alt="#"
+                        className="w-7 h-7"
+                      />
+                      <span>안녕</span>
+                    </div>
+                  </a>
+                </li>
               </ul>
             </div>
           </li>
-          <li className="lnb-item">
+          <li className="lnb-item mt-[30px]">
             <div className="lnb-header !mb-[10px]">
               <img
                 src="/images/ico/page_delete24_999999.svg"
