@@ -1,11 +1,16 @@
 import { RouterProvider } from "react-router-dom";
 import "./App.css";
-import "./styles/Lending.scss";
+import "./styles/Landing.scss";
 import "./styles/Main.scss";
 import router from "./router/router";
+import { CompletePageProvider } from "./hooks/Lending/completePageReducer";
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <CompletePageProvider>
+      <RouterProvider router={router} />
+    </CompletePageProvider>
+  );
 }
 
 export default App;
