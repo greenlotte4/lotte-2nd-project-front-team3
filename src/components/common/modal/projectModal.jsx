@@ -66,7 +66,6 @@ export default function ProjectModal() {
   }, [type, taskToEdit]);
 
   if (!isOpen) return null;
-
   const renderContent = () => {
     switch (type) {
       case "task-create":
@@ -186,7 +185,7 @@ export default function ProjectModal() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
                     작업 추가
                   </button>
@@ -312,7 +311,7 @@ export default function ProjectModal() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
                     수정 완료
                   </button>
@@ -324,9 +323,9 @@ export default function ProjectModal() {
       case "project":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] p-6">
+            <div className="bg-white rounded-lg w-[600px] p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">새 프로젝트 추가</h2>
+                <h2 className="text-2xl font-bold">프로젝트 추가</h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -335,11 +334,20 @@ export default function ProjectModal() {
                 </button>
               </div>
 
-              <form onSubmit={handleProjectSubmit} className="space-y-4">
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  console.log({
+                    projectName,
+                    projectMembers: teamMembers, // 실제 로직에서는 선택된 멤버로 처리
+                  });
+                  closeModal();
+                }}
+              >
+                {/* 프로젝트명 입력 */}
                 <div>
-                  <label className="block mb-2 font-medium">
-                    프로젝트 이름
-                  </label>
+                  <label className="block mb-2 font-medium">프로젝트명</label>
                   <input
                     type="text"
                     value={projectName}
@@ -350,14 +358,13 @@ export default function ProjectModal() {
                   />
                 </div>
 
+                {/* 협업자 검색 및 추가 */}
                 <div>
-                  <label className="block mb-2 font-medium">
-                    프로젝트 협업자
-                  </label>
+                  <label className="block mb-2 font-medium">협업자 검색</label>
                   <div className="relative w-full">
                     <input
                       type="text"
-                      placeholder="담당자 검색"
+                      placeholder="협업자 이름을 검색하세요"
                       onChange={handleSearch}
                       className="w-full border rounded p-2 pl-10 mb-2"
                     />
@@ -375,25 +382,163 @@ export default function ProjectModal() {
                       />
                     </svg>
                   </div>
+                </div>
 
+                <div className="border rounded max-h-40 overflow-y-auto">
+                  {filteredMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <span>{member.name}</span>
+                      <button
+                        onClick={() => console.log(`${member.name} 추가`)}
+                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-700"
+                      >
+                        추가
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 현재 협업자 목록 */}
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">현재 협업자 목록</h3>
                   <div className="border rounded max-h-40 overflow-y-auto">
-                    {filteredMembers.map((member) => (
+                    {teamMembers.map((member) => (
                       <div
                         key={member.id}
-                        onClick={() => setProjectManager(member.name)}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        className="flex justify-between items-center p-2"
                       >
-                        {member.name}
+                        <span>{member.name}</span>
+                        <button
+                          onClick={() => console.log(`${member.name} 삭제`)}
+                          className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-100"
+                        >
+                          삭제
+                        </button>
                       </div>
                     ))}
                   </div>
-                  {projectManager && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      선택된 협업자: {projectManager}
-                    </div>
-                  )}
                 </div>
 
+                {/* 닫기 및 저장 버튼 */}
+                <div className="flex justify-end space-x-2 mt-6">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-green-700"
+                  >
+                    저장
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        );
+      case "project-edit":
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
+            <div className="bg-white rounded-lg w-[600px] p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">프로젝트 수정</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  console.log({
+                    updatedProjectName: projectName,
+                    updatedProjectDescription: projectDescription,
+                    updatedProjectMembers: teamMembers, // 선택된 멤버로 처리
+                  });
+                  closeModal();
+                }}
+              >
+                {/* 프로젝트명 수정 */}
+                <div>
+                  <label className="block mb-2 font-medium">프로젝트명</label>
+                  <input
+                    type="text"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    className="w-full border rounded p-2"
+                    placeholder="프로젝트 이름을 수정하세요"
+                    required
+                  />
+                </div>
+
+                {/* 협업자 검색 및 수정 */}
+                <div>
+                  <label className="block mb-2 font-medium">협업자 검색</label>
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="협업자 이름을 검색하세요"
+                      onChange={handleSearch}
+                      className="w-full border rounded p-2 pl-10 mb-2"
+                    />
+                    <svg
+                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="border rounded max-h-40 overflow-y-auto">
+                  {filteredMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <span>{member.name}</span>
+                      <button
+                        onClick={() => console.log(`${member.name} 추가`)}
+                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-700"
+                      >
+                        추가
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 현재 협업자 목록 */}
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">현재 협업자 목록</h3>
+                  <div className="border rounded max-h-40 overflow-y-auto">
+                    {teamMembers.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex justify-between items-center p-2"
+                      >
+                        <span>{member.name}</span>
+                        <button
+                          onClick={() => console.log(`${member.name} 삭제`)}
+                          className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-100"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 닫기 및 저장 버튼 */}
                 <div className="flex justify-end space-x-2 mt-6">
                   <button
                     type="button"
@@ -404,9 +549,9 @@ export default function ProjectModal() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-green-700"
                   >
-                    프로젝트 추가
+                    저장
                   </button>
                 </div>
               </form>
