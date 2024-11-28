@@ -37,11 +37,11 @@ jobs:
         # SSH를 통해 EC2 서버에 접속하여 기존 파일 삭제 및 Nginx 재시작
         ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_EC2_USER@$AWS_EC2_HOST << EOF
           # 기존 웹 파일 삭제
-          sudo rm -rf /var/www/react-app/*  # 기존 웹 파일 삭제
+          sudo rm -rf /var/www/html/*  # 기존 웹 파일 삭제
         EOF
 
         # SCP를 통해 dist 폴더의 빌드 파일들을 EC2 서버로 복사
-        scp -i private_key.pem -r ./dist/* $AWS_EC2_USER@$AWS_EC2_HOST:/var/www/react-app/
+        scp -i private_key.pem -r ./dist/* $AWS_EC2_USER@$AWS_EC2_HOST:/var/www/html/
 
         # Nginx 서비스 재시작
         ssh -i private_key.pem -o StrictHostKeyChecking=no $AWS_EC2_USER@$AWS_EC2_HOST << EOF
