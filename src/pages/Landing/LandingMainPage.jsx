@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import LandingLayout from "../../layouts/LandingLayout";
+import LandingLayout from "./../../layouts/LandingLayout";
 
 {
   /*
@@ -65,6 +65,18 @@ export default function LandingMainPage() {
           <Link to="#" className="btnR"></Link>
         </div>
       </div>
+
+      {/* 랜딩페이지 추가 요소를 위해 남겨둠 */}
+      <main id="container">
+        <section className="cont1">
+          <div className="inner">
+            <h3>{/* cont1 */}</h3>
+          </div>
+        </section>
+        <section className="cont2">
+          <div className="inner"></div>
+        </section>
+      </main>
     </LandingLayout>
   );
 }

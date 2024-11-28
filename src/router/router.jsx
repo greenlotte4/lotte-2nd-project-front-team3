@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import LandingMainPage from "../pages/Landing/LandingMainPage";
+import LendingMainPage from "../pages/Lending/LendingMainPage";
 import MainPage from "./../pages/Main/MainPage";
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
@@ -41,17 +41,12 @@ const ProjectViewPage = lazy(() =>
 );
 
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
-import DriveSharePage from "../pages/Main/drive/driveSharePage";
-import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
-import LandingPayPage from "./../pages/Landing/LandingPayPage";
-import LandingFuctionPage from "../pages/Landing/LandingFuctionPage";
+import LendingPayPage from "./../pages/Lending/LendingPayPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
-  { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LandingMainPage 추가
-  { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LandingPayPage 추가
-  { path: "/support", element: <LandingSupportPage /> }, // 랜딩 지원
-  { path: "/function", element: <LandingFuctionPage /> }, // 랜딩 기능
+  { path: "/", element: <LendingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
+  { path: "/pay", element: <LendingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
