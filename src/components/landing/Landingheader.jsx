@@ -67,7 +67,7 @@ export default function LandingHeader() {
             <Link to="/login" className="login cursor-pointer">
               로그인
             </Link>
-            <Link to className="register cursor-pointer">
+            <Link to="/antwork" className="register cursor-pointer">
               회원가입
             </Link>
           </div>
