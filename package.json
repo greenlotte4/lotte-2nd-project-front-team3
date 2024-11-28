@@ -37,6 +37,7 @@
     "css-loader": "^7.1.2",
     "emoji-picker-react": "^4.12.0",
     "init": "^0.1.2",
+    "lucide-react": "^0.462.0",
     "quill": "^2.0.0-dev.4",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
@@ -49,6 +50,7 @@
     "react-router-dom": "^6.28.0",
     "rechart": "^0.0.1",
     "recharts": "^2.13.3",
+    "redux": "^5.0.1",
     "sass-loader": "^16.0.3",
     "style-loader": "^4.0.0",
     "zustand": "^5.0.1"

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
     /*
       날짜 : 2024/11/27(수)
       생성자 : 김민희
-      내용 : BoardView.jsx - 게시판 작성 페이지 화면구현
+      내용 : BoardView.jsx - 게시판 글보기 페이지 화면구현
   
       수정 내역 : 
   
@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
   }
 
 export default function BoardWrite() {
-
+    
     return (
         <>
         <article className="page-list">
