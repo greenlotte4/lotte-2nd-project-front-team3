@@ -1,7 +1,6 @@
 import { useState } from "react";
 import useToggle from "../../hooks/useToggle";
 import MyCalendar from "../main/Calendar/MyCalendar";
-import ScheduleList from "../main/Calendar/ScheduleList";
 import { Link } from "react-router-dom";
 
 export default function MainSection() {
@@ -277,11 +276,8 @@ export default function MainSection() {
               {/* 자료실 끝 */}
             </section>
             <section className="">
-              <div className="w-[800px] h-[700px] bg-white rounded-lg p-4 shadow-sm mx-auto overflow-y-auto">
+              <div className="w-[700px] h-[800px] bg-white rounded-lg p-4 shadow-sm mx-auto overflow-y-auto">
                 <MyCalendar />
-              </div>
-              <div className="w-[800px] h-auto bg-white rounded-lg p-4 shadow-sm mx-auto mt-[40px]">
-                <ScheduleList />
               </div>
             </section>
           </div>

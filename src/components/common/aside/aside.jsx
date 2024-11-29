@@ -19,10 +19,11 @@ import SettinngAside from "./settingAside";
     수정 내역 : 
     2024/11/25 - 김민희 : 토글 메뉴 컴포넌트화를 위해 토글 메뉴 컴포넌트 분리
     2024/11/26 - 황수빈 : AdminAside 추가
+    2024/11/28 - 하정훈 : 혹시 26번째줄에 setListMonth를 추가했는데 문제가 있으면 저에게 바로 말씀해주시면 됩니다.
   */
 }
 
-export default function Aside({ asideVisible }) {
+export default function Aside({ asideVisible, setListMonth }) {
   const location = useLocation();
 
   //http://localhost:5137/anwork/_______ 여기 주소값을 찾음
@@ -53,7 +54,12 @@ export default function Aside({ asideVisible }) {
       {mainPath === "board" && <BoardAside asideVisible={asideVisible} />}
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
       {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
-      {mainPath === "calendar" && <CalendarAside asideVisible={asideVisible} />}
+      {mainPath === "calendar" && (
+        <CalendarAside
+          asideVisible={asideVisible}
+          setListMonth={setListMonth}
+        />
+      )}
       {mainPath === "admin" && <AdminAside asideVisible={asideVisible} />}
       {mainPath === "setting" && <SettinngAside asideVisible={asideVisible} />}
     </>

@@ -1,9 +1,48 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function CalendarAside({ asideVisible }) {
+export default function CalendarAside({ asideVisible, setListMonth }) {
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const handleButtonClick = () => {
+    console.log("버튼 클릭!");
+    setListMonth("listWeek"); // listMonth 값 업데이트
+  };
+
+  const [calendars, setCalendars] = useState([
+    { id: 1, name: "팀 캘린더" }, // 기본 항목
+  ]);
+  const [editingId, setEditingId] = useState(null); // 수정 중인 캘린더 ID
+  const [newName, setNewName] = useState(""); // 수정 중인 이름
+  // 새 캘린더 추가 함수
+  const addCalendar = () => {
+    const newCalendar = {
+      id: calendars.length + 1, // 고유 ID
+      name: `새 캘린더 ${calendars.length + 1}`, // 기본 이름
+    };
+    setCalendars([...calendars, newCalendar]); // 상태 업데이트
+  };
+  const startEditing = (id, currentName) => {
+    setEditingId(id);
+    setNewName(currentName); // 기존 이름 설정
+  };
+
+  // 이름 저장
+  const saveName = (id) => {
+    setCalendars(
+      calendars.map((calendar) =>
+        calendar.id === id ? { ...calendar, name: newName } : calendar
+      )
+    );
+    setEditingId(null); // 수정 모드 종료
+    setNewName(""); // 입력 초기화
+  };
+
+  // 수정 취소
+  const cancelEditing = () => {
+    setEditingId(null);
+    setNewName("");
+  };
   return (
     <>
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
@@ -28,7 +67,7 @@ export default function CalendarAside({ asideVisible }) {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            <span className="text-xl">New Calendar</span>
+            <span className="text-xl">New Schedule</span>
           </button>
         </div>
         <ul className="a mt-20">
@@ -67,15 +106,52 @@ export default function CalendarAside({ asideVisible }) {
               } pl-8`}
             >
               <ul>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
+                {calendars.map((calendar) => (
+                  <li key={calendar.id}>
+                    <div className="flex items-center mb-2 space-x-4">
                       <img
-                        src="/images/Antwork/calendar/캘린더.svg"
+                        src="../../../public/images/Antwork/calendar/캘린더.svg"
                         alt="#"
                         className="w-7 h-7"
                       />
-                      <Link to="/antwork/calendar">내 캘린더</Link>
+
+                      {/* 이름 표시 또는 수정 필드 */}
+                      {editingId === calendar.id ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="border rounded-md px-2 py-1"
+                          />
+                          <button
+                            onClick={() => saveName(calendar.id)}
+                            className="ml-2 text-green-500"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={cancelEditing}
+                            className="ml-2 text-red-500"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      ) : (
+                        <span>{calendar.name}</span>
+                      )}
+
+                      {/* 이름 수정 버튼 */}
+                      {editingId !== calendar.id && (
+                        <button
+                          onClick={() =>
+                            startEditing(calendar.id, calendar.name)
+                          }
+                          className="ml-2 text-blue-500"
+                        >
+                          이름 수정
+                        </button>
+                      )}
                     </div>
                   </a>
                 </li>
@@ -83,7 +159,7 @@ export default function CalendarAside({ asideVisible }) {
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4 text-center">
                       <img
-                        src="/images/Antwork/calendar/캘린더.svg"
+                        src="../../../public/images/Antwork/calendar/캘린더.svg"
                         alt="#"
                         className="w-7 h-7"
                       />
@@ -156,9 +232,7 @@ export default function CalendarAside({ asideVisible }) {
                 <li>
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <Link to="/antwork/calendar/scheduleList">
-                        + 전체보기
-                      </Link>
+                      <button onClick={handleButtonClick}>+ 전체보기</button>
                     </div>
                   </a>
                 </li>
