@@ -558,6 +558,116 @@ export default function ProjectModal() {
             </div>
           </div>
         );
+      case "project-invite":
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
+            <div className="bg-white rounded-lg w-[600px] p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">협업자 추가</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  console.log({
+                    updatedProjectName: projectName,
+                    updatedProjectDescription: projectDescription,
+                    updatedProjectMembers: teamMembers, // 선택된 멤버로 처리
+                  });
+                  closeModal();
+                }}
+              >
+                {/* 협업자 검색 및 수정 */}
+                <div>
+                  <label className="block mb-2 font-medium">협업자 검색</label>
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="협업자 이름을 검색하세요"
+                      onChange={handleSearch}
+                      className="w-full border rounded p-2 pl-10 mb-2"
+                    />
+                    <svg
+                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="border rounded max-h-40 overflow-y-auto">
+                  {filteredMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <span>{member.name}</span>
+                      <button
+                        onClick={() => console.log(`${member.name} 추가`)}
+                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-700"
+                      >
+                        추가
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 현재 협업자 목록 */}
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">현재 협업자 목록</h3>
+                  <div className="border rounded max-h-40 overflow-y-auto">
+                    {teamMembers.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex justify-between items-center p-2"
+                      >
+                        <span>{member.name}</span>
+                        <button
+                          onClick={() => console.log(`${member.name} 삭제`)}
+                          className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-100"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 닫기 및 저장 버튼 */}
+                <div className="flex justify-end space-x-2 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-4 py-2 border rounded hover:bg-gray-100"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-green-700"
+                  >
+                    저장
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        );
       default:
         return <div>모달 내용이 없습니다.</div>;
     }

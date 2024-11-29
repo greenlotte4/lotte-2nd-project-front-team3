@@ -14,18 +14,51 @@ export default function ProjectViewSection() {
         <div className="content-header">
           <div className="max-w-9xl mx-auto p-2">
             <div className="mb-3 text-center">
-              <div className="flex justify-center items-center space-x-3">
-                <h1 className="text-4xl font-semibold">AntWork Project</h1>
-                <button
-                  onClick={() => openModal("project-edit")}
-                  className="p-2 rounded-full hover:bg-gray-100 mb-2"
-                >
+              <div className="flex justify-between items-center">
+                <div className="flex justify-center items-center space-x-3">
+                  <h1 className="text-4xl font-semibold">AntWork Project</h1>
+                  {/* <button
+                    onClick={() => openModal("project-edit")}
+                    className="p-2 rounded-full hover:bg-gray-100 mb-2"
+                  >
+                    <img
+                      src="/images/Antwork/project/project_edit.png"
+                      alt="프로젝트 수정"
+                      className="w-6 h-6"
+                    />
+                  </button> */}
+                </div>
+
+                <div className="flex items-center">
                   <img
-                    src="/images/Antwork/project/project_edit.png"
-                    alt="프로젝트 수정"
-                    className="w-6 h-6"
+                    src="/images/Antwork/project/project_profile.png"
+                    alt="Profile 1"
+                    className="w-10 h-10 rounded-full border-2 border-white -ml-2"
                   />
-                </button>
+                  <img
+                    src="/images/Antwork/project/project_profile.png"
+                    alt="Profile 2"
+                    className="w-10 h-10 rounded-full border-2 border-white -ml-2"
+                  />
+                  <img
+                    src="/images/Antwork/project/project_profile.png"
+                    alt="Profile 3"
+                    className="w-10 h-10 rounded-full border-2 border-white -ml-2"
+                  />
+                  <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
+                    +3
+                  </div>
+                  <button
+                    onClick={() => openModal("project-invite")}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <img
+                      src="/images/Antwork/project/project_invite.png"
+                      alt="Add More"
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                    />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -82,17 +115,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -127,17 +160,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -172,17 +205,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -217,17 +250,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -262,17 +295,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -307,17 +340,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -352,17 +385,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -397,17 +430,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -442,17 +475,17 @@ export default function ProjectViewSection() {
                       </h3>
                       <div className="absolute top-2 right-2 flex -space-x-4">
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-10"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-20"
                         />
                         <img
-                          src="https://via.placeholder.com/40"
+                          src="/images/Antwork/project/project_profile.png"
                           alt="Profile"
                           className="w-8 h-8 rounded-full border border-gray-300 z-30"
                         />
@@ -527,17 +560,17 @@ export default function ProjectViewSection() {
                     <h3 className="text-xl mb-2">REQ-004 공통 프로젝트 설계</h3>
                     <div className="absolute top-2 right-2 flex -space-x-4">
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-10"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-20"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-30"
                       />
@@ -551,14 +584,19 @@ export default function ProjectViewSection() {
                       </span>
                     </div>
                   </article>
-                  <button className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30">
-                    <img
-                      src="/images/Antwork/project/project_addItem.png"
-                      alt="추가"
-                      className="w-5 h-5 mr-2"
-                    />
-                    <p className="text-[13px] text-gray-500">Add item</p>
-                  </button>
+                  <div className="pt-3">
+                    <button
+                      onClick={() => openModal("task-create")}
+                      className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
+                    >
+                      <img
+                        src="/images/Antwork/project/project_addItem.png"
+                        alt="추가"
+                        className="w-5 h-5 mr-2"
+                      />
+                      <p className="text-[13px] text-gray-500">Add item</p>
+                    </button>
+                  </div>
                 </section>
               </article>
 
@@ -606,17 +644,17 @@ export default function ProjectViewSection() {
                     <h3 className="text-xl mb-2">REQ-004 공통 프로젝트 설계</h3>
                     <div className="absolute top-2 right-2 flex -space-x-4">
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-10"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-20"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-30"
                       />
@@ -685,17 +723,17 @@ export default function ProjectViewSection() {
                     <h3 className="text-xl mb-2">REQ-004 공통 프로젝트 설계</h3>
                     <div className="absolute top-2 right-2 flex -space-x-4">
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-10"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-20"
                       />
                       <img
-                        src="https://via.placeholder.com/40"
+                        src="/images/Antwork/project/project_profile.png"
                         alt="Profile"
                         className="w-8 h-8 rounded-full border border-gray-300 z-30"
                       />
