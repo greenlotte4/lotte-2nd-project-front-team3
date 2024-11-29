@@ -13,6 +13,56 @@ export default function DriveShareSection() {
     { isChecked: false, isStarred: false }, // 폴더1 상태
     { isChecked: false, isStarred: false }, // 폴더2 상태
     { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
   ]);
 
   const menuRef = useRef(null);
@@ -79,13 +129,13 @@ export default function DriveShareSection() {
 
   return (
     <>
-      <div className="bg-white p-[40px] rounded-[8px] border-none">
-        <article className="dirve_header">
+      <div className="bg-white p-[40px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
+        <article className="dirve_header flex-shrink-0">
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
               <h3>SHARE DRIVE</h3>
             </div>
-            <div className="border w-[250px] h-[30px] rounded-[4px]">
+            <div className="border w-[250px] h-[30px] rounded-[4px] flex items-center">
               <input
                 className="bg-[#D9E8FF] w-[190px] h-[30px] rounded-[4px] pl-[3px]"
                 type="text"
@@ -106,9 +156,9 @@ export default function DriveShareSection() {
           </div>
         </article>
 
-        <article className="drive_update">
-          <div className="flex justify-between my-[20px]">
-            <div className="drive_active">
+        <article className="drive_update flex-shrink-0 my-[20px]">
+          <div className="flex justify-between">
+            <div className="drive_active flex space-x-2">
               <button className="w-[70px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
                 업로드
               </button>
@@ -144,7 +194,7 @@ export default function DriveShareSection() {
             </div>
           </div>
         </article>
-        <article className="drive_main">
+        <article className="drive_main flex-grow overflow-y-auto">
           <div>
             {isListView ? (
               // 리스트 뷰
@@ -154,12 +204,14 @@ export default function DriveShareSection() {
                     <th className="w-[3%]">
                       <input type="checkbox" />
                     </th>
-                    <th className="w-[3%]">⭐</th>
-                    <th className="w-[30%]">이름</th>
-                    <th className="w-[10%]">크기</th>
-                    <th className="w-[10%]">공유자</th>
-                    <th className="w-[10%]">공유한날짜</th>
-                    <th className="w-[10%]">수정한날짜</th>
+                    <th className="w-[2%]">⭐</th>
+                    <th className="w-[3%]">종류</th>
+                    <th className="w-[20%]">이름</th>
+                    <th className="w-[5%]">크기</th>
+                    <th className="w-[5%]">공유자</th>
+                    <th className="w-[5%]">수정자</th>
+                    <th className="w-[7.5%]">공유한날짜</th>
+                    <th className="w-[7.5%]">수정한날짜</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -189,9 +241,18 @@ export default function DriveShareSection() {
                           ></i>
                         </button>
                       </td>
+                      <td>
+                        <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden"></i>
+                        <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden"></i>
+                        <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden"></i>
+                        <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden"></i>
+                        <i className="fa-solid fa-folder text-[16px] text-[#6BBFFC]"></i>
+                        <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden"></i>
+                      </td>
                       <td>폴더 {index + 1}</td>
                       <td>3MB</td>
                       <td>챱챱김</td>
+                      <td>정마요</td>
                       <td>2022-11-26</td>
                       <td>2024-11-26</td>
                     </tr>
@@ -200,7 +261,7 @@ export default function DriveShareSection() {
               </table>
             ) : (
               // 앨범 뷰
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-10 gap-8">
                 {folderStates.map((folder, index) => (
                   <div
                     key={index}
@@ -227,12 +288,12 @@ export default function DriveShareSection() {
                         <i className="fa-solid fa-check"></i>
                       )}
                     </div>
-
-                    <img
-                      src="/images/folder_icon.png"
-                      alt={`폴더${index + 1}`}
-                      className="w-[50px] h-[50px] mx-auto"
-                    />
+                    <i className="fa-solid fa-folder text-[43px] text-[#6BBFFC] mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden mx-20 my-[25px]"></i>
                     <div className="text-center mt-2">폴더 {index + 1}</div>
                     <button
                       className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
@@ -272,9 +333,6 @@ export default function DriveShareSection() {
               <i className="fa-solid fa-folder-open mr-2"></i> 열기
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
-              <i className="fa-solid fa-folder-plus mr-2 my-2"></i> 새 폴더
-            </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
               <i className="fa-solid fa-file-upload mr-2 my-2"></i> 업로드
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
@@ -283,7 +341,14 @@ export default function DriveShareSection() {
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
               <i className="fa-solid fa-star mr-2 my-2"></i> 즐겨찾기 추가
             </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
+            <li
+              onClick={() => {
+                console.log("asdf");
+                setMenuVisible(false);
+                openModal("out");
+              }}
+              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
+            >
               <i className="fa-solid fa-right-from-bracket mr-2 my-2"></i>{" "}
               나가기
             </li>
