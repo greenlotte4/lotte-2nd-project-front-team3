@@ -149,7 +149,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           }
                           className="ml-2 text-blue-500"
                         >
-                          이름 수정
+                          수정
                         </button>
                       )}
                     </div>

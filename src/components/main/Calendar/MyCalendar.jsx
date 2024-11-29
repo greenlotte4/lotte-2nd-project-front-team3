@@ -181,7 +181,22 @@ function MyCalendar({ listMonth, setListMonth }) {
       alert("삭제할 일정이 없습니다.");
     }
   };
+  const renderEventContent = (eventInfo) => {
+    const { location, member } = eventInfo.event.extendedProps;
 
+    const start = eventInfo.event.start;
+
+    return (
+      <div>
+        <p>
+          {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </p>
+        <b>{eventInfo.event.title}</b>
+        <p>장소: {location}</p>
+        <p>참석자: {member}</p>
+      </div>
+    );
+  };
   return (
     <section className="w-auto h-auto bg-white mx-auto">
       <div className="w-full h-auto ">
@@ -195,6 +210,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           contentHeight="700px"
           aspectRatio={2}
           locale="ko"
+          eventContent={renderEventContent} // 커스터마이징 렌더링
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정
           headerToolbar={{
