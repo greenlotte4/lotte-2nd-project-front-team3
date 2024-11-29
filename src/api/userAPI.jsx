@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  USER_INVITE_SEND_EMAIL_URI,
   USER_SEND_EMAIL_URI,
   USER_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
@@ -46,6 +47,23 @@ export const verifyUserCheckEmail = async (token) => {
       `${USER_VERIFY_CHECK_EMAIL_URI}?token=${token}`
     );
     console.log("Email verification response:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+// 멤버 초대
+export const verifyUserInviteEmail = async (email, companyName) => {
+  try {
+    const response = await axios.post(USER_INVITE_SEND_EMAIL_URI, {
+      email,
+      companyName,
+    });
+
+    console.log("Email verification response:", response.data);
+
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
