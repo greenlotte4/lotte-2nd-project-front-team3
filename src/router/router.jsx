@@ -18,6 +18,8 @@ import BoardPage from "../pages/Main/board/boardPage";
 import BoardViewPage from "../pages/Main/board/boardViewPage";
 import BoardWritePage from "../pages/Main/board/boardWritePage";
 import BoardListPage from "../pages/Main/board/boardListPage";
+import BoardDataRoomPage from "../pages/Main/board/boardDataRoomPage";
+import BoardDataViewPage from "../pages/Main/board/boardDataViewPage";
 import AdminPage from "../pages/Main/Admin/adminPage";
 import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
@@ -85,6 +87,8 @@ const router = createBrowserRouter([
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
   { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
   { path: "/antwork/board/view", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
+  { path: "/antwork/board/boardDataRoom", element: <BoardDataRoomPage /> }, // 2024/11/29(금) 김민희 - Board Data Room 추가
+  { path: "/antwork/board/boardDataView", element: <BoardDataViewPage /> }, // 2024/11/29(금) 김민희 - Board Data View 추가
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
   { path: "/antwork/project/view", element: <ProjectViewPage /> }, // 2024/11/27(월) 강은경 - Project view 추가
 ]);

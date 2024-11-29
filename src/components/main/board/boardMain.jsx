@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+
 {
   /*
     날짜 : 2024/11/25(월)
@@ -90,6 +91,9 @@ export default function BoardMain() {
           <h1>게시판 홈</h1>
           <p className="!mb-5">게시판 메인 페이지 입니다.</p>
 
+
+          {/* 게시판 홈(메인) 검색 */}
+
           <div className="flex justify-between mb-4">
             <div className="flex items-center">
               <select className="border border-gray-300 rounded py-2 px-2 mr-2 w-20 cursor-pointer">
@@ -117,11 +121,61 @@ export default function BoardMain() {
             </div>
           </div>
 
-          <section className="main_article flex ">
-            <article className="page-list mr-7">
-              <div className="content-header">
-                <h2 className="!mb-3">🔥 인기급상승 게시물</h2>
-                {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
+
+          <section className="main_article flex "> 
+
+          <article className="page-list mr-7">
+            <div className="content-header">
+              <h2 className="!mb-3">🔥 인기급상승 게시물</h2>
+              {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
+            </div>
+
+            <div className="page-grid cursor-pointer">
+             {/* 인기급상승 게시물  */}
+              <div className="page-card !bg-slate-50">
+                <div className="card-content">
+                  <div className="user-info">
+                    {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
+                    <div className="user-details w-80">
+                      <Link to="/antwork/board/view">
+                        <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
+                          인기급상승 게시물 제목입니다. 회사 신입사원 식탐 문제 지적해야할까요?
+                        </h3>
+                      </Link>
+                      <p className="!mt-3 !text-[12px] line-clamp-2">
+                        인기급상승 게시물 내용입니다.
+                        팀에 신입이 들어왔는데 탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에 가져와서 먹습니다 과자면 이해하는데 
+                        진짜 그거는 아닌 것 같아서 작은거 아니고 큰 거입니다 근데 지적하면 사람이 너무 치사해보일것같아서 고민하고 있었습니다 
+                        어제 옆팀 사람이 조심스럽게 팀원이 그렇게 먹는거 아냐고 물어보는데 할 말이 없었습니다 이거 제가 말해야하는게 맞을까요? 
+                        물론 이거 하나가지고 식탐이라고 할 수 없다면 할 말 없지만 단체 생활의 예의아닐까요?
+                      </p>
+                      <ul className="mt-4 flex gap-2">
+
+                        <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/create_date.svg" alt="create_at 작성일" />
+                          <span className="article_create_at w-13]"> 2024-11-25 </span>
+                        </li>
+
+
+                        <li className="article_view w-13 h-7 flex items-center gap-2 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/eye.svg" alt="eye views 조회수" />
+                          <span className="view_count"> 1,016 </span>
+                        </li>
+
+
+                        <li className="article_comment w-13 h-7 flex items-center gap-2 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/comment.svg" alt="comment 댓글수" />
+                          <span className="article_comment_count"> 629 </span>
+                        </li>
+
+
+                      </ul>
+                    </div>
+                  </div>
+                  {/* <button className="options-btn">⋮</button> */}
+                </div>
+
+              </div>
               </div>
 
               <div className="page-grid cursor-pointer">
@@ -131,10 +185,15 @@ export default function BoardMain() {
                     <div className="user-info">
                       {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
                       <div className="user-details w-80">
+                        
+                        
+                      <Link to="/antwork/board/view">
+
                         <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
                           인기급상승 게시물 제목입니다. 회사 신입사원 식탐 문제
                           지적해야할까요?
                         </h3>
+                      </Link>
                         <p className="!mt-3 !text-[12px] line-clamp-2">
                           인기급상승 게시물 내용입니다. 팀에 신입이 들어왔는데
                           탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에
@@ -181,147 +240,139 @@ export default function BoardMain() {
                     </div>
                     {/* <button className="options-btn">⋮</button> */}
                   </div>
-                </div>
-                {/* 인기게시물 끝 */}
-
-                {/* 인기급상승 게시물  2*/}
-                <div className="page-card !bg-slate-200">
-                  <div className="card-content">
-                    <div className="user-info">
-                      {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
-                      <div className="user-details w-80">
-                        <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
-                          인기급상승 게시물 제목입니다. 회사 신입사원 식탐 문제
-                          지적해야할까요?
-                        </h3>
-                        <p className="!mt-3 !text-[12px] line-clamp-2">
-                          인기급상승 게시물 내용입니다. 팀에 신입이 들어왔는데
-                          탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에
-                          가져와서 먹습니다 과자면 이해하는데 진짜 그거는 아닌
-                          것 같아서 작은거 아니고 큰 거입니다 근데 지적하면
-                          사람이 너무 치사해보일것같아서 고민하고 있었습니다
-                          어제 옆팀 사람이 조심스럽게 팀원이 그렇게 먹는거
-                          아냐고 물어보는데 할 말이 없었습니다 이거 제가
-                          말해야하는게 맞을까요? 물론 이거 하나가지고 식탐이라고
-                          할 수 없다면 할 말 없지만 단체 생활의 예의아닐까요?
-                        </p>
-                        <ul className="mt-4 flex gap-2">
-                          <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
-                            <img
-                              className="w-6 h-6"
-                              src="/images/ico/create_date.svg"
-                              alt="create_at 작성일"
-                            />
-                            <span className="article_create_at w-13]">
-                              {" "}
-                              2024-11-25{" "}
-                            </span>
-                          </li>
-
-                          <li className="article_view w-13 h-7 flex items-center gap-2 ">
-                            <img
-                              className="w-6 h-6"
-                              src="/images/ico/eye.svg"
-                              alt="eye views 조회수"
-                            />
-                            <span className="view_count"> 1,016 </span>
-                          </li>
-
-                          <li className="article_comment w-13 h-7 flex items-center gap-2 ">
-                            <img
-                              className="w-6 h-6"
-                              src="/images/ico/comment.svg"
-                              alt="comment 댓글수"
-                            />
-                            <span className="article_comment_count"> 629 </span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    {/* <button className="options-btn">⋮</button> */}
-                  </div>
-                </div>
-                {/* 인기게시물 끝 2*/}
               </div>
-            </article>
+            {/* 인기게시물 끝 2*/}
 
-            {/* 2. 자료실  */}
-            <article className="page-list">
-              <div className="content-header grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
-                <h1 className="!mb-3 ">📑 자료실</h1>
-                {/* <p> 자료실 설명글입니다. </p> */}
-              </div>
+            </div>
+          </article>
 
-              <div className="p-6 bg-gray-100 rounded-lg w-full max-w-lg mx-auto">
+
+          {/* 2. 자료실  */}
+          <article className="page-list">
+            <div className="content-header grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+              <Link to="/antwork/board/dataRoom"> <h1 className="!mb-3 ">📑 자료실</h1></Link>
+              
+              {/* <p> 자료실 설명글입니다. </p> */}
+
+            </div>
+
+            <div className="p-6 bg-gray-100 rounded-lg w-full max-w-lg mx-auto">
+              <div>
+                <div className="flex justify-between items-center mb-2 cursor-pointer">
+                  <span className="text-sm font-medium">첨부</span>
+                  <span className="text-sm text-gray-500">{`${files.length}개 (${files.reduce((acc, file) => acc + parseInt(file.size), 0)}MB)`}</span>
+                </div>
+
+                <Link to="/antwork/board/boardDataRoom">
                 <div>
-                  <div className="flex justify-between items-center mb-2 cursor-pointer">
-                    <span className="text-sm font-medium">첨부</span>
-                    <span className="text-sm text-gray-500">{`${
-                      files.length
-                    }개 (${files.reduce(
-                      (acc, file) => acc + parseInt(file.size),
-                      0
-                    )}MB)`}</span>
-                  </div>
-                  <div>
-                    {files.map((file) => (
-                      <div
-                        key={file.id}
-                        className="flex items-center justify-between bg-white p-3 mb-2 rounded-lg shadow cursor-pointer"
-                      >
-                        <div className="flex items-center cursor-pointer">
-                          <div className="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full mr-3 cursor-pointer">
-                            {file.type === "video" ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                className="w-5 h-5 text-blue-500 cursor-pointer"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M15.75 6.75L19.5 12l-3.75 5.25M4.5 12h15"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                className="w-5 h-5 text-slate-500"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M9 19V5l12-1.5v14.25"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                          <div>
-                            <p className="!text-[14px] font-medium">
-                              {file.name}
-                            </p>
-                            <p className="!text-[12px] text-gray-500">
-                              {file.size}
-                            </p>
-                          </div>
+                  {files.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center justify-between bg-white p-3 mb-2 rounded-lg shadow cursor-pointer"
+                    >
+                      <div className="flex items-center cursor-pointer">
+                        <div className="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full mr-3 cursor-pointer">
+                          {file.type === "video" ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              className="w-5 h-5 text-blue-500 cursor-pointer"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15.75 6.75L19.5 12l-3.75 5.25M4.5 12h15"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              className="w-5 h-5 text-slate-500"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M9 19V5l12-1.5v14.25"
+                              />
+                            </svg>
+                          )}
                         </div>
-                        <button
-                          onClick={() => handleDelete(file.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          ×
-                        </button>
+                        <div>
+                          <p className="!text-[14px] font-medium">{file.name}</p>
+                          <p className="!text-[12px] text-gray-500">{file.size}</p>
+                        </div>
                       </div>
-                    ))}
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                </Link>
+
+                
+              </div>
+            </div>
+
+          </article>
+          {/* 자료실 끝 */}
+          
+          <article className="page-list ml-7">
+            <div className="content-header">
+              <h2 className="!mb-3"># 억울한 일 🥹</h2>
+              {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
+            </div>
+
+            <div className="page-grid cursor-pointer">
+             {/* 인기급상승 게시물  */}
+              <div className="page-card !bg-slate-50">
+                <div className="card-content">
+                  <div className="user-info">
+                    {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
+                    <div className="user-details w-80">
+                      <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
+                        👔 억울합니다.. 
+                      </h3>
+                      <p className="!mt-3 !text-[12px] line-clamp-2">
+                        입사 1시간만에 짤린 썰,,, 대기업이라고 다 대기업 아니더만요 ㅋㅋㅋㅋㅋㅋㅋ 
+                        나 참 오자마자 청소를 시키질 않나
+                      </p>
+                      <ul className="mt-4 flex gap-2">
+
+                        <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/create_date.svg" alt="create_at 작성일" />
+                          <span className="article_create_at w-13]"> 2024-11-25 </span>
+                        </li>
+
+
+                        <li className="article_view w-13 h-7 flex items-center gap-2 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/eye.svg" alt="eye views 조회수" />
+                          <span className="view_count"> 1,016 </span>
+                        </li>
+
+
+                        <li className="article_comment w-13 h-7 flex items-center gap-2 ">
+                          <img className="w-6 h-6"  src="../../../public/images/ico/comment.svg" alt="comment 댓글수" />
+                          <span className="article_comment_count"> 629 </span>
+                        </li>
+
+
+                      </ul>
+                    </div>
+
                   </div>
                 </div>
+              </div>
               </div>
             </article>
             {/* 자료실 끝 */}

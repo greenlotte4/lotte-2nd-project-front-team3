@@ -91,9 +91,13 @@ export default function BoardList() {
                 <strong>961,011 개</strong>
               </div>
               <div className="">
-                <button className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600">
-                  글쓰기
-                </button>
+
+                <Link to="/antwork/board/write">
+                  <button className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600">
+                    글쓰기
+                  </button>
+                </Link>
+
                 <button className="cursor-pointer bg-yellow-500 text-white py-2 px-4 rounded mr-2 hover:bg-yellow-600">
                   내 글만 보기
                 </button>
@@ -234,4 +238,6 @@ export default function BoardList() {
   );
 }
 
+
 export { BoardList };
+
