@@ -20,7 +20,7 @@ export default function LandingMainPage() {
       <div id="mainSlider">
         <div className="slider">
           <img
-            src="../../../public/images/Landing/main_img(1920x815).jpg"
+            src="/images/Landing/main_img(1920x815).jpg"
             alt="메인페이지 1"
           />
         </div>
