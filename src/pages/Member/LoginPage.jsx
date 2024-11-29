@@ -6,7 +6,7 @@ export default function LoginPage() {
       <div className="wrapper">
         <div className="content">
           <img
-            src="images/Antwork/member/login.png"
+            src="/images/Antwork/member/login.png"
             alt="login_img"
             className="login_img"
           />
@@ -14,7 +14,7 @@ export default function LoginPage() {
             <h1 className="logo">
               <Link to="/">
                 <img
-                  src="images/Lending/antwork_logo.png"
+                  src="/images/Lending/antwork_logo.png"
                   alt="antwork 로고"
                   className="ml-[7.5rem] w-[146px] h-[47px]"
                 />
