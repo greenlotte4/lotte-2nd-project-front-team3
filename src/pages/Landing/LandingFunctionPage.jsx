@@ -15,7 +15,7 @@ import Navigator from "../../components/common/navigator";
   */
 }
 
-export default function LandingFuctionPage() {
+export default function LandingFunctionPage() {
   const [visibleSpan, setVisibleSpan] = useState("calendarFunction");
 
   const handleImageClick = (spanName) => {
