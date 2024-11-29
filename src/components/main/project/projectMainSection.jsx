@@ -35,7 +35,7 @@ export default function ProjectMainSection() {
               <div className="ml-4">
                 <div className="w-10 h-10 rounded-lg overflow-hidden">
                   <img
-                    src="../../../public/images/Antwork/project/project_sort.png"
+                    src="/images/Antwork/project/project_sort.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
@@ -48,7 +48,7 @@ export default function ProjectMainSection() {
                 <div className="flex items-center space-x-8">
                   <div className="w-12 h-12 rounded-lg overflow-hidden">
                     <img
-                      src="../../../public/images/Antwork/project/project.png"
+                      src="/images/Antwork/project/project.png"
                       alt="Description"
                       className="w-full h-full object-cover mr-4"
                     />
@@ -67,7 +67,7 @@ export default function ProjectMainSection() {
                 </div>
                 <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
                   <img
-                    src="../../../public/images/Antwork/project/project_delete.png"
+                    src="/images/Antwork/project/project_delete.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
@@ -78,7 +78,7 @@ export default function ProjectMainSection() {
                 <div className="flex items-center space-x-8">
                   <div className="w-12 h-12 rounded-lg overflow-hidden">
                     <img
-                      src="../../../public/images/Antwork/project/project.png"
+                      src="/images/Antwork/project/project.png"
                       alt="Description"
                       className="w-full h-full object-cover"
                     />
@@ -111,7 +111,7 @@ export default function ProjectMainSection() {
                 </div>
                 <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
                   <img
-                    src="../../../public/images/Antwork/project/project_delete.png"
+                    src="/images/Antwork/project/project_delete.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
@@ -122,7 +122,7 @@ export default function ProjectMainSection() {
                 <div className="flex items-center space-x-8">
                   <div className="w-12 h-12 rounded-lg overflow-hidden">
                     <img
-                      src="../../../public/images/Antwork/project/project.png"
+                      src="/images/Antwork/project/project.png"
                       alt="Description"
                       className="w-full h-full object-cover"
                     />
@@ -138,7 +138,7 @@ export default function ProjectMainSection() {
                 </div>
                 <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
                   <img
-                    src="../../../public/images/Antwork/project/project_delete.png"
+                    src="/images/Antwork/project/project_delete.png"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />

@@ -56,7 +56,7 @@ export default function ChattingModal() {
               />
               <button>
                 <img
-                  src="../../../public/images/ico/돋보기.svg"
+                  src="/images/ico/돋보기.svg"
                   alt="검색"
                   className="w-6 h-6 text-gray-500"
                 />

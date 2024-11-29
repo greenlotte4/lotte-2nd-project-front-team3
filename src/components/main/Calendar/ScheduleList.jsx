@@ -7,7 +7,7 @@ export default function ScheduleList() {
       <section className="mx-auto w-[800px] h-[400px] mt-[30px]">
         <div className="mx-auto w-[700px] h-[50px] bg-[#eceef1] flex rounded-lg mt-[20px] ">
           <img
-            src="../../../public/images/Antwork/calendar/일정 아이콘.svg"
+            src="/images/Antwork/calendar/일정 아이콘.svg"
             className="my-auto ml-[10px]"
           />
           <div className="flex flex-col justify-center ml-[10px]">
@@ -18,7 +18,7 @@ export default function ScheduleList() {
         </div>
         <div className="mx-auto w-[700px] h-[50px] bg-[#eceef1] flex rounded-lg mt-[20px] ">
           <img
-            src="../../../public/images/Antwork/calendar/일정 아이콘.svg"
+            src="/images/Antwork/calendar/일정 아이콘.svg"
             className="my-auto ml-[10px]"
           />
           <div className="flex flex-col justify-center ml-[10px]">
@@ -29,7 +29,7 @@ export default function ScheduleList() {
         </div>
         <div className="mx-auto w-[700px] h-[50px] bg-[#eceef1] flex rounded-lg mt-[20px] ">
           <img
-            src="../../../public/images/Antwork/calendar/일정 아이콘.svg"
+            src="/images/Antwork/calendar/일정 아이콘.svg"
             className="my-auto ml-[10px]"
           />
           <div className="flex flex-col justify-center ml-[10px]">
@@ -40,7 +40,7 @@ export default function ScheduleList() {
         </div>
         <div className="mx-auto w-[700px] h-[50px] bg-[#eceef1] flex rounded-lg mt-[20px] ">
           <img
-            src="../../../public/images/Antwork/calendar/일정 아이콘.svg"
+            src="/images/Antwork/calendar/일정 아이콘.svg"
             className="my-auto ml-[10px]"
           />
           <div className="flex flex-col justify-center ml-[10px]">
@@ -51,7 +51,7 @@ export default function ScheduleList() {
         </div>
         <div className="mx-auto w-[700px] h-[50px] bg-[#eceef1] flex rounded-lg mt-[20px] ">
           <img
-            src="../../../public/images/Antwork/calendar/일정 아이콘.svg"
+            src="/images/Antwork/calendar/일정 아이콘.svg"
             className="my-auto ml-[10px]"
           />
           <div className="flex flex-col justify-center ml-[10px]">

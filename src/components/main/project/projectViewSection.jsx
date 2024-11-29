@@ -21,7 +21,7 @@ export default function ProjectViewSection() {
                   className="p-2 rounded-full hover:bg-gray-100 mb-2"
                 >
                   <img
-                    src="../../../public/images/Antwork/project/project_edit.png"
+                    src="/images/Antwork/project/project_edit.png"
                     alt="프로젝트 수정"
                     className="w-6 h-6"
                   />
@@ -42,7 +42,7 @@ export default function ProjectViewSection() {
                     </div>
                     <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                       <img
-                        src="../../../public/images/Antwork/project/project_icon.png" // 이미지 경로
+                        src="/images/Antwork/project/project_icon.png" // 이미지 경로
                         alt="옵션"
                         className="w-6 h-6" // 이미지 크기 설정
                       />
@@ -68,7 +68,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -113,7 +113,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -158,7 +158,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -203,7 +203,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -248,7 +248,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -293,7 +293,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -338,7 +338,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -383,7 +383,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -428,7 +428,7 @@ export default function ProjectViewSection() {
                         </span>
                         <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                           <img
-                            src="../../../public/images/Antwork/project/project_more.png"
+                            src="/images/Antwork/project/project_more.png"
                             alt="옵션"
                             className="w-6 h-6"
                           />
@@ -473,7 +473,7 @@ export default function ProjectViewSection() {
                       className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
                     >
                       <img
-                        src="../../../public/images/Antwork/project/project_addItem.png"
+                        src="/images/Antwork/project/project_addItem.png"
                         alt="추가"
                         className="w-5 h-5 mr-2"
                       />
@@ -495,7 +495,7 @@ export default function ProjectViewSection() {
                     </div>
                     <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                       <img
-                        src="../../../public/images/Antwork/project/project_icon.png" // 이미지 경로
+                        src="/images/Antwork/project/project_icon.png" // 이미지 경로
                         alt="옵션"
                         className="w-6 h-6" // 이미지 크기 설정
                       />
@@ -518,7 +518,7 @@ export default function ProjectViewSection() {
                       </span>
                       <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                         <img
-                          src="../../../public/images/Antwork/project/project_more.png" // 이미지 경로
+                          src="/images/Antwork/project/project_more.png" // 이미지 경로
                           alt="옵션"
                           className="w-6 h-6" // 이미지 크기 설정
                         />
@@ -553,7 +553,7 @@ export default function ProjectViewSection() {
                   </article>
                   <button className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30">
                     <img
-                      src="../../../public/images/Antwork/project/project_addItem.png"
+                      src="/images/Antwork/project/project_addItem.png"
                       alt="추가"
                       className="w-5 h-5 mr-2"
                     />
@@ -574,7 +574,7 @@ export default function ProjectViewSection() {
                     </div>
                     <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                       <img
-                        src="../../../public/images/Antwork/project/project_icon.png" // 이미지 경로
+                        src="/images/Antwork/project/project_icon.png" // 이미지 경로
                         alt="옵션"
                         className="w-6 h-6" // 이미지 크기 설정
                       />
@@ -597,7 +597,7 @@ export default function ProjectViewSection() {
                       </span>
                       <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                         <img
-                          src="../../../public/images/Antwork/project/project_more.png" // 이미지 경로
+                          src="/images/Antwork/project/project_more.png" // 이미지 경로
                           alt="옵션"
                           className="w-6 h-6" // 이미지 크기 설정
                         />
@@ -632,7 +632,7 @@ export default function ProjectViewSection() {
                   </article>
                   <button className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30">
                     <img
-                      src="../../../public/images/Antwork/project/project_addItem.png"
+                      src="/images/Antwork/project/project_addItem.png"
                       alt="추가"
                       className="w-5 h-5 mr-2"
                     />
@@ -653,7 +653,7 @@ export default function ProjectViewSection() {
                     </div>
                     <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                       <img
-                        src="../../../public/images/Antwork/project/project_icon.png" // 이미지 경로
+                        src="/images/Antwork/project/project_icon.png" // 이미지 경로
                         alt="옵션"
                         className="w-6 h-6" // 이미지 크기 설정
                       />
@@ -676,7 +676,7 @@ export default function ProjectViewSection() {
                       </span>
                       <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
                         <img
-                          src="../../../public/images/Antwork/project/project_more.png" // 이미지 경로
+                          src="/images/Antwork/project/project_more.png" // 이미지 경로
                           alt="옵션"
                           className="w-6 h-6" // 이미지 크기 설정
                         />
@@ -711,7 +711,7 @@ export default function ProjectViewSection() {
                   </article>
                   <button className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30">
                     <img
-                      src="../../../public/images/Antwork/project/project_addItem.png"
+                      src="/images/Antwork/project/project_addItem.png"
                       alt="추가"
                       className="w-5 h-5 mr-2"
                     />
