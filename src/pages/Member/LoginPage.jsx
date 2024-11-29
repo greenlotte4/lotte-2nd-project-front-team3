@@ -14,7 +14,7 @@ export default function LoginPage() {
             <h1 className="logo">
               <Link to="/">
                 <img
-                  src="/images/Lending/antwork_logo.png"
+                  src="/images/Landing/antwork_logo.png"
                   alt="antwork 로고"
                   className="ml-[7.5rem] w-[146px] h-[47px]"
                 />
