@@ -31,7 +31,7 @@ export default function LandingHeader() {
               </Link>
             </li>
             <li>
-              <Link to="#" className="cursor-pointer">
+              <Link to="/function" className="cursor-pointer">
                 서비스 소개
                 <img
                   src="/images/ico/arrow_drop_down.svg"
@@ -49,7 +49,7 @@ export default function LandingHeader() {
               </Link>
             </li>
             <li>
-              <Link to="#" className="cursor-pointer">
+              <Link to="/support" className="cursor-pointer">
                 체험 및 도입
                 <img
                   src="/images/ico/arrow_drop_down.svg"
@@ -65,7 +65,7 @@ export default function LandingHeader() {
               로그인
             </Link>
             <Link to="/antwork" className="register cursor-pointer">
-              회원가입
+              AntWork
             </Link>
           </div>
         </nav>

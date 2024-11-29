@@ -24,6 +24,8 @@ import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 import DriveSharePage from "./../pages/Main/drive/driveSharePage";
 import DriveRecylcePage from "./../pages/Main/drive/driveRecyclePage";
+import ProjectMainPage from "../pages/Main/project/projectMainPage";
+import ProjectViewPage from "../pages/Main/project/projectViewPage";
 
 {
   /*
@@ -35,14 +37,10 @@ import DriveRecylcePage from "./../pages/Main/drive/driveRecyclePage";
 
 import LandingSupportPage from "../pages/Landing/LandingSupportPage";
 
-// 해당 컴포넌트가 필요할때 로딩 되도록 lazy import 처리
-const ProjectMainPage = lazy(() =>
-  import("../pages/Main/project/projectMainPage")
-);
-const ProjectViewPage = lazy(() =>
-  import("../pages/Main/project/projectViewPage")
-);
 import LandingMainPage from "./../pages/Landing/LandingMainPage";
+import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
+import DriveSharePage from "../pages/Main/drive/driveSharePage";
+import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
 import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
