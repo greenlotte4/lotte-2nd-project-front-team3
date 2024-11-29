@@ -6,24 +6,23 @@ import listPlugin from "@fullcalendar/list";
 import "../../../styles/calendar.scss";
 import axios from "axios";
 
-function MyCalendar() {
+function MyCalendar({ listMonth, setListMonth }) {
   const calendarRef = useRef(null);
+
   useEffect(() => {
     if (calendarRef.current) {
-      console.log("calendarRef.current: ", calendarRef.current);
-      const calendarApi = calendarRef.current.getApi(); // getApi()로 FullCalendar API에 접근
-      console.log("FullCalendar API:", calendarApi);
-    } else {
-      console.log("calendarRef.current가 null입니다.");
+      const calendarApi = calendarRef.current.getApi(); // FullCalendar API 참조
+      if (listMonth === "listWeek") {
+        calendarApi.changeView("listWeek"); // 'listMonth' 버튼 동작 재현
+        setListMonth("dayGridMonth");
+      }
     }
-  }, []); // 컴포넌트가 처음 렌더링될 때 한 번 실행됨
+  }, [listMonth]); // 컴포넌트가 처음 렌더링될 때 한 번 실행됨
 
   const customPrevYear = () => {
-    console.log("이전 1년 버튼 클릭됨");
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       const currentDate = calendarApi.getDate();
-      console.log("현재 날짜 (1년 전):", currentDate); // 현재 날짜 확인
       // 현재 날짜를 기준으로 1년을 빼고 새로운 Date 객체를 생성
       const prevYearDate = new Date(
         currentDate.setFullYear(
@@ -32,7 +31,6 @@ function MyCalendar() {
           currentDate.getDate()
         )
       );
-      console.log("이전 1년 날짜:", prevYearDate);
       calendarApi.gotoDate(prevYearDate); // 새로 생성한 날짜로 이동
     }
   };
@@ -92,6 +90,7 @@ function MyCalendar() {
     content_title: "",
     description: "",
     location: "",
+    member: "",
     start: "",
     end: "",
   });
@@ -106,6 +105,10 @@ function MyCalendar() {
 
     setNewEvent((prevState) => ({
       ...prevState,
+      content_title: "",
+      description: "",
+      location: "",
+      member: "",
       start: formattedDate, // 시작일에 클릭한 날짜 설정
       end: formattedDate, // 종료일에도 클릭한 날짜 설정 (같은 날짜로 초기화)
     }));
@@ -125,6 +128,7 @@ function MyCalendar() {
       content_title: event.title.split(" - ")[0], // 제목 분리 (예: "회의 - 설명")
       description: event.title.split(" - ")[1] || "", // 설명 분리
       location: event.extendedProps.location || "",
+      member: event.extendedProps.member || "",
       start: startDate,
       end: endDate,
     });
@@ -141,6 +145,7 @@ function MyCalendar() {
       start: newEvent.start,
       end: newEvent.end,
       location: newEvent.location,
+      member: newEvent.member,
     };
 
     setEvents((prevEvents) => [...prevEvents, event]);
@@ -149,6 +154,7 @@ function MyCalendar() {
       content_title: "",
       description: "",
       location: "",
+      member: "",
       start: "",
       end: "",
     });
@@ -156,6 +162,25 @@ function MyCalendar() {
   };
 
   const allEvents = [...events, ...holidays];
+
+  const handleDelete = () => {
+    if (currentEventId && calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      const event = calendarApi.getEventById(currentEventId);
+
+      if (event) {
+        if (confirm("일정을 삭제하시겠습니까?")) {
+          event.remove(); // FullCalendar의 해당 이벤트 삭제
+          alert("일정이 삭제되었습니다.");
+          setShowModal(false); // 모달 닫기
+        }
+      } else {
+        alert("삭제할 일정을 찾을 수 없습니다.");
+      }
+    } else {
+      alert("삭제할 일정이 없습니다.");
+    }
+  };
 
   return (
     <section className="w-auto h-auto bg-white mx-auto">
@@ -166,13 +191,16 @@ function MyCalendar() {
           initialView="dayGridMonth"
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           events={allEvents}
+          slotWidth="auto" // slot의 너비를 자동으로 조정
+          contentHeight="700px"
+          aspectRatio={2}
           locale="ko"
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정
           headerToolbar={{
             start: "prev,next,today", // 이전/다음 버튼
             center: "customPrevYear,title,customNextYear", // 현재 날짜 제목
-            end: "dayGridMonth,dayGridWeek,dayGridDay,listMonth", // 뷰 전환 버튼
+            end: "dayGridMonth,dayGridWeek,dayGridDay,listWeek", // 뷰 전환 버튼
           }}
           customButtons={{
             customPrevYear: {
@@ -218,6 +246,27 @@ function MyCalendar() {
                   }
                 />
 
+                {/* 장소 입력 */}
+                <input
+                  type="text"
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  placeholder="장소"
+                  value={newEvent.location}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, location: e.target.value })
+                  }
+                />
+                {/* 인원 입력 */}
+                <input
+                  type="text"
+                  className="w-full p-2 mb-4 border rounded outline-none"
+                  placeholder="인원"
+                  value={newEvent.member}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, member: e.target.value })
+                  }
+                />
+
                 {/* 설명 입력 */}
                 <textarea
                   className="w-full p-2 mb-4 border rounded outline-none"
@@ -256,8 +305,16 @@ function MyCalendar() {
                   >
                     {editMode ? "수정" : "저장"}
                   </button>
+                  {editMode && (
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                      onClick={handleDelete}
+                    >
+                      삭제
+                    </button>
+                  )}
                   <button
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 outline-none"
+                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                     onClick={() => setShowModal(false)}
                   >
                     취소

@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
+import useModalStore from "../../../store/modalStore";
+import AdminModal from "../../common/modal/adminModal";
 
 export default function AdminMember() {
+  const openModal = useModalStore((state) => state.openModal);
   return (
     <>
+      <AdminModal />
       <article className="page-list">
         <div className="content-header">
           <h1>멤버 관리</h1>
@@ -15,7 +19,10 @@ export default function AdminMember() {
               <strong>165 명</strong>
             </div>
             <div>
-              <button className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600">
+              <button
+                className="bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600"
+                onClick={() => openModal("member-invite")}
+              >
                 멤버 생성
               </button>
               <button className="bg-yellow-500 text-white py-2 px-4 rounded mr-2 hover:bg-yellow-600">

@@ -130,7 +130,7 @@ main {
   width: 60px;
   background-color: #eaf0f9;
   border-right: 1px solid #ddd;
-  z-index: 100;
+  z-index: 20;
 }
 /* ////////////////////////////////////////////////////////////// */
 
@@ -147,7 +147,7 @@ aside {
   transition: all 0.4s ease-in-out;
   border-right: 1px solid #ddd;
   overflow-y: auto; /* 내용이 많을 경우 스크롤 */
-  z-index: 90;
+  z-index: 20;
 }
 /* ////////////////////////////////////////////////////////////// */
 

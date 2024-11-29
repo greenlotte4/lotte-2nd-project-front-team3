@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainPage from "./../pages/Main/MainPage";
+
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
 import TermsPage from "../pages/Member/TermsPage";
@@ -8,7 +9,6 @@ import TermsPage from "../pages/Member/TermsPage";
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
 import CalendarPage from "../pages/Main/calendar/CalendarPage";
-import { lazy, Suspense } from "react";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
 import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWritePage";
@@ -70,8 +70,7 @@ const router = createBrowserRouter([
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
-  { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지
-  { path: "/antWork/calendar/ScheduleList", element: <ScheduleListPage /> }, // Antwork 캘린더 일정 페이지
+  { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
 
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
