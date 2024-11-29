@@ -13,7 +13,7 @@ export default function LandingPayPage({ children }) {
         <div className="content-left">
           <h1 className="title">제품 및 가격안내</h1>
           <img
-            src="/images/Lending/payyb.png"
+            src="/images/Landing/payyb.png"
             alt="제품 이미지"
             className="product-image"
           />
@@ -33,8 +33,8 @@ export default function LandingPayPage({ children }) {
             <div className="payment-methods">
               <p>결제 수단</p>
               <div className="payment-images">
-                <img src="/images/Lending/payment.png" alt="결제 수단" />
-                <img src="/images/Lending/paymentbottom.png" alt="결제 수단" />
+                <img src="/images/Landing/payment.png" alt="결제 수단" />
+                <img src="/images/Landing/paymentbottom.png" alt="결제 수단" />
               </div>
             </div>
           </div>

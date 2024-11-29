@@ -18,7 +18,7 @@ export default function LandingFooter() {
           <Link to="#" className="cursor-pointer">
             <img
               className="w-40 h-20 gap-8"
-              src="../.././../public/images/Landing/antwork_logo.png"
+              src="/images/Landing/antwork_logo.png"
               alt="Antwork footer logo"
             />
           </Link>
@@ -196,7 +196,7 @@ export default function LandingFooter() {
           <div className="sns">
             <img
               className="!w-145 !h-auto"
-              src="../../../public/images/Landing/sns.png"
+              src="/images/Landing/sns.png"
               alt="sns - 트위터, 인스타그램, 유튜브, LinkedIn"
             />
           </div>

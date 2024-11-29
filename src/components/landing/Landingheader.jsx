@@ -16,7 +16,7 @@ export default function LandingHeader() {
           <Link to="/">
             <img
               className="mt-[5px]"
-              src="../.././../public/images/Landing/antwork_logo.png"
+              src="/images/Landing/antwork_logo.png"
               alt=""
             />
           </Link>
@@ -27,17 +27,14 @@ export default function LandingHeader() {
           <ul className="">
             <li>
               <Link to="#" className="home cursor-pointer">
-                <img
-                  src="../../../public/images/Landing/home.svg"
-                  alt="home ico"
-                />
+                <img src="/images/Landing/home.svg" alt="home ico" />
               </Link>
             </li>
             <li>
               <Link to="#" className="cursor-pointer">
                 서비스 소개
                 <img
-                  src="../../../public/images/ico/arrow_drop_down.svg"
+                  src="/images/ico/arrow_drop_down.svg"
                   alt="arrow_drop_down 🔽"
                 />
               </Link>
@@ -46,7 +43,7 @@ export default function LandingHeader() {
               <Link to="/pay" className="cursor-pointer">
                 가격 및 혜택
                 <img
-                  src="../../../public/images/ico/arrow_drop_down.svg"
+                  src="/images/ico/arrow_drop_down.svg"
                   alt="arrow_drop_down 🔽"
                 />
               </Link>
@@ -55,7 +52,7 @@ export default function LandingHeader() {
               <Link to="#" className="cursor-pointer">
                 체험 및 도입
                 <img
-                  src="../../../public/images/ico/arrow_drop_down.svg"
+                  src="/images/ico/arrow_drop_down.svg"
                   alt="arrow_drop_down 🔽"
                 />
               </Link>
