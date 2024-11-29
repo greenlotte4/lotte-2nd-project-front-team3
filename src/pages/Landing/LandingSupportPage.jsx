@@ -47,7 +47,7 @@ export default function LandingSupportPage() {
             {" "}
             <div className="w-[107px] h-[207px]">
               <img
-                src="../../../public/images/Landing/support2.png"
+                src="images/Landing/support2.png"
                 alt="문의 등록 이미지"
                 className="w-full h-auto ml-[3.75rem]"
               />
@@ -80,7 +80,7 @@ export default function LandingSupportPage() {
             <div className="flex items-center ml-auto">
               <div className="w-[336px] h-[207px]">
                 <img
-                  src="../../../public/images/Landing/support3.png"
+                  src="images/Landing/support3.png"
                   alt="가이드 이미지"
                   className="w-full h-auto"
                 />
