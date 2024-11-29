@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { verifyUserCheckEmail } from "../../../api/userAPI";
 
 const Step3 = ({ state, dispatch, handleNextStep }) => {
   const [invitedEmails, setInvitedEmails] = useState([]);
   const [emailInput, setEmailInput] = useState("");
 
+  // 로고 업로드 처리 함수
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -23,7 +25,7 @@ const Step3 = ({ state, dispatch, handleNextStep }) => {
     }
   };
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (emailInput.trim() === "" || !emailInput.includes("@")) {
       dispatch({
         type: "SET_ERROR",
@@ -31,9 +33,31 @@ const Step3 = ({ state, dispatch, handleNextStep }) => {
       });
       return;
     }
-    setInvitedEmails([...invitedEmails, emailInput]);
-    setEmailInput("");
-    dispatch({ type: "SET_ERROR", payload: null }); // 오류 초기화
+
+    try {
+      // 초대 요청 및 이메일 검증
+      const response = await verifyUserCheckEmail(
+        emailInput,
+        state.companyName
+      );
+
+      if (response.data.success) {
+        // 초대 성공 시 이메일 목록 업데이트
+        setInvitedEmails([...invitedEmails, emailInput]);
+        setEmailInput("");
+        dispatch({ type: "SET_ERROR", payload: null }); // 오류 초기화
+      } else {
+        dispatch({
+          type: "SET_ERROR",
+          payload: response.data.message || "초대에 실패했습니다.",
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: "SET_ERROR",
+        payload: "초대 중 오류가 발생했습니다.",
+      });
+    }
   };
 
   const handleEmailDelete = (email) => {

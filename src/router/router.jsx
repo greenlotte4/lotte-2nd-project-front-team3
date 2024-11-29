@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import LendingMainPage from "../pages/Lending/LendingMainPage";
+
 import MainPage from "./../pages/Main/MainPage";
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
@@ -21,6 +21,9 @@ import AdminMemberPage from "../pages/Main/Admin/adminMemberPage";
 import AdminLoginPage from "../pages/Main/Admin/LoginPage";
 import SettingMainPage from "../pages/Main/setting/settingMainPage";
 import SettingMyinfoPage from "../pages/Main/setting/settingMyinfoPage";
+import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
+import DriveSharePage from "./../pages/Main/drive/driveSharePage";
+import DriveRecylcePage from "./../pages/Main/drive/driveRecyclePage";
 
 {
   /*
@@ -39,14 +42,17 @@ const ProjectMainPage = lazy(() =>
 const ProjectViewPage = lazy(() =>
   import("../pages/Main/project/projectViewPage")
 );
-
-import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
-import LendingPayPage from "./../pages/Lending/LendingPayPage";
+import LandingMainPage from "./../pages/Landing/LandingMainPage";
+import LandingPayPage from "./../pages/Landing/LandingPayPage";
+import CompletePage from "./../pages/Landing/CompletePage";
+import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
-  { path: "/", element: <LendingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
-  { path: "/pay", element: <LendingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+  { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
+  { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+  { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+  { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
