@@ -34,6 +34,7 @@ import ProjectViewPage from "../pages/Main/project/projectViewPage";
 }
 
 import LandingSupportPage from "../pages/Landing/LandingSupportPage";
+import LandingFunctionPage from "../pages/Landing/LandingFunctionPage";
 
 import LandingMainPage from "./../pages/Landing/LandingMainPage";
 import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
@@ -45,7 +46,9 @@ import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
 const router = createBrowserRouter([
   // 랜딩 페이지
   { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
-  { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+  { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가추가
+  { path: "/support", element: <LandingSupportPage /> }, // 2024/11/29(금) 강은경 - LendingSupportPage 추가
+  { path: "/function", element: <LandingFunctionPage /> }, // 2024/11/29(금) 강은경 - LandingFunctionPage 추가
   { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
   { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
 
