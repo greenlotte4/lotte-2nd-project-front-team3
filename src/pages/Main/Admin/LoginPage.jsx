@@ -6,7 +6,7 @@ export default function AdminLoginPage() {
       <div className="wrapper">
         <div className="content">
           <img
-            src="../../../public/images/Antwork/member/login.png"
+            src="images/Antwork/member/login.png"
             alt="login_img"
             className="login_img"
           />

@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
   */
 }
 
-
 export default function BoardAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
     communityList: true,
@@ -37,18 +36,18 @@ export default function BoardAside({ asideVisible }) {
         <ul className="lnb inline-grid">
           <li className="lnb-item">
             <div className="lnb-header !mb-[10px]">
-              <img src="/images/ico/page_home_22_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px] cursor-pointer" 
-                />
-              <Link to="/antwork/board" className="main-cate !text-[16px] cursor-pointer">
+              <img
+                src="/images/ico/page_home_22_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px] cursor-pointer"
+              />
+              <Link
+                to="/antwork/board"
+                className="main-cate !text-[16px] cursor-pointer"
+              >
                 홈 바로가기
               </Link>
 
-              <div className="">
-
-              </div>
-
-
+              <div className=""></div>
             </div>
 
             <div className="lnb-header !pb-[15px] border-b border-[#ddd]">
@@ -88,50 +87,43 @@ export default function BoardAside({ asideVisible }) {
                 <li>
                   <Link to="#">🥹&nbsp;&nbsp;억울한 일</Link>
                 </li>
-
-
-                
               </ol>
             )}
-                        
-          {/* 자료실 토글 메뉴 start ---------------------------------------------------------------------------------------------------------- */}
-          <li className="lnb-item !mt-[15px] !h-[300px] border-b border-[#ddd]">
-            <div
-              className="lnb-header cursor-pointer "
-              onClick={() => {
-                toggleSection("dataList");
-              }}
-            >
-              <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
-                자료실{" "}
-                <img
-                  src={
-                    toggles.dataList
-                      ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
-                      : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
-                  }
-                  alt="toggle"
-                />
-              </span>
-            </div>
-            {toggles.dataList && (
-              <ol>
-                <li>
-                  <a href="#">🔖&nbsp;&nbsp;휴가신청서</a>
-                </li>
-                <li>
-                  <a href="#">🔖&nbsp;&nbsp;지출결의서</a>
-                </li>
-              </ol>
-            )}
-            
-          </li>
-           {/* 자료실 end ---------------------------------------------------------------------------------------------------------- */}
+
+            {/* 자료실 토글 메뉴 start ---------------------------------------------------------------------------------------------------------- */}
+            <li className="lnb-item !mt-[15px] !h-[300px] border-b border-[#ddd]">
+              <div
+                className="lnb-header cursor-pointer "
+                onClick={() => {
+                  toggleSection("dataList");
+                }}
+              >
+                <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
+                  자료실{" "}
+                  <img
+                    src={
+                      toggles.dataList
+                        ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
+                        : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                    }
+                    alt="toggle"
+                  />
+                </span>
+              </div>
+              {toggles.dataList && (
+                <ol>
+                  <li>
+                    <a href="#">🔖&nbsp;&nbsp;휴가신청서</a>
+                  </li>
+                  <li>
+                    <a href="#">🔖&nbsp;&nbsp;지출결의서</a>
+                  </li>
+                </ol>
+              )}
+            </li>
+            {/* 자료실 end ---------------------------------------------------------------------------------------------------------- */}
           </li>
           {/* 커뮤니티 end ---------------------------------------------------------------------------------------------------------- */}
-
-         
-            
 
           <li className="lnb-item">
             <div className="lnb-header !mb-[10px]">

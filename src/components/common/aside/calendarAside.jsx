@@ -43,8 +43,8 @@ export default function CalendarAside({ asideVisible }) {
                   <img
                     src={
                       isMyOpen
-                        ? "images/Antwork/main/drive/위화살표.png"
-                        : "images/Antwork/main/drive/아래화살표.png"
+                        ? "/images/Antwork/main/drive/위화살표.png"
+                        : "/images/Antwork/main/drive/아래화살표.png"
                     }
                     alt="화살표 아이콘"
                     className="w-4 h-4"
@@ -53,7 +53,7 @@ export default function CalendarAside({ asideVisible }) {
 
                 <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
                   <img
-                    src="images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                    src="/images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
@@ -71,7 +71,7 @@ export default function CalendarAside({ asideVisible }) {
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4 text-center">
                       <img
-                        src="images/Antwork/calendar/캘린더.svg"
+                        src="/images/Antwork/calendar/캘린더.svg"
                         alt="#"
                         className="w-7 h-7"
                       />
@@ -83,7 +83,7 @@ export default function CalendarAside({ asideVisible }) {
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4 text-center">
                       <img
-                        src="images/Antwork/calendar/캘린더.svg"
+                        src="/images/Antwork/calendar/캘린더.svg"
                         alt="#"
                         className="w-7 h-7"
                       />
@@ -105,8 +105,8 @@ export default function CalendarAside({ asideVisible }) {
                   <img
                     src={
                       isShareOpen
-                        ? "images/Antwork/main/drive/위화살표.png"
-                        : "images/Antwork/main/drive/아래화살표.png"
+                        ? "/images/Antwork/main/drive/위화살표.png"
+                        : "/images/Antwork/main/drive/아래화살표.png"
                     }
                     alt="화살표 아이콘"
                     className="w-4 h-4"
@@ -115,7 +115,7 @@ export default function CalendarAside({ asideVisible }) {
 
                 <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
                   <img
-                    src="images/Antwork/calendar/스케쥴.svg"
+                    src="/images/Antwork/calendar/스케쥴.svg"
                     alt="Description"
                     className="w-full h-full object-cover"
                   />
@@ -133,7 +133,7 @@ export default function CalendarAside({ asideVisible }) {
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4 text-center">
                       <img
-                        src="images/Antwork/calendar/일정 아이콘.svg"
+                        src="/images/Antwork/calendar/일정 아이콘.svg"
                         alt="#"
                         className="w-7 h-7"
                       />
@@ -145,7 +145,7 @@ export default function CalendarAside({ asideVisible }) {
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
                       <img
-                        src="images/Antwork/calendar/일정 아이콘.svg"
+                        src="/images/Antwork/calendar/일정 아이콘.svg"
                         alt="#"
                         className="w-7 h-7"
                       />

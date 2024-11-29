@@ -50,7 +50,7 @@ export default function ChattingMain() {
                 onClick={() => console.log("고정핀 기능 실행")}
               >
                 <img
-                  src="../../../../public/images/ico/고정핀.svg"
+                  src="/images/ico/고정핀.svg"
                   alt="Pin"
                   className="w-8 h-8"
                 />
@@ -96,7 +96,7 @@ export default function ChattingMain() {
                   onClick={() => toggleState("isSearchOpen")}
                 >
                   <img
-                    src="../../../../public/images/ico/돋보기.svg"
+                    src="/images/ico/돋보기.svg"
                     alt="Search"
                     className="w-8 h-8"
                   />
@@ -109,7 +109,7 @@ export default function ChattingMain() {
                 onClick={() => toggleState("isSidebarOpen")}
               >
                 <img
-                  src="../../../../public/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                  src="/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                   alt="Menu"
                   className="w-8 h-8"
                 />
@@ -179,10 +179,7 @@ export default function ChattingMain() {
               />
               {/* 첨부파일 버튼 */}
               <button className="p-3 rounded-full hover:bg-gray-200 focus:outline-none">
-                <img
-                  src="../../../../public/images/ico/file.svg"
-                  alt="Attach"
-                />
+                <img src="/images/ico/file.svg" alt="Attach" />
               </button>
               {/* 전송 버튼 */}
               <button
@@ -208,7 +205,7 @@ export default function ChattingMain() {
               className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
               onClick={() => toggleState("isSidebarOpen")}
             >
-              <img src="../../../../public/images/ico/closechat.svg"></img>
+              <img src="/images/ico/closechat.svg"></img>
             </button>
 
             {/* 채팅방 이름 */}
@@ -224,8 +221,8 @@ export default function ChattingMain() {
                 <img
                   src={
                     toggleStates.isAlarmOn
-                      ? "../../../../public/images/ico/alerm.svg"
-                      : "../../../../public/images/ico/alermoff.svg"
+                      ? "/images/ico/alerm.svg"
+                      : "/images/ico/alermoff.svg"
                   }
                   alt="알림 아이콘"
                 />
@@ -233,7 +230,7 @@ export default function ChattingMain() {
 
               {/* 나가기 아이콘 */}
               <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none">
-                <img src="../../../../public/images/ico/outchat.svg"></img>
+                <img src="/images/ico/outchat.svg"></img>
               </button>
             </div>
           </div>

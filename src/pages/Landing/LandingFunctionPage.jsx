@@ -29,42 +29,42 @@ export default function LandingFunctionPage() {
           <section className="w-[59px] border-r border-l border-black-500">
             <div className="nav-item">
               <img
-                src="images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                src="/images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 alt="calendar"
                 onClick={() => handleImageClick("calendarFunction")}
               />
             </div>
             <div className="nav-item">
               <img
-                src="images/ico/nav_chat.svg"
+                src="/images/ico/nav_chat.svg"
                 alt="message"
                 onClick={() => handleImageClick("messageFunction")}
               />
             </div>
             <div className="nav-item">
               <img
-                src="images/ico/edit_document_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                src="/images/ico/edit_document_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 alt="page"
                 onClick={() => handleImageClick("pageFunction")}
               />
             </div>
             <div className="nav-item">
               <img
-                src="images/ico/group_add_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                src="/images/ico/group_add_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 alt="project"
                 onClick={() => handleImageClick("projectFunction")}
               />
             </div>
             <div className="nav-item">
               <img
-                src="images/ico/content_paste_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                src="/images/ico/content_paste_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 alt="board"
                 onClick={() => handleImageClick("boardFunction")}
               />
             </div>
             <div className="nav-item">
               <img
-                src="images/ico/cloud_download_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                src="/images/ico/cloud_download_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 alt="drive"
                 onClick={() => handleImageClick("driveFunction")}
               />
@@ -89,7 +89,7 @@ export default function LandingFunctionPage() {
           </section>
           <img
             className="mainImage !w-[425px] !h-[500px] z-10 absolute bottom-[0] right-[440px] "
-            src="images/Landing/functionBackground.png"
+            src="/images/Landing/functionBackground.png"
           ></img>
           <section className="functionright w-3/5 p-[40px] bg-customBlueOpacity">
             <div className="w-[480px] h-[570px] ml-[140px] bg-[url('/images/Landing/LandingFunctionBG.png')] bg-cover bg-center flex border border-[#ddd] rounded-[10px]">
