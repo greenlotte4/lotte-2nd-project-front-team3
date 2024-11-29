@@ -38,7 +38,6 @@ import ProjectViewPage from "../pages/Main/project/projectViewPage";
 import LandingSupportPage from "../pages/Landing/LandingSupportPage";
 import LandingFunctionPage from "../pages/Landing/LandingFunctionPage";
 
-import LandingMainPage from "./../pages/Landing/LandingMainPage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
@@ -52,7 +51,6 @@ const router = createBrowserRouter([
   { path: "/function", element: <LandingFunctionPage /> }, // 2024/11/29(금) 강은경 - LandingFunctionPage 추가
   { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
   { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
-
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
