@@ -37,7 +37,6 @@ import LandingSupportPage from "../pages/Landing/LandingSupportPage";
 import LandingFunctionPage from "../pages/Landing/LandingFunctionPage";
 
 import LandingMainPage from "./../pages/Landing/LandingMainPage";
-import ScheduleListPage from "../pages/Main/calendar/ScheduleListPage";
 import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
