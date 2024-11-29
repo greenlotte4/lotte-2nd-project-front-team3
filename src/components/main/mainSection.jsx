@@ -161,7 +161,7 @@ export default function MainSection() {
                             <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/create_date.svg"
+                                src="images/ico/create_date.svg"
                                 alt="create_at 작성일"
                               />
                               <span className="article_create_at w-13]">
@@ -173,7 +173,7 @@ export default function MainSection() {
                             <li className="article_view w-13 h-7 flex items-center gap-2 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/eye.svg"
+                                src="images/ico/eye.svg"
                                 alt="eye views 조회수"
                               />
                               <span className="view_count"> 1,016 </span>
@@ -182,7 +182,7 @@ export default function MainSection() {
                             <li className="article_comment w-13 h-7 flex items-center gap-2 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/comment.svg"
+                                src="images/ico/comment.svg"
                                 alt="comment 댓글수"
                               />
                               <span className="article_comment_count">
@@ -224,7 +224,7 @@ export default function MainSection() {
                             <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/create_date.svg"
+                                src="images/ico/create_date.svg"
                                 alt="create_at 작성일"
                               />
                               <span className="article_create_at w-13]">
@@ -236,7 +236,7 @@ export default function MainSection() {
                             <li className="article_view w-13 h-7 flex items-center gap-2 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/eye.svg"
+                                src="images/ico/eye.svg"
                                 alt="eye views 조회수"
                               />
                               <span className="view_count"> 1,016 </span>
@@ -245,7 +245,7 @@ export default function MainSection() {
                             <li className="article_comment w-13 h-7 flex items-center gap-2 ">
                               <img
                                 className="w-6 h-6"
-                                src="../../../public/images/ico/comment.svg"
+                                src="images/ico/comment.svg"
                                 alt="comment 댓글수"
                               />
                               <span className="article_comment_count">
@@ -444,8 +444,8 @@ export default function MainSection() {
                     <img
                       src={
                         isMyOpen
-                          ? "../../../public/images/Antwork/main/drive/위화살표.png"
-                          : "../../../public/images/Antwork/main/drive/아래화살표.png"
+                          ? "images/Antwork/main/drive/위화살표.png"
+                          : "images/Antwork/main/drive/아래화살표.png"
                       }
                       alt="화살표 아이콘"
                       className="w-4 h-4"
@@ -454,7 +454,7 @@ export default function MainSection() {
 
                   <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
                     <img
-                      src="../../../public/images/Antwork/main/drive/내드라이브.png"
+                      src="images/Antwork/main/drive/내드라이브.png"
                       alt="Description"
                       className="w-full h-full object-cover"
                     />
@@ -472,7 +472,7 @@ export default function MainSection() {
                     <a href="#">
                       <div className="flex items-start items-center mb-2 space-x-4 text-center">
                         <img
-                          src="../../../public/images/Antwork/main/drive/폴더.png"
+                          src="images/Antwork/main/drive/폴더.png"
                           alt="#"
                           className="w-7 h-7"
                         />
@@ -484,7 +484,7 @@ export default function MainSection() {
                     <a href="#">
                       <div className="flex items-start items-center mb-2 space-x-4 text-center">
                         <img
-                          src="../../../public/images/Antwork/main/drive/폴더.png"
+                          src="images/Antwork/main/drive/폴더.png"
                           alt="#"
                           className="w-7 h-7"
                         />
@@ -508,8 +508,8 @@ export default function MainSection() {
                     <img
                       src={
                         isShareOpen
-                          ? "../../../public/images/Antwork/main/drive/위화살표.png"
-                          : "../../../public/images/Antwork/main/drive/아래화살표.png"
+                          ? "images/Antwork/main/drive/위화살표.png"
+                          : "images/Antwork/main/drive/아래화살표.png"
                       }
                       alt="화살표 아이콘"
                       className="w-4 h-4"
@@ -518,7 +518,7 @@ export default function MainSection() {
 
                   <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
                     <img
-                      src="../../../public/images/Antwork/main/drive/공유드라이브.png"
+                      src="images/Antwork/main/drive/공유드라이브.png"
                       alt="Description"
                       className="w-full h-full object-cover"
                     />
@@ -536,7 +536,7 @@ export default function MainSection() {
                     <a href="#">
                       <div className="flex items-start items-center mb-2 space-x-4 text-center">
                         <img
-                          src="../../../public/images/Antwork/main/drive/폴더.png"
+                          src="images/Antwork/main/drive/폴더.png"
                           alt="#"
                           className="w-7 h-7"
                         />
@@ -548,7 +548,7 @@ export default function MainSection() {
                     <a href="#">
                       <div className="flex items-start items-center mb-2 space-x-4">
                         <img
-                          src="../../../public/images/Antwork/main/drive/폴더.png"
+                          src="images/Antwork/main/drive/폴더.png"
                           alt="#"
                           className="w-7 h-7"
                         />

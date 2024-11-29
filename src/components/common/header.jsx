@@ -14,7 +14,7 @@ export default function Header({ onToggleAside }) {
             }}
           >
             <img
-              src="../../../public/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+              src="images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="menu"
             />
           </a>
@@ -23,17 +23,17 @@ export default function Header({ onToggleAside }) {
         <div className="header rightside">
           <a href="#">
             <img
-              src="../../../public/images/ico/notifications_24dp_5F6368_FILL0_wght400_GRAD0_opsz24 copy.svg"
+              src="images/ico/notifications_24dp_5F6368_FILL0_wght400_GRAD0_opsz24 copy.svg"
               alt="alarm"
             />
           </a>
           <a href="#">
-            <img src="../../../public/images/ico/nav_chat.svg" alt="message" />
+            <img src="images/ico/nav_chat.svg" alt="message" />
           </a>
 
           <div className="user-info headeruser">
             <img
-              src="../../../public/images/ico/account_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+              src="images/ico/account_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="profile"
               className="avatar"
             />
@@ -43,7 +43,7 @@ export default function Header({ onToggleAside }) {
             </div>
             <a href="#">
               <img
-                src="../../../public/images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
+                src="images/ico/keyboard_arrow_down_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.svg"
                 alt="message"
               />
             </a>
@@ -51,7 +51,7 @@ export default function Header({ onToggleAside }) {
 
           <a href="#">
             <img
-              src="../../../public/images/ico/logout_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+              src="images/ico/logout_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
               alt="logout"
             />
           </a>

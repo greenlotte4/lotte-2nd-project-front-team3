@@ -67,16 +67,8 @@ export default function TermsPage() {
     <div className="member_body">
       <div className="terms-container">
         <div id="main">
-          <img
-            id="womanImg"
-            src="../../../public/images/Antwork/member/woman.png"
-            alt="여자"
-          />
-          <img
-            id="manImg"
-            src="../../../public/images/Antwork/member/man.png"
-            alt="남자"
-          />
+          <img id="womanImg" src="images/Antwork/member/woman.png" alt="여자" />
+          <img id="manImg" src="images/Antwork/member/man.png" alt="남자" />
           <div className="info-box">
             <div className="header">
               <h1>

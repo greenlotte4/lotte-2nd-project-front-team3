@@ -7,7 +7,7 @@ export default function RegisterPage() {
         <div id="register_div">
           <img
             id="register_img"
-            src="../../../public/images/Antwork/member/register.png"
+            src="images/Antwork/member/register.png"
             alt="#"
           />
           <form className="register_form">
