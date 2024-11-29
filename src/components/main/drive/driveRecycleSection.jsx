@@ -79,13 +79,13 @@ export default function DriveRecylceSection() {
 
   return (
     <>
-      <div className="bg-white p-[40px] rounded-[8px] border-none">
-        <article className="dirve_header">
+      <div className="bg-white p-[40px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
+        <article className="dirve_header flex-shrink-0">
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
               <h3>휴지통</h3>
             </div>
-            <div className="border w-[250px] h-[30px] rounded-[4px]">
+            <div className="border w-[250px] h-[30px] rounded-[4px] flex items-center">
               <input
                 className="bg-[#D9E8FF] w-[190px] h-[30px] rounded-[4px] pl-[3px]"
                 type="text"
@@ -106,9 +106,9 @@ export default function DriveRecylceSection() {
           </div>
         </article>
 
-        <article className="drive_update">
-          <div className="flex justify-between my-[20px]">
-            <div className="drive_active">
+        <article className="drive_update flex-shrink-0 my-[20px]">
+          <div className="flex justify-between">
+            <div className="drive_active flex space-x-2">
               <button className="w-[90px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
                 휴지통 비우기
               </button>
@@ -141,7 +141,7 @@ export default function DriveRecylceSection() {
             </div>
           </div>
         </article>
-        <article className="drive_main">
+        <article className="drive_main flex-grow overflow-y-auto">
           <div>
             {isListView ? (
               // 리스트 뷰
@@ -151,6 +151,7 @@ export default function DriveRecylceSection() {
                     <th className="w-[3%]">
                       <input type="checkbox" />
                     </th>
+                    <th className="w-[3%]">종류</th>
                     <th className="w-[30%]">이름</th>
                     <th className="w-[10%]">크기</th>
                     <th className="w-[10%]">사용자</th>
@@ -173,6 +174,14 @@ export default function DriveRecylceSection() {
                           onChange={() => toggleFolderCheck(index)}
                         />
                       </td>
+                      <td>
+                        <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden"></i>
+                        <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden"></i>
+                        <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden"></i>
+                        <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden"></i>
+                        <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
+                        <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden"></i>
+                      </td>
                       <td>폴더 {index + 1}</td>
                       <td>3MB</td>
                       <td>챱챱김</td>
@@ -183,7 +192,7 @@ export default function DriveRecylceSection() {
               </table>
             ) : (
               // 앨범 뷰
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-10 gap-8">
                 {folderStates.map((folder, index) => (
                   <div
                     key={index}
@@ -210,11 +219,12 @@ export default function DriveRecylceSection() {
                         <i className="fa-solid fa-check"></i>
                       )}
                     </div>
-                    <img
-                      src="/images/folder_icon.png"
-                      alt={`폴더${index + 1}`}
-                      className="w-[50px] h-[50px] mx-auto"
-                    />
+                    <i className="fa-solid fa-folder text-[43px] text-[#FFC558] mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden mx-20 my-[25px]"></i>
                     <div className="text-center mt-2">폴더 {index + 1}</div>
                   </div>
                 ))}
@@ -239,7 +249,13 @@ export default function DriveRecylceSection() {
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
               <i className="fa-solid fa-folder-plus mr-2"></i> 복원
             </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">
+            <li
+              onClick={() => {
+                setMenuVisible(false);
+                openModal("delete");
+              }}
+              className="py-1 px-3 hover:bg-gray-100 cursor-pointer"
+            >
               <i className="fa-solid fa-trash mr-2"></i> 삭제
             </li>
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer">

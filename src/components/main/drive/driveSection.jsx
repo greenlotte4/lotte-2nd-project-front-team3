@@ -14,6 +14,109 @@ export default function DriveSection() {
     { isChecked: false, isStarred: false }, // 폴더1 상태
     { isChecked: false, isStarred: false }, // 폴더2 상태
     { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
+    { isChecked: false, isStarred: false }, // 폴더3 상태
   ]);
 
   const menuRef = useRef(null);
@@ -80,13 +183,13 @@ export default function DriveSection() {
 
   return (
     <>
-      <div className="bg-white p-[40px] rounded-[8px] border-none">
-        <article className="dirve_header">
+      <div className="bg-white p-[40px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
+        <article className="drive_header flex-shrink-0">
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
               <h3>MY DRIVE</h3>
             </div>
-            <div className="border w-[250px] h-[30px] rounded-[4px]">
+            <div className="border w-[250px] h-[30px] rounded-[4px] flex items-center">
               <input
                 className="bg-[#D9E8FF] w-[190px] h-[30px] rounded-[4px] pl-[3px]"
                 type="text"
@@ -107,28 +210,28 @@ export default function DriveSection() {
           </div>
         </article>
 
-        <article className="drive_update">
-          <div className="flex justify-between my-[20px]">
-            <div className="drive_active">
-              <button className="w-[70px] h-[30px] border rounded-[4px] mx-[5px] bg-[#4078ff] text-white">
+        <article className="drive_update flex-shrink-0 my-[20px]">
+          <div className="flex justify-between">
+            <div className="drive_active flex space-x-2">
+              <button className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white">
                 업로드
               </button>
               <button
                 onClick={() => openModal("insert")}
-                className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]"
+                className="w-[70px] h-[30px] border rounded-[4px]"
               >
                 새폴더
               </button>
-              <button className="w-[70px] h-[30px] border rounded-[4px] mx-[2px]">
+              <button className="w-[70px] h-[30px] border rounded-[4px]">
                 파일유형
               </button>
             </div>
-            <div>
+            <div className="flex space-x-4">
               <button className="drive_List" onClick={() => toggleView("list")}>
                 <img
                   src="/images/Antwork/main/drive/list.png"
                   alt=""
-                  className="w-[25px] h-[25px] mx-[10px]"
+                  className="w-[25px] h-[25px]"
                 />
               </button>
               <button
@@ -138,20 +241,20 @@ export default function DriveSection() {
                 <img
                   src="/images/Antwork/main/drive/grid.png"
                   alt=""
-                  className="w-[25px] h-[25px] mx-[10px]"
+                  className="w-[25px] h-[25px]"
                 />
               </button>
               <button className="drive_info">
                 <img
                   src="/images/Antwork/main/drive/info.png"
                   alt=""
-                  className="w-[25px] h-[25px] mx-[10px]"
+                  className="w-[25px] h-[25px]"
                 />
               </button>
             </div>
           </div>
         </article>
-        <article className="drive_main">
+        <article className="drive_main flex-grow overflow-y-auto">
           <div>
             {isListView ? (
               // 리스트 뷰
@@ -161,8 +264,9 @@ export default function DriveSection() {
                     <th className="w-[3%]">
                       <input type="checkbox" />
                     </th>
-                    <th className="w-[3%]">⭐</th>
-                    <th className="w-[30%]">이름</th>
+                    <th className="w-[2%]">⭐</th>
+                    <th className="w-[3%]">종류</th>
+                    <th className="w-[20%]">이름</th>
                     <th className="w-[10%]">크기</th>
                     <th className="w-[10%]">소유자</th>
                     <th className="w-[10%]">날짜</th>
@@ -195,6 +299,14 @@ export default function DriveSection() {
                           ></i>
                         </button>
                       </td>
+                      <td>
+                        <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden"></i>
+                        <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden"></i>
+                        <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden"></i>
+                        <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden"></i>
+                        <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
+                        <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden"></i>
+                      </td>
                       <td>폴더 {index + 1}</td>
                       <td>3MB</td>
                       <td>사용자</td>
@@ -205,7 +317,7 @@ export default function DriveSection() {
               </table>
             ) : (
               // 앨범 뷰
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-10 gap-8">
                 {folderStates.map((folder, index) => (
                   <div
                     key={index}
@@ -232,11 +344,12 @@ export default function DriveSection() {
                         <i className="fa-solid fa-check"></i>
                       )}
                     </div>
-                    <img
-                      src="/images/folder_icon.png"
-                      alt={`폴더${index + 1}`}
-                      className="w-[50px] h-[50px] mx-auto"
-                    />
+                    <i className="fa-solid fa-folder text-[43px] text-[#FFC558] mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden mx-20 my-[25px]"></i>
+                    <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden mx-20 my-[25px]"></i>
                     <div className="text-center mt-2">폴더 {index + 1}</div>
                     <button
                       className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
@@ -287,7 +400,14 @@ export default function DriveSection() {
             <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
               <i className="fa-solid fa-star mr-2 my-2"></i> 즐겨찾기 추가
             </li>
-            <li className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t">
+            <li
+              onClick={() => {
+                console.log("asdf");
+                setMenuVisible(false);
+                openModal("recycle");
+              }}
+              className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
+            >
               <i className="fa-solid fa-trash mr-2 my-2"></i> 삭제
             </li>
             <li

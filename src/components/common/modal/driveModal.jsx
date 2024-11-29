@@ -263,13 +263,116 @@ export default function DriveModal() {
           </div>
         );
       case "delete":
-        return <></>;
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-[300px]">
+              <div className="flex justify-between items-center px-6 pt-4 border-gray-200">
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900 ml-[auto]"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex flex-col items-center justify-center px-6 py-4 text-center">
+                <i className="fa-solid fa-circle-info text-[#5C9CE6] text-[20px] pb-[30px]"></i>
+                <h3>'ㅁㄴㅇㄹ' 항목을 삭제하시겠습니까?</h3>
+                <p>휴지통에서 삭제하신 항목은 복구할 수 없습니다.</p>
+              </div>
+
+              <div className="flex justify-center items-center gap-4 px-6 pt-4 pb-8">
+                <button
+                  onClick={handleNameSubmit}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  확인
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                >
+                  취소
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      case "recycle":
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-[300px]">
+              <div className="flex justify-between items-center px-6 pt-4 border-gray-200">
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900 ml-[auto]"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex flex-col items-center justify-center px-6 py-4 text-center">
+                <i className="fa-solid fa-circle-info text-[#5C9CE6] text-[20px] pb-[30px]"></i>
+                <h3>'1개' 항목을 삭제하시겠습니까?</h3>
+                <p>공유 중이거나 즐겨 찾는 파일도 함께 삭제되며,</p>
+                <p>삭제된 항목은 휴지통으로 이동합니다.</p>
+              </div>
+
+              <div className="flex justify-center items-center gap-4 px-6 pt-4 pb-8">
+                <button
+                  onClick={handleNameSubmit}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  확인
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                >
+                  취소
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       case "out":
-        return <></>;
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-[300px]">
+              <div className="flex justify-between items-center px-6 pt-4 border-gray-200">
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900 ml-[auto]"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex flex-col items-center justify-center px-6 py-4 text-center">
+                <i className="fa-solid fa-circle-info text-[#5C9CE6] text-[20px] pb-[30px]"></i>
+                <h3>공유받은 항목에서 제거됩니다.</h3>
+                <p>멤버 초대를 받은 폴더에서 나가며</p>
+                <p>링크 공유를 받은 항목을 목록에서 제거합니다.</p>
+              </div>
+
+              <div className="flex justify-center items-center gap-4 px-6 pt-4 pb-8">
+                <button
+                  onClick={handleNameSubmit}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  확인
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                >
+                  취소
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       case "c_share":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg w-[500px]">
+            <div className="bg-white rounded-lg shadow-lg w-[500px] p-[10px]">
               {/* 상단 헤더 */}
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                 <i className="fa-solid fa-folder text-[#5C9CE6] text-xl"></i>
@@ -285,7 +388,7 @@ export default function DriveModal() {
               {/* 본문 */}
               <div className="px-6 pt-4 pb-6">
                 {/* 이름 */}
-                <div className="mb-4 flex">
+                <div className="mb-8 flex">
                   <label className="text-sm font-medium mr-4 w-24">이름</label>
                   <div className="flex-1">
                     <input
@@ -298,7 +401,7 @@ export default function DriveModal() {
                 </div>
 
                 {/* 설명 */}
-                <div className="mb-4 flex">
+                <div className="mb-8 flex">
                   <label className="block text-sm font-medium mr-4 w-24">
                     설명
                   </label>
@@ -313,7 +416,7 @@ export default function DriveModal() {
                 </div>
 
                 {/* 폴더 마스터 */}
-                <div className="mb-4 flex">
+                <div className="mb-8 flex">
                   <label className="block text-sm font-medium mr-4 w-24">
                     폴더 마스터
                   </label>
@@ -349,7 +452,7 @@ export default function DriveModal() {
                 </div>
 
                 {/* 공유 범위 */}
-                <div className="mb-4 flex">
+                <div className="mb-8 flex">
                   <label className="block text-sm font-medium mr-4 w-24">
                     공유 범위
                   </label>
@@ -403,7 +506,7 @@ export default function DriveModal() {
                 </div>
 
                 {/* 링크 공유 */}
-                <div className="mb-6 flex">
+                <div className="mb-8 flex">
                   <label className="block text-sm font-medium mr-4 w-24">
                     링크 공유
                   </label>
@@ -417,7 +520,10 @@ export default function DriveModal() {
 
                 {/* 하단 버튼 */}
                 <div className="flex justify-end space-x-2">
-                  <button className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-400">
+                  <button
+                    onClick={closeModal}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-400"
+                  >
                     취소
                   </button>
                   <button className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600">

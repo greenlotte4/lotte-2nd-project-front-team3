@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
+import LandingMainPage from "../pages/Landing/LandingMainPage";
+
 import MainPage from "./../pages/Main/MainPage";
 
 import LoginPage from "../pages/Member/LoginPage";
@@ -50,6 +52,7 @@ const router = createBrowserRouter([
   { path: "/function", element: <LandingFunctionPage /> }, // 2024/11/29(금) 강은경 - LandingFunctionPage 추가
   { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
   { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
