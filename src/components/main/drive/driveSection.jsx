@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
+import { MyDriveFoldersView } from "../../../api/driveAPI";
 
 export default function DriveSection() {
   // 모달 상태 관리를 위한 useState 추가
@@ -10,114 +11,28 @@ export default function DriveSection() {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
   const [isListView, setIsListView] = useState(true); // 리스트와 앨범 뷰 전환 상태
 
-  const [folderStates, setFolderStates] = useState([
-    { isChecked: false, isStarred: false }, // 폴더1 상태
-    { isChecked: false, isStarred: false }, // 폴더2 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-    { isChecked: false, isStarred: false }, // 폴더3 상태
-  ]);
+  const [folderStates, setFolderStates] = useState([]);
+
+  // 폴더 데이터를 받아오는 비동기 함수
+  const MyDriveView = async () => {
+    try {
+      const response = await MyDriveFoldersView(); // 필요한 데이터 전송
+      console.log("Response data:", response.data);
+
+      // 받아온 데이터를 기반으로 folderStates 배열 업데이트
+      const updatedStates = response.data.map((folder) => ({
+        isChecked: folder.isChecked || false, // 기본값은 false
+        isStarred: folder.isStarred || false, // 기본값은 false
+      }));
+      setFolderStates(updatedStates); // 상태 배열 업데이트
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+
+  useEffect(() => {
+    MyDriveView(); // 컴포넌트 마운트 시 폴더 데이터 가져오기
+  }, []); // `data`가 변경될 때마다 실행
 
   const menuRef = useRef(null);
 
