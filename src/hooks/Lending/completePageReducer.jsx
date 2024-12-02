@@ -10,6 +10,12 @@ const initialState = {
   emailSent: false,
   emailVerified: false,
   companyName: "",
+  companyDescription: "",
+  foundationDate: "",
+  startTime: "",
+  endTime: "",
+  address: "",
+  businessNumber: "",
   logo: null,
   logoPreview: null,
   loading: false,
@@ -36,14 +42,25 @@ function reducer(state, action) {
     case "SET_EMAIL_SENT":
       return { ...state, emailSent: action.payload };
     case "SET_EMAIL_VERIFIED":
-      console.log(`set email : ${action.payload}`);
       return { ...state, emailVerified: action.payload };
+    case "SET_COMPANY_NAME":
+      return { ...state, companyName: action.payload };
+    case "SET_COMPANY_DESCRIPTION":
+      return { ...state, companyDescription: action.payload };
+    case "SET_FOUNDATION_DATE":
+      return { ...state, foundationDate: action.payload };
+    case "SET_START_TIME":
+      return { ...state, startTime: action.payload };
+    case "SET_END_TIME":
+      return { ...state, endTime: action.payload };
+    case "SET_ADDRESS":
+      return { ...state, address: action.payload };
+    case "SET_BUSINESS_NUMBER":
+      return { ...state, businessNumber: action.payload };
     case "SET_LOGO":
       return { ...state, logo: action.payload };
     case "SET_LOGO_PREVIEW":
       return { ...state, logoPreview: action.payload };
-    case "SET_COMPANY_NAME":
-      return { ...state, companyName: action.payload };
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     case "SET_ERROR":

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   USER_INVITE_SEND_EMAIL_URI,
+  USER_REGISTER_URI,
   USER_SEND_EMAIL_URI,
   USER_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
@@ -67,6 +68,30 @@ export const verifyUserInviteEmail = async (email, companyName) => {
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+// 멤버 추가
+/**
+ * 사용자 추가 API
+ * @param {Object} userData - 사용자 정보 객체
+ * @returns {Promise} - API 호출 결과
+ */
+export const addUser = async (userData) => {
+  try {
+    const response = await axios.post(USER_REGISTER_URI, userData);
+
+    if (response.data.success) {
+      console.log("User added successfully:", response.data);
+      return response.data;
+    } else {
+      throw new Error(
+        response.data.message || "사용자 정보 저장에 실패했습니다."
+      );
+    }
+  } catch (error) {
+    console.error("Error adding user:", error);
     throw error; // 예외를 호출한 쪽으로 전달
   }
 };

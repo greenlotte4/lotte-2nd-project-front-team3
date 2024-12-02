@@ -200,6 +200,23 @@ export default function ProjectViewSection() {
                                   }
                                 >
                                   <h3 className="text-xl mb-2">{item.title}</h3>
+                                  <div className="absolute top-2 right-2 flex -space-x-4">
+                                    <img
+                                      src="/images/Antwork/project/project_profile.png"
+                                      alt="Profile"
+                                      className="w-8 h-8 rounded-full border border-gray-300 z-10"
+                                    />
+                                    <img
+                                      src="/images/Antwork/project/project_profile.png"
+                                      alt="Profile"
+                                      className="w-8 h-8 rounded-full border border-gray-300 z-20"
+                                    />
+                                    <img
+                                      src="/images/Antwork/project/project_profile.png"
+                                      alt="Profile"
+                                      className="w-8 h-8 rounded-full border border-gray-300 z-30"
+                                    />
+                                  </div>
                                   <div className="flex gap-1">
                                     <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700">
                                       {item.priority}

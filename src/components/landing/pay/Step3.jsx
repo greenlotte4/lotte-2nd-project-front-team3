@@ -1,75 +1,15 @@
-import { useState } from "react";
-import { verifyUserCheckEmail } from "../../../api/userAPI";
-
+import { completeSetup } from "./../../../hooks/Lending/completeSetup";
 const Step3 = ({ state, dispatch, handleNextStep }) => {
-  const [invitedEmails, setInvitedEmails] = useState([]);
-  const [emailInput, setEmailInput] = useState("");
-
-  // 로고 업로드 처리 함수
-  const handleLogoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // 파일 형식 확인
-      if (!file.type.startsWith("image/")) {
-        dispatch({
-          type: "SET_ERROR",
-          payload: "이미지 파일만 업로드 가능합니다.",
-        });
-        return;
-      }
-
-      const previewUrl = URL.createObjectURL(file);
-      dispatch({ type: "SET_LOGO", payload: file });
-      dispatch({ type: "SET_LOGO_PREVIEW", payload: previewUrl });
-      dispatch({ type: "SET_ERROR", payload: null }); // 오류 초기화
-    }
-  };
-
-  const handleInvite = async () => {
-    if (emailInput.trim() === "" || !emailInput.includes("@")) {
-      dispatch({
-        type: "SET_ERROR",
-        payload: "유효한 이메일을 입력하세요.",
-      });
-      return;
-    }
-
-    try {
-      // 초대 요청 및 이메일 검증
-      const response = await verifyUserCheckEmail(
-        emailInput,
-        state.companyName
-      );
-
-      if (response.data.success) {
-        // 초대 성공 시 이메일 목록 업데이트
-        setInvitedEmails([...invitedEmails, emailInput]);
-        setEmailInput("");
-        dispatch({ type: "SET_ERROR", payload: null }); // 오류 초기화
-      } else {
-        dispatch({
-          type: "SET_ERROR",
-          payload: response.data.message || "초대에 실패했습니다.",
-        });
-      }
-    } catch (error) {
-      dispatch({
-        type: "SET_ERROR",
-        payload: "초대 중 오류가 발생했습니다.",
-      });
-    }
-  };
-
-  const handleEmailDelete = (email) => {
-    setInvitedEmails(invitedEmails.filter((item) => item !== email));
-  };
-
   const isButtonDisabled =
-    !state.companyName || invitedEmails.length === 0 || !state.logoPreview;
+    !state.companyName || !state.logoPreview || !state.foundationDate;
+
+  const handleComplete = async () => {
+    await completeSetup(state, dispatch);
+  };
 
   return (
     <div className="step-container flex flex-col items-center bg-white p-6 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">추가 설정</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">회사 설정</h1>
       <div className="w-full max-w-sm flex flex-col space-y-4">
         {/* 회사 이름 입력 */}
         <label className="text-gray-700 font-medium">회사 이름</label>
@@ -87,7 +27,14 @@ const Step3 = ({ state, dispatch, handleNextStep }) => {
         <input
           type="file"
           accept="image/*"
-          onChange={handleLogoUpload}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith("image/")) {
+              const previewUrl = URL.createObjectURL(file);
+              dispatch({ type: "SET_LOGO", payload: file });
+              dispatch({ type: "SET_LOGO_PREVIEW", payload: previewUrl });
+            }
+          }}
           className="px-4 py-2 border rounded-lg focus:outline-none"
         />
         {state.logoPreview && (
@@ -98,50 +45,94 @@ const Step3 = ({ state, dispatch, handleNextStep }) => {
           />
         )}
 
-        {/* 사용자 초대 */}
-        <label className="text-gray-700 font-medium">사용자 초대</label>
+        {/* 회사 소개 */}
+        <label className="text-gray-700 font-medium">회사 소개</label>
+        <textarea
+          value={state.companyDescription}
+          onChange={(e) =>
+            dispatch({
+              type: "SET_COMPANY_DESCRIPTION",
+              payload: e.target.value,
+            })
+          }
+          placeholder="회사에 대한 간단한 설명을 입력하세요."
+          className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+        />
+
+        {/* 설립일 */}
+        <label className="text-gray-700 font-medium">설립일</label>
+        <input
+          type="date"
+          value={state.foundationDate}
+          onChange={(e) =>
+            dispatch({ type: "SET_FOUNDATION_DATE", payload: e.target.value })
+          }
+          className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+        />
+
+        {/* 대표 이메일 */}
+        <label className="text-gray-700 font-medium">대표 이메일</label>
+        <input
+          type="email"
+          value={state.adminEmail}
+          onChange={(e) =>
+            dispatch({ type: "SET_ADMIN_EMAIL", payload: e.target.value })
+          }
+          placeholder="example@company.com"
+          className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+        />
+
+        {/* 운영 시간 */}
+        <label className="text-gray-700 font-medium">운영 시간</label>
         <div className="flex space-x-2">
           <input
-            type="email"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            placeholder="초대할 이메일 입력"
-            className="flex-1 px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+            type="time"
+            value={state.startTime}
+            onChange={(e) =>
+              dispatch({ type: "SET_START_TIME", payload: e.target.value })
+            }
+            className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
           />
-          <button
-            onClick={handleInvite}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          >
-            추가
-          </button>
+          <span>~</span>
+          <input
+            type="time"
+            value={state.endTime}
+            onChange={(e) =>
+              dispatch({ type: "SET_END_TIME", payload: e.target.value })
+            }
+            className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+          />
         </div>
-        <ul className="mt-2 space-y-2">
-          {invitedEmails.map((email, index) => (
-            <li
-              key={index}
-              className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
-            >
-              <span>{email}</span>
-              <button
-                onClick={() => handleEmailDelete(email)}
-                className="text-red-500 hover:underline"
-              >
-                삭제
-              </button>
-            </li>
-          ))}
-        </ul>
 
-        {/* 오류 메시지 */}
-        {state.error && (
-          <p className="text-red-500 text-center mt-4">{state.error}</p>
-        )}
+        {/* 회사 주소 */}
+        <label className="text-gray-700 font-medium">회사 주소</label>
+        <input
+          type="text"
+          value={state.address}
+          onChange={(e) =>
+            dispatch({ type: "SET_ADDRESS", payload: e.target.value })
+          }
+          placeholder="주소를 입력하세요."
+          className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+        />
+
+        {/* 사업자 등록 번호 */}
+        <label className="text-gray-700 font-medium">사업자 등록 번호</label>
+        <input
+          type="text"
+          value={state.businessNumber}
+          onChange={(e) =>
+            dispatch({ type: "SET_BUSINESS_NUMBER", payload: e.target.value })
+          }
+          placeholder="사업자 등록 번호를 입력하세요."
+          className="px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+        />
 
         {/* 설정 완료 버튼 */}
         <button
           onClick={(e) => {
             e.preventDefault();
-            handleNextStep();
+            handleComplete(); // 설정 완료 호출
           }}
           disabled={isButtonDisabled}
           className={`w-full px-6 py-3 text-white rounded-lg transition ${

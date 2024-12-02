@@ -110,8 +110,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   <li key={calendar.id}>
                     <div className="flex items-center mb-2 space-x-4">
                       <img
-                        src="/images/Antwork/calendar/캘린더.svg"
-                        alt="캘린더"
+                        src="../../../public/images/Antwork/calendar/캘린더.svg"
+                        alt="#"
                         className="w-7 h-7"
                       />
 
@@ -153,14 +153,17 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                         </button>
                       )}
                     </div>
-                  </li>
-                ))}
-
-                {/* 새 캘린더 추가 버튼 */}
                 <li>
-                  <button onClick={addCalendar} className="text-blue-500">
-                    + 캘린더 추가
-                  </button>
+                  <a href="#">
+                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
+                      <img
+                        src="../../../public/images/Antwork/calendar/캘린더.svg"
+                        alt="#"
+                        className="w-7 h-7"
+                      />
+                      <span>팀 캘린더</span>
+                    </div>
+                  </a>
                 </li>
               </ul>
             </div>

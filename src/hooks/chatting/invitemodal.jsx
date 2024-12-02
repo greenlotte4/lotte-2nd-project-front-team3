@@ -1,5 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 
+{
+  /*
+    날짜 : 2024/11/26(화)
+    생성자 : 최준혁
+    내용 : useInviteModal 채팅 초대 모달 상태관리를 위한 훅 
+  */
+}
+
 export function useInviteModal() {
   const [availableUsers, setAvailableUsers] = useState([
     { id: 1, name: "정지현", avatar: "https://via.placeholder.com/40" },
