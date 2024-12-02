@@ -12,7 +12,15 @@ export default function RegisterPage() {
           />
           <form className="register_form">
             <div className="register_one">
-              <img className="register_logoimg" alt="#" />
+              <h1 className="logo">
+                <Link to="/">
+                  <img
+                    src="/images/Landing/antwork_logo.png"
+                    alt="antwork 로고"
+                    className="ml-[7.5rem] w-[146px] h-[47px]"
+                  />
+                </Link>
+              </h1>
               <span className="register_title">Register</span>
               <span className="register_logo">회원가입 페이지입니다.</span>
 

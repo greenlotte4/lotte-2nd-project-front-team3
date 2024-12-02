@@ -1,77 +1,185 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 
-export default function ProjectModal() {
-  const { isOpen, type, closeModal, taskToEdit } = useModalStore(); // taskToEdit을 받아서 수정 시 사용할 작업 정보
+export default function ProjectModal({
+  onAddState,
+  onAddItem,
+  onEditItem,
+  currentStateId,
+  currentTask,
+  setCurrentTask,
+}) {
+  const { isOpen, type, closeModal } = useModalStore();
 
+  // State 관련 상태
+  const [stateTitle, setStateTitle] = useState("");
+  const [stateDescription, setStateDescription] = useState("");
+  const [stateColor, setStateColor] = useState("#00FF00"); // 기본 색상
+
+  // Task 관련 상태
   const [taskTitle, setTaskTitle] = useState("");
   const [taskContent, setTaskContent] = useState("");
   const [priority, setPriority] = useState("P2");
-  const [status, setStatus] = useState("Todo");
-  const [assignee, setAssignee] = useState("");
+  const [size, setSize] = useState("M");
 
+  // 프로젝트 이름 상태 추가
   const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
-  const [projectManager, setProjectManager] = useState("");
 
-  // 팀원 목록 (예시)
-  const teamMembers = [
-    { id: 1, name: "김철수" },
-    { id: 2, name: "이영희" },
-    { id: 3, name: "박민수" },
-    { id: 4, name: "최지원" },
-  ];
+  // 협업자 관련 상태
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedCollaborators, setSelectedCollaborators] = useState([]);
 
-  const [filteredMembers, setFilteredMembers] = useState(teamMembers);
+  useEffect(() => {
+    if (currentTask) {
+      setTaskTitle(currentTask.title);
+      setTaskContent(currentTask.content);
+      setPriority(currentTask.priority);
+      setSize(currentTask.size);
 
-  const handleSearch = (e) => {
-    const query = e.target.value;
-    const filtered = teamMembers.filter((member) =>
-      member.name.includes(query)
-    );
-    setFilteredMembers(filtered);
-  };
+      // 선택된 담당자 설정
+      if (currentTask.assignees) {
+        setSelectedCollaborators(currentTask.assignees); // 담당자 설정
+      }
+    } else {
+      setTaskTitle("");
+      setTaskContent("");
+      setPriority("P2");
+      setSize("M");
 
-  const handleSubmit = (e) => {
+      // 담당자 상태 초기화
+      setSearchQuery("");
+      setSearchResults([]);
+      setSelectedCollaborators([]);
+    }
+  }, [currentTask]);
+
+  const handleSaveTask = (e) => {
     e.preventDefault();
-    console.log({
+
+    const taskData = {
+      id: currentTask?.id || Date.now(), // 수정 시 기존 ID 유지
       title: taskTitle,
       content: taskContent,
       priority,
-      status,
-      assignee,
-    });
-    closeModal();
-  };
+      size,
+      assignees: selectedCollaborators, // 선택된 담당자 추가
+    };
 
-  const handleProjectSubmit = (e) => {
-    e.preventDefault();
-    console.log({
-      name: projectName,
-      description: projectDescription,
-      manager: projectManager,
-    });
-    closeModal();
-  };
+    console.log("Task Data to Save:", taskData);
 
-  // 작업 수정 시 초기화
-  useEffect(() => {
-    if (type === "task-edit" && taskToEdit) {
-      setTaskTitle(taskToEdit.title);
-      setTaskContent(taskToEdit.content);
-      setPriority(taskToEdit.priority);
-      setStatus(taskToEdit.status);
-      setAssignee(taskToEdit.assignee);
+    if (type === "task-create") {
+      onAddItem(currentStateId, taskData);
+    } else if (type === "task-edit") {
+      console.log("Calling onEditItem with:", currentStateId, taskData);
+      onEditItem(currentStateId, taskData);
     }
-  }, [type, taskToEdit]);
+
+    closeModal();
+    setTimeout(() => {
+      setCurrentTask(null);
+    }, 0); // 상태 업데이트 후 초기화
+  };
+
+  const handleAddState = (e) => {
+    e.preventDefault();
+    onAddState({
+      title: stateTitle,
+      description: stateDescription,
+      color: stateColor,
+    });
+    setStateTitle("");
+    setStateDescription("");
+    setStateColor("#00FF00"); // 초기화
+    closeModal();
+  };
+
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    console.log("Current State ID:", currentStateId); // 디버깅 로그
+    console.log("Adding Task:", { taskTitle, taskContent, priority, size }); // Task 내용 확인
+
+    // currentStateId와 task 데이터를 확인 후 추가
+    if (!onAddItem || !currentStateId) {
+      console.error("onAddItem or currentStateId is missing!");
+      return;
+    }
+
+    // New item 생성
+    const newItem = {
+      title: taskTitle,
+      content: taskContent,
+      priority,
+      size,
+    };
+
+    console.log("New Item to Add:", newItem);
+
+    // onAddItem 호출
+    onAddItem(newItem);
+
+    // 상태 초기화
+    setTaskTitle("");
+    setTaskContent("");
+    setPriority("P2");
+    setSize("M");
+    closeModal();
+  };
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    // 예제 사용자 데이터 (검색 API 대신)
+    const exampleUsers = [
+      { username: "ekkang1" },
+      { username: "ekkang2" },
+      { username: "ekkang3" },
+      { username: "ekkang4" },
+      { username: "ekkang5" },
+      { username: "ekkang6" },
+    ];
+
+    const filteredUsers = exampleUsers.filter((user) =>
+      user.username.toLowerCase().includes(query.toLowerCase())
+    );
+    setSearchResults(filteredUsers);
+  };
+
+  const handleAddCollaborator = (user) => {
+    if (
+      !selectedCollaborators.find(
+        (collaborator) => collaborator.username === user.username
+      )
+    ) {
+      setSelectedCollaborators((prev) => [...prev, { ...user, role: "Write" }]);
+    }
+  };
+
+  const handleRemoveCollaborator = (username) => {
+    setSelectedCollaborators((prev) =>
+      prev.filter((collaborator) => collaborator.username !== username)
+    );
+  };
+
+  const handleRoleChange = (username, newRole) => {
+    setSelectedCollaborators((prev) =>
+      prev.map((collaborator) =>
+        collaborator.username === username
+          ? { ...collaborator, role: newRole }
+          : collaborator
+      )
+    );
+  };
 
   if (!isOpen) return null;
+
   const renderContent = () => {
     switch (type) {
       case "task-create":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] p-6">
+            <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">새 작업 추가</h2>
                 <button
@@ -82,7 +190,7 @@ export default function ProjectModal() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleAddTask} className="space-y-4">
                 <div>
                   <label className="block mb-2 font-medium">작업명</label>
                   <input
@@ -113,66 +221,85 @@ export default function ProjectModal() {
                     onChange={(e) => setPriority(e.target.value)}
                     className="w-full border rounded p-2"
                   >
-                    <option value="P0">P0 - 최우선 순위</option>
-                    <option value="P1">P1 - 높은 순위</option>
-                    <option value="P2">P2 - 일반 순위</option>
+                    <option value="P0">P0 - 최우선</option>
+                    <option value="P1">P1 - 높음</option>
+                    <option value="P2">P2 - 보통</option>
                   </select>
                 </div>
-
                 <div>
-                  <label className="block mb-2 font-medium">작업 상태</label>
+                  <label className="block mb-2 font-medium">크기</label>
                   <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    value={size}
+                    onChange={(e) => setSize(e.target.value)}
                     className="w-full border rounded p-2"
                   >
-                    <option value="Todo">Todo</option>
-                    <option value="Ready">Ready</option>
-                    <option value="Doing">Doing</option>
-                    <option value="Done">Done</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
                   </select>
                 </div>
-
+                {/* 담당자 검색 및 선택 */}
                 <div>
-                  <label className="block mb-2 font-medium">작업 담당자</label>
-                  <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="담당자 검색"
-                      onChange={handleSearch}
-                      className="w-full border rounded p-2 pl-10 mb-2"
-                    />
-                    <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-
-                  <div className="border rounded max-h-40 overflow-y-auto">
-                    {filteredMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        onClick={() => setAssignee(member.name)}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        {member.name}
-                      </div>
-                    ))}
-                  </div>
-                  {assignee && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      선택된 담당자: {assignee}
+                  <label className="block mb-2 font-medium">담당자 검색</label>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="w-full border rounded p-2"
+                    placeholder="담당자 이름을 입력하세요"
+                  />
+                  {searchQuery && (
+                    <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
+                      {searchResults.length > 0 ? (
+                        searchResults.map((user, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center p-2"
+                          >
+                            <span>{user.username}</span>
+                            <button
+                              type="button"
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() => handleAddCollaborator(user)}
+                            >
+                              선택
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500">검색 결과가 없습니다.</p>
+                      )}
                     </div>
                   )}
+                </div>
+
+                {/* 선택된 담당자 목록 */}
+                <div>
+                  <h3 className="font-medium mb-3">선택된 담당자</h3>
+                  <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
+                    {selectedCollaborators.length > 0 ? (
+                      selectedCollaborators.map((collaborator, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-2"
+                        >
+                          <span>{collaborator.username}</span>
+                          <button
+                            type="button"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() =>
+                              handleRemoveCollaborator(collaborator.username)
+                            }
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500">선택된 담당자가 없습니다.</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-2 mt-6">
@@ -197,7 +324,7 @@ export default function ProjectModal() {
       case "task-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] p-6">
+            <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">작업 수정</h2>
                 <button
@@ -208,7 +335,7 @@ export default function ProjectModal() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSaveTask} className="space-y-4">
                 <div>
                   <label className="block mb-2 font-medium">작업명</label>
                   <input
@@ -239,66 +366,86 @@ export default function ProjectModal() {
                     onChange={(e) => setPriority(e.target.value)}
                     className="w-full border rounded p-2"
                   >
-                    <option value="P0">P0 - 최우선 순위</option>
-                    <option value="P1">P1 - 높은 순위</option>
-                    <option value="P2">P2 - 일반 순위</option>
+                    <option value="P0">P0 - 최우선</option>
+                    <option value="P1">P1 - 높음</option>
+                    <option value="P2">P2 - 보통</option>
                   </select>
                 </div>
-
                 <div>
-                  <label className="block mb-2 font-medium">작업 상태</label>
+                  <label className="block mb-2 font-medium">크기</label>
                   <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    value={size}
+                    onChange={(e) => setSize(e.target.value)}
                     className="w-full border rounded p-2"
                   >
-                    <option value="Todo">Todo</option>
-                    <option value="Ready">Ready</option>
-                    <option value="Doing">Doing</option>
-                    <option value="Done">Done</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
                   </select>
                 </div>
 
+                {/* 담당자 검색 및 선택 */}
                 <div>
-                  <label className="block mb-2 font-medium">작업 담당자</label>
-                  <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="담당자 검색"
-                      onChange={handleSearch}
-                      className="w-full border rounded p-2 pl-10 mb-2"
-                    />
-                    <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-
-                  <div className="border rounded max-h-40 overflow-y-auto">
-                    {filteredMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        onClick={() => setAssignee(member.name)}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        {member.name}
-                      </div>
-                    ))}
-                  </div>
-                  {assignee && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      선택된 담당자: {assignee}
+                  <label className="block mb-2 font-medium">담당자 검색</label>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="w-full border rounded p-2"
+                    placeholder="담당자 이름을 입력하세요"
+                  />
+                  {searchQuery && (
+                    <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
+                      {searchResults.length > 0 ? (
+                        searchResults.map((user, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center p-2"
+                          >
+                            <span>{user.username}</span>
+                            <button
+                              type="button"
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() => handleAddCollaborator(user)}
+                            >
+                              선택
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500">검색 결과가 없습니다.</p>
+                      )}
                     </div>
                   )}
+                </div>
+
+                {/* 선택된 담당자 목록 */}
+                <div>
+                  <h3 className="font-medium mb-3">선택된 담당자</h3>
+                  <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
+                    {selectedCollaborators.length > 0 ? (
+                      selectedCollaborators.map((collaborator, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-2"
+                        >
+                          <span>{collaborator.username}</span>
+                          <button
+                            type="button"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() =>
+                              handleRemoveCollaborator(collaborator.username)
+                            }
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500">선택된 담당자가 없습니다.</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-2 mt-6">
@@ -313,7 +460,7 @@ export default function ProjectModal() {
                     type="submit"
                     className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
-                    수정 완료
+                    수정
                   </button>
                 </div>
               </form>
@@ -323,7 +470,7 @@ export default function ProjectModal() {
       case "project":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[600px] p-6">
+            <div className="bg-white rounded-lg w-[500px] p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">프로젝트 추가</h2>
                 <button
@@ -335,15 +482,13 @@ export default function ProjectModal() {
               </div>
 
               <form
-                className="space-y-4"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  console.log({
-                    projectName,
-                    projectMembers: teamMembers, // 실제 로직에서는 선택된 멤버로 처리
-                  });
+                  // 프로젝트 이름만 등록
+                  console.log("Project Name:", projectName);
                   closeModal();
                 }}
+                className="space-y-4"
               >
                 {/* 프로젝트명 입력 */}
                 <div>
@@ -358,75 +503,18 @@ export default function ProjectModal() {
                   />
                 </div>
 
-                {/* 협업자 검색 및 추가 */}
-                <div>
-                  <label className="block mb-2 font-medium">협업자 검색</label>
-                  <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="협업자 이름을 검색하세요"
-                      onChange={handleSearch}
-                      className="w-full border rounded p-2 pl-10 mb-2"
-                    />
-                    <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="border rounded max-h-40 overflow-y-auto">
-                  {filteredMembers.map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                      <span>{member.name}</span>
-                      <button
-                        onClick={() => console.log(`${member.name} 추가`)}
-                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-700"
-                      >
-                        추가
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* 현재 협업자 목록 */}
-                <div className="mt-4">
-                  <h3 className="font-medium mb-2">현재 협업자 목록</h3>
-                  <div className="border rounded max-h-40 overflow-y-auto">
-                    {teamMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex justify-between items-center p-2"
-                      >
-                        <span>{member.name}</span>
-                        <button
-                          onClick={() => console.log(`${member.name} 삭제`)}
-                          className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-100"
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 닫기 및 저장 버튼 */}
+                {/* 저장 버튼 */}
                 <div className="flex justify-end space-x-2 mt-6">
                   <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-4 py-2 border rounded hover:bg-gray-100"
+                  >
+                    취소
+                  </button>
+                  <button
                     type="submit"
-                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-green-700"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
                     저장
                   </button>
@@ -435,6 +523,7 @@ export default function ProjectModal() {
             </div>
           </div>
         );
+
       case "project-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
@@ -472,32 +561,6 @@ export default function ProjectModal() {
                     placeholder="프로젝트 이름을 수정하세요"
                     required
                   />
-                </div>
-
-                {/* 협업자 검색 및 수정 */}
-                <div>
-                  <label className="block mb-2 font-medium">협업자 검색</label>
-                  <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="협업자 이름을 검색하세요"
-                      onChange={handleSearch}
-                      className="w-full border rounded p-2 pl-10 mb-2"
-                    />
-                    <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
                 </div>
 
                 <div className="border rounded max-h-40 overflow-y-auto">
@@ -561,9 +624,9 @@ export default function ProjectModal() {
       case "project-invite":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[600px] p-6">
+            <div className="bg-white rounded-lg w-[600px] h-[60vh] p-6 overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">협업자 추가</h2>
+                <h2 className="text-2xl font-bold">협업자 설정</h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -572,83 +635,164 @@ export default function ProjectModal() {
                 </button>
               </div>
 
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  console.log({
-                    updatedProjectName: projectName,
-                    updatedProjectDescription: projectDescription,
-                    updatedProjectMembers: teamMembers, // 선택된 멤버로 처리
-                  });
-                  closeModal();
-                }}
-              >
-                {/* 협업자 검색 및 수정 */}
-                <div>
+              <div className="space-y-4">
+                {/* 검색 및 추가 */}
+                <div className="mb-4">
                   <label className="block mb-2 font-medium">협업자 검색</label>
-                  <div className="relative w-full">
+                  <div className="flex items-center">
                     <input
                       type="text"
-                      placeholder="협업자 이름을 검색하세요"
+                      className="w-full border rounded p-2"
+                      placeholder="사용자 이름을 입력하세요"
+                      value={searchQuery}
                       onChange={handleSearch}
-                      className="w-full border rounded p-2 pl-10 mb-2"
                     />
-                    <svg
-                      className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
                   </div>
-                </div>
 
-                <div className="border rounded max-h-40 overflow-y-auto">
-                  {filteredMembers.map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                      <span>{member.name}</span>
-                      <button
-                        onClick={() => console.log(`${member.name} 추가`)}
-                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-700"
-                      >
-                        추가
-                      </button>
+                  {/* 검색 결과 */}
+                  {searchQuery && (
+                    <div className="mt-3 border rounded p-2">
+                      {searchResults.length > 0 ? (
+                        searchResults.map((user, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center p-2 border-b"
+                          >
+                            <span>{user.username}</span>
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={() => handleAddCollaborator(user)}
+                            >
+                              선택
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500">검색 결과가 없습니다.</p>
+                      )}
                     </div>
-                  ))}
+                  )}
                 </div>
 
-                {/* 현재 협업자 목록 */}
-                <div className="mt-4">
-                  <h3 className="font-medium mb-2">현재 협업자 목록</h3>
-                  <div className="border rounded max-h-40 overflow-y-auto">
-                    {teamMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex justify-between items-center p-2"
-                      >
-                        <span>{member.name}</span>
-                        <button
-                          onClick={() => console.log(`${member.name} 삭제`)}
-                          className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-100"
+                {/* 선택된 협업자 목록 */}
+                <div>
+                  <h3 className="font-medium mb-3">선택된 협업자</h3>
+                  <div className="border rounded p-4 max-h-[200px] overflow-y-auto">
+                    {selectedCollaborators.length > 0 ? (
+                      selectedCollaborators.map((collaborator, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-2 border rounded mb-2"
                         >
-                          삭제
-                        </button>
-                      </div>
-                    ))}
+                          <div className="flex items-center">
+                            <span className="font-medium">
+                              {collaborator.username}
+                            </span>
+                          </div>
+                          <div className="flex items-center">
+                            <select
+                              className="border rounded p-2 mr-3"
+                              value={collaborator.role}
+                              onChange={(e) =>
+                                handleRoleChange(
+                                  collaborator.username,
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="Admin">Admin</option>
+                              <option value="Write">Write</option>
+                              <option value="Read">Read</option>
+                            </select>
+                            <button
+                              className="text-red-500 hover:text-red-700"
+                              onClick={() =>
+                                handleRemoveCollaborator(collaborator.username)
+                              }
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500">선택된 협업자가 없습니다.</p>
+                    )}
                   </div>
                 </div>
+              </div>
 
-                {/* 닫기 및 저장 버튼 */}
+              {/* 저장 버튼 */}
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => {
+                    console.log(
+                      "Selected collaborators:",
+                      selectedCollaborators
+                    );
+                    closeModal();
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  초대
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "state-add":
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
+            <div className="bg-white rounded-lg w-[500px] h-[39vh] p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">새 상태 추가</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleAddState} className="space-y-4">
+                {/* 색상 선택 */}
+                <div>
+                  <label className="block mb-2 font-medium">상태 색상</label>
+                  <input
+                    type="color"
+                    value={stateColor}
+                    onChange={(e) => setStateColor(e.target.value)}
+                    className="w-full h-10 border rounded p-1"
+                  />
+                </div>
+
+                {/* 상태 제목 */}
+                <div>
+                  <label className="block mb-2 font-medium">상태 제목</label>
+                  <input
+                    type="text"
+                    value={stateTitle}
+                    onChange={(e) => setStateTitle(e.target.value)}
+                    className="w-full border rounded p-2"
+                    placeholder="상태 이름을 입력하세요"
+                    required
+                  />
+                </div>
+
+                {/* 상태 설명 */}
+                <div>
+                  <label className="block mb-2 font-medium">상태 설명</label>
+                  <textarea
+                    value={stateDescription}
+                    onChange={(e) => setStateDescription(e.target.value)}
+                    className="w-full border rounded p-2"
+                    rows="4"
+                    placeholder="상태 설명을 입력하세요"
+                  />
+                </div>
+
+                {/* 저장 버튼 */}
                 <div className="flex justify-end space-x-2 mt-6">
                   <button
                     type="button"
@@ -659,7 +803,7 @@ export default function ProjectModal() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-green-700"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
                   >
                     저장
                   </button>
