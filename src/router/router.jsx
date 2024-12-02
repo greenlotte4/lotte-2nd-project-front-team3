@@ -12,7 +12,6 @@ import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
 import CalendarPage from "../pages/Main/calendar/CalendarPage";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
-import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWritePage";
 import BoardPage from "../pages/Main/board/boardPage";
 import BoardViewPage from "../pages/Main/board/boardViewPage";
@@ -79,7 +78,6 @@ const router = createBrowserRouter([
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
   { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
-  { path: "/antwork/page/view", element: <PagingViewPage /> }, // 2024/11/25(월) 황수빈 - Page View 추가
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
