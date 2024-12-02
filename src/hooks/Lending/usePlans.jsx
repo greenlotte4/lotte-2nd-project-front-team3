@@ -1,5 +1,13 @@
 import { useState } from "react";
 
+{
+  /*
+    날짜 : 2024/11/28(화)
+    생성자 : 최준혁
+    내용 : 요금 plancard 안에 내용 상태관리를 위한 훅 
+  */
+}
+
 const usePlans = () => {
   const [plans] = useState([
     {

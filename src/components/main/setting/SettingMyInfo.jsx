@@ -46,7 +46,7 @@ export default function SettingMyinfo() {
           </div>
           {/* 직급 */}
           <div className="flex items-center mx-[10px]">
-            <label className="w-1/3 text-gray-700 font-medium">직급</label>
+            <label className="w-1/3 text-gray-700 font-medium">직급</label>
             <input
               type="text"
               placeholder="사원"
@@ -63,20 +63,20 @@ export default function SettingMyinfo() {
               placeholder="홍길동"
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button class=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
               수정
             </button>
           </div>
 
           {/* 생년월일 */}
           <div className="flex items-center mx-[10px]">
-            <label className="w-1/3 text-gray-700 font-medium">생년월일</label>
+            <label className="w-1/3 text-gray-700 font-medium">생년월일</label>
             <input
               type="date"
               placeholder="생년월일"
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button class=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
               수정
             </button>
           </div>
@@ -91,7 +91,7 @@ export default function SettingMyinfo() {
               placeholder="ghkdtnqls95@gmail.com"
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button class=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
               수정
             </button>
           </div>
@@ -104,7 +104,7 @@ export default function SettingMyinfo() {
               placeholder="010-7334-2080"
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button class=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
               수정
             </button>
           </div>

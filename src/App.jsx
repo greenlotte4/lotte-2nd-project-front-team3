@@ -10,6 +10,7 @@ function App() {
     <CompletePageProvider>
       <RouterProvider router={router} />
     </CompletePageProvider>
+    // ProtectedRoute 추후에 추가 필요
   );
 }
 
