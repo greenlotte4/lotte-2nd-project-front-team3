@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
+import axios from "axios";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
     personalPages: true,
     sharedPages: true,
   });
+  const [personalPageList, setPersonalPageList] = useState([]);
+
+  useEffect(() => {
+    // 개인 페이지 목록을 가져오는 함수
+    const fetchPersonalPages = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/page/list");
+        setPersonalPageList(response.data);
+      } catch (error) {
+        console.error("개인 페이지 목록을 가져오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchPersonalPages();
+  }, []);
 
   return (
     <>
@@ -61,21 +77,13 @@ export default function PageAside({ asideVisible }) {
             </div>
             {toggles.personalPages && (
               <ol>
-                <li>
-                  <Link to="/antwork/page/view">📘&nbsp;&nbsp;업무일지</Link>
-                </li>
-                <li>
-                  <a href="#">✔&nbsp;&nbsp;CheckList</a>
-                </li>
-                <li>
-                  <a href="#">❓&nbsp;&nbsp;Question</a>
-                </li>
-                <li>
-                  <a href="#">🎞 &nbsp;&nbsp;Movie review</a>
-                </li>
-                <li>
-                  <a href="#">👗 &nbsp;&nbsp;Shopping List</a>
-                </li>
+                {personalPageList.map((page) => (
+                  <li key={page.id}>
+                    <Link to={`/antwork/page/write?id=${page._id}`}>
+                      {page.icon}&nbsp;&nbsp;{page.title}
+                    </Link>
+                  </li>
+                ))}
               </ol>
             )}
 

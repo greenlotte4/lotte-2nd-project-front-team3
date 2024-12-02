@@ -3,10 +3,10 @@ import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import ImageTool from "@editorjs/image";
-import { BsEmojiSmile } from "react-icons/bs";
+import { BsEmojiSmile, BsThreeDotsVertical } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const PagingWrite = () => {
   const ejInstance = useRef();
@@ -19,6 +19,8 @@ const PagingWrite = () => {
   const queryParams = new URLSearchParams(location.search);
   const [id, setId] = useState(queryParams.get("id"));
   const titleRef = useRef("");
+  const [showMenu, setShowMenu] = useState(false);
+  const navigate = useNavigate();
 
   const fetchPageData = async () => {
     try {
@@ -158,8 +160,47 @@ const PagingWrite = () => {
     await savePage(newTitle, currentContent);
   };
 
+  const onEmojiClick = (emojiData) => {
+    setSelectedIcon(emojiData.emoji);
+    setShowIconPicker(false);
+
+    const newTitle = emojiData.emoji + " " + title;
+    setTitle(newTitle);
+    titleRef.current = newTitle;
+
+    savePage(newTitle, content);
+  };
+
+  const handleDeletePage = async () => {
+    if (!id) return;
+
+    if (window.confirm("정말로 이 페이지를 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(`http://localhost:8080/api/page/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          alert("페이지가 삭제되었습니다.");
+          navigate("/antwork/page"); // 페이지 목록으로 이동
+        } else {
+          alert("페이지 삭제에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("Error deleting page:", error);
+        alert("페이지 삭제 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
   useEffect(() => {
     const setupPage = async () => {
+      // 기존 에디터 인스턴스 정리
+      if (ejInstance.current) {
+        ejInstance.current = null;
+        document.getElementById("editorjs").innerHTML = "";
+      }
+
       if (!id) {
         await createPage();
       } else {
@@ -177,11 +218,70 @@ const PagingWrite = () => {
     };
   }, [id]);
 
+  useEffect(() => {
+    const setupPage = async () => {
+      // 기존 로직 유지
+    };
+
+    const newId = queryParams.get("id");
+    if (id !== newId) {
+      setId(newId);
+      setupPage();
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMenu && !event.target.closest(".menu-container")) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
+
   return (
     <div className="w-full">
       <article className="page-list pageWrite content">
-        <div className="content-header">
+        <div className="content-header flex justify-between items-center">
           <h2>{id ? "My Page" : "New Page"}</h2>
+          <div className="relative menu-container">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+            >
+              <BsThreeDotsVertical className="text-gray-500 text-xl" />
+            </button>
+
+            {showMenu && (
+              <div className="absolute right-0 mt-2 p-4 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="py-1">
+                  <div className="border-t border-gray-300 border-b border-gray-300 p-3">
+                    <button
+                      onClick={handleDeletePage}
+                      className="w-full px-4 py-3 text-[14px] text-red-600 hover:bg-gray-100 hover:rounded-[10px] text-left"
+                    >
+                      페이지 삭제
+                    </button>
+                    <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200">
+                      공유 멤버 관리
+                    </button>
+                  </div>
+                  <div className="p-3">
+                    <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
+                      페이지 설정
+                      <p className="!text-[11px] !text-slate-400 mt-[2px]">
+                        &nbsp;설정페이지로 이동
+                      </p>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <article className="page-list !-5mt !border-none w-full">
           <div
@@ -189,14 +289,9 @@ const PagingWrite = () => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
-            <div className="relative w-[30px] h-[30px]">
+            <div className="relative w-[40px] h-[40px]">
               {selectedIcon ? (
-                <button
-                  onClick={() => setShowIconPicker(!showIconPicker)}
-                  className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]"
-                >
-                  {selectedIcon}
-                </button>
+                <button className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]"></button>
               ) : (
                 <button
                   onClick={() => setShowIconPicker(true)}
@@ -219,10 +314,7 @@ const PagingWrite = () => {
                       width={400}
                       height={500}
                     />
-                    <button
-                      onClick={() => setShowIconPicker(false)}
-                      className="ml-2 p-1 hover:bg-gray-100 rounded-full transition-colors h-[30px] w-[30px] flex items-center justify-center"
-                    >
+                    <button className="ml-2 p-1 hover:bg-gray-100 rounded-full transition-colors h-[30px] w-[30px] flex items-center justify-center">
                       <IoCloseOutline size={20} className="text-gray-500" />
                     </button>
                   </div>
