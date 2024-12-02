@@ -1,10 +1,11 @@
-const SERVER_HOST = "http://localhost:8080";
-const API_SERVER_HOST = "http://localhost:8080/api";
+const SERVER_HOST = import.meta.env.VITE_SERVER_HOST;
+const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
-export const USER_LOGIN_URI = `${SERVER_HOST}/user/login`;
-export const USER_REGISTER_URI = `${SERVER_HOST}/user/register`;
+export const USER_LOGIN_URI = `${API_SERVER_HOST}/user/login`; // 유저 로그인
+export const USER_REFRESH_URI = `${API_SERVER_HOST}/user/refresh`; // 리프레시 토큰 검증
+export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기 관리자 유저 INSERT
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송
@@ -13,4 +14,4 @@ export const USER_VERIFY_CHECK_EMAIL_URI = `${API_SERVER_HOST}/email/check-verif
 export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 이메일 발송
 
 // company
-export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/invite`; // 회사 insert
+export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert

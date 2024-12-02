@@ -7,6 +7,7 @@ const initialState = {
   adminPassword: "",
   step: 1,
   adminEmail: "",
+  adminName: "",
   emailSent: false,
   emailVerified: false,
   companyName: "",
@@ -25,6 +26,7 @@ const initialState = {
 
 // 리듀서 함수 정의
 function reducer(state, action) {
+  console.log("Action received:", action.type, action.payload);
   switch (action.type) {
     case "SET_MANUAL_INPUT":
       return { ...state, manualInput: action.payload };
@@ -45,6 +47,8 @@ function reducer(state, action) {
       return { ...state, emailVerified: action.payload };
     case "SET_COMPANY_NAME":
       return { ...state, companyName: action.payload };
+    case "SET_ADMIN_NAME":
+      return { ...state, adminName: action.payload };
     case "SET_COMPANY_DESCRIPTION":
       return { ...state, companyDescription: action.payload };
     case "SET_FOUNDATION_DATE":

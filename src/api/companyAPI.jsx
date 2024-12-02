@@ -1,15 +1,20 @@
 import { COMPANY_INSERT_URI } from "./_URI";
 import axios from "axios";
 
-/**
- * 회사 추가 API
- * @param {Object} companyData - 회사 정보 객체
- * @returns {Promise} - API 호출 결과
- */
 export const addCompany = async (companyData) => {
   try {
-    const response = await axios.post(COMPANY_INSERT_URI, companyData);
+    console.log("회사 insert 요청 전송");
+    // 요청 전송
+    const response = await axios.post(COMPANY_INSERT_URI, companyData, {
+      headers: {
+        "Content-Type":
+          companyData instanceof FormData
+            ? "multipart/form-data"
+            : "application/json",
+      },
+    });
 
+    // 응답 데이터 검증
     if (response.data.success) {
       console.log("Company added successfully:", response.data);
       return response.data;
@@ -19,7 +24,7 @@ export const addCompany = async (companyData) => {
       );
     }
   } catch (error) {
-    console.error("Error adding company:", error);
-    throw error; // 예외를 호출한 쪽으로 전달
+    console.error("Error adding company:", error.message || error);
+    throw new Error("회사 정보를 저장하는 중 문제가 발생했습니다."); // 사용자 친화적 메시지
   }
 };

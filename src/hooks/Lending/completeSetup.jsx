@@ -14,30 +14,61 @@ export const completeSetup = async (state, dispatch) => {
       endTime: state.endTime,
       address: state.address,
       businessNumber: state.businessNumber,
-      logo: state.logo,
+      logo: state.logo instanceof File ? null : state.logo,
     };
 
-    const companyResponse = await addCompany(companyData);
+    let companyResponse;
+    try {
+      console.log("회사 setup insert 요청 전송");
+      companyResponse = await addCompany(companyData);
+    } catch (error) {
+      throw new Error(
+        "회사 정보 저장 중 오류가 발생했습니다. 다시 시도해주세요."
+      );
+    }
 
-    const companyId = companyResponse.companyId; // 저장된 회사 ID
+    const companyId = companyResponse?.data; // 응답의 data 필드에서 companyId 추출
+    if (!companyId || companyId <= 0) {
+      throw new Error("회사 ID를 가져오지 못했습니다.");
+    }
 
-    // 사용자 정보 저장
+    // 사용자 정보 생성
     const userData = {
-      username: state.adminId,
+      uid: state.adminId,
+      name: state.adminName,
       password: state.adminPassword,
       email: state.adminEmail,
       companyId,
+      phoneNumber: state.phoneNumber,
+      role: "ADMIN",
     };
 
-    await addUser(userData);
+    if (
+      !userData.uid ||
+      !userData.name ||
+      !userData.password ||
+      !userData.email ||
+      !userData.companyId
+    ) {
+      throw new Error("사용자 정보에 필수 값이 누락되었습니다.");
+    }
 
-    // 성공 시 상태 초기화 및 메시지 출력
+    try {
+      await addUser(userData);
+    } catch (error) {
+      throw new Error(
+        "사용자 정보 저장 중 오류가 발생했습니다. 다시 시도해주세요."
+      );
+    }
+
+    // 성공 처리
     dispatch({ type: "RESET" });
     alert("설정이 완료되었습니다. 로그인 페이지로 이동합니다.");
     window.location.href = "/login";
   } catch (error) {
     console.error("설정 완료 중 오류:", error);
     dispatch({ type: "SET_ERROR", payload: error.message });
+    alert(error.message);
   } finally {
     dispatch({ type: "SET_LOADING", payload: false });
   }
