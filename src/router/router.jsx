@@ -44,6 +44,7 @@ import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
 import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
+import SchedulePage from "../pages/Main/calendar/SchedulePage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -73,6 +74,7 @@ const router = createBrowserRouter([
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
+  { path: "/antwork/schedule", element: <SchedulePage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
 
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인

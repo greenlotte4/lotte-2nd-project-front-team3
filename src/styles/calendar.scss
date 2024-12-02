@@ -18,12 +18,6 @@
   border-right: none;
 }
 
-.fc-col-header-cell.fc-day {
-  /* 원하는 스타일 */
-  background-color: #b2d1ff;
-  color: #eceef1;
-  text-align: center;
-}
 .fc .fc-toolbar.fc-header-toolbar {
   padding: 10px 10px;
 
@@ -81,12 +75,16 @@
   color: #fff;
 }
 
-.fc
-  .fc-day.fc-day-sun.fc-day-past.fc-daygrid-day
-  > .fc-daygrid-day-frame.fc-scrollgrid-sync-inner,
-.fc-day.fc-day-sun.fc-day-future.fc-daygrid-day
-  > .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-  background-color: #fce3e3;
+.fc-toolbar-chunk {
+  margin-top: 10px;
+}
+
+.fc-toolbar-chunk:nth-child(1) > div {
+  gap: 10px;
+}
+
+.fc-toolbar-chunk:nth-child(1) > div > button:nth-child(3) {
+  width: 80px;
 }
 
 .fc-toolbar-chunk:nth-child(2) > div {
@@ -102,4 +100,52 @@
 .fc-toolbar-chunk:nth-child(2) > div > button:active {
   box-shadow: none !important;
   background-color: white !important;
+  color: black;
+}
+.fc-toolbar-chunk:nth-child(2) > div > button:hover {
+  background-color: white;
+  color: black;
+}
+
+.fc-toolbar-chunk:nth-child(2) > div > button:visited {
+  background-color: white;
+  color: black;
+}
+
+.fc-toolbar-chunk:nth-child(3) > div {
+  gap: 30px;
+}
+
+.fc-toolbar-chunk:nth-child(3) > div > button {
+  width: 80px;
+}
+
+.fc-col-header-cell.fc-day {
+  /* 원하는 스타일 */
+  color: #eceef1;
+  text-align: right;
+  border-bottom: none; /* 상단 요일 헤더 숨김 */
+}
+
+.fc-col-header-cell.fc-day {
+  border-left: none;
+}
+
+.fc-scrollgrid-sync-inner {
+  color: black;
+  border: none;
+}
+
+tr[role="row"]:nth-child(1) {
+  border-right: none;
+}
+
+.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+  border-left: none;
+}
+.fc-day-past.fc-daygrid-day,
+.fc-day-today.fc-daygrid-day,
+.fc-day-future.fc-daygrid-day {
+  border-right: none;
+  border-left: none;
 }
