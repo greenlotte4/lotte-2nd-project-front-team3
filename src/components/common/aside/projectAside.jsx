@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
-import ProjectModal from "../modal/projectModal";
 import useModalStore from "../../../store/modalStore";
+import ProjectModal from "../modal/projectModal";
 
 export default function ProjectAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
