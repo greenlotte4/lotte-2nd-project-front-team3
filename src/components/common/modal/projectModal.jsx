@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
+import { postProject } from "../../../api/projectAPI";
 
 export default function ProjectModal({
   onAddState,
@@ -10,6 +11,35 @@ export default function ProjectModal({
   setCurrentTask,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
+
+  // 프로젝트 추가 상태 관리
+  const [project, setProject] = useState({
+    projectName: "",
+    status: 0,
+  });
+
+  // 프로젝트 추가 changeHandler
+  const projectChangeHandler = (e) => {
+    setProject({ ...project, [e.target.name]: e.target.value });
+  };
+
+  // 프로젝트 추가 submitHandler
+  const projectSubmitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      // project 객체를 그대로 JSON으로 전송
+      const result = await postProject(project);
+      console.log("result:", result);
+
+      // 상태 초기화 및 모달 닫기
+      setProject({ projectName: "", status: 0 });
+      closeModal();
+    } catch (error) {
+      console.error("Error submitting project:", error);
+      alert("프로젝트 생성 중 문제가 발생했습니다.");
+    }
+  };
 
   // State 관련 상태
   const [stateTitle, setStateTitle] = useState("");
@@ -481,22 +511,14 @@ export default function ProjectModal({
                 </button>
               </div>
 
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  // 프로젝트 이름만 등록
-                  console.log("Project Name:", projectName);
-                  closeModal();
-                }}
-                className="space-y-4"
-              >
-                {/* 프로젝트명 입력 */}
+              <form onSubmit={projectSubmitHandler} className="space-y-4">
                 <div>
                   <label className="block mb-2 font-medium">프로젝트명</label>
                   <input
                     type="text"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
+                    name="projectName"
+                    value={project.projectName}
+                    onChange={projectChangeHandler}
                     className="w-full border rounded p-2"
                     placeholder="프로젝트 이름을 입력하세요"
                     required

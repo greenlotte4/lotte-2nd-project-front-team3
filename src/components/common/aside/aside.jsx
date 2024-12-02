@@ -54,7 +54,7 @@ export default function Aside({ asideVisible, setListMonth }) {
       {mainPath === "board" && <BoardAside asideVisible={asideVisible} />}
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
       {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
-      {mainPath === "calendar" && (
+      {(mainPath === "calendar" || mainPath === "schedule") && (
         <CalendarAside
           asideVisible={asideVisible}
           setListMonth={setListMonth}

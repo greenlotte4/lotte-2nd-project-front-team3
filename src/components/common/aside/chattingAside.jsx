@@ -26,7 +26,7 @@ export default function ChattingAside({ asideVisible }) {
       <div className="pb-4 border-b border-gray-200 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-black">💬 채팅</h1>
         {/* 플러스 버튼 */}
-        <button
+        {/* <button
           className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
           onClick={() => {
             console.log("Modal Props:", inviteModalProps); // 로그 추가
@@ -34,7 +34,7 @@ export default function ChattingAside({ asideVisible }) {
           }}
         >
           +
-        </button>
+        </button> */}
       </div>
 
       {/* 채팅방 검색 */}
@@ -184,7 +184,13 @@ export default function ChattingAside({ asideVisible }) {
 
       {/* 사용자 초대 버튼 */}
       <div className="border-t border-gray-200 pt-6 mt-6">
-        <button className="w-full flex items-center justify-center gap-3 bg-blue-500 text-white px-6 py-3 rounded-full hover:shadow-xl transition-transform hover:scale-105">
+        <button
+          className="w-full flex items-center justify-center gap-3 bg-blue-500 text-white px-6 py-3 rounded-full hover:shadow-xl transition-transform hover:scale-105"
+          onClick={() => {
+            console.log("Modal Props:", inviteModalProps); // 로그 추가
+            openModal("invite", { ...inviteModalProps });
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"

@@ -12,7 +12,6 @@ import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
 import CalendarPage from "../pages/Main/calendar/CalendarPage";
 import PagingPage from "./../pages/Main/Paging/pagingPage";
-import PagingViewPage from "../pages/Main/Paging/pagingViewPage";
 import PagingWritePage from "../pages/Main/Paging/pagingWritePage";
 import BoardPage from "../pages/Main/board/boardPage";
 import BoardViewPage from "../pages/Main/board/boardViewPage";
@@ -44,6 +43,7 @@ import DriveRecylcePage from "../pages/Main/drive/driveRecyclePage";
 import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
 import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
+import SchedulePage from "../pages/Main/calendar/SchedulePage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -73,11 +73,11 @@ const router = createBrowserRouter([
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
+  { path: "/antwork/schedule", element: <SchedulePage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
 
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
   { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
-  { path: "/antwork/page/view", element: <PagingViewPage /> }, // 2024/11/25(월) 황수빈 - Page View 추가
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지

@@ -15,3 +15,6 @@ export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 
 
 // company
 export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
+
+// project
+export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가

@@ -9,7 +9,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   };
 
   const [calendars, setCalendars] = useState([
-    { id: 1, name: "팀 캘린더" }, // 기본 항목
+    { id: 1, name: "캘린더 1" }, // 기본 항목
   ]);
   const [editingId, setEditingId] = useState(null); // 수정 중인 캘린더 ID
   const [newName, setNewName] = useState(""); // 수정 중인 이름
@@ -42,6 +42,16 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     setEditingId(null);
     setNewName("");
   };
+
+  // 캘린더 삭제
+  const deleteCalendar = (id) => {
+    if (confirm("캘린더를 삭제하시겠습니까?")) {
+      setCalendars((prevCalendars) =>
+        prevCalendars.filter((calendar) => calendar.id !== id)
+      );
+    }
+  };
+
   return (
     <>
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
@@ -49,7 +59,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
           <span className="sub-title">My Schedule</span>
 
           <span className="title">Calendar</span>
-          <button
+          <Link
+            to="/antwork/schedule"
             className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 mt-6 h-14"
             style={{ backgroundColor: "#D9E8FF" }}
           >
@@ -67,7 +78,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
               />
             </svg>
             <span className="text-xl">New Schedule</span>
-          </button>
+          </Link>
         </div>
         <ul className="a mt-20">
           <li className="">
@@ -121,7 +132,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                             type="text"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="border rounded-md px-2 py-1"
+                            className="border rounded-md w-[150px] px-2 py-1"
                           />
                           <button
                             onClick={() => saveName(calendar.id)}
@@ -149,6 +160,16 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           className="ml-2 text-blue-500"
                         >
                           수정
+                        </button>
+                      )}
+
+                      {/* 캘린더 삭제 버튼 */}
+                      {editingId !== calendar.id && (
+                        <button
+                          onClick={() => deleteCalendar(calendar.id)}
+                          className="ml-2 text-red-500"
+                        >
+                          삭제
                         </button>
                       )}
                     </div>

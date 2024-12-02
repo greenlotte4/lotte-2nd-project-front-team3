@@ -1,11 +1,11 @@
-import PagingView from "../../../components/main/paging/pagingView";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
+import Schedule from "../../../components/main/Calendar/Schedule";
 
-export default function PagingViewPage() {
+export default function SchedulePage() {
   return (
     <>
       <AntWorkLayout>
-        <PagingView />
+        <Schedule />
       </AntWorkLayout>
     </>
   );
