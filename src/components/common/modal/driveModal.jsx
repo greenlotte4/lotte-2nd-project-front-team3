@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
+import { driveFolderInsert } from "../../../api/driveAPI";
 
 export default function DriveModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
-  const [folderName, setFolderName] = useState("");
+  const [driveFolderName, setdriveFolderName] = useState("");
   const [ModifyName, setModfiyName] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
   // 모달 열릴 때 초기화
   useEffect(() => {
     if (type === "insert") {
-      setFolderName("");
+      setdriveFolderName("");
     } else if (type === "name") {
       setModfiyName("");
     }
@@ -23,37 +24,51 @@ export default function DriveModal() {
   };
 
   const handleFolderSubmit = async () => {
-    if (!folderName.trim()) {
+    if (!driveFolderName.trim()) {
       alert("폴더 이름을 입력하세요!");
       return;
     }
+    console.log("driveFolderName : " + driveFolderName);
 
     try {
-      const response = await fetch("/api/folders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: folderName }),
-      });
+      const data = { driveFolderName };
+      const response = await driveFolderInsert(data);
 
-      if (!response.ok) {
-        throw new Error("폴더 생성 실패");
+      // 백엔드 응답 확인
+      console.log("Response from backend:", response);
+      alert("우선 백엔드한테 응답은 받음");
+
+      if (props?.onSubmit) {
+        props.onSubmit({
+          type: "insert",
+          driveFolderDTO: response, // 백엔드에서 받은 response를 전달
+        });
       }
-
-      const data = await response.json();
-      console.log("폴더 생성 성공:", data);
-
-      // 서버 응답을 props로 업데이트 (필요 시)
-      updateProps(data);
-
-      alert("폴더가 성공적으로 생성되었습니다!");
+      
       closeModal();
     } catch (error) {
       console.error("에러 발생:", error);
       alert("폴더 생성 중 문제가 발생했습니다.");
     }
   };
+
+  // const response = await fetch("/api/drive/folder/insert", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ folderName: folderName }),
+  // });
+
+  // if (!response.ok) {
+  //   throw new Error("폴더 생성 실패");
+  // }
+
+  // const data = await response.json();
+  // console.log("폴더 생성 성공:", data);
+
+  // // 서버 응답을 props로 업데이트 (필요 시)
+  // updateProps(data);
 
   const renderContent = () => {
     switch (type) {
@@ -75,8 +90,8 @@ export default function DriveModal() {
               <div className="px-6 py-4">
                 <input
                   type="text"
-                  value={folderName}
-                  onChange={(e) => setFolderName(e.target.value)}
+                  value={driveFolderName}
+                  onChange={(e) => setdriveFolderName(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-300"
                   placeholder="새 폴더"
                 />

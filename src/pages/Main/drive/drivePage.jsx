@@ -9,8 +9,8 @@ export default function DrivePage() {
     <>
       <AntWorkLayout>
         <DriveAside />
-        <DriveSection />
-        <DriveModal />
+        <DriveSection /> {/* 상태를 자식 컴포넌트에 전달 */}
+        <DriveModal /> {/* 모달에서 받은 데이터를 처리 */}
       </AntWorkLayout>
     </>
   );
