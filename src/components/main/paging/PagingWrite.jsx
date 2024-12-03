@@ -179,7 +179,7 @@ const PagingWrite = () => {
 
     if (window.confirm("정말로 이 페이지를 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`${PAGE_DELETE_URI}/${id}`, {
+        const response = await fetch(`${PAGE_DELETE_URI}/${id}/soft`, {
           method: "DELETE",
         });
 
@@ -297,7 +297,7 @@ const PagingWrite = () => {
                 <button className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]"></button>
               ) : (
                 <button
-                  onClick={() => setShowIconPicker(false)}
+                  onClick={() => setShowIconPicker(true)}
                   className={`w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 transition-opacity duration-200
                                         ${
                                           isHovering
