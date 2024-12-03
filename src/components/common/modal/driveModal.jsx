@@ -14,6 +14,7 @@ export default function DriveModal() {
   useEffect(() => {
     if (type === "insert") {
       console.log("dasfaadsfadsf : " + props.driveFolderId);
+      console.log(driveFolderId);
       setdriveFolderName("");
     } else if (type === "name") {
       setModfiyName("");
@@ -31,6 +32,7 @@ export default function DriveModal() {
       alert("폴더 이름을 입력하세요!");
       return;
     }
+
     console.log("driveFolderName : " + driveFolderName);
     console.log("ID : " + driveFolderId);
 

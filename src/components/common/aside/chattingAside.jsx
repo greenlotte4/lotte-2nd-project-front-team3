@@ -20,7 +20,7 @@ export default function ChattingAside({ asideVisible }) {
   return (
     <aside
       className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${
-        !asideVisible ? "hidden" : ""
+        !asideVisible ? "hidden" : "" 
       }`}
     >
       {/* Header */}
