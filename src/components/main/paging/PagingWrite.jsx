@@ -257,7 +257,7 @@ const PagingWrite = () => {
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 mt-2 p-4 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 <div className="py-1">
                   <div className="border-t border-gray-300 border-b border-gray-300 p-3">
                     <button
