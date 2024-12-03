@@ -17,6 +17,7 @@ export default function DriveModal() {
   // 모달 열릴 때 초기화
   useEffect(() => {
     if (type === "insert") {
+      console.log("dasfaadsfadsf : " + props.driveFolderId);
       console.log(driveFolderId);
       setdriveFolderName("");
     } else if (type === "name") {
