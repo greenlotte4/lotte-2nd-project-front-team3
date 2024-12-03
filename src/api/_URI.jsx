@@ -22,7 +22,8 @@ export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트
 
 //drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
-export const MY_DRIVE_FOLDERS_URI = `${API_SERVER_HOST}/drive/folder/mydriveView`; // 드라이브..테스트용..
+export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
+export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
@@ -42,3 +43,5 @@ export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하�
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 캘린더 추가하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
+
+

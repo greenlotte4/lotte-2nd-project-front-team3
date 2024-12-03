@@ -81,6 +81,7 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
+  { path: "/antwork/drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage
   { path: "/antwork/drive/share", element: <DriveSharePage /> }, // antwork 페이지
   { path: "/antwork/drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, //

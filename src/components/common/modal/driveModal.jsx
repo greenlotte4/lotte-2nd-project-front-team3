@@ -8,9 +8,12 @@ export default function DriveModal() {
   const [ModifyName, setModfiyName] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
+  const driveFolderId = props.driveFolderId;
+
   // 모달 열릴 때 초기화
   useEffect(() => {
     if (type === "insert") {
+      console.log("dasfaadsfadsf : " + props.driveFolderId);
       setdriveFolderName("");
     } else if (type === "name") {
       setModfiyName("");
@@ -29,6 +32,7 @@ export default function DriveModal() {
       return;
     }
     console.log("driveFolderName : " + driveFolderName);
+    console.log("ID : " + driveFolderId);
 
     try {
       const data = { driveFolderName };
@@ -44,31 +48,13 @@ export default function DriveModal() {
           driveFolderDTO: response, // 백엔드에서 받은 response를 전달
         });
       }
-      
+
       closeModal();
     } catch (error) {
       console.error("에러 발생:", error);
       alert("폴더 생성 중 문제가 발생했습니다.");
     }
   };
-
-  // const response = await fetch("/api/drive/folder/insert", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ folderName: folderName }),
-  // });
-
-  // if (!response.ok) {
-  //   throw new Error("폴더 생성 실패");
-  // }
-
-  // const data = await response.json();
-  // console.log("폴더 생성 성공:", data);
-
-  // // 서버 응답을 props로 업데이트 (필요 시)
-  // updateProps(data);
 
   const renderContent = () => {
     switch (type) {
