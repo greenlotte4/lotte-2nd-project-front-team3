@@ -1,8 +1,8 @@
 import axios from "axios";
+import useAuthStore from "../store/authStore"; // Zustand 스토어
+import { refreshAccessToken } from "../api/userAPI"; // 토큰 갱신 API
 
 const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
-import { getAccessToken } from "./auth";
-import { refreshAccessToken } from "./../api/userAPI";
 
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getAccessToken(); // 로컬/세션 스토리지에서 토큰 가져오기
+    const token = useAuthStore.getState().accessToken; // Zustand에서 토큰 가져오기
     if (token) {
       console.log("Access Token 포함:", token);
       config.headers.Authorization = `Bearer ${token}`;
@@ -39,14 +39,21 @@ axiosInstance.interceptors.response.use(
       try {
         console.log("401 Unauthorized 발생. 리프레시 토큰 사용.");
         const newAccessToken = await refreshAccessToken();
+
         console.log("새로운 Access Token:", newAccessToken);
+
+        // Zustand 스토어에 새 토큰 저장
+        useAuthStore.getState().setAccessToken(newAccessToken);
 
         // 갱신된 토큰으로 헤더 업데이트
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest); // 요청 재시도
       } catch (refreshError) {
         console.error("리프레시 토큰 갱신 실패:", refreshError);
-        // 새 토큰 갱신 실패 시 로그아웃 처리 또는 사용자 통지
+
+        // 새 토큰 갱신 실패 시 Zustand 스토어에서 토큰 초기화
+        useAuthStore.getState().clearAccessToken();
+
         throw refreshError;
       }
     }

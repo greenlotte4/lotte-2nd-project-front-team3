@@ -2,19 +2,24 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../api/userAPI";
 
 export default function Header({ onToggleAside }) {
   const navigate = useNavigate();
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault(); // 기본 동작 방지
 
-    // 로컬 스토리지와 세션 스토리지에서 인증 토큰 제거
-    localStorage.removeItem("authToken");
-    sessionStorage.removeItem("authToken");
+    try {
+      // 로그아웃 요청
+      await logoutUser();
 
-    // 로그인 페이지로 리다이렉트
-    navigate("/login");
+      // 로그아웃 후 로그인 페이지로 리다이렉트
+      navigate("/login");
+    } catch (error) {
+      console.error("로그아웃 처리 중 오류:", error.message);
+      alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+    }
   };
   const [showDropdown, setShowDropdown] = useState(false);
 

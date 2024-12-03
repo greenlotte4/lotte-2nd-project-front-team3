@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useToggle from "../../hooks/useToggle";
 import MyCalendar from "../main/Calendar/MyCalendar";
 import { Link } from "react-router-dom";
+import useAuthStore from "./../../store/AuthStore";
 
 export default function MainSection() {
   const [toggles, toggleSection] = useToggle({});
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [buttonText, setButtonText] = useState("업무");
+
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  useEffect(() => {
+    console.log("사용자 정보:", user);
+  }, [user]);
+
   const handleToggle = () => {
     toggleSection("showMenu");
   };
@@ -29,7 +37,7 @@ export default function MainSection() {
               <span className="absolute bottom-0 right-[70px] w-3 h-3 bg-green-400 rounded-full"></span>
             </div>
             <div className="text-center mt-[20px]">
-              <h1 className="text-3xl">OOO 님 환영합니다.</h1>
+              <h1 className="text-3xl">{user?.uid || "OOO"} 님 환영합니다.</h1>
               <span className=" opacity-60">OO 그룹 대리</span>
             </div>
             <ul className="mt-[20px]">

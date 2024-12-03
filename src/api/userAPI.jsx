@@ -1,9 +1,11 @@
 import axios from "axios";
 import axiosInstance from "./../utils/axiosInstance";
+import useAuthStore from "../store/AuthStore";
 import {
   USER_ADMIN_CREATE_URI,
   USER_INVITE_SEND_EMAIL_URI,
   USER_LOGIN_URI,
+  USER_LOGOUT_URI,
   USER_REFRESH_URI,
   USER_SEND_EMAIL_URI,
   USER_URI,
@@ -27,16 +29,16 @@ export const loginUser = async (uid, password) => {
     console.log("로그인 요청");
     const response = await axios.post(
       USER_LOGIN_URI,
-      {
-        uid,
-        password,
-      },
-      { withCredentials: true }
-    ); // 쿠키 허용
-    console.log("로그인 응답: ", response.data);
+      { uid, password },
+      { withCredentials: true } // 쿠키 허용
+    );
+    const accessToken = response.data.data;
+    console.log("로그인 응답: ", accessToken);
 
-    // accessToken 반환
-    return response.data; // { accessToken: "..." }
+    // Zustand 상태 저장소에 accessToken 저장
+    useAuthStore.getState().setAccessToken(accessToken);
+
+    return accessToken; // { accessToken: "..." }
   } catch (error) {
     console.error("로그인 요청 중 오류:", error.response || error.message);
     throw new Error(
@@ -45,20 +47,35 @@ export const loginUser = async (uid, password) => {
   }
 };
 
-// 리프레시 토큰
+// 리프레시 토큰 검증
 export const refreshAccessToken = async () => {
   try {
-    console.log("리프레시 요청 들어오나?");
     const response = await axios.post(USER_REFRESH_URI, null, {
-      withCredentials: true, // 리프레시 토큰은 HTTP-Only Secure Cookie에 저장
+      withCredentials: true, // HTTP-Only 쿠키로 갱신
     });
-
-    const newAccessToken = response.data.newAccessToken;
-    localStorage.setItem("authToken", newAccessToken);
-    return newAccessToken;
+    return response.data.newAccessToken; // 새로운 Access Token 반환
   } catch (error) {
-    console.error("토큰 갱신 실패:", error);
-    throw new Error("토큰 갱신에 실패했습니다.");
+    console.error("리프레시 토큰 갱신 실패:", error);
+    throw new Error("리프레시 토큰 갱신에 실패했습니다.");
+  }
+};
+
+// 토큰 초기화
+export const clearAuthToken = () => {
+  useAuthStore.getState().clearAccessToken();
+};
+
+// 유저 로그아웃
+export const logoutUser = async () => {
+  try {
+    // 서버에 로그아웃 요청 (쿠키 삭제)
+    await axios.post(USER_LOGOUT_URI, null, { withCredentials: true });
+
+    // Zustand에서 Access Token 삭제
+    useAuthStore.getState().clearAccessToken();
+  } catch (error) {
+    console.error("로그아웃 요청 실패:", error.response || error.message);
+    throw new Error("로그아웃 요청에 실패했습니다.");
   }
 };
 
