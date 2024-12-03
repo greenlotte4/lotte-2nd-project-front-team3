@@ -29,3 +29,11 @@ export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
 export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장
 export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미지 업로드
 export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
+
+// 추가할 페이지 관련 URI
+export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
+export const PAGE_LIST_MODIFIED_URI = `${API_SERVER_HOST}/page/list/modified`; // 최근 수정된 페이지 목록
+export const PAGE_LIST_DELETED_URI = `${API_SERVER_HOST}/page/list/deleted`; // 삭제된 페이지 목록
+export const PAGE_RESTORE_URI = `${API_SERVER_HOST}/page/:id/restore`; // 페이지 복구
+export const PAGE_SOFT_DELETE_URI = `${API_SERVER_HOST}/page/:id/soft`; // 소프트 삭제
+export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하드 삭제

@@ -454,3 +454,32 @@ aside.hidden + .main-content {
 .options-btn:hover {
   background-color: #f3f4f6;
 }
+
+.preview-content {
+  .codex-editor__redactor {
+    padding-bottom: 0 !important;
+  }
+
+  .ce-block__content {
+    max-width: 100%;
+  }
+
+  .ce-toolbar,
+  .ce-settings,
+  .ce-toolbar__plus {
+    display: none !important;
+  }
+
+  img {
+    max-height: 200px;
+    object-fit: cover;
+  }
+}
+
+.page-card {
+  &:hover {
+    .preview-content {
+      opacity: 0.8;
+    }
+  }
+}
