@@ -4,6 +4,7 @@ const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
 export const USER_LOGIN_URI = `${API_SERVER_HOST}/user/login`; // 유저 로그인
+export const USER_LOGOUT_URI = `${API_SERVER_HOST}/user/logout`; // 유저 로그아웃
 export const USER_REFRESH_URI = `${API_SERVER_HOST}/user/refresh`; // 리프레시 토큰 검증
 export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기 관리자 유저 INSERT
 
