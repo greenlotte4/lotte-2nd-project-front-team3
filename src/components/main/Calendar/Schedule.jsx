@@ -9,6 +9,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Schedule() {
   const [formData, setFormData] = useState({
@@ -107,7 +108,7 @@ export default function Schedule() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Event Title */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Calendar className="mr-2 text-blue-500" size={18} />
                 일정 이름
               </label>
@@ -125,7 +126,7 @@ export default function Schedule() {
             {/* Start and End Time */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                   <Clock className="mr-2 text-green-500" size={18} />
                   시작 시간
                 </label>
@@ -139,7 +140,7 @@ export default function Schedule() {
                 />
               </div>
               <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                   <Clock className="mr-2 text-red-500" size={18} />
                   종료 시간
                 </label>
@@ -156,7 +157,7 @@ export default function Schedule() {
 
             {/* Calendar Selection */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Calendar className="mr-2 text-purple-500" size={18} />
                 Calendar 선택
               </label>
@@ -175,7 +176,7 @@ export default function Schedule() {
 
             {/* 내부 참석자 섹션 (드롭다운 토글 방식) */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Users className="mr-2 text-indigo-500" size={18} />
                 참석자 명단
               </label>
@@ -214,14 +215,14 @@ export default function Schedule() {
 
               {selectedAttendees.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  <h4 className="text-sm font-medium text-gray-600">
+                  <h4 className="text-m font-medium text-gray-600">
                     선택된 참석자
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedAttendees.map((attendee, idx) => (
                       <span
                         key={idx}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs flex items-center"
+                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-s flex items-center"
                       >
                         {attendee}
                         <button
@@ -240,7 +241,7 @@ export default function Schedule() {
 
             {/* 외부 참석자 섹션 (삭제 버튼 추가) */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Users className="mr-2 text-teal-500" size={18} />
                 외부 참석자 명단
               </label>
@@ -268,7 +269,7 @@ export default function Schedule() {
                     {formData.externalAttendees.map((attendee, idx) => (
                       <span
                         key={idx}
-                        className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs flex items-center"
+                        className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-s flex items-center"
                       >
                         {attendee}
                         <button
@@ -287,7 +288,7 @@ export default function Schedule() {
 
             {/* Location */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <MapPin className="mr-2 text-orange-500" size={18} />
                 장소
               </label>
@@ -304,7 +305,7 @@ export default function Schedule() {
 
             {/* Description */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 일정 내용
               </label>
               <textarea
@@ -319,13 +320,19 @@ export default function Schedule() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-center">
+            <div className="flex w-[200px] mx-auto justify-between">
               <button
                 type="submit"
                 className="bg-[#b2d1ff] text-white px-8 py-3 rounded-full hover:from-blue-600 hover:to-green-600 transition-all transform hover:-translate-y-1 shadow-lg"
               >
                 일정 등록
               </button>
+              <Link
+                to="/antwork/calendar"
+                className="bg-[#eceef1] text-black px-8 py-3 rounded-full hover:from-blue-600 hover:to-green-600 transition-all transform hover:-translate-y-1 shadow-lg"
+              >
+                취소
+              </Link>
             </div>
           </form>
         </div>

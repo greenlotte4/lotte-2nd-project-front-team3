@@ -8,11 +8,29 @@ import axios from "axios";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const calendarRef = useRef(null);
+  // useState 몰아넣은 곳
+  const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
+  const [events, setEvents] = useState([]);
+  const [newEvent, setNewEvent] = useState({
+    content_title: "",
+    description: "",
+    location: "",
+    member: "",
+    start: "",
+    end: "",
+  });
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false); // 수정 모드
+  const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
+  //
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi(); // FullCalendar API 참조
       if (listMonth === "listWeek") {
         calendarApi.changeView("listWeek"); // 'listMonth' 버튼 동작 재현
+        setListMonth("dayGridMonth");
+      } else if (listMonth === "listMonth") {
+        calendarApi.changeView("listMonth"); // 'listMonth' 버튼 동작 재현
         setListMonth("dayGridMonth");
       }
     }
@@ -45,7 +63,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       calendarApi.gotoDate(nextYearDate); // 새로 생성한 날짜로 이동
     }
   };
-  const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
 
   useEffect(() => {
     const fetchHolidays = async () => {
@@ -70,9 +87,8 @@ function MyCalendar({ listMonth, setListMonth }) {
           return {
             title: holiday.dateName, // 공휴일 이름
             date: formattedDate, // 공휴일 날짜 (YYYYMMDD 형식)
-            color: "#f70202", // 공휴일 표시 색상
-            textColor: "white", // 공휴일 텍스트 색상
-            editable: "false",
+            color: "white", // 공휴일 표시 색상
+            display: "background",
           };
         });
 
@@ -84,20 +100,6 @@ function MyCalendar({ listMonth, setListMonth }) {
 
     fetchHolidays();
   }, []); // 컴포넌트가 처음 렌더링될 때만 호출
-
-  const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({
-    content_title: "",
-    description: "",
-    location: "",
-    member: "",
-    start: "",
-    end: "",
-    editable: "false",
-  });
-  const [showModal, setShowModal] = useState(false);
-  const [editMode, setEditMode] = useState(false); // 수정 모드
-  const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
 
   // 날짜 클릭 시 모달 띄우기
   const handleDateClick = (info) => {
@@ -214,10 +216,10 @@ function MyCalendar({ listMonth, setListMonth }) {
     const { location, member } = eventInfo.event.extendedProps;
 
     const start = eventInfo.event.start;
-    if (eventInfo.event.backgroundColor === "#f70202") {
+    if (eventInfo.event.backgroundColor === "white") {
       return (
-        <div>
-          <b>{eventInfo.event.title}</b>
+        <div className="flex justify-start ml-[33px] mt-1">
+          <b className="text-[rgb(253,1,1)]">{eventInfo.event.title}</b>
         </div>
       ); // 이벤트가 빨간색 배경일 때 렌더링하지 않음
     }
@@ -250,6 +252,16 @@ function MyCalendar({ listMonth, setListMonth }) {
     );
   };
 
+  const [dayMaxEvents, setDayMaxEvents] = useState(2); // dayMaxEvents 기본값 설정
+
+  const handleDatesSet = (info) => {
+    if (info.view.type === "dayGridMonth") {
+      setDayMaxEvents(2); // dayGridMonth에서만 2개로 제한
+    } else {
+      setDayMaxEvents(false); // 다른 뷰에서는 제한 없음
+    }
+  };
+
   return (
     <section className="w-auto h-auto bg-white mx-auto">
       <div className="w-full">
@@ -264,14 +276,14 @@ function MyCalendar({ listMonth, setListMonth }) {
           select={handleDateSelect} // 날짜 선택 시 실행할 함수
           slotWidth="auto" // slot의 너비를 자동으로 조정
           height="750px" // 일정 내용 영역의 높이를 200px로 고정
-          dayMaxEvents={2} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
+          dayMaxEvents={dayMaxEvents} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
+          datesSet={handleDatesSet} // 뷰 변경시마다 호출되는 이벤트
           moreLinkText={(n) => `+${n}개의 일정 더보기`} // 3개 이상일 때 나타날 + 텍스트
           locale="ko" // 언어를 한국어로 설정
           eventContent={renderEventContent} // 커스터마이징 렌더링
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정
           editable={true} // 드래그 및 리사이즈 가능
-          eventDurationEditable={false} // 리사이즈 비활성화
           eventDrop={handleEventDrop} // 드래그 앤 드롭 후 호출
           headerToolbar={{
             start: "prev,next,today", // 이전/다음 버튼

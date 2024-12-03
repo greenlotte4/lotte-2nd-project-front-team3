@@ -21,6 +21,8 @@ export default function LandingFooter() {
               src="/images/Landing/antwork_logo.png"
               alt="Antwork footer logo"
             />
+            <span>App Version:</span> <br />
+            <span>3조-0.0.3-SNAPSHOT</span>
           </Link>
         </div>
 
