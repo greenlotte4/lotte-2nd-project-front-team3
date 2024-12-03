@@ -3,6 +3,7 @@ import { useInviteModal } from "../../../hooks/chatting/invitemodal";
 import useModalStore from "../../../store/modalStore";
 import useToggle from "../../../hooks/useToggle";
 
+
 export default function ChattingAside({ asideVisible }) {
   const [toggleStates, toggleState] = useToggle({
     isDMOpen: true,
@@ -35,6 +36,14 @@ export default function ChattingAside({ asideVisible }) {
         >
           +
         </button> */}
+ {/* 채널 생성 플러스 버튼 */}
+        <button
+          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
+          onClick={() => openModal("createChannel", {})} // 모달 열기
+        >
+        + 채널 추가
+        </button>
+
       </div>
 
       {/* 채팅방 검색 */}

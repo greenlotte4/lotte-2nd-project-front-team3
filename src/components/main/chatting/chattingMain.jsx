@@ -1,8 +1,10 @@
 import { useState } from "react";
 import useToggle from "./../../../hooks/useToggle";
+import useModalStore from "./../../../store/modalStore";
 
 export default function ChattingMain() {
   const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
+  const { openModal } = useModalStore(); // 모달 열기 함수 가져오기
 
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
@@ -88,7 +90,7 @@ export default function ChattingMain() {
                           />
                         </svg>
                       </button>
-                    )}
+                    )} 
                   </div>
                 )}
                 <button
@@ -102,7 +104,19 @@ export default function ChattingMain() {
                   />
                 </button>
               </div>
+            {/* 채팅 생성 버튼 (여기에 이동) */}
+            <button
+              className="p-2 rounded-full hover:bg-gray-300 focus:outline-none"
+              onClick={() => openModal("createChannel", {})} // 모달 열기
+            >
+              <img
+                src="/images/ico/channel_create.svg"
+                alt="채널 생성"
+                className="w-8 h-8"
+              />
+            </button>
 
+      
               {/* 메뉴 아이콘 */}
               <button
                 className="p-2 rounded-full focus:outline-none "
