@@ -7,6 +7,12 @@ import { BsEmojiSmile, BsThreeDotsVertical } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  PAGE_FETCH_URI,
+  PAGE_SAVE_URI,
+  PAGE_IMAGE_UPLOAD_URI,
+  PAGE_DELETE_URI,
+} from "../../../api/_URI";
 
 const PagingWrite = () => {
   const ejInstance = useRef();
@@ -24,7 +30,7 @@ const PagingWrite = () => {
 
   const fetchPageData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/page/${id}`);
+      const response = await fetch(`${PAGE_FETCH_URI}/${id}`);
       if (response.ok) {
         const data = await response.json();
         setTitle(data.title);
@@ -41,7 +47,7 @@ const PagingWrite = () => {
 
   const createPage = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/page/save", {
+      const response = await fetch(PAGE_SAVE_URI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +82,7 @@ const PagingWrite = () => {
 
       console.log("Saving with title:", saveData.title);
 
-      const response = await fetch("http://localhost:8080/api/page/save", {
+      const response = await fetch(PAGE_SAVE_URI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,13 +122,10 @@ const PagingWrite = () => {
                 const formData = new FormData();
                 formData.append("file", file);
 
-                const response = await fetch(
-                  "http://localhost:8080/api/page/upload",
-                  {
-                    method: "POST",
-                    body: formData,
-                  }
-                );
+                const response = await fetch(PAGE_IMAGE_UPLOAD_URI, {
+                  method: "POST",
+                  body: formData,
+                });
 
                 if (response.ok) {
                   const imageUrl = await response.text();
@@ -176,7 +179,7 @@ const PagingWrite = () => {
 
     if (window.confirm("정말로 이 페이지를 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`http://localhost:8080/api/page/${id}`, {
+        const response = await fetch(`${PAGE_DELETE_URI}/${id}`, {
           method: "DELETE",
         });
 
@@ -294,7 +297,7 @@ const PagingWrite = () => {
                 <button className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]"></button>
               ) : (
                 <button
-                  onClick={() => setShowIconPicker(true)}
+                  onClick={() => setShowIconPicker(false)}
                   className={`w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 transition-opacity duration-200
                                         ${
                                           isHovering

@@ -22,3 +22,9 @@ export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트
 //drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
 export const MY_DRIVE_FOLDERS_URI = `${API_SERVER_HOST}/drive/folder/mydriveView`; // 드라이브..테스트용..
+
+// page
+export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
+export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장
+export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미지 업로드
+export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
