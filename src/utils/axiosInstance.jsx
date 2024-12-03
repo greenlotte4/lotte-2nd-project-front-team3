@@ -1,5 +1,5 @@
 import axios from "axios";
-import useAuthStore from "../store/authStore"; // Zustand 스토어
+import useAuthStore from "./../store/AuthStore";
 import { refreshAccessToken } from "../api/userAPI"; // 토큰 갱신 API
 
 const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
