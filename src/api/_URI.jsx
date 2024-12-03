@@ -37,3 +37,8 @@ export const PAGE_LIST_DELETED_URI = `${API_SERVER_HOST}/page/list/deleted`; // 
 export const PAGE_RESTORE_URI = `${API_SERVER_HOST}/page/:id/restore`; // 페이지 복구
 export const PAGE_SOFT_DELETE_URI = `${API_SERVER_HOST}/page/:id/soft`; // 소프트 삭제
 export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하드 삭제
+
+// calendar
+export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
+export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 캘린더 추가하기
+export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기

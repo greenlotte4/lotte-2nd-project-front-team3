@@ -1,36 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCalendar, insertCalendar } from "../../../api/calendarAPI";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  // const uid = useState(user.username);
+  const uid = "qwer123";
+  console.log("dsaf" + uid);
+
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const handleButtonClick = () => {
     console.log("버튼 클릭!");
     setListMonth("listWeek"); // listMonth 값 업데이트
   };
-
-  const [calendars, setCalendars] = useState([
-    { id: 1, name: "캘린더 1" }, // 기본 항목
-  ]);
+  const handleButtonClick2 = () => {
+    console.log("버튼 클릭!");
+    setListMonth("listMonth"); // listMonth 값 업데이트
+  };
+  const [calendars, setCalendars] = useState([]);
   const [editingId, setEditingId] = useState(null); // 수정 중인 캘린더 ID
   const [newName, setNewName] = useState(""); // 수정 중인 이름
   // 새 캘린더 추가 함수
-  const addCalendar = () => {
-    const newCalendar = {
-      id: calendars.length + 1, // 고유 ID
-      name: `새 캘린더 ${calendars.length + 1}`, // 기본 이름
-    };
-    setCalendars([...calendars, newCalendar]); // 상태 업데이트
+  const addCalendar = async (e) => {
+    e.preventDefault();
+    if (confirm("캘린더를 추가 하시겠습니까?")) {
+      const newCalendar = {
+        no: calendars.length,
+        name: `새 캘린더`, // 기본 이름
+        user_id: user.username,
+      };
+      setCalendars([...calendars, newCalendar]); // 상태 업데이트
+      console.log(newCalendar, user.username);
+      await insertCalendar(newCalendar);
+    }
   };
-  const startEditing = (id, currentName) => {
-    setEditingId(id);
+
+  const startEditing = (no, currentName) => {
+    setEditingId(no);
     setNewName(currentName); // 기존 이름 설정
   };
 
   // 이름 저장
-  const saveName = (id) => {
+  const saveName = (no) => {
     setCalendars(
       calendars.map((calendar) =>
-        calendar.id === id ? { ...calendar, name: newName } : calendar
+        calendar.no === no ? { ...calendar, name: newName } : calendar
       )
     );
     setEditingId(null); // 수정 모드 종료
@@ -44,13 +60,20 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   };
 
   // 캘린더 삭제
-  const deleteCalendar = (id) => {
-    if (confirm("캘린더를 삭제하시겠습니까?")) {
-      setCalendars((prevCalendars) =>
-        prevCalendars.filter((calendar) => calendar.id !== id)
-      );
-    }
-  };
+  const deleteCalendar = () => {};
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCalendar(uid);
+      console.log("333333333" + data);
+
+      setData(data);
+    };
+
+    fetchData();
+  }, [uid]);
 
   return (
     <>
@@ -116,8 +139,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
               } pl-8`}
             >
               <ul>
-                {calendars.map((calendar) => (
-                  <li key={calendar.id}>
+                {data.map((item) => (
+                  <li key={item.calendarId}>
                     <div className="flex items-center mb-2 space-x-4">
                       <img
                         src="/images/Antwork/calendar/캘린더.svg"
@@ -126,7 +149,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                       />
 
                       {/* 이름 표시 또는 수정 필드 */}
-                      {editingId === calendar.id ? (
+                      {editingId === item.calendarId ? (
                         <div>
                           <input
                             type="text"
@@ -135,7 +158,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                             className="border rounded-md w-[150px] px-2 py-1"
                           />
                           <button
-                            onClick={() => saveName(calendar.id)}
+                            onClick={() => saveName(item.calendarId)}
                             className="ml-2 text-green-500"
                           >
                             저장
@@ -148,14 +171,14 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           </button>
                         </div>
                       ) : (
-                        <span>{calendar.name}</span>
+                        <span>{item.name}</span>
                       )}
 
                       {/* 이름 수정 버튼 */}
-                      {editingId !== calendar.id && (
+                      {editingId !== item.calendarId && (
                         <button
                           onClick={() =>
-                            startEditing(calendar.id, calendar.name)
+                            startEditing(item.calendarId, item.name)
                           }
                           className="ml-2 text-blue-500"
                         >
@@ -164,9 +187,9 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                       )}
 
                       {/* 캘린더 삭제 버튼 */}
-                      {editingId !== calendar.id && (
+                      {editingId !== item.calendarId && (
                         <button
-                          onClick={() => deleteCalendar(calendar.id)}
+                          onClick={() => deleteCalendar(item.calendarId)}
                           className="ml-2 text-red-500"
                         >
                           삭제
@@ -247,7 +270,12 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                 <li>
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <button onClick={handleButtonClick}>+ 전체보기</button>
+                      <button onClick={handleButtonClick2}>- 월간보기</button>
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="flex items-start items-center mb-2 space-x-4">
+                      <button onClick={handleButtonClick}>- 주간보기</button>
                     </div>
                   </a>
                 </li>
