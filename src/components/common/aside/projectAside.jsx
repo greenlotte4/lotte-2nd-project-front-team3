@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 import useModalStore from "../../../store/modalStore";
 import ProjectModal from "../modal/projectModal";
-import useAuthStore from "../../../store/authStore";
 
 export default function ProjectAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
