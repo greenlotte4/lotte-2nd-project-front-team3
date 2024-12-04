@@ -19,6 +19,8 @@ export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사
 
 // project
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가
+export const PROJECT_LIST_URI = `${API_SERVER_HOST}/project/list`; // 프로젝트 조회
+export const PROJECT_DETAIL_URI = `${API_SERVER_HOST}/project/view`; // 프로젝트 상세
 
 //drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
