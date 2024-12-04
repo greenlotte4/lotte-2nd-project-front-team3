@@ -7,13 +7,11 @@ export default function ProjectMainSection() {
   const [projects, setProjects] = useState([]);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
-  //const uid = useState(user.uid);
-  const uid = "qwer123";
-
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const projectData = await getProjects(uid); // API 호출
+        console.log("사용자 정보:", user);
+        const projectData = await getProjects(user?.uid); // API 호출
         console.log("Fetched project data:", projectData); // 데이터 확인
         setProjects(projectData); // 상태에 데이터 저장
       } catch (error) {
@@ -23,7 +21,7 @@ export default function ProjectMainSection() {
     };
 
     fetchProjects(); // 컴포넌트 마운트 시 데이터 가져오기
-  }, [user.uid]); // UID 변경 시 데이터 다시 가져오기
+  }, [user]); // UID 변경 시 데이터 다시 가져오기
 
   return (
     <>

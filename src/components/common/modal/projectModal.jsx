@@ -106,11 +106,49 @@ export default function ProjectModal({
     }
   };
 
-  // Task 관련 상태
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskContent, setTaskContent] = useState("");
-  const [priority, setPriority] = useState("P2");
-  const [size, setSize] = useState("M");
+  // 작업 상태 관리
+  const [taskData, setTaskData] = useState({
+    title: "",
+    content: "",
+    priority: "2",
+    size: "M",
+  });
+
+  // 작업 changeHandler
+  const handleTaskChange = (e) => {
+    const { name, value } = e.target;
+    setTaskData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // 작업 추가 핸들러
+  const handleAddTask = (e) => {
+    e.preventDefault();
+
+    if (!currentStateId || !onAddItem) {
+      console.error("currentStateId or onAddItem is missing!");
+      return;
+    }
+
+    const newTask = {
+      title: taskData.title,
+      content: taskData.content,
+      priority: taskData.priority,
+      size: taskData.size,
+      stateId: currentStateId,
+      status: 0,
+    };
+
+    console.log("New Task to Add:", newTask);
+
+    onAddItem(newTask);
+
+    alert("작업이 등록되었습니다!");
+    setTaskData({ title: "", content: "", priority: "2", size: "M" });
+    closeModal();
+  };
 
   // 프로젝트 이름 상태 추가
   const [projectName, setProjectName] = useState("");
@@ -120,88 +158,56 @@ export default function ProjectModal({
   const [searchResults, setSearchResults] = useState([]);
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
 
-  useEffect(() => {
-    if (currentTask) {
-      setTaskTitle(currentTask.title);
-      setTaskContent(currentTask.content);
-      setPriority(currentTask.priority);
-      setSize(currentTask.size);
+  // useEffect(() => {
+  //   if (currentTask) {
+  //     setTaskTitle(currentTask.title);
+  //     setTaskContent(currentTask.content);
+  //     setPriority(currentTask.priority);
+  //     setSize(currentTask.size);
 
-      // 선택된 담당자 설정
-      if (currentTask.assignees) {
-        setSelectedCollaborators(currentTask.assignees); // 담당자 설정
-      }
-    } else {
-      setTaskTitle("");
-      setTaskContent("");
-      setPriority("P2");
-      setSize("M");
+  //     // 선택된 담당자 설정
+  //     if (currentTask.assignees) {
+  //       setSelectedCollaborators(currentTask.assignees); // 담당자 설정
+  //     }
+  //   } else {
+  //     setTaskTitle("");
+  //     setTaskContent("");
+  //     setPriority("P2");
+  //     setSize("M");
 
-      // 담당자 상태 초기화
-      setSearchQuery("");
-      setSearchResults([]);
-      setSelectedCollaborators([]);
-    }
-  }, [currentTask]);
+  //     // 담당자 상태 초기화
+  //     setSearchQuery("");
+  //     setSearchResults([]);
+  //     setSelectedCollaborators([]);
+  //   }
+  // }, [currentTask]);
 
-  const handleSaveTask = (e) => {
-    e.preventDefault();
+  // const handleSaveTask = (e) => {
+  //   e.preventDefault();
 
-    const taskData = {
-      id: currentTask?.id || Date.now(), // 수정 시 기존 ID 유지
-      title: taskTitle,
-      content: taskContent,
-      priority,
-      size,
-      assignees: selectedCollaborators, // 선택된 담당자 추가
-    };
+  //   const taskData = {
+  //     id: currentTask?.id || Date.now(), // 수정 시 기존 ID 유지
+  //     title: taskTitle,
+  //     content: taskContent,
+  //     priority,
+  //     size,
+  //     assignees: selectedCollaborators, // 선택된 담당자 추가
+  //   };
 
-    console.log("Task Data to Save:", taskData);
+  //   console.log("Task Data to Save:", taskData);
 
-    if (type === "task-create") {
-      onAddItem(currentStateId, taskData);
-    } else if (type === "task-edit") {
-      console.log("Calling onEditItem with:", currentStateId, taskData);
-      onEditItem(currentStateId, taskData);
-    }
+  //   if (type === "task-create") {
+  //     onAddItem(currentStateId, taskData);
+  //   } else if (type === "task-edit") {
+  //     console.log("Calling onEditItem with:", currentStateId, taskData);
+  //     onEditItem(currentStateId, taskData);
+  //   }
 
-    closeModal();
-    setTimeout(() => {
-      setCurrentTask(null);
-    }, 0); // 상태 업데이트 후 초기화
-  };
-
-  const handleAddTask = (e) => {
-    e.preventDefault();
-    console.log("Current State ID:", currentStateId); // 디버깅 로그
-    console.log("Adding Task:", { taskTitle, taskContent, priority, size }); // Task 내용 확인
-
-    // currentStateId와 task 데이터를 확인 후 추가
-    if (!onAddItem || !currentStateId) {
-      console.error("onAddItem or currentStateId is missing!");
-      return;
-    }
-
-    // New item 생성
-    const newItem = {
-      title: taskTitle,
-      content: taskContent,
-      priority,
-      size,
-    };
-
-    console.log("New Item to Add:", newItem);
-
-    // onAddItem 호출
-    onAddItem(newItem);
-
-    // 상태 초기화
-    setTaskTitle("");
-    setTaskContent("");
-    setPriority("P2");
-    setSize("M");
-    closeModal();
-  };
+  //   closeModal();
+  //   setTimeout(() => {
+  //     setCurrentTask(null);
+  //   }, 0); // 상태 업데이트 후 초기화
+  // };
 
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -272,8 +278,9 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">작업명</label>
                   <input
                     type="text"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
+                    name="title"
+                    value={taskData.title}
+                    onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                     placeholder="작업 제목을 입력하세요"
                     required
@@ -283,8 +290,9 @@ export default function ProjectModal({
                 <div>
                   <label className="block mb-2 font-medium">작업 내용</label>
                   <textarea
-                    value={taskContent}
-                    onChange={(e) => setTaskContent(e.target.value)}
+                    name="content"
+                    value={taskData.content}
+                    onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                     rows="4"
                     placeholder="작업 내용을 설명해주세요"
@@ -294,20 +302,22 @@ export default function ProjectModal({
                 <div>
                   <label className="block mb-2 font-medium">우선순위</label>
                   <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
+                    name="priority"
+                    value={taskData.priority}
+                    onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
-                    <option value="P0">P0 - 최우선</option>
-                    <option value="P1">P1 - 높음</option>
-                    <option value="P2">P2 - 보통</option>
+                    <option value="0">P0 - 최우선</option>
+                    <option value="1">P1 - 높음</option>
+                    <option value="2">P2 - 보통</option>
                   </select>
                 </div>
                 <div>
                   <label className="block mb-2 font-medium">크기</label>
                   <select
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
+                    name="size"
+                    value={taskData.size}
+                    onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
                     <option value="S">S</option>
@@ -317,7 +327,7 @@ export default function ProjectModal({
                   </select>
                 </div>
                 {/* 담당자 검색 및 선택 */}
-                <div>
+                {/* <div>
                   <label className="block mb-2 font-medium">담당자 검색</label>
                   <input
                     type="text"
@@ -349,10 +359,10 @@ export default function ProjectModal({
                       )}
                     </div>
                   )}
-                </div>
+                </div> */}
 
                 {/* 선택된 담당자 목록 */}
-                <div>
+                {/* <div>
                   <h3 className="font-medium mb-3">선택된 담당자</h3>
                   <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
                     {selectedCollaborators.length > 0 ? (
@@ -377,7 +387,7 @@ export default function ProjectModal({
                       <p className="text-gray-500">선택된 담당자가 없습니다.</p>
                     )}
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex justify-end space-x-2 mt-6">
                   <button
@@ -398,152 +408,152 @@ export default function ProjectModal({
             </div>
           </div>
         );
-      case "task-edit":
-        return (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">작업 수정</h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  ✕
-                </button>
-              </div>
+      // case "task-edit":
+      //   return (
+      //     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
+      //       <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
+      //         <div className="flex justify-between items-center mb-6">
+      //           <h2 className="text-2xl font-bold">작업 수정</h2>
+      //           <button
+      //             onClick={closeModal}
+      //             className="text-gray-600 hover:text-gray-900"
+      //           >
+      //             ✕
+      //           </button>
+      //         </div>
 
-              <form onSubmit={handleSaveTask} className="space-y-4">
-                <div>
-                  <label className="block mb-2 font-medium">작업명</label>
-                  <input
-                    type="text"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
-                    className="w-full border rounded p-2"
-                    placeholder="작업 제목을 입력하세요"
-                    required
-                  />
-                </div>
+      //         <form onSubmit={handleSaveTask} className="space-y-4">
+      //           <div>
+      //             <label className="block mb-2 font-medium">작업명</label>
+      //             <input
+      //               type="text"
+      //               value={taskTitle}
+      //               onChange={(e) => setTaskTitle(e.target.value)}
+      //               className="w-full border rounded p-2"
+      //               placeholder="작업 제목을 입력하세요"
+      //               required
+      //             />
+      //           </div>
 
-                <div>
-                  <label className="block mb-2 font-medium">작업 내용</label>
-                  <textarea
-                    value={taskContent}
-                    onChange={(e) => setTaskContent(e.target.value)}
-                    className="w-full border rounded p-2"
-                    rows="4"
-                    placeholder="작업 내용을 설명해주세요"
-                  />
-                </div>
+      //           <div>
+      //             <label className="block mb-2 font-medium">작업 내용</label>
+      //             <textarea
+      //               value={taskContent}
+      //               onChange={(e) => setTaskContent(e.target.value)}
+      //               className="w-full border rounded p-2"
+      //               rows="4"
+      //               placeholder="작업 내용을 설명해주세요"
+      //             />
+      //           </div>
 
-                <div>
-                  <label className="block mb-2 font-medium">우선순위</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full border rounded p-2"
-                  >
-                    <option value="P0">P0 - 최우선</option>
-                    <option value="P1">P1 - 높음</option>
-                    <option value="P2">P2 - 보통</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block mb-2 font-medium">크기</label>
-                  <select
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    className="w-full border rounded p-2"
-                  >
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                  </select>
-                </div>
+      //           <div>
+      //             <label className="block mb-2 font-medium">우선순위</label>
+      //             <select
+      //               value={priority}
+      //               onChange={(e) => setPriority(e.target.value)}
+      //               className="w-full border rounded p-2"
+      //             >
+      //               <option value="P0">P0 - 최우선</option>
+      //               <option value="P1">P1 - 높음</option>
+      //               <option value="P2">P2 - 보통</option>
+      //             </select>
+      //           </div>
+      //           <div>
+      //             <label className="block mb-2 font-medium">크기</label>
+      //             <select
+      //               value={size}
+      //               onChange={(e) => setSize(e.target.value)}
+      //               className="w-full border rounded p-2"
+      //             >
+      //               <option value="S">S</option>
+      //               <option value="M">M</option>
+      //               <option value="L">L</option>
+      //               <option value="XL">XL</option>
+      //             </select>
+      //           </div>
 
-                {/* 담당자 검색 및 선택 */}
-                <div>
-                  <label className="block mb-2 font-medium">담당자 검색</label>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    className="w-full border rounded p-2"
-                    placeholder="담당자 이름을 입력하세요"
-                  />
-                  {searchQuery && (
-                    <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
-                      {searchResults.length > 0 ? (
-                        searchResults.map((user, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-2"
-                          >
-                            <span>{user.username}</span>
-                            <button
-                              type="button"
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handleAddCollaborator(user)}
-                            >
-                              선택
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">검색 결과가 없습니다.</p>
-                      )}
-                    </div>
-                  )}
-                </div>
+      //           {/* 담당자 검색 및 선택 */}
+      //           <div>
+      //             <label className="block mb-2 font-medium">담당자 검색</label>
+      //             <input
+      //               type="text"
+      //               value={searchQuery}
+      //               onChange={handleSearch}
+      //               className="w-full border rounded p-2"
+      //               placeholder="담당자 이름을 입력하세요"
+      //             />
+      //             {searchQuery && (
+      //               <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
+      //                 {searchResults.length > 0 ? (
+      //                   searchResults.map((user, index) => (
+      //                     <div
+      //                       key={index}
+      //                       className="flex justify-between items-center p-2"
+      //                     >
+      //                       <span>{user.username}</span>
+      //                       <button
+      //                         type="button"
+      //                         className="text-blue-500 hover:text-blue-700"
+      //                         onClick={() => handleAddCollaborator(user)}
+      //                       >
+      //                         선택
+      //                       </button>
+      //                     </div>
+      //                   ))
+      //                 ) : (
+      //                   <p className="text-gray-500">검색 결과가 없습니다.</p>
+      //                 )}
+      //               </div>
+      //             )}
+      //           </div>
 
-                {/* 선택된 담당자 목록 */}
-                <div>
-                  <h3 className="font-medium mb-3">선택된 담당자</h3>
-                  <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
-                    {selectedCollaborators.length > 0 ? (
-                      selectedCollaborators.map((collaborator, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center p-2"
-                        >
-                          <span>{collaborator.username}</span>
-                          <button
-                            type="button"
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() =>
-                              handleRemoveCollaborator(collaborator.username)
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">선택된 담당자가 없습니다.</p>
-                    )}
-                  </div>
-                </div>
+      //           {/* 선택된 담당자 목록 */}
+      //           <div>
+      //             <h3 className="font-medium mb-3">선택된 담당자</h3>
+      //             <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
+      //               {selectedCollaborators.length > 0 ? (
+      //                 selectedCollaborators.map((collaborator, index) => (
+      //                   <div
+      //                     key={index}
+      //                     className="flex justify-between items-center p-2"
+      //                   >
+      //                     <span>{collaborator.username}</span>
+      //                     <button
+      //                       type="button"
+      //                       className="text-red-500 hover:text-red-700"
+      //                       onClick={() =>
+      //                         handleRemoveCollaborator(collaborator.username)
+      //                       }
+      //                     >
+      //                       삭제
+      //                     </button>
+      //                   </div>
+      //                 ))
+      //               ) : (
+      //                 <p className="text-gray-500">선택된 담당자가 없습니다.</p>
+      //               )}
+      //             </div>
+      //           </div>
 
-                <div className="flex justify-end space-x-2 mt-6">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="px-4 py-2 border rounded hover:bg-gray-100"
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
-                  >
-                    수정
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        );
+      //           <div className="flex justify-end space-x-2 mt-6">
+      //             <button
+      //               type="button"
+      //               onClick={closeModal}
+      //               className="px-4 py-2 border rounded hover:bg-gray-100"
+      //             >
+      //               취소
+      //             </button>
+      //             <button
+      //               type="submit"
+      //               className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
+      //             >
+      //               수정
+      //             </button>
+      //           </div>
+      //         </form>
+      //       </div>
+      //     </div>
+      //   );
       case "project":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
