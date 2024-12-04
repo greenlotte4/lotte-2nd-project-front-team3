@@ -15,7 +15,7 @@ export default function ProjectModal({
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
 
-  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기l
 
   useEffect(() => {
     console.log("사용자 정보:", user);
