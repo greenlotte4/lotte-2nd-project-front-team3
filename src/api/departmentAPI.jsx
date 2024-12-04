@@ -33,7 +33,7 @@ export const insertDepartment = async (departmentName, companyId) => {
 export const fetchDepartmentsByCompanyId = async (companyId) => {
   try {
     const response = await axiosInstance.get(
-      `${DEPARTMENT_SELECT_URI}+"/"+${companyId}`
+      `${DEPARTMENT_SELECT_URI}/${companyId}`
     );
     return response.data; // 부서 데이터 반환
   } catch (error) {
