@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProjects } from "../../../api/projectAPI";
-import useAuthStore from "../../../store/authStore";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function ProjectMainSection() {
   const [projects, setProjects] = useState([]);
