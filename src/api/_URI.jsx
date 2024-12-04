@@ -1,12 +1,17 @@
 const SERVER_HOST = import.meta.env.VITE_SERVER_HOST;
 const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 
+// department
+export const DEPARTMENT_INSERT_URI = `${API_SERVER_HOST}/department/insert`; // 부서 생성
+export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; // 회사별 부서 조회
+
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
 export const USER_LOGIN_URI = `${API_SERVER_HOST}/user/login`; // 유저 로그인
 export const USER_LOGOUT_URI = `${API_SERVER_HOST}/user/logout`; // 유저 로그아웃
 export const USER_REFRESH_URI = `${API_SERVER_HOST}/user/refresh`; // 리프레시 토큰 검증
 export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기 관리자 유저 INSERT
+export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초대
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송
@@ -22,7 +27,7 @@ export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트
 export const PROJECT_LIST_URI = `${API_SERVER_HOST}/project/list`; // 프로젝트 조회
 export const PROJECT_DETAIL_URI = `${API_SERVER_HOST}/project/view`; // 프로젝트 상세
 
-//drive
+// drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기

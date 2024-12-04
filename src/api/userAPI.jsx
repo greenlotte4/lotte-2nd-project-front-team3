@@ -1,27 +1,16 @@
 import axios from "axios";
-import axiosInstance from "./../utils/axiosInstance";
 import useAuthStore from "../store/AuthStore";
 import {
   USER_ADMIN_CREATE_URI,
   USER_INVITE_SEND_EMAIL_URI,
+  USER_INVITE_URI,
   USER_LOGIN_URI,
   USER_LOGOUT_URI,
   USER_REFRESH_URI,
   USER_SEND_EMAIL_URI,
-  USER_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
-
-export const postUser = async (data) => {
-  try {
-    const response = await axios.post(`${USER_URI}`, data);
-    console.log(response.data);
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 // 유저 로그인
 export const loginUser = async (uid, password) => {
@@ -53,7 +42,8 @@ export const refreshAccessToken = async () => {
     const response = await axios.post(USER_REFRESH_URI, null, {
       withCredentials: true, // HTTP-Only 쿠키로 갱신
     });
-    return response.data.newAccessToken; // 새로운 Access Token 반환
+    console.log("api? 토큰 " + response.data.data);
+    return response.data.data; // 새로운 Access Token 반환
   } catch (error) {
     console.error("리프레시 토큰 갱신 실패:", error);
     throw new Error("리프레시 토큰 갱신에 실패했습니다.");
@@ -116,7 +106,7 @@ export const verifyUserCheckEmail = async (token) => {
   }
 };
 
-// 멤버 초대
+// 관리자 이메일 인증
 export const verifyUserInviteEmail = async (email, companyName) => {
   try {
     const response = await axios.post(USER_INVITE_SEND_EMAIL_URI, {
@@ -133,7 +123,7 @@ export const verifyUserInviteEmail = async (email, companyName) => {
   }
 };
 
-// 멤버 추가
+// 초기 관리자 멤버 추가
 export const addUser = async (userData) => {
   console.log("유저 insert 요청 전송");
   try {
@@ -150,5 +140,27 @@ export const addUser = async (userData) => {
   } catch (error) {
     console.error("Error adding user:", error);
     throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+// 회원 초대 API 호출 함수
+export const inviteUser = async (userData) => {
+  try {
+    console.log("초대 요청 전송");
+    const response = await axios.post(USER_INVITE_URI, userData);
+
+    if (response.data.success) {
+      console.log("초대 성공:", response.data);
+      return response.data;
+    } else {
+      throw new Error(
+        response.data.message || "초대 요청 처리에 실패했습니다."
+      );
+    }
+  } catch (error) {
+    console.error("초대 요청 실패:", error.response || error.message);
+    throw new Error(
+      error.response?.data?.message || "초대 요청 중 문제가 발생했습니다."
+    );
   }
 };
