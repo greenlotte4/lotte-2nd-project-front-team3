@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
-import { postProject } from "../../../api/projectAPI";
+import { postProject, postProjectState } from "../../../api/projectAPI";
 
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 
 export default function ProjectModal({
+  projectId,
   onAddState,
   onAddItem,
   onEditItem,
@@ -54,17 +55,56 @@ export default function ProjectModal({
       alert("프로젝트가 생성되었습니다. 상세 등록 화면으로 이동합니다.");
 
       // 프로젝트 생성 후 view 화면으로 이동
-      navigate(`/antwork/project/view/?id=${result.id}`);
+      navigate(`/antwork/project/view?id=${result.id}`);
     } catch (error) {
       console.error("Error submitting project:", error);
       alert("프로젝트 생성 중 문제가 발생했습니다.");
     }
   };
 
-  // State 관련 상태
-  const [stateTitle, setStateTitle] = useState("");
-  const [stateDescription, setStateDescription] = useState("");
-  const [stateColor, setStateColor] = useState("#00FF00"); // 기본 색상
+  // 프로젝트 작업 상태 관리
+  const [stateData, setStateData] = useState({
+    title: "",
+    description: "",
+    color: "#00FF00", // 기본 색상
+    projectId: projectId, // projectId 기본값
+  });
+
+  // 프로젝트 상태 changeHandler
+  const projectStateChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setStateData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // 프로젝트 작업 상태 추가 핸들러
+  const handleAddState = async (e) => {
+    e.preventDefault();
+
+    try {
+      // 서버로 전송
+      const addedState = await postProjectState(stateData); // API 호출
+      console.log("추가된 상태:", addedState);
+
+      if (onAddState) {
+        onAddState(addedState); // 부모 컴포넌트에 상태 추가 알림
+      }
+
+      alert("상태가 성공적으로 추가되었습니다!");
+      closeModal();
+      setStateData({
+        title: "",
+        description: "",
+        color: "#00FF00",
+        projectId: projectId, // 초기화 시에도 projectId 유지
+      }); // 초기화
+    } catch (error) {
+      console.error("Error adding state:", error);
+      alert("상태 추가 중 문제가 발생했습니다.");
+    }
+  };
 
   // Task 관련 상태
   const [taskTitle, setTaskTitle] = useState("");
@@ -129,19 +169,6 @@ export default function ProjectModal({
     setTimeout(() => {
       setCurrentTask(null);
     }, 0); // 상태 업데이트 후 초기화
-  };
-
-  const handleAddState = (e) => {
-    e.preventDefault();
-    onAddState({
-      title: stateTitle,
-      description: stateDescription,
-      color: stateColor,
-    });
-    setStateTitle("");
-    setStateDescription("");
-    setStateColor("#00FF00"); // 초기화
-    closeModal();
   };
 
   const handleAddTask = (e) => {
@@ -803,8 +830,9 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">상태 색상</label>
                   <input
                     type="color"
-                    value={stateColor}
-                    onChange={(e) => setStateColor(e.target.value)}
+                    name="color"
+                    value={stateData.color}
+                    onChange={projectStateChangeHandler}
                     className="w-full h-10 border rounded p-1"
                   />
                 </div>
@@ -814,8 +842,9 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">상태 제목</label>
                   <input
                     type="text"
-                    value={stateTitle}
-                    onChange={(e) => setStateTitle(e.target.value)}
+                    name="title"
+                    value={stateData.title}
+                    onChange={projectStateChangeHandler}
                     className="w-full border rounded p-2"
                     placeholder="상태 이름을 입력하세요"
                     required
@@ -826,8 +855,9 @@ export default function ProjectModal({
                 <div>
                   <label className="block mb-2 font-medium">상태 설명</label>
                   <textarea
-                    value={stateDescription}
-                    onChange={(e) => setStateDescription(e.target.value)}
+                    name="description"
+                    value={stateData.description}
+                    onChange={projectStateChangeHandler}
                     className="w-full border rounded p-2"
                     rows="4"
                     placeholder="상태 설명을 입력하세요"
