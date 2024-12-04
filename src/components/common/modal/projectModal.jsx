@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 import { postProject } from "../../../api/projectAPI";
-import useAuthStore from "../../../store/authStore";
+
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function ProjectModal({
   onAddState,
