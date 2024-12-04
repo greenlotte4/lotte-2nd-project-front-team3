@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 import { postProject } from "../../../api/projectAPI";
+import useAuthStore from "../../../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectModal({
   onAddState,
@@ -11,6 +13,13 @@ export default function ProjectModal({
   setCurrentTask,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  useEffect(() => {
+    console.log("사용자 정보:", user);
+  }, [user]);
 
   // 프로젝트 추가 상태 관리
   const [project, setProject] = useState({
@@ -28,13 +37,23 @@ export default function ProjectModal({
     e.preventDefault();
 
     try {
-      // project 객체를 그대로 JSON으로 전송
-      const result = await postProject(project);
-      console.log("result:", result);
+      // 프로젝트 추가 전 확인 알림창
+      if (!window.confirm("프로젝트를 생성하시겠습니까?")) {
+        return;
+      }
+
+      // 프로젝트 객체와 함께 uid를 전송
+      const result = await postProject(project, user.uid);
 
       // 상태 초기화 및 모달 닫기
+      console.log("Project Created:", result);
       setProject({ projectName: "", status: 0 });
       closeModal();
+
+      alert("프로젝트가 생성되었습니다. 상세 등록 화면으로 이동합니다.");
+
+      // 프로젝트 생성 후 view 화면으로 이동
+      navigate(`/antwork/project/view/?id=${result.id}`);
     } catch (error) {
       console.error("Error submitting project:", error);
       alert("프로젝트 생성 중 문제가 발생했습니다.");
