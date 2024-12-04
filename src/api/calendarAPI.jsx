@@ -1,5 +1,10 @@
 import axios from "axios";
-import { CALENDAR_INSERT_URI, CALENDAR_SELECT_URI } from "./_URI";
+import {
+  CALENDAR_DELETE_URI,
+  CALENDAR_INSERT_URI,
+  CALENDAR_SELECT_URI,
+  CALENDAR_UPDATE_URI,
+} from "./_URI";
 
 export const insertCalendar = async (calendar) => {
   try {
@@ -20,6 +25,36 @@ export const getCalendar = async (uid) => {
   console.log("43434343434" + uid);
   try {
     const response = await axios.get(`${CALENDAR_SELECT_URI}/${uid}`, {
+      headers: {
+        "Content-Type": "application/json", // JSON 형식으로 전송
+      },
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const updateCalendar = async (no, newName) => {
+  try {
+    const response = await axios.put(
+      `${CALENDAR_UPDATE_URI}/${no}/${newName}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const deleteCalendar = async (no) => {
+  try {
+    const response = await axios.delete(`${CALENDAR_DELETE_URI}/${no}`, {
       headers: {
         "Content-Type": "application/json", // JSON 형식으로 전송
       },
