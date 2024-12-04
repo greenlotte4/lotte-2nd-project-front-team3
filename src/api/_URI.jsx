@@ -12,6 +12,7 @@ export const USER_LOGOUT_URI = `${API_SERVER_HOST}/user/logout`; // 유저 로�
 export const USER_REFRESH_URI = `${API_SERVER_HOST}/user/refresh`; // 리프레시 토큰 검증
 export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기 관리자 유저 INSERT
 export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초대
+export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`;
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송

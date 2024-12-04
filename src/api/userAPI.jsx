@@ -1,9 +1,11 @@
 import axios from "axios";
 import useAuthStore from "../store/AuthStore";
+import axiosInstance from "./../utils/axiosInstance";
 import {
   USER_ADMIN_CREATE_URI,
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
+  USER_INVITE_VERIFY_URI,
   USER_LOGIN_URI,
   USER_LOGOUT_URI,
   USER_REFRESH_URI,
@@ -92,7 +94,21 @@ export const verifyUserEmail = async (token) => {
   }
 };
 
-// 인증 확인
+// 초대 인증 확인 (회원)
+export const verifyInviteToken = async (token) => {
+  try {
+    console.log("토큰" + token);
+    const response = await axios.get(
+      `${USER_INVITE_VERIFY_URI}?token=${token}`
+    );
+    return response.data; // 사용자 정보 반환
+  } catch (error) {
+    console.error("토큰 검증 실패:", error.response?.data || error.message);
+    throw new Error("유효하지 않은 초대 토큰입니다.");
+  }
+};
+
+// 이메일 인증 확인 (관리자)
 export const verifyUserCheckEmail = async (token) => {
   try {
     const response = await axios.get(
@@ -147,7 +163,8 @@ export const addUser = async (userData) => {
 export const inviteUser = async (userData) => {
   try {
     console.log("초대 요청 전송");
-    const response = await axios.post(USER_INVITE_URI, userData);
+    console.log("롤" + userData.role);
+    const response = await axiosInstance.post(USER_INVITE_URI, userData);
 
     if (response.data.success) {
       console.log("초대 성공:", response.data);

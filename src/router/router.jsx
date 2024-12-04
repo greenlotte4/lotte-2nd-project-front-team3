@@ -6,7 +6,6 @@ import MainPage from "./../pages/Main/MainPage";
 
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
-import TermsPage from "../pages/Member/TermsPage";
 
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
@@ -57,8 +56,7 @@ const router = createBrowserRouter([
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
-  { path: "/register", element: <RegisterPage /> }, // 회원가입
-  { path: "/terms", element: <TermsPage /> }, // 회원가입
+  { path: "/register", element: <RegisterPage /> }, // 약관, 회원가입 통합
 
   // 관리자 페이지
   { path: "/admin/login", element: <AdminLoginPage /> }, // 2024/11/26(화) 최준혁 - AdminLoginPage 추가
