@@ -1,5 +1,11 @@
 import axios from "axios";
-import { PROJECT_ADD_URI, PROJECT_LIST_URI, PROJECT_DETAIL_URI } from "./_URI";
+import {
+  PROJECT_ADD_URI,
+  PROJECT_LIST_URI,
+  PROJECT_DETAIL_URI,
+  PROJECT_STATE_INSERT_URI,
+  PROJECT_STATE_SELECT_URI,
+} from "./_URI";
 
 // 프로젝트 등록
 export const postProject = async (project, uid) => {
@@ -51,6 +57,39 @@ export const getProjectById = async (id) => {
     return response.data; // 프로젝트 데이터 반환
   } catch (error) {
     console.error("Error fetching project details:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 상태 등록
+export const postProjectState = async (stateData) => {
+  console.log("들어옴");
+  console.log("API 요청 데이터:", stateData); // 디버깅용
+  try {
+    const response = await axios.post(
+      `${PROJECT_STATE_INSERT_URI}`,
+      stateData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // 서버에서 반환된 상태 DTO
+  } catch (error) {
+    console.error("Error adding project state:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 상태 조회
+export const getProjectStates = async (id) => {
+  console.log("프로젝트상태조회 들어옴?");
+  try {
+    const response = await axios.get(`${PROJECT_STATE_SELECT_URI}/${id}`);
+    return response.data; // 서버에서 반환된 전체 상태
+  } catch (error) {
+    console.error("Error fetching project states:", error);
     throw error;
   }
 };

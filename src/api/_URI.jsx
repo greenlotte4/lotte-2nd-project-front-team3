@@ -26,6 +26,8 @@ export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가
 export const PROJECT_LIST_URI = `${API_SERVER_HOST}/project/list`; // 프로젝트 조회
 export const PROJECT_DETAIL_URI = `${API_SERVER_HOST}/project/view`; // 프로젝트 상세
+export const PROJECT_STATE_INSERT_URI = `${API_SERVER_HOST}/project/state/insert`; // 프로젝트 상태 추가
+export const PROJECT_STATE_SELECT_URI = `${API_SERVER_HOST}/project/state/select`; // 프로젝트 상태 조회
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
@@ -52,5 +54,3 @@ export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 
 export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 새 캘린더 추가하기
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 캘린더 추가하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
-
-
