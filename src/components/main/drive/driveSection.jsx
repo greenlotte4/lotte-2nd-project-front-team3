@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useHistory } from "react";
+import { useEffect, useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import { MyDriveSelectView, MyDriveView } from "../../../api/driveAPI";
@@ -13,46 +13,48 @@ export default function DriveSection() {
   const [isListView, setIsListView] = useState(true); // 리스트와 앨범 뷰 전환 상태
 
   const [folderStates, setFolderStates] = useState([]);
-  const [currentFolder, setCurrentFolder] = useState(null); // 현재 선택된 폴더 정보
 
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
 
-  ///////////////////////////////////////////////////////////////////////////
-  // 폴더 데이터를 받아오는 비동기 함수(목록)
-  const MyDriveAllView = async () => {
-    setIsLoading(true); // 로딩 시작
-    try {
-      const response = await MyDriveView(); // 필요한 데이터 전송
-      console.log("Response data:", response.data);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-      // 받아온 데이터를 기반으로 folderStates 배열 업데이트
-      const updatedStates = response.data.map((folder) => ({
-        isChecked: folder.isChecked || false, // 기본값은 false
-        isStarred: folder.isStarred || false, // 기본값은 false
-        driveFolderName: folder.driveFolderName,
-        driveFolderSize: folder.driveFolderSize,
-        driveFolderCreatedAt: folder.driveFolderCreatedAt,
-        driveFolderMaker: folder.driveFolderMaker,
-        driveFolderId: folder.driveFolderId,
-      }));
-      setFolderStates(updatedStates); // 상태 배열 업데이트
-    } catch (err) {
-      console.error("Error fetching data:", err);
-    } finally {
-      setIsLoading(false); // 로딩 종료
-    }
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // 폴더 상세 정보를 받아오는 함수
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log("파일 업로드:", file.name);
+    }
+    setIsDropdownOpen(false);
+  };
 
-  const fetchCurrentFolder = async (driveFolderId) => {
+  const handleFolderUpload = (e) => {
+    const folder = e.target.files;
+    if (folder.length > 0) {
+      console.log("폴더 업로드:", folder);
+    }
+    setIsDropdownOpen(false);
+  };
+
+  //////////////////////////////폴더목록 가져오기/////////////////////////////////////////////
+
+  const fetchFolderData = async (driveFolderId) => {
     setIsLoading(true); // 로딩 시작
-    console.log("qwerqwerqwerqwerqwer :" + driveFolderId);
     try {
-      const response = await MyDriveSelectView(driveFolderId); // 폴더 상세 정보 API 호출
-      console.log("선택된 폴더:", response.data);
+      let response;
+      // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
+      if (driveFolderId) {
+        response = await MyDriveSelectView(driveFolderId); // 상세 정보 API 호출
+        console.log("선택된 폴더:", response.data);
+      } else {
+        response = await MyDriveView(); // 목록 정보 API 호출
+        console.log("폴더 목록 데이터:", response.data);
+      }
+
       // 받아온 데이터를 기반으로 folderStates 배열 업데이트
       const updatedStates = response.data.map((folder) => ({
         isChecked: folder.isChecked || false, // 기본값은 false
@@ -62,32 +64,25 @@ export default function DriveSection() {
         driveFolderCreatedAt: folder.driveFolderCreatedAt,
         driveFolderMaker: folder.driveFolderMaker,
         driveFolderId: folder.driveFolderId,
+        driveParentFolderId: folder.driveParentFolderId,
       }));
+
       setFolderStates(updatedStates); // 상태 배열 업데이트
     } catch (err) {
-      console.error("Error fetching folder details:", err);
+      console.error("폴더 데이터를 가져오는 중 오류 발생:", err);
     } finally {
       setIsLoading(false); // 로딩 종료
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (driveFolderId) {
-        await fetchCurrentFolder(driveFolderId);
-        // folderId가 useParam이라 URL 경로의 매개변수인 folderId를 감지함
-      } else {
-        // 컴포넌트 마운트 시 폴더 데이터 가져오기
-        await MyDriveAllView();
-      }
-    };
+    fetchFolderData(driveFolderId); // driveFolderId가 있을 때는 상세 정보, 없으면 목록 데이터 불러오기
+  }, [driveFolderId]); //  const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
 
-    fetchData(); // 데이터 가져오기 함수 호출
-  }, [driveFolderId]); //   const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
-
-  /////////////////////////////////////////////////////////////////////
+  ////////////////////////////////오른쪽 커스텀메뉴, 체크박스, 별표/////////////////////////////////////
 
   const menuRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const handleContextMenu = (event, index) => {
     event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
@@ -192,11 +187,55 @@ export default function DriveSection() {
         <article className="drive_update flex-shrink-0 my-[20px]">
           <div className="flex justify-between">
             <div className="drive_active flex space-x-2">
-              <button className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white">
+              <button
+                onClick={toggleDropdown}
+                className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white"
+              >
                 업로드
               </button>
+              {/* 드롭다운 메뉴 */}
+              {isDropdownOpen && (
+                <div className="absolute mt-11 w-[150px] bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  {/* 파일 올리기 */}
+                  <label
+                    htmlFor="fileUpload"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    파일 올리기
+                  </label>
+                  <input
+                    type="file"
+                    id="fileUpload"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+
+                  {/* 폴더 올리기 */}
+                  <label
+                    htmlFor="folderUpload"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    폴더 올리기
+                  </label>
+                  <input
+                    type="file"
+                    id="folderUpload"
+                    className="hidden"
+                    webkitdirectory="true"
+                    directory="true"
+                    onChange={handleFolderUpload}
+                  />
+                </div>
+              )}
               <button
-                onClick={() => openModal("insert", { driveFolderId })} // driveFolderId 값을 객체로 전달
+                onClick={() =>
+                  openModal("insert", {
+                    driveFolderId,
+                    onFolderAdd: (newFolder) => {
+                      setFolderStates((prevState) => [...prevState, newFolder]); // 기존 상태 배열에 새 폴더 추가
+                    },
+                  })
+                } // driveFolderId 값을 객체로 전달
                 className="w-[70px] h-[30px] border rounded-[4px]"
               >
                 새폴더
