@@ -47,6 +47,22 @@ export default function BoardView() {
     },
   ]);
 
+   // 글 상세 조회를 하지 못한 경우
+   if (!boards) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="bg-white shadow-lg rounded-lg p-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 w-32 mb-4"></div>
+            <div className="h-4 bg-gray-200 mb-2"></div>
+            <div className="h-4 bg-gray-200 mb-2"></div>
+            <div className="h-4 bg-gray-200 mb-2"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [isSecretComment, setIsSecretComment] = useState(false);
