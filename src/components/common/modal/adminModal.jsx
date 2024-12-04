@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import useModalStore from "../../../store/modalStore";
 import { inviteUser } from "../../../api/userAPI";
-import { insertDepartment } from "../../../api/departmentAPI";
+import {
+  fetchDepartmentsByCompanyId,
+  insertDepartment,
+} from "../../../api/departmentAPI";
 import useAuthStore from "./../../../store/AuthStore";
 
 const AdminModal = () => {
@@ -11,13 +14,31 @@ const AdminModal = () => {
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [department, setDepartment] = useState("");
-  const [rank, setRank] = useState("");
-  const [role, setRole] = useState("");
+  const [position, setPositon] = useState("");
+  const [role, setRole] = useState("USER"); // 기본값: 'USER'
   const [note, setNote] = useState("");
   const [newDepartmentName, setNewDepartmentName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const [departments, setDepartments] = useState([]); // 부서 목록 상태 추가
+
+  // 모달 열릴 때 부서 목록 가져오기
+  useEffect(() => {
+    if (isOpen && type === "member-invite") {
+      const loadDepartments = async () => {
+        try {
+          const data = await fetchDepartmentsByCompanyId(user?.company); // 회사 ID로 부서 목록 가져오기
+          setDepartments(data);
+        } catch (error) {
+          console.error("부서 목록 가져오기 실패:", error);
+          setDepartments([]); // 실패 시 빈 배열
+        }
+      };
+
+      loadDepartments();
+    }
+  }, [isOpen, type, user?.company.id]);
 
   if (!isOpen) return null;
 
@@ -32,7 +53,7 @@ const AdminModal = () => {
         name,
         email: mail,
         department,
-        rank,
+        position,
         role,
         note,
       };
@@ -57,28 +78,36 @@ const AdminModal = () => {
     }
 
     setLoading(true);
+
     try {
-      // API 호출
+      // 서버에 부서 생성 요청
       const newDepartment = await insertDepartment(
         newDepartmentName,
         user.company
       );
 
-      // 성공적으로 생성된 부서를 상위 컴포넌트로 전달
+      // 생성된 부서 데이터를 부모 컴포넌트로 전달
       if (props?.onCreate) {
-        props.onCreate(newDepartment);
+        props.onCreate({
+          id: newDepartment.id,
+          name: newDepartment.name,
+          users: newDepartment.users || [],
+          createdAt: newDepartment.createdAt,
+          updatedAt: newDepartment.updatedAt,
+        });
       }
 
       alert("부서 생성이 완료되었습니다!");
-      setNewDepartmentName(""); // 입력 초기화
+      setNewDepartmentName(""); // 입력 필드 초기화
       closeModal(); // 모달 닫기
     } catch (error) {
-      console.error(error);
+      console.error("부서 생성 실패:", error);
       alert(error.message || "부서 생성 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
+
   const renderContent = () => {
     switch (type) {
       case "member-invite":
@@ -134,26 +163,32 @@ const AdminModal = () => {
                     >
                       부서
                     </label>
-                    <input
-                      type="text"
+                    <select
                       id="department"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
-                    />
+                    >
+                      <option value="">부서를 선택하세요</option>
+                      {departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label
-                      htmlFor="rank"
+                      htmlFor="position"
                       className="block font-medium text-gray-700 mb-2"
                     >
                       직급
                     </label>
                     <input
                       type="text"
-                      id="rank"
-                      value={rank}
-                      onChange={(e) => setRank(e.target.value)}
+                      id="position"
+                      value={position}
+                      onChange={(e) => setPositon(e.target.value)}
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     />
                   </div>
@@ -166,13 +201,16 @@ const AdminModal = () => {
                     </label>
                     <select
                       id="role"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
+                      value={role} // 상태값과 연결
+                      onChange={(e) => {
+                        console.log("Selected Role:", e.target.value); // 선택된 값 확인
+                        setRole(e.target.value); // 상태 업데이트
+                      }}
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     >
-                      <option value="user">직원</option>
-                      <option value="admin">관리자</option>
-                      <option value="super-admin">슈퍼 관리자</option>
+                      <option value="USER">직원</option>
+                      <option value="ADMIN">관리자</option>
+                      <option value="SUPER_ADMIN">슈퍼 관리자</option>
                     </select>
                   </div>
                   <div>

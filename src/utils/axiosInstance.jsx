@@ -7,7 +7,7 @@ const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
   baseURL: API_SERVER_HOST,
-  timeout: 5000, // 요청 타임아웃 설정
+  timeout: 20000, // 요청 타임아웃 설정
   withCredentials: true, // 쿠키 포함 요청
 });
 
