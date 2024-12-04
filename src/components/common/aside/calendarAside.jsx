@@ -10,9 +10,7 @@ import useAuthStore from "../../../store/AuthStore";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
-  // const uid = useState(user.username);
-  const uid = "qwer123";
-  console.log("dsaf" + uid);
+  const uid = user?.uid;
 
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -34,11 +32,12 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       const newCalendar = {
         no: calendars.length,
         name: `새 캘린더`, // 기본 이름
-        user_id: user.username,
+        user_id: uid,
       };
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
-      console.log(newCalendar, user.username);
+      console.log(newCalendar, uid);
       await insertCalendar(newCalendar);
+      window.location.reload(); // 페이지 새로 고침
     }
   };
 
