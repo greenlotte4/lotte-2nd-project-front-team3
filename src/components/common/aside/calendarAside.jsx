@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getCalendar, insertCalendar } from "../../../api/calendarAPI";
+import {
+  getCalendar,
+  insertCalendar,
+  updateCalendar,
+  deleteCalendar,
+} from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
@@ -44,13 +49,14 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
   // 이름 저장
   const saveName = (no) => {
-    setCalendars(
-      calendars.map((calendar) =>
-        calendar.no === no ? { ...calendar, name: newName } : calendar
-      )
-    );
+    const fetchData = async () => {
+      await updateCalendar(no, newName);
+    };
+
+    fetchData();
     setEditingId(null); // 수정 모드 종료
     setNewName(""); // 입력 초기화
+    window.location.reload(); // 페이지 새로 고침
   };
 
   // 수정 취소
@@ -60,7 +66,13 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   };
 
   // 캘린더 삭제
-  const deleteCalendar = () => {};
+  const deleteCal = (no) => {
+    const fetchData = async () => {
+      await deleteCalendar(no);
+    };
+    fetchData();
+    window.location.reload(); // 페이지 새로 고침
+  };
 
   const [data, setData] = useState([]);
 
@@ -189,7 +201,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                       {/* 캘린더 삭제 버튼 */}
                       {editingId !== item.calendarId && (
                         <button
-                          onClick={() => deleteCalendar(item.calendarId)}
+                          onClick={() => deleteCal(item.calendarId)}
                           className="ml-2 text-red-500"
                         >
                           삭제

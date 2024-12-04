@@ -49,6 +49,8 @@ export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하�
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 캘린더 추가하기
+export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 새 캘린더 추가하기
+export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 캘린더 추가하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
 
 
