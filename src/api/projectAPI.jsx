@@ -5,6 +5,7 @@ import {
   PROJECT_DETAIL_URI,
   PROJECT_STATE_INSERT_URI,
   PROJECT_STATE_SELECT_URI,
+  PROJECT_TASK_INSERT_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -90,6 +91,26 @@ export const getProjectStates = async (id) => {
     return response.data; // 서버에서 반환된 전체 상태
   } catch (error) {
     console.error("Error fetching project states:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 생성
+export const createTask = async (taskData) => {
+  console.log("전달되는 taskData:", taskData); // 디버깅용
+  try {
+    const response = await axios.post(`${PROJECT_TASK_INSERT_URI}`, taskData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("서버 응답 데이터:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "작업 생성 중 오류 발생:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

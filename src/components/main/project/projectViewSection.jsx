@@ -3,7 +3,11 @@ import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
-import { getProjectById, getProjectStates } from "../../../api/projectAPI";
+import {
+  createTask,
+  getProjectById,
+  getProjectStates,
+} from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
   const queryParams = new URLSearchParams(location.search);
@@ -39,10 +43,17 @@ export default function ProjectViewSection() {
     const fetchStates = async () => {
       try {
         const statesData = await getProjectStates(id); // API 호출
-        console.log("statesData : ", statesData);
-        setStates(statesData); // 가져온 상태 데이터를 설정
+        console.log("상태 데이터:", statesData);
+
+        // items 속성이 없는 경우 빈 배열로 초기화
+        const initializedStates = statesData.map((state) => ({
+          ...state,
+          items: state.items || [],
+        }));
+
+        setStates(initializedStates);
       } catch (error) {
-        console.error("Error fetching states:", error);
+        console.error("Error fetching states:", error.message || error);
       } finally {
         setLoadingStates(false); // 로딩 완료
       }
@@ -52,6 +63,7 @@ export default function ProjectViewSection() {
   }, [id]);
 
   const [states, setStates] = useState([]);
+
   const [currentStateId, setCurrentStateId] = useState(null);
   const [currentTask, setCurrentTask] = useState(null);
 
@@ -66,20 +78,25 @@ export default function ProjectViewSection() {
     ]);
   };
 
-  const handleAddItem = (stateId, newItem) => {
-    setStates((prevStates) =>
-      prevStates.map((state) =>
-        state.id === stateId
-          ? {
-              ...state,
-              items: [
-                ...state.items,
-                { ...newItem, id: Date.now().toString() },
-              ],
-            }
-          : state
-      )
-    );
+  // 작업 추가 핸들러
+  const handleAddItem = async (newTask) => {
+    try {
+      console.log("백엔드로 전달되는 taskData:", newTask);
+
+      const createdTask = await createTask(newTask); // API 호출
+      console.log("생성된 작업:", createdTask);
+
+      setStates((prevStates) =>
+        prevStates.map((state) =>
+          state.id === newTask.stateId // stateId로 매칭
+            ? { ...state, items: [...(state.items || []), createdTask] }
+            : state
+        )
+      );
+    } catch (error) {
+      console.error("작업 추가 중 오류 발생:", error.message || error);
+      alert("작업 등록 중 문제가 발생했습니다.");
+    }
   };
 
   const handleEditItem = (stateId, updatedItem) => {
@@ -164,7 +181,7 @@ export default function ProjectViewSection() {
       <ProjectModal
         projectId={id} // 파라미터 id값 넘김
         onAddState={handleAddState}
-        onAddItem={(newItem) => handleAddItem(currentStateId, newItem)}
+        onAddItem={handleAddItem}
         onEditItem={handleEditItem}
         currentStateId={currentStateId}
         currentTask={currentTask}
@@ -211,107 +228,115 @@ export default function ProjectViewSection() {
                 </div>
               </div>
               <section className="flex gap-4 overflow-x-auto pb-6">
-                {states.map((state) => (
-                  <Droppable key={state.id} droppableId={state.id}>
-                    {(provided) => (
-                      <article
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="flex-shrink-0 w-96 rounded-lg bg-white border border-blue-200 max-h-[800px]"
-                      >
-                        <div className="p-3 border-b border-gray-100">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className="text-xl"
-                                style={{ color: state.color }}
-                              >
-                                ●
-                              </span>
-                              <h2 className="font-semibold text-2xl">
-                                {state.title}
-                              </h2>
-                              {/* <span className="text-sm text-gray-500 bg-gray-50 rounded-full px-2">
+                {/* states 배열이 초기화되기전에 map 메서드가 호출되어 에러발생하는 이슈때문에 states가 배열인지 확인하는 조건 추가 */}
+                {Array.isArray(states) &&
+                  states.map((state) => (
+                    <Droppable key={state.id} droppableId={state.id}>
+                      {(provided) => (
+                        <article
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="flex-shrink-0 w-96 rounded-lg bg-white border border-blue-200 max-h-[800px]"
+                        >
+                          <div className="p-3 border-b border-gray-100">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="text-xl"
+                                  style={{ color: state.color }}
+                                >
+                                  ●
+                                </span>
+                                <h2 className="font-semibold text-2xl">
+                                  {state.title}
+                                </h2>
+                                {/* <span className="text-sm text-gray-500 bg-gray-50 rounded-full px-2">
                                 {state.items.length}
                               </span> */}
+                              </div>
                             </div>
-                          </div>
-                          <p className="text-[14px] text-gray-600 mt-3">
-                            {state.description}
-                          </p>
-                        </div>
-                        <section className="p-3 bg-blue-50/50 flex flex-col">
-                          {/* <div className="flex-1 overflow-y-auto max-h-[641px]">
-                            {state.items.map((item, index) => (
-                              <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={index}
-                              >
-                                {(provided) => (
-                                  <article
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className="bg-white rounded-lg p-4 shadow-sm mb-3 cursor-pointer hover:shadow-md transition-shadow border border-gray-100"
-                                    onClick={() =>
-                                      openTaskEditModal(state.id, item)
-                                    }
-                                  >
-                                    <h3 className="text-xl mb-2">
-                                      {item.title}
-                                    </h3>
-                                    <div className="absolute top-2 right-2 flex -space-x-4">
-                                      <img
-                                        src="/images/Antwork/project/project_profile.png"
-                                        alt="Profile"
-                                        className="w-8 h-8 rounded-full border border-gray-300 z-10"
-                                      />
-                                      <img
-                                        src="/images/Antwork/project/project_profile.png"
-                                        alt="Profile"
-                                        className="w-8 h-8 rounded-full border border-gray-300 z-20"
-                                      />
-                                      <img
-                                        src="/images/Antwork/project/project_profile.png"
-                                        alt="Profile"
-                                        className="w-8 h-8 rounded-full border border-gray-300 z-30"
-                                      />
-                                    </div>
-                                    <div className="flex gap-1">
-                                      <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700">
-                                        {item.priority}
-                                      </span>
-                                      <span className="px-2 py-1 text-xs rounded bg-purple-100 text-purple-700">
-                                        {item.size}
-                                      </span>
-                                    </div>
-                                  </article>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                          </div> */}
-                        </section>
-                        <div className="pt-3">
-                          <button
-                            onClick={() => openTaskCreateModal(state.id)}
-                            className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
-                          >
-                            <img
-                              src="/images/Antwork/project/project_addItem.png"
-                              alt="추가"
-                              className="w-5 h-5 mr-2"
-                            />
-                            <p className="text-[13px] text-gray-500">
-                              Add item
+                            <p className="text-[14px] text-gray-600 mt-3">
+                              {state.description}
                             </p>
-                          </button>
-                        </div>
-                      </article>
-                    )}
-                  </Droppable>
-                ))}
+                          </div>
+                          <section className="p-3 bg-blue-50/50 flex flex-col">
+                            <div className="flex-1 overflow-y-auto max-h-[641px]">
+                              {state?.items?.map((item, index) => (
+                                <Draggable
+                                  key={item.id}
+                                  draggableId={item.id}
+                                  index={index}
+                                >
+                                  {(provided) => (
+                                    <article
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className="bg-white rounded-lg p-4 shadow-sm mb-3 cursor-pointer hover:shadow-md transition-shadow border border-gray-100"
+                                      onClick={() =>
+                                        openTaskEditModal(state.id, item)
+                                      }
+                                    >
+                                      <h3 className="text-xl mb-2">
+                                        {item.title}
+                                      </h3>
+                                      <div className="absolute top-2 right-2 flex -space-x-4">
+                                        <img
+                                          src="/images/Antwork/project/project_profile.png"
+                                          alt="Profile"
+                                          className="w-8 h-8 rounded-full border border-gray-300 z-10"
+                                        />
+                                        <img
+                                          src="/images/Antwork/project/project_profile.png"
+                                          alt="Profile"
+                                          className="w-8 h-8 rounded-full border border-gray-300 z-20"
+                                        />
+                                        <img
+                                          src="/images/Antwork/project/project_profile.png"
+                                          alt="Profile"
+                                          className="w-8 h-8 rounded-full border border-gray-300 z-30"
+                                        />
+                                      </div>
+                                      <div className="flex gap-1">
+                                        <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700">
+                                          {item.priority === 0
+                                            ? "P0"
+                                            : item.priority === 1
+                                            ? "P1"
+                                            : item.priority === 2
+                                            ? "P2"
+                                            : "Unknown"}{" "}
+                                        </span>
+                                        <span className="px-2 py-1 text-xs rounded bg-purple-100 text-purple-700">
+                                          {item.size}
+                                        </span>
+                                      </div>
+                                    </article>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          </section>
+                          <div className="pt-3">
+                            <button
+                              onClick={() => openTaskCreateModal(state.id)}
+                              className="w-full flex items-center text-left text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
+                            >
+                              <img
+                                src="/images/Antwork/project/project_addItem.png"
+                                alt="추가"
+                                className="w-5 h-5 mr-2"
+                              />
+                              <p className="text-[13px] text-gray-500">
+                                Add item
+                              </p>
+                            </button>
+                          </div>
+                        </article>
+                      )}
+                    </Droppable>
+                  ))}
                 <div className="text-center">
                   <button
                     className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-600 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-700 h-10 transition-colors"
