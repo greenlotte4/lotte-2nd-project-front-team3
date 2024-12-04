@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from 'axios';
+
 {
   /*
     날짜 : 2024/11/27(수)
@@ -8,70 +10,45 @@ import { useState } from "react";
     내용 : BoardList.jsx - 게시판 목록 페이지 화면구현
 
     수정 내역 : 
-
+    2024/12/03(수) - 김민희 : 글 상세 조회를 위한 응답 데이터 처리 {id}
   */
 }
 
 export default function BoardList() {
-  // 컴포넌트 코드
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title:
-        "안녕하세요. 퇴사하겠습니다. 그럼 이만 총총총 헤헤헤 ^^ 글 잘리나 대표님 저 잘라주세요 글자도 잘라주세여",
-      author: "김사원 ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 3,
-    },
+  
+  const [boards, setBoards] = useState([]);
+  //const { id } = useParams();
 
-    {
-      id: 2,
-      title: "오늘 점심 메뉴 추천 해주세여 - 엽떡이었으면 좋겠다 크크크크크크",
-      author: "황사원 ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 3,
-    },
-    {
-      id: 3,
-      title: "경고 메시지입니다 자유게시판이지만 너무 자유롭지 마십시오.",
-      author: "최사원ᖳ ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 3,
-    },
-    {
-      id: 4,
-      title: "안녕하세요. 앤드워크에 관한 모든 비밀을 담은 자료입니다!",
-      author: "정사원ᖳ ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 3,
-    },
-    {
-      id: 5,
-      title: "안녕하세요. 열람권한이 없는 게시물입니다.",
-      author: "강사원ᖳ ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 3,
-    },
-    {
-      id: 6,
-      title: "성과면담 및 이의제기 안내",
-      author: "하사원ᖳ ",
-      date: "2024-11-27",
-      views: 9697,
-      likes: 1016,
-      commentCount: 1000,
-    },
-  ]);
+  useEffect(() => {
+    //console.log("useEffect에서 가져온 id:", id);
+    // 게시글 목록을 가져오는 함수
+    const fetchBoards = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/board/list");
+        // axios는 2xx 상태 코드의 경우 자동으로 response.data에 데이터를 넣습니다
+        setBoards(response.data); // 성공 시 데이터 확인
+      } catch (error) {
+        // console.error("게시글 목록을 가져오는데 실패했습니다:", error);
+        console.error("에러 상세:", {
+          message: error.message,
+          response: error.response?.data,  // 서버에서 보낸 에러 메시지
+          status: error.response?.status
+        });
+        setBoards([]); // 에러 시 빈 배열로 초기화
+      }
+    };
+    fetchBoards();
+  }, []);
+
+ 
+
+ // 날짜 포맷팅 함수
+ const formatDate = (dateString) => {
+
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+
+};
 
   return (
     <>
@@ -139,7 +116,7 @@ export default function BoardList() {
                 <span className="text-gray-600">개</span>
               </div>
             </div>
-            <table className="w-full bg-white !border border-gray-200 rounded-lg overflow-hidden ml-4 mr-4 ">
+            <table className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
               <thead className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal rounded-[10px] text-center">
                 <tr>
                   <th className="py-3 px-6 text-center whitespace-nowrap w-11">
@@ -164,55 +141,46 @@ export default function BoardList() {
                 </tr>
               </thead>
 
-              <tbody className="text-gray-600 text-sm font-light cursor-pointer">
-                {posts.map((post, index) => (
-                  <tr
-                    key={post.id}
-                    className="border-b border-gray-200 hover:bg-gray-100"
-                  >
-                    <td className="py-3 px-6 w-10 text-center">{index + 1}</td>{" "}
-                    {/* 번호 */}
-                    <Link to="/antwork/board/view">
-                      {" "}
-                      {/* 제목 + 작성자 -> 링크 */}
-                      <td
-                        className="py-3 px-6 w-1/2 text-left text-ellipsis truncate"
-                        title={post.title}
-                      >
-                        {" "}
-                        {/* 제목 */}
-                        {post.title.length > 30
-                          ? `${post.title.slice(0, 30)}...`
-                          : post.title}
-                        <span className="text-blue-500">
-                          {" "}
-                          {/* 공백, 댓글수 */}
-                          {/* 댓글 아이콘 💬  */}({post.commentCount})
-                        </span>
-                      </td>
-                    </Link>
-                    <td className="py-3 px-6 w-1/6 text-center">
-                      {" "}
-                      {/* 작성자 */}
-                      {post.author.charAt(0)}**{post.author.slice(-1)}
-                    </td>
-                    <td className="py-3 px-6 w-1/10 text-center">
-                      {post.date}
-                    </td>{" "}
-                    {/* 날짜 */}
-                    <td className="py-3 px-6 w-1/10 text-center">
-                      {post.views.toLocaleString()}
-                    </td>{" "}
-                    {/* 조회수 */}
-                    <td className="py-3 px-6 w-1/10 text-center flex">
-                      {" "}
-                      {/* 좋아요 */}
-                      ❤️ ({post.likes})
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          
+              <tbody className="text-gray-600 text-sm font-light">
+            {Array.isArray(boards) && boards.length > 0 ? (
+              boards.map((board, index) => (
+                <tr key={board.id} className="border-b border-gray-200 hover:bg-gray-100">
+                  <td className="py-3 px-6 text-center">{index + 1}</td>
+                  <td className="py-3 px-6 text-left">
+                  <Link to={`/antwork/board/view/${board.id}`} className="hover:text-blue-500">
+                    {board.title && board.title.length > 30
+                      ? `${board.title.slice(0, 30)}...`
+                      : board.title}
+                    <span className="text-blue-500 ml-2">
+                      ({board.comment || 0})
+                    </span>
+                  </Link>
+                  </td>
+                  <td className="py-3 px-6 text-center">
+                    {board.writerName 
+                      ? `${board.writerName.charAt(0)}${'*'.repeat(board.writerName.length-2)}${board.writerName.slice(-1)}`
+                      : '익명'
+                    }
+                  </td>
+                  <td className="py-3 px-6 text-center">{formatDate(board.regDate)}</td>
+                  <td className="py-3 px-6 text-center">{board.hit || 0}</td>
+                  <td className="py-3 px-6 text-center">
+                    ❤️ {board.like || 0}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="py-3 px-6 text-center">
+                  게시글이 없습니다.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+    
             <div className="flex justify-center items-center mt-4">
               <button className=" text-gray-700 py-2 px-4 rounded-l hover:bg-gray-100">
                 이전
