@@ -3,12 +3,14 @@ import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
-import { getProjectById } from "../../../api/projectAPI";
+import { getProjectById, getProjectStates } from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   console.log("id : " + id);
+
+  const [loadingStates, setLoadingStates] = useState(true); // 상태 로딩 플래그
 
   const [project, setProject] = useState();
 
@@ -30,6 +32,23 @@ export default function ProjectViewSection() {
     };
 
     fetchProjectDetails(); // 컴포넌트 마운트 시 데이터 로드
+  }, [id]);
+
+  // 전체 상태 데이터 가져오기
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const statesData = await getProjectStates(id); // API 호출
+        console.log("statesData : ", statesData);
+        setStates(statesData); // 가져온 상태 데이터를 설정
+      } catch (error) {
+        console.error("Error fetching states:", error);
+      } finally {
+        setLoadingStates(false); // 로딩 완료
+      }
+    };
+
+    fetchStates();
   }, [id]);
 
   const [states, setStates] = useState([]);
@@ -132,9 +151,18 @@ export default function ProjectViewSection() {
     }
   };
 
+  if (loadingStates) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-xl font-semibold text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <ProjectModal
+        projectId={id} // 파라미터 id값 넘김
         onAddState={handleAddState}
         onAddItem={(newItem) => handleAddItem(currentStateId, newItem)}
         onEditItem={handleEditItem}
@@ -203,9 +231,9 @@ export default function ProjectViewSection() {
                               <h2 className="font-semibold text-2xl">
                                 {state.title}
                               </h2>
-                              <span className="text-sm text-gray-500 bg-gray-50 rounded-full px-2">
+                              {/* <span className="text-sm text-gray-500 bg-gray-50 rounded-full px-2">
                                 {state.items.length}
-                              </span>
+                              </span> */}
                             </div>
                           </div>
                           <p className="text-[14px] text-gray-600 mt-3">
@@ -213,7 +241,7 @@ export default function ProjectViewSection() {
                           </p>
                         </div>
                         <section className="p-3 bg-blue-50/50 flex flex-col">
-                          <div className="flex-1 overflow-y-auto max-h-[641px]">
+                          {/* <div className="flex-1 overflow-y-auto max-h-[641px]">
                             {state.items.map((item, index) => (
                               <Draggable
                                 key={item.id}
@@ -263,7 +291,7 @@ export default function ProjectViewSection() {
                               </Draggable>
                             ))}
                             {provided.placeholder}
-                          </div>
+                          </div> */}
                         </section>
                         <div className="pt-3">
                           <button
