@@ -1,39 +1,90 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import useModalStore from "../../../store/modalStore";
+import { inviteUser } from "../../../api/userAPI";
+import { insertDepartment } from "../../../api/departmentAPI";
+import useAuthStore from "./../../../store/AuthStore";
 
 const AdminModal = () => {
-  const { isOpen, type, props, closeModal, updateProps } = useModalStore();
+  const { isOpen, type, props, closeModal } = useModalStore();
 
+  // 공통 상태 관리
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [department, setDepartment] = useState("");
   const [rank, setRank] = useState("");
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
+  const [newDepartmentName, setNewDepartmentName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  // 멤버 초대 핸들러
+  const handleInviteUser = async (e) => {
     e.preventDefault();
-    // 사용자 정보 저장 로직 추가
-    console.log("Saved user info:", {
-      name,
-      mail,
-      department,
-      rank,
-      role,
-      note,
-    });
-    closeModal();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload = {
+        name,
+        email: mail,
+        department,
+        rank,
+        role,
+        note,
+      };
+
+      const response = await inviteUser(payload);
+      console.log("초대 성공:", response);
+      alert("초대가 성공적으로 완료되었습니다!");
+      closeModal();
+    } catch (err) {
+      console.error("초대 실패:", err);
+      setError("초대에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // 부서 생성 핸들러
+  const handleAddDepartment = async () => {
+    if (!newDepartmentName.trim()) {
+      alert("부서명을 입력하세요.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // API 호출
+      const newDepartment = await insertDepartment(
+        newDepartmentName,
+        user.company
+      );
+
+      // 성공적으로 생성된 부서를 상위 컴포넌트로 전달
+      if (props?.onCreate) {
+        props.onCreate(newDepartment);
+      }
+
+      alert("부서 생성이 완료되었습니다!");
+      setNewDepartmentName(""); // 입력 초기화
+      closeModal(); // 모달 닫기
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "부서 생성 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const renderContent = () => {
     switch (type) {
       case "member-invite":
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg w-[500px] h-auto p-6">
-              {/* 헤더 */}
               <div className="flex justify-between items-center mb-4 border-b pb-2">
                 <h2 className="text-xl font-bold text-gray-800">멤버 초대</h2>
                 <button
@@ -43,17 +94,8 @@ const AdminModal = () => {
                   ✕
                 </button>
               </div>
-
-              {/* 설명 */}
-              <p className="text-gray-600 text-sm mb-6">
-                새 멤버를 그룹웨어에 초대합니다. 이름, 이메일, 직급 등 정보를
-                입력하세요.
-              </p>
-
-              {/* 초대 폼 */}
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleInviteUser}>
                 <div className="grid grid-cols-1 gap-4">
-                  {/* 이름 입력 */}
                   <div>
                     <label
                       htmlFor="name"
@@ -69,8 +111,6 @@ const AdminModal = () => {
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     />
                   </div>
-
-                  {/* 이메일 입력 */}
                   <div>
                     <label
                       htmlFor="mail"
@@ -87,8 +127,6 @@ const AdminModal = () => {
                       placeholder="example@domain.com"
                     />
                   </div>
-
-                  {/* 부서 입력 */}
                   <div>
                     <label
                       htmlFor="department"
@@ -104,8 +142,6 @@ const AdminModal = () => {
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     />
                   </div>
-
-                  {/* 직급 입력 */}
                   <div>
                     <label
                       htmlFor="rank"
@@ -121,8 +157,6 @@ const AdminModal = () => {
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     />
                   </div>
-
-                  {/* 역할 선택 */}
                   <div>
                     <label
                       htmlFor="role"
@@ -136,13 +170,11 @@ const AdminModal = () => {
                       onChange={(e) => setRole(e.target.value)}
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                     >
-                      <option value="employee">직원</option>
-                      <option value="manager">관리자</option>
-                      <option value="admin">슈퍼 관리자</option>
+                      <option value="user">직원</option>
+                      <option value="admin">관리자</option>
+                      <option value="super-admin">슈퍼 관리자</option>
                     </select>
                   </div>
-
-                  {/* 메모 입력 */}
                   <div>
                     <label
                       htmlFor="note"
@@ -159,14 +191,14 @@ const AdminModal = () => {
                     />
                   </div>
                 </div>
-
-                {/* 버튼 그룹 */}
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                 <div className="flex justify-end mt-6">
                   <button
                     type="submit"
                     className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md mr-2"
+                    disabled={loading}
                   >
-                    초대하기
+                    {loading ? "초대 중..." : "초대하기"}
                   </button>
                   <button
                     type="button"
@@ -180,10 +212,43 @@ const AdminModal = () => {
             </div>
           </div>
         );
+      case "add-department":
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-md p-6 w-1/3">
+              <h2 className="text-lg font-bold mb-4 text-gray-700">
+                부서 생성
+              </h2>
+              <input
+                type="text"
+                placeholder="부서명"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
+                value={newDepartmentName}
+                onChange={(e) => setNewDepartmentName(e.target.value)}
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleAddDepartment}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  생성
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       default:
-        return <div>모달 내용이 없습니다.</div>;
+        return null;
     }
   };
+
   return renderContent();
 };
+
 export default AdminModal;

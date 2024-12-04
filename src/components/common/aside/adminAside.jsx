@@ -93,6 +93,11 @@ export default function AdminAside({ asideVisible }) {
                     👤&nbsp;&nbsp;멤버 통합 관리
                   </Link>
                 </li>
+                <li>
+                  <Link to="/antwork/admin/department">
+                    🏢&nbsp;&nbsp;부서 관리
+                  </Link>
+                </li>
               </ol>
             )}
 
