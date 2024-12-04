@@ -1,8 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
+import { createChannel } from "../../../api/chattingAPI";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function ChattingModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
+  const [channelName, setChannelName] = useState("")
+  const [isPublic, setIsPublic] = useState(false)
+  // const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   // 상태 변경 감지
   useEffect(() => {
@@ -162,82 +167,107 @@ export default function ChattingModal() {
             </div>
           </div>
         );
-        /* 채널 생성 */
-        case "createChannel":
-    return (
-    <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4 border-b pb-2">채널 생성</h2>
-      <form className="flex flex-col space-y-4">
-        <div>
-          <label htmlFor="channelName" className="text-sm font-medium">
-            채널 이름
-          </label>
-          <input
-            id="channelName"
-            type="text"
-            placeholder="채널 이름을 입력하세요"
-            className="mt-2 p-2 border rounded w-full"
-          />
-        </div>
-        <div>
-          <label htmlFor="channelDescription" className="text-sm font-medium">
-            채널 설명
-          </label>
-          <textarea
-            id="channelDescription"
-            placeholder="채널에 대한 설명을 입력하세요"
-            className="mt-2 p-2 border rounded w-full h-24"
-          />
-        </div>
+      /* 채널 생성 */
+      case "createChannel":
+        return (
+          <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2">채널 생성</h2>
+            <form className="flex flex-col space-y-4">
+              <div>
+                <label htmlFor="channelName" className="text-sm font-medium">
+                  채널 이름
+                </label>
+                <input
+                  id="channelName"
+                  type="text"
+                  placeholder="채널 이름을 입력하세요"
+                  className="mt-2 p-2 border rounded w-full"
+                  value={channelName}
+                  onChange={(e) => { setChannelName(e.currentTarget.value) }}
+                />
+              </div>
+              <div>
+                <label htmlFor="channelDescription" className="text-sm font-medium">
+                  채널 설명
+                </label>
+                <textarea
+                  id="channelDescription"
+                  placeholder="채널에 대한 설명을 입력하세요"
+                  className="mt-2 p-2 border rounded w-full h-24"
+                />
+              </div>
 
-        {/* 공개/비공개 선택 라디오 버튼 */}
-        <div className="mt-4">
-          <label className="text-sm font-medium">채널 공개 여부</label>
-          <div className="flex space-x-4 mt-2">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="public"
-                name="channelPrivacy"
-                checked={!props.isPrivate}
-                onChange={() => updateProps({ isPrivate: false })}
-                className="mr-2"
-              />
-              <label htmlFor="public" className="text-sm">공개</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="private"
-                name="channelPrivacy"
-                checked={props.isPrivate}
-                onChange={() => updateProps({ isPrivate: true })}
-                className="mr-2"
-              />
-              <label htmlFor="private" className="text-sm">비공개</label>
-            </div>
+              {/* 공개/비공개 선택 라디오 버튼 */}
+              <div className="mt-4">
+                <label className="text-sm font-medium">채널 공개 여부</label>
+                <div className="flex space-x-4 mt-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="public"
+                      name="channelPrivacy"
+                      checked={isPublic}
+                      value="true"
+                      onChange={(e) => {
+                        console.log(`변경 : ${e.target.value}`)
+                        setIsPublic(e.target.value === 'true')
+                      }}
+                      className="mr-2"
+                    />
+                    <label htmlFor="public" className="text-sm">공개</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="private"
+                      name="channelPrivacy"
+                      checked={!isPublic}
+                      value="false"
+                      onChange={(e) => {
+                        console.log(`변경 : ${e.target.value}`)
+                        setIsPublic(e.target.value === "true")
+                      }}
+                      className="mr-2"
+                    />
+                    <label htmlFor="private" className="text-sm">비공개</label>
+                  </div>
+                </div>
+              </div>
+
+              {/* 버튼 영역 */}
+              <div className="flex justify-center space-x-4 mt-4">
+                <button
+                  type="button"
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  onClick={async () => {
+                    try {
+                      await createChannel({
+                        name: channelName,
+                        userId: 6,
+                        isPublic: isPublic
+                      })
+                      alert("생성 성공")
+                    }
+                    catch (e) {
+                      console.error("CHANNEL CREATE FAILED : ", e)
+                    } finally {
+                      closeModal()
+                    }
+                  }}
+                >
+                  추가
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeModal()}
+                  className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+                >
+                  취소
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
-
-        {/* 버튼 영역 */}
-        <div className="flex justify-center space-x-4 mt-4">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          >
-            추가
-          </button>
-          <button
-            type="button"
-            onClick={() => closeModal()}
-            className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-          >
-            취소
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+        );
 
       default:
         return <div>모달 내용이 없습니다.</div>;

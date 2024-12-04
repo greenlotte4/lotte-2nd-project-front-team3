@@ -57,3 +57,5 @@ export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 새 
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 캘린더 추가하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
+
+export const CHANNEL_URI = 'http://localhost:8080/api/chatting/channel'
