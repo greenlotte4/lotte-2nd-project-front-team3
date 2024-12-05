@@ -741,7 +741,7 @@ export default function ProjectModal({
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
             <div className="bg-white rounded-lg w-[500px] h-[39vh] p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">새 상태 추가</h2>
+                <h2 className="text-2xl font-bold">새 작업상태 추가</h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -753,7 +753,9 @@ export default function ProjectModal({
               <form onSubmit={handleAddState} className="space-y-4">
                 {/* 색상 선택 */}
                 <div>
-                  <label className="block mb-2 font-medium">상태 색상</label>
+                  <label className="block mb-2 font-medium">
+                    작업상태 색상
+                  </label>
                   <input
                     type="color"
                     name="color"
@@ -765,7 +767,9 @@ export default function ProjectModal({
 
                 {/* 상태 제목 */}
                 <div>
-                  <label className="block mb-2 font-medium">상태 제목</label>
+                  <label className="block mb-2 font-medium">
+                    작업상태 제목
+                  </label>
                   <input
                     type="text"
                     name="title"
@@ -779,7 +783,9 @@ export default function ProjectModal({
 
                 {/* 상태 설명 */}
                 <div>
-                  <label className="block mb-2 font-medium">상태 설명</label>
+                  <label className="block mb-2 font-medium">
+                    작업상태 설명
+                  </label>
                   <textarea
                     name="description"
                     value={stateData.description}

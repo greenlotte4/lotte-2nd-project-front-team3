@@ -278,11 +278,14 @@ export default function ProjectViewSection() {
               <div className="mb-3 text-center">
                 <div className="flex justify-between items-center">
                   <div className="flex justify-center items-center space-x-3">
-                    <h1 className="text-4xl font-bold tracking-wide text-blue-700">
+                    <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
                       {project.projectName}
                     </h1>
-                    <p>{project.status === 0 ? "In Progress" : "Completed"}</p>
+                    <p className="text-sm text-gray-500">
+                      {project.status === 0 ? "In Progress" : "Completed"}
+                    </p>
                   </div>
+
                   <div className="flex items-center">
                     {[...Array(3)].map((_, index) => (
                       <img
@@ -331,14 +334,18 @@ export default function ProjectViewSection() {
                               <div className="flex items-center gap-2">
                                 <span
                                   className="text-xl"
-                                  style={{ color: state.color }}
+                                  style={{
+                                    color: state.color,
+                                    display: "inline-block",
+                                    marginBottom: "4px",
+                                  }}
                                 >
                                   ●
                                 </span>
                                 <h2 className="font-semibold text-2xl">
                                   {state.title}
                                 </h2>
-                                <span className="text-[12px] text-gray-700 bg-gray-100 rounded-full px-3 mb-2">
+                                <span className="text-[12px] text-gray-700 bg-gray-100 rounded-full px-3 mb-1">
                                   {state.items.length}
                                 </span>
                               </div>
@@ -365,23 +372,28 @@ export default function ProjectViewSection() {
                                         openTaskEditModal(state.id, item)
                                       }
                                     >
-                                      <div className="flex items-center justify-between group">
-                                        <h3 className="text-xl mb-2">
-                                          {item.title}
-                                        </h3>
-                                        <button
-                                          className="hidden group-hover:flex items-center text-sm text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-white/30"
-                                          onClick={(e) => {
-                                            e.stopPropagation(); // onClick 이벤트 전파 중단 (수정 모달 방지)
-                                            handleDeleteTask(state.id, item.id); // 삭제 핸들러 호출
-                                          }}
-                                        >
-                                          <img
-                                            src="/images/Antwork/project/project_task_delete.png"
-                                            alt="삭제"
-                                            className="w-7 h-7 ml-3 mb-2"
-                                          />
-                                        </button>
+                                      <div className="flex items-center justify-between group mb-3">
+                                        <div className="flex items-center space-x-2">
+                                          <h3 className="text-xl">
+                                            {item.title}
+                                          </h3>
+                                          <button
+                                            className="hidden group-hover:flex items-center text-sm text-gray-400 hover:text-gray-600 p-1 rounded-lg"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteTask(
+                                                state.id,
+                                                item.id
+                                              );
+                                            }}
+                                          >
+                                            <img
+                                              src="/images/Antwork/project/project_task_delete.png"
+                                              alt="삭제"
+                                              className="w-6 h-6"
+                                            />
+                                          </button>
+                                        </div>
                                       </div>
 
                                       <div className="absolute top-2 right-2 flex -space-x-4">
@@ -443,12 +455,18 @@ export default function ProjectViewSection() {
                   ))}
                 <div className="text-center">
                   <button
-                    className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-600 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-700 h-10 transition-colors"
-                    style={{ backgroundColor: "#D9E8FF" }}
+                    className="w-full flex items-center justify-center space-x-2 p-4 rounded-lg text-black font-semibold shadow-md transition-all transform hover:scale-105 hover:shadow-lg"
+                    style={{
+                      backgroundColor:
+                        "rgb(217 232 255 / var(--tw-bg-opacity, 1))",
+                      fontSize: "15px",
+                      border: "none",
+                    }}
                     onClick={() => openModal("state-add")}
                   >
+                    New Status
                     <svg
-                      className="w-6 h-6"
+                      className="w-5 h-5 ml-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

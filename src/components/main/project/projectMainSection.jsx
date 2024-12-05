@@ -38,7 +38,7 @@ export default function ProjectMainSection() {
                 projects.map((project) => (
                   <div
                     key={project.id} // 프로젝트 ID를 키로 사용
-                    className="bg-white p-8 rounded-lg shadow flex items-center justify-between"
+                    className="bg-white p-8 rounded-lg shadow flex items-center justify-between transition-all duration-300 hover:bg-gray-100 hover:shadow-xl"
                   >
                     <div className="flex items-center space-x-8">
                       <div className="w-12 h-12 rounded-lg overflow-hidden">
