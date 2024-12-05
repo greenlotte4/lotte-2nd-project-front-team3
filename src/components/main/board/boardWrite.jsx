@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BoardFileUpload from './boardFileUpload';
+import { postBoard } from "../../../api/boardAPI";
+import { BOARD_LIST_URI } from "../../../api/_URI";
 
 {
   /*
@@ -21,36 +23,13 @@ export default function BoardWrite() {
   const [board, setBoard] = useState({
     cate1: "",
     cate2: "",
-    writer: "ghkdtnqls95",
+    writer: "user1",
     title: "",
     file: null,
     content: "",
   });
 
-  const postBoard = async (data) => {
-    console.log('데이터 전송 전:', data);
-    // const formData = new FormData();
 
-    // Object.entries(data).forEach(([key, value]) => {
-    //   formData.append(key, value);
-    // });
-
-    // const response = await fetch('/antwork/board/write', {
-    //   method: 'POST',
-    //   body: formData,
-    // });
-
-    const response = await fetch('http://localhost:8080/api/board/write', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    console.log('API 호출 결과:', response); 
-    return response.ok;
-  };
   
   const changeHandler = (e) => {
     e.preventDefault();
@@ -59,26 +38,48 @@ export default function BoardWrite() {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    const data = {
-      cate1: board.cate1,
-      cate2: board.cate2,
-      writer: "ghkdtnqls95",
-      title: board.title,
-      file: null,
-      content: board.content,
-      regDate: new Date().toISOString(),
-      hit: 0,
-      likes: 0,
-    };
+    try {
+        // 필수 필드 검증
+        if (!board.cate1 || !board.cate2) {
+            alert("카테고리를 선택해주세요.");
+            return;
+        }
 
-    const result = await postBoard(data);
-    console.log("result 결과 : " + result);
+        if (!board.title.trim()) {
+            alert("제목을 입력해주세요.");
+            return;
+        }
 
-    if (result) {
-      alert("글 작성 했습니다.");
-      navigate("/antwork/board/list"); // 프론트 주소
+        if (!board.content.trim()) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
+
+        const data = {
+          cate1: String(board.cate1), 
+          cate2: String(board.cate2),  // 
+          writer: "qwer123",
+          title: board.title.trim(),
+          content: board.content.trim(),
+          hit: 0,
+          likes: 0
+        };
+
+        // 실제 전송되는 데이터 콘솔에 출력
+        console.log('전송 데이터:', data);
+      
+        await postBoard(data);
+
+        alert("글 작성이 완료되었습니다.");
+        // navigate(BOARD_LIST_URI);
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
+        navigate("/antwork/board/list");
+
+    } catch (error) {
+        console.error("게시글 작성 실패:", error);
+        alert("게시글 작성에 실패했습니다. 다시 시도해주세요.");
     }
-  };
+};
 
   return (
     <>
@@ -88,8 +89,6 @@ export default function BoardWrite() {
         </div>
         <form onSubmit={submitHandler}
           id="myForm"
-          action="/api/board/write"
-          method="POST"
           className="space-y-4"
         >
           <table className="w-full h-56 min-h-[300px] border-t-2 border-gray-300 border-collapse">
@@ -204,7 +203,7 @@ export default function BoardWrite() {
             >
               작성하기
             </button>
-          </div>4
+          </div>
         </form>
       </article>
     </>

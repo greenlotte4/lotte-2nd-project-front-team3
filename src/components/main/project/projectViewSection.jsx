@@ -5,8 +5,11 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
 import {
   createTask,
+  deleteTask,
   getProjectById,
   getProjectStates,
+  getTasksByStateId,
+  updateTask,
 } from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
@@ -64,7 +67,9 @@ export default function ProjectViewSection() {
 
   const [states, setStates] = useState([]);
 
+  // 현재 작업이 속한 작업상태의 id 상태관리
   const [currentStateId, setCurrentStateId] = useState(null);
+  //수정 중인 작업 데이터 상태관리(작업 수정할 때 기존 데이터를 불러옴)
   const [currentTask, setCurrentTask] = useState(null);
 
   useEffect(() => {
@@ -99,29 +104,108 @@ export default function ProjectViewSection() {
     }
   };
 
-  const handleEditItem = (stateId, updatedItem) => {
-    setStates((prevStates) =>
-      prevStates.map((state) =>
-        state.id === stateId
-          ? {
-              ...state,
-              items: state.items.map((item) =>
-                item.id === updatedItem.id ? updatedItem : item
-              ),
+  // 전체 작업 데이터 가져오기
+  useEffect(() => {
+    const fetchTasksForStates = async () => {
+      try {
+        // 여러 비동기 작업(getTasksByStateId)을 동시에 실행하고, 모든 작업이 완료될 때까지 기다림
+        const updatedStates = await Promise.all(
+          // states 배열의 각 요소에 대해 작업을 처리
+          states.map(async (state) => {
+            if (!state.items || state.items.length === 0) {
+              // 작업이 없는 상태만 요청
+              const tasks = await getTasksByStateId(state.id);
+              // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
+              return { ...state, items: tasks };
             }
-          : state
-      )
-    );
-    setCurrentTask(null);
+            return state;
+          })
+        );
+        setStates(updatedStates);
+      } catch (error) {
+        console.error("Error fetching tasks for states:", error.message);
+      }
+    };
+
+    if (states.length > 0) {
+      // 상태가 존재할 때만 호출
+      fetchTasksForStates();
+    }
+  }, [states.length]); // 상태 수가 변경될 때만 트리거
+
+  // 작업 수정
+  const handleEditItem = async (stateId, updatedTask) => {
+    try {
+      console.log("수정 요청 taskId:", updatedTask.id);
+      console.log("수정 요청 데이터:", updatedTask);
+
+      // 백엔드로 수정 요청
+      const updatedTaskFromServer = await updateTask(
+        updatedTask.id,
+        updatedTask
+      ); // taskId를 전달
+      console.log("수정 완료된 작업:", updatedTaskFromServer);
+
+      // 상태 업데이트
+      setStates((prevStates) =>
+        prevStates.map((state) =>
+          state.id === stateId
+            ? {
+                ...state,
+                items: state.items.map((item) =>
+                  item.id === updatedTaskFromServer.id
+                    ? updatedTaskFromServer
+                    : item
+                ),
+              }
+            : state
+        )
+      );
+    } catch (error) {
+      console.error("작업 수정 중 오류 발생:", error.message || error);
+      alert("작업 수정 중 문제가 발생했습니다.");
+    }
   };
 
+  // 작업 삭제 핸들러
+  const handleDeleteTask = async (stateId, taskId) => {
+    console.log("삭제 stateId, taskId : " + stateId, taskId);
+    if (!window.confirm("정말로 삭제하시겠습니까?")) return;
+    try {
+      // 서버에 삭제 요청
+      await deleteTask(taskId);
+      console.log(`Task ${taskId} 삭제 성공`);
+
+      // State에서 삭제 반영
+      setStates((prevStates) =>
+        prevStates.map((state) =>
+          state.id === stateId
+            ? {
+                ...state,
+                items: state.items.filter((task) => task.id !== taskId),
+              }
+            : state
+        )
+      );
+
+      alert("성공적으로 삭제되었습니다!");
+    } catch (error) {
+      console.error("Task 삭제 중 오류 발생:", error.message || error);
+      alert("Task 삭제 중 문제가 발생했습니다.");
+    }
+  };
+
+  // 작업 등록 모달
   const openTaskCreateModal = (stateId) => {
+    console.log("등록모달 열때 stateId : " + stateId);
     setCurrentStateId(stateId);
     setCurrentTask(null);
     openModal("task-create");
   };
 
+  // 작업 수정 모달
   const openTaskEditModal = (stateId, task) => {
+    console.log("수정모달 열때 stateId와 task : " + stateId, task);
     setCurrentStateId(stateId);
     setCurrentTask(task);
     openModal("task-edit");
@@ -180,12 +264,12 @@ export default function ProjectViewSection() {
     <DragDropContext onDragEnd={handleDragEnd}>
       <ProjectModal
         projectId={id} // 파라미터 id값 넘김
-        onAddState={handleAddState}
-        onAddItem={handleAddItem}
-        onEditItem={handleEditItem}
-        currentStateId={currentStateId}
-        currentTask={currentTask}
-        setCurrentTask={setCurrentTask}
+        onAddState={handleAddState} // 상태 추가 핸들러
+        onAddItem={handleAddItem} // 작업 추가 핸들러
+        onEditItem={handleEditItem} // 작업 수정 핸들러
+        currentStateId={currentStateId} // openTaskEditModal에서 설정한 stateId
+        currentTask={currentTask} // openTaskEditModal에서 설정한 task
+        setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
       />
       {project ? (
         <article className="page-list">
@@ -194,14 +278,14 @@ export default function ProjectViewSection() {
               <div className="mb-3 text-center">
                 <div className="flex justify-between items-center">
                   <div className="flex justify-center items-center space-x-3">
-                    <h1 className="text-4xl font-bold tracking-wide text-blue-700">
+                    <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
                       {project.projectName}
                     </h1>
-                    <p>
-                      Status:{" "}
+                    <p className="text-sm text-gray-500">
                       {project.status === 0 ? "In Progress" : "Completed"}
                     </p>
                   </div>
+
                   <div className="flex items-center">
                     {[...Array(3)].map((_, index) => (
                       <img
@@ -238,21 +322,32 @@ export default function ProjectViewSection() {
                           {...provided.droppableProps}
                           className="flex-shrink-0 w-96 rounded-lg bg-white border border-blue-200 max-h-[800px]"
                         >
-                          <div className="p-3 border-b border-gray-100">
+                          <div
+                            className="p-3 border-b"
+                            style={{
+                              borderColor: state.color,
+                              borderBottomWidth: "2px",
+                              marginBottom: "5px",
+                            }}
+                          >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span
                                   className="text-xl"
-                                  style={{ color: state.color }}
+                                  style={{
+                                    color: state.color,
+                                    display: "inline-block",
+                                    marginBottom: "4px",
+                                  }}
                                 >
                                   ●
                                 </span>
                                 <h2 className="font-semibold text-2xl">
                                   {state.title}
                                 </h2>
-                                {/* <span className="text-sm text-gray-500 bg-gray-50 rounded-full px-2">
-                                {state.items.length}
-                              </span> */}
+                                <span className="text-[12px] text-gray-700 bg-gray-100 rounded-full px-3 mb-1">
+                                  {state.items.length}
+                                </span>
                               </div>
                             </div>
                             <p className="text-[14px] text-gray-600 mt-3">
@@ -277,9 +372,30 @@ export default function ProjectViewSection() {
                                         openTaskEditModal(state.id, item)
                                       }
                                     >
-                                      <h3 className="text-xl mb-2">
-                                        {item.title}
-                                      </h3>
+                                      <div className="flex items-center justify-between group mb-3">
+                                        <div className="flex items-center space-x-2">
+                                          <h3 className="text-xl">
+                                            {item.title}
+                                          </h3>
+                                          <button
+                                            className="hidden group-hover:flex items-center text-sm text-gray-400 hover:text-gray-600 p-1 rounded-lg"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteTask(
+                                                state.id,
+                                                item.id
+                                              );
+                                            }}
+                                          >
+                                            <img
+                                              src="/images/Antwork/project/project_task_delete.png"
+                                              alt="삭제"
+                                              className="w-6 h-6"
+                                            />
+                                          </button>
+                                        </div>
+                                      </div>
+
                                       <div className="absolute top-2 right-2 flex -space-x-4">
                                         <img
                                           src="/images/Antwork/project/project_profile.png"
@@ -339,12 +455,18 @@ export default function ProjectViewSection() {
                   ))}
                 <div className="text-center">
                   <button
-                    className="w-full flex items-center justify-center space-x-2 p-2 border border-gray-200 rounded-md text-gray-600 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-700 h-10 transition-colors"
-                    style={{ backgroundColor: "#D9E8FF" }}
+                    className="w-full flex items-center justify-center space-x-2 p-4 rounded-lg text-black font-semibold shadow-md transition-all transform hover:scale-105 hover:shadow-lg"
+                    style={{
+                      backgroundColor:
+                        "rgb(217 232 255 / var(--tw-bg-opacity, 1))",
+                      fontSize: "15px",
+                      border: "none",
+                    }}
                     onClick={() => openModal("state-add")}
                   >
+                    New Status
                     <svg
-                      className="w-6 h-6"
+                      className="w-5 h-5 ml-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

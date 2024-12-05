@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  DRIVE_FILES_INSERT_URI,
   DRIVE_FOLDER_INSERT_URI,
   MY_DRIVE_SELECT_URI,
   MY_DRIVE_URI,
@@ -15,6 +16,22 @@ export const driveFolderInsert = async (data) => {
     console.log(err);
   }
 };
+
+//드라이브 파일 등록
+export const driveFilesInsert = async (formData) => {
+  try {
+    const response = await axios.post(`${DRIVE_FILES_INSERT_URI}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 
 
 //마이 드라이브 전체보기
