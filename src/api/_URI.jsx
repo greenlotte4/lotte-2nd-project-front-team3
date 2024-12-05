@@ -85,4 +85,5 @@ export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepa
 export const BOARD_WRITE_URI = `${API_SERVER_HOST}/board/write`; // 게시판 글쓰기
 export const BOARD_LIST_URI = `${API_SERVER_HOST}/board/list`; // 게시판 리스트 (글목록) 
 export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 (글보기)
+export const BOARD_UPDATE_URI = `${API_SERVER_HOST}/board/modify`; // 게시판 글 수정
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인

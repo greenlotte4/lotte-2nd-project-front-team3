@@ -4,6 +4,8 @@ import {
     BOARD_LIST_URI, // 게시판 리스트 (글목록)
     BOARD_VIEW_URI, // 게시판 뷰 (글보기)
     //BOARD_MAIN_URI, // 게시판 메인
+    
+    BOARD_UPDATE_URI
 } from "./_URI";
 
 // 게시글 작성 
@@ -68,4 +70,30 @@ export const getBoardById = async (uid) => {
     }
 };
 
+// 게시글 글 수정
+    export const updateBoard = async (uid, data) => {
+    try {
+        console.log('요청 URL : ', `${BOARD_UPDATE_URI}/${uid}`);
+        console.log('요청 데이터 : ', data);
 
+        const response = await axios.put(`${BOARD_UPDATE_URI}/${uid}`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        });
+
+        if (response.status !== 200 && response.status !== 201) {
+        throw new Error('게시글 수정에 실패했습니다. 다시 시도해주세요.');
+        }
+
+        console.log('응답 데이터 : ', response);
+        return response.data;
+    } catch (error) {
+        console.error('게시글 수정 에러 상세 : ', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+        });
+        throw error;
+    }
+    };

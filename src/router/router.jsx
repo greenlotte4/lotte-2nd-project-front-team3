@@ -44,6 +44,7 @@ import CompletePage from "./../pages/Landing/CompletePage";
 import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
 import SchedulePage from "../pages/Main/calendar/SchedulePage";
 import AdminDepartmentPage from "../pages/Main/Admin/adminDepartmentPage";
+import BoardUpdatePage from "../pages/Main/board/boardUpdatePage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -88,6 +89,7 @@ const router = createBrowserRouter([
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
   { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
   { path: "/antwork/board/view/:id", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
+  { path: "/antwork/board/update/:id", element: <BoardUpdatePage /> }, // 2024/12/05(목) 김민희 - Board Modify 추가
   { path: "/antwork/board/boardDataRoom", element: <BoardDataRoomPage /> }, // 2024/11/29(금) 김민희 - Board Data Room 추가
   { path: "/antwork/board/boardDataView", element: <BoardDataViewPage /> }, // 2024/11/29(금) 김민희 - Board Data View 추가
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
