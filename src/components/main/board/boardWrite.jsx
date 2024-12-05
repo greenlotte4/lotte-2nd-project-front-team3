@@ -72,6 +72,7 @@ export default function BoardWrite() {
 
         alert("글 작성이 완료되었습니다.");
         // navigate(BOARD_LIST_URI);
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
         navigate("/antwork/board/list");
 
     } catch (error) {
