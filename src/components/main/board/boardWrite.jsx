@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BoardFileUpload from './boardFileUpload';
 import { postBoard } from "../../../api/boardAPI";
-// import { BOARD_LIST_URI } from "../../../api/_URI.jsx";
+import { BOARD_LIST_URI } from "../../../api/_URI";
 
 {
   /*
@@ -61,7 +61,6 @@ export default function BoardWrite() {
           writer: "qwer123",
           title: board.title.trim(),
           content: board.content.trim(),
-          //regDate: new Date().toLocaleString(), // 날짜 형식 변경
           hit: 0,
           likes: 0
         };
@@ -72,6 +71,7 @@ export default function BoardWrite() {
         await postBoard(data);
 
         alert("글 작성이 완료되었습니다.");
+        // navigate(BOARD_LIST_URI);
         navigate("/antwork/board/list");
 
     } catch (error) {
