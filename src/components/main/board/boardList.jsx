@@ -26,7 +26,9 @@ export default function BoardList() {
     // 게시글 목록을 가져오는 함수
     const fetchBoards = async () => {
       try {
-        const response = await axiosInstance.get("/api/board/list");
+
+        const response = await axiosInstance.get("/board/list");
+
         // axios는 2xx 상태 코드의 경우 자동으로 response.data에 데이터를 넣습니다
         setBoards(response.data); // 성공 시 데이터 확인
       } catch (error) {
