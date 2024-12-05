@@ -36,7 +36,6 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
         user_id: uid,
       };
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
-      console.log(newCalendar, uid);
       await insertCalendar(newCalendar);
       window.location.reload(); // 페이지 새로 고침
     }
@@ -81,8 +80,6 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     const fetchData = async () => {
       const data = await getCalendar(uid);
       const data2 = await getSchedule(uid);
-      console.log("data::::" + data);
-      console.log("data2::::" + data2);
 
       const updatedData = data2.filter((item) => {
         const endTime = new Date(item.end);
@@ -92,8 +89,6 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       setData(data);
       setSchedule(updatedData);
     };
-
-    console.log("sch:::::::::::::::" + JSON.stringify(schedule));
 
     fetchData();
   }, [uid]);
@@ -129,8 +124,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
         <ul className="a mt-20">
           <li className="">
             <div>
-              <a
-                href="#"
+              <button
+                type="button"
                 className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
                 onClick={() => setIsMyOpen(!isMyOpen)}
               >
@@ -154,7 +149,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   />
                 </div>
                 <span className="main-cate">캘린더</span>
-              </a>
+              </button>
             </div>
             <div
               className={`Mydrive_List transition-all duration-300 overflow-hidden ${
@@ -233,8 +228,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
           </li>
           <li className="">
             <div>
-              <a
-                href="#"
+              <button
+                type="button"
                 className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
                 onClick={() => setIsShareOpen(!isShareOpen)}
               >
@@ -258,7 +253,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   />
                 </div>
                 <span className="main-cate">내 일정</span>
-              </a>
+              </button>
             </div>
             <div
               className={`Mydrive_List transition-all duration-300 overflow-hidden ${

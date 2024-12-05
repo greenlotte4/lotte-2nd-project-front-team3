@@ -79,7 +79,9 @@ export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 캘�
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 캘린더 삭제하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
 export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 일정 조회하기
+export const SCHEDULE_DETAIL_URI = `${API_SERVER_HOST}/schedule/select/detail`; // 일정 상세조회하기
 export const SCHEDULE_UPDATE_URI = `${API_SERVER_HOST}/schedule/update`; // 일정 수정하기
+export const SCHEDULE_UPDATEDETAIL_URI = `${API_SERVER_HOST}/schedule/update/detail`; // 일정 수정하기
 export const SCHEDULE_DELETE_URI = `${API_SERVER_HOST}/schedule/delete`; // 일정 삭제하기
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
 
