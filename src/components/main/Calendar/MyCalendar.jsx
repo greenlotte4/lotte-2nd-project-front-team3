@@ -6,25 +6,29 @@ import listPlugin from "@fullcalendar/list";
 import "../../../styles/calendar.scss";
 import axios from "axios";
 import {
+  deleteSchedule,
   getCalendar,
   getSchedule,
   insertSchedule,
+  updateScheduleDrag,
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
+import { useNavigate } from "react-router-dom";
 
 function MyCalendar({ listMonth, setListMonth }) {
+  const navigate = useNavigate();
   const calendarRef = useRef(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
-  console.log("uid::::" + uid);
   // useState 몰아넣은 곳
+  const [currentEventData, setCurrentEventData] = useState(null);
   const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
   const [option, setOption] = useState([]);
-
+  const allEvents = [...events, ...holidays];
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -40,6 +44,7 @@ function MyCalendar({ listMonth, setListMonth }) {
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi(); // FullCalendar API 참조
+
       if (listMonth === "listWeek") {
         calendarApi.changeView("listWeek"); // 'listMonth' 버튼 동작 재현
         setListMonth("dayGridMonth");
@@ -118,12 +123,8 @@ function MyCalendar({ listMonth, setListMonth }) {
   useEffect(() => {
     const fetchData = async () => {
       const data2 = await getSchedule(uid);
-      console.log("data2::::" + data2);
-
       setEvents(data2);
     };
-
-    console.log("sch:::::::::::::::" + events);
 
     fetchData();
   }, [uid]);
@@ -163,12 +164,32 @@ function MyCalendar({ listMonth, setListMonth }) {
       return;
     }
 
+    setFormData({
+      title: event.title || "",
+      location: event.extendedProps.location || "",
+      calendarId: event.extendedProps.calendarId,
+      content: event.extendedProps.content,
+      start: startDate,
+      end: endDate,
+    });
+
     setEditMode(true); // 수정 모드로 설정
     setShowModal(true); // 모달 띄우기
     setCurrentEventId(event.id); // 수정하려는 이벤트의 ID 저장
+
+    setCurrentEventData({ event });
   };
 
-  const allEvents = [...events, ...holidays];
+  const navigateToEditPage = () => {
+    console.log();
+    if (currentEventData) {
+      navigate("/antwork/schedule", {
+        state: {
+          id: currentEventData.event.id,
+        }, // eventData를 state로 전달
+      });
+    }
+  };
 
   const handleDelete = () => {
     if (currentEventId && calendarRef.current) {
@@ -178,7 +199,11 @@ function MyCalendar({ listMonth, setListMonth }) {
       if (event) {
         if (confirm("일정을 삭제하시겠습니까?")) {
           event.remove(); // FullCalendar의 해당 이벤트 삭제
+          const fetchData = async () => {
+            await deleteSchedule(event.id);
+          };
           alert("일정이 삭제되었습니다.");
+          fetchData();
           setShowModal(false); // 모달 닫기
         }
       } else {
@@ -234,11 +259,17 @@ function MyCalendar({ listMonth, setListMonth }) {
   const handleEventDrop = (info) => {
     const { event } = info;
     const isHoliday = holidays.some((holiday) => holiday.title === event.title);
-
     if (isHoliday) {
       // 공휴일인 경우 드래그를 되돌려 원래 위치로 복원
       info.revert();
     }
+    console.log("ppppppppppp:::" + JSON.stringify(event));
+
+    const fetchData = async () => {
+      await updateScheduleDrag(event.id, event.start, event.end);
+    };
+    fetchData();
+
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
         e.id === event.id
@@ -277,7 +308,10 @@ function MyCalendar({ listMonth, setListMonth }) {
     setFormData({ uid: uid });
     const fetchData = async () => {
       console.log("form:::::::::" + JSON.stringify(formData));
-      await insertSchedule(formData);
+      const result = await insertSchedule(formData);
+
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.addEvent(result); // FullCalendar에 동적으로 추가
     };
     fetchData();
     setFormData({
@@ -381,7 +415,7 @@ function MyCalendar({ listMonth, setListMonth }) {
                   {/* Calendar Selection */}
                   <select
                     name="calendarId"
-                    value={formData.calendarId}
+                    value={formData.calendarId || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, calendarId: e.target.value })
                     }
@@ -438,12 +472,21 @@ function MyCalendar({ listMonth, setListMonth }) {
                       {editMode ? "수정" : "저장"}
                     </button>
                     {editMode && (
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={handleDelete}
-                      >
-                        삭제
-                      </button>
+                      <>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          onClick={handleDelete}
+                        >
+                          삭제
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                          onClick={navigateToEditPage}
+                        >
+                          상세 수정
+                        </button>
+                      </>
                     )}
                     <button
                       className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"

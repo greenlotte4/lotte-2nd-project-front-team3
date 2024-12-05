@@ -9,9 +9,15 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
-import { getCalendar, getUser, insertSchedule } from "../../../api/calendarAPI";
+import {
+  getCalendar,
+  getScheduleDetail,
+  getUser,
+  insertSchedule,
+  updateSchedule,
+} from "../../../api/calendarAPI";
 
 export default function Schedule() {
   const navigate = useNavigate();
@@ -22,6 +28,7 @@ export default function Schedule() {
     title: "",
     start: "",
     end: "",
+    id: "",
     calendarId: "",
     uid: uid,
     internalAttendees: [],
@@ -31,6 +38,38 @@ export default function Schedule() {
     content: "",
   });
 
+  const location = useLocation(); // location 객체를 받음
+  const { id } = location.state || {};
+  useEffect(() => {
+    if (location.state) {
+      const fetchData = async () => {
+        const data2 = await getScheduleDetail(id);
+
+        setFormData({
+          title: data2.title,
+          start: data2.start,
+          end: data2.end,
+          id: data2.id,
+          calendarId: data2.calendarId,
+          uid: uid,
+          internalAttendees: data2.internalAttendees,
+          newExternalAttendee: "",
+          externalAttendees: data2.externalAttendees,
+          location: data2.location,
+          content: data2.content,
+        });
+        const updatedAttendees = [
+          ...selectedAttendees,
+          ...data2.internalAttendees, // data2.internalAttendees의 각 항목을 펼쳐서 추가
+        ];
+        setSelectedAttendees(updatedAttendees);
+      };
+      fetchData();
+      console.log("ffffffff::::::::::" + JSON.stringify(formData));
+      console.log("eeeeeeee::::::::::" + JSON.stringify(selectedAttendees));
+    }
+  }, [location.state]); // location.state가 변경될 때만 실행되도록 의존성 배열 추가
+
   const [isAttendeesDropdownOpen, setIsAttendeesDropdownOpen] = useState(false);
 
   const [availableAttendees, setAvailableAttendees] = useState([]);
@@ -39,11 +78,9 @@ export default function Schedule() {
     const fetchData = async () => {
       const data = await getUser(department);
       const data2 = await getCalendar(uid);
-      console.log("55555565666666" + data);
       setAvailableAttendees(data);
       setOption(data2);
     };
-    console.log("444444444" + availableAttendees);
     fetchData();
   }, [department]);
   const [selectedAttendees, setSelectedAttendees] = useState([]);
@@ -82,6 +119,7 @@ export default function Schedule() {
   };
 
   const handleSelectAttendee = (attendee) => {
+    console.log(selectedAttendees);
     if (!selectedAttendees.includes(attendee)) {
       // 새로운 참석자 추가
       const updatedAttendees = [...selectedAttendees, attendee];
@@ -119,18 +157,34 @@ export default function Schedule() {
     e.preventDefault();
     console.log(formData); // 폼 제출 시 데이터 로그
     const fetchData = async () => {
-      await insertSchedule(formData);
+      if (id) {
+        // 수정일 때 updateSchedule 호출
+        await updateSchedule(formData);
+      } else {
+        // 일정 등록일 때 insertSchedule 호출
+        await insertSchedule(formData);
+      }
     };
     fetchData();
     navigate("/antwork/calendar");
   };
 
+  useEffect(() => {
+    console.log("Updated selectedAttendees:", selectedAttendees);
+    console.log("selectedAttendees length:", selectedAttendees.length);
+  }, [selectedAttendees]);
+
   return (
     <section className="w-full max-w-[1200px] h-auto rounded-lg p-[25px] bg-white mx-auto">
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-[25px] font-semibold mb-[10px]">일정 등록</h1>
-          <p className="text-sm text-gray-500">상세등록</p>
+          {/* 데이터가 있으면 '일정 수정'과 '상세 수정'으로 변경 */}
+          <h1 className="text-[25px] font-semibold mb-[10px]">
+            {id ? "일정 수정" : "일정 등록"}
+          </h1>
+          <p className="text-sm text-gray-500">
+            {id ? "상세 수정" : "상세 등록"}
+          </p>
         </div>
         <div className="bg-white shadow-xl rounded-2xl p-8  ">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -250,21 +304,23 @@ export default function Schedule() {
                     선택된 참석자
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {selectedAttendees.map((attendee, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-s flex items-center"
-                      >
-                        {attendee}
-                        <button
-                          type="button"
-                          onClick={() => removeInternalAttendee(attendee)}
-                          className="ml-1 text-blue-500 hover:text-blue-700"
+                    {selectedAttendees
+                      .filter((attendee) => attendee.trim() !== "") // 공백 제외
+                      .map((attendee, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-s flex items-center"
                         >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
+                          {attendee}
+                          <button
+                            type="button"
+                            onClick={() => removeInternalAttendee(attendee)}
+                            className="ml-1 text-blue-500 hover:text-blue-700"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
                   </div>
                 </div>
               )}
@@ -297,21 +353,23 @@ export default function Schedule() {
               {formData.externalAttendees.length > 0 && (
                 <div className="mt-2 space-y-1">
                   <div className="flex flex-wrap gap-2">
-                    {formData.externalAttendees.map((attendee, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-s flex items-center"
-                      >
-                        {attendee}
-                        <button
-                          type="button"
-                          onClick={() => removeExternalAttendee(attendee)}
-                          className="ml-1 text-teal-500 hover:text-teal-700"
+                    {formData.externalAttendees
+                      .filter((attendee) => attendee.trim() !== "") // 공백 제외
+                      .map((attendee, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-s flex items-center"
                         >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
+                          {attendee}
+                          <button
+                            type="button"
+                            onClick={() => removeExternalAttendee(attendee)}
+                            className="ml-1 text-teal-500 hover:text-teal-700"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
                   </div>
                 </div>
               )}
@@ -356,7 +414,7 @@ export default function Schedule() {
                 type="submit"
                 className="bg-[#b2d1ff] text-white px-8 py-3 rounded-full hover:from-blue-600 hover:to-green-600 transition-all transform hover:-translate-y-1 shadow-lg"
               >
-                일정 등록
+                {id ? "일정 수정" : "일정 등록"}
               </button>
               <Link
                 to="/antwork/calendar"
