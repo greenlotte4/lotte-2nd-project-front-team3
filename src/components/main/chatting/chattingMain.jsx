@@ -9,7 +9,7 @@ export default function ChattingMain({ dmId }) {
 
   const [messages, setMessages] = useState([]); // 메시지 상태
   const [loading, setLoading] = useState(false); // 로딩 상태
-  
+
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
     isSidebarOpen: false, // 오른쪽 사이드바 토글
@@ -24,16 +24,16 @@ export default function ChattingMain({ dmId }) {
     try {
       console.log("Fetching messages for dmId:", dmId);
       setLoading(true);
-  
-      const response = await getDmMessages(dmId);
-      
+
+      const response = await getDmMessages(1);
+
       // 응답이 HTML인 경우 처리
       if (response.data.includes("<html")) {
         console.error("HTML 응답을 받았습니다. 서버 응답을 확인하세요.");
         setMessages([]); // HTML 응답이면 메시지 비우기
         return;
       }
-  
+
       // 응답 데이터가 배열인지 확인
       if (Array.isArray(response.data)) {
         setMessages(response.data); // 메시지 상태에 저장
@@ -48,7 +48,7 @@ export default function ChattingMain({ dmId }) {
       setLoading(false); // 로딩 종료
     }
   };
-  
+
   // 컴포넌트 마운트 시 메시지 조회
   useEffect(() => {
     fetchMessages(); // dmId가 변경될 때마다 호출
@@ -124,7 +124,7 @@ export default function ChattingMain({ dmId }) {
                           />
                         </svg>
                       </button>
-                    )} 
+                    )}
                   </div>
                 )}
                 <button
@@ -196,5 +196,5 @@ export default function ChattingMain({ dmId }) {
       </div>
     </div>
   );
-  
+
 }
