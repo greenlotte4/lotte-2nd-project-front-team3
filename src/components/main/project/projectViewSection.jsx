@@ -353,7 +353,6 @@ export default function ProjectViewSection() {
                             style={{
                               borderColor: state.color,
                               borderBottomWidth: "2px",
-                              marginBottom: "5px",
                             }}
                           >
                             <div className="flex items-center justify-between">
