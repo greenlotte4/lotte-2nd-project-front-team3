@@ -16,12 +16,30 @@ export default function ProjectModal({
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
-
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기l
 
   useEffect(() => {
     console.log("사용자 정보:", user);
   }, [user]);
+
+  // 작업 수정 effect
+  useEffect(() => {
+    if (type === "task-create") {
+      // 작업 추가 시 상태 초기화
+      setTaskData({ title: "", content: "", priority: "2", size: "M" });
+    } else if (type === "task-edit" && currentTask) {
+      // 작업 수정 시 현재 작업 데이터를 로드
+      setTaskData({
+        title: currentTask.title || "",
+        content: currentTask.content || "",
+        priority:
+          currentTask.priority !== undefined && currentTask.priority !== null
+            ? String(currentTask.priority)
+            : "2", // 숫자를 문자열로 변환
+        size: currentTask.size || "M",
+      });
+    }
+  }, [type, currentTask]);
 
   // 프로젝트 추가 상태 관리
   const [project, setProject] = useState({
@@ -106,7 +124,7 @@ export default function ProjectModal({
     }
   };
 
-  // 작업 상태 관리
+  // 작업데이터 상태 관리
   const [taskData, setTaskData] = useState({
     title: "",
     content: "",
@@ -114,7 +132,7 @@ export default function ProjectModal({
     size: "M",
   });
 
-  // 작업 changeHandler
+  // 작업 changeHandler(사용자가 입력한 데이터를 taskData에 업데이트)
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
     setTaskData((prevData) => ({
@@ -141,13 +159,48 @@ export default function ProjectModal({
       status: 0,
     };
 
-    console.log("New Task to Add:", newTask);
+    console.log("newTask:", newTask);
 
     onAddItem(newTask);
 
     alert("작업이 등록되었습니다!");
     setTaskData({ title: "", content: "", priority: "2", size: "M" });
     closeModal();
+  };
+
+  // 작업 수정 핸들러
+  const handleEditTask = async (e) => {
+    e.preventDefault();
+
+    if (!currentStateId || !onEditItem) {
+      console.error("currentStateId 또는 onEditItem이 누락되었습니다!");
+      return;
+    }
+
+    // 수정된 작업 데이터 생성
+    const updatedTask = {
+      id: currentTask?.id || null, // 기존 작업의 ID 유지
+      title: taskData.title,
+      content: taskData.content,
+      priority: taskData.priority,
+      size: taskData.size,
+      stateId: currentStateId,
+      status: currentTask?.status || 0, // 기존 상태 유지
+    };
+
+    console.log("updatedTask : " + updatedTask);
+
+    try {
+      // 부모 컴포넌트로 업데이트된 작업 데이터 전달
+      onEditItem(currentStateId, updatedTask);
+
+      alert("작업이 수정되었습니다!");
+      setTaskData({ title: "", content: "", priority: "2", size: "M" }); // 초기화
+      closeModal();
+    } catch (error) {
+      console.error("작업 수정 중 오류 발생:", error.message || error);
+      alert("작업 수정 중 문제가 발생했습니다.");
+    }
   };
 
   // 프로젝트 이름 상태 추가
@@ -260,11 +313,14 @@ export default function ProjectModal({
   const renderContent = () => {
     switch (type) {
       case "task-create":
+      case "task-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
             <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">새 작업 추가</h2>
+                <h2 className="text-2xl font-bold">
+                  {type === "task-create" ? "새 작업 추가" : "작업 수정"}
+                </h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -273,13 +329,18 @@ export default function ProjectModal({
                 </button>
               </div>
 
-              <form onSubmit={handleAddTask} className="space-y-4">
+              <form
+                onSubmit={
+                  type === "task-create" ? handleAddTask : handleEditTask
+                }
+                className="space-y-4"
+              >
                 <div>
                   <label className="block mb-2 font-medium">작업명</label>
                   <input
                     type="text"
                     name="title"
-                    value={taskData.title}
+                    value={taskData.title || currentTask?.title || ""}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                     placeholder="작업 제목을 입력하세요"
@@ -291,7 +352,7 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">작업 내용</label>
                   <textarea
                     name="content"
-                    value={taskData.content}
+                    value={taskData.content || currentTask?.content || ""}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                     rows="4"
@@ -303,7 +364,7 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">우선순위</label>
                   <select
                     name="priority"
-                    value={taskData.priority}
+                    value={taskData.priority || currentTask?.priority || "2"}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
@@ -316,7 +377,7 @@ export default function ProjectModal({
                   <label className="block mb-2 font-medium">크기</label>
                   <select
                     name="size"
-                    value={taskData.size}
+                    value={taskData.size || currentTask?.size || "M"}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
@@ -401,159 +462,14 @@ export default function ProjectModal({
                     type="submit"
                     className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
-                    작업 추가
+                    {type === "task-create" ? "추가" : "수정"}
                   </button>
                 </div>
               </form>
             </div>
           </div>
         );
-      case "task-edit":
-        return (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">작업 수정</h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  ✕
-                </button>
-              </div>
 
-              <form onSubmit={handleSaveTask} className="space-y-4">
-                <div>
-                  <label className="block mb-2 font-medium">작업명</label>
-                  <input
-                    type="text"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
-                    className="w-full border rounded p-2"
-                    placeholder="작업 제목을 입력하세요"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 font-medium">작업 내용</label>
-                  <textarea
-                    value={taskContent}
-                    onChange={(e) => setTaskContent(e.target.value)}
-                    className="w-full border rounded p-2"
-                    rows="4"
-                    placeholder="작업 내용을 설명해주세요"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 font-medium">우선순위</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full border rounded p-2"
-                  >
-                    <option value="P0">P0 - 최우선</option>
-                    <option value="P1">P1 - 높음</option>
-                    <option value="P2">P2 - 보통</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block mb-2 font-medium">크기</label>
-                  <select
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    className="w-full border rounded p-2"
-                  >
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                  </select>
-                </div>
-
-                {/* 담당자 검색 및 선택 */}
-                {/* <div>
-                  <label className="block mb-2 font-medium">담당자 검색</label>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    className="w-full border rounded p-2"
-                    placeholder="담당자 이름을 입력하세요"
-                  />
-                  {searchQuery && (
-                    <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
-                      {searchResults.length > 0 ? (
-                        searchResults.map((user, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-2"
-                          >
-                            <span>{user.username}</span>
-                            <button
-                              type="button"
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handleAddCollaborator(user)}
-                            >
-                              선택
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">검색 결과가 없습니다.</p>
-                      )}
-                    </div>
-                  )}
-                </div> */}
-
-                {/* 선택된 담당자 목록 */}
-                {/* <div>
-                  <h3 className="font-medium mb-3">선택된 담당자</h3>
-                  <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
-                    {selectedCollaborators.length > 0 ? (
-                      selectedCollaborators.map((collaborator, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center p-2"
-                        >
-                          <span>{collaborator.username}</span>
-                          <button
-                            type="button"
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() =>
-                              handleRemoveCollaborator(collaborator.username)
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">선택된 담당자가 없습니다.</p>
-                    )}
-                  </div>
-                </div> */}
-
-                <div className="flex justify-end space-x-2 mt-6">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="px-4 py-2 border rounded hover:bg-gray-100"
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
-                  >
-                    수정
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        );
       case "project":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
@@ -885,7 +801,7 @@ export default function ProjectModal({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
                     저장
                   </button>

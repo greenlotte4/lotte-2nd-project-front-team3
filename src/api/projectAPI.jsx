@@ -7,6 +7,8 @@ import {
   PROJECT_STATE_SELECT_URI,
   PROJECT_TASK_INSERT_URI,
   PROJECT_TASK_SELECT_URI,
+  PROJECT_TASK_UPDATE_URI,
+  PROJECT_TASK_DELETE_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -125,3 +127,45 @@ export async function getTasksByStateId(stateId) {
   }
   return response.json();
 }
+
+// 프로젝트 작업 수정
+export const updateTask = async (taskId, updatedTask) => {
+  console.log("수정 요청 데이터:", taskId, updatedTask);
+  try {
+    const response = await axios.put(
+      `${PROJECT_TASK_UPDATE_URI}/${taskId}`,
+      updatedTask,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // 서버에서 반환된 상태 DTO
+  } catch (error) {
+    console.error("Error adding project state:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 개별 삭제
+export const deleteTask = async (taskId) => {
+  console.log("taskId : " + taskId);
+  try {
+    const response = await axios.delete(
+      `${PROJECT_TASK_DELETE_URI}/${taskId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // 삭제 성공 시 반환값 (필요 없으면 생략 가능)
+  } catch (error) {
+    console.error(
+      "Task 삭제 중 오류 발생:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
