@@ -7,12 +7,20 @@ export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; 
 
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
+export const USER_REGISTER_URI = `${API_SERVER_HOST}/user/register`; // 유저 회원가입
 export const USER_LOGIN_URI = `${API_SERVER_HOST}/user/login`; // 유저 로그인
 export const USER_LOGOUT_URI = `${API_SERVER_HOST}/user/logout`; // 유저 로그아웃
+export const USER_LIST_URI = `${API_SERVER_HOST}/user/list`; // 유저 로그아웃
 export const USER_REFRESH_URI = `${API_SERVER_HOST}/user/refresh`; // 리프레시 토큰 검증
 export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기 관리자 유저 INSERT
 export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초대
-export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`;
+export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회원 초대 토큰 검증
+export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
+
+// attendance
+export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
+export const USER_CHECK_OUT_URI = `${API_SERVER_HOST}/attendance/check-out`; // 퇴근 처리
+export const USER_CHANGE_STATUS_URI = `${API_SERVER_HOST}/attendance/update-status`; // 상태업데이트 처리
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송
@@ -55,11 +63,13 @@ export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하�
 
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
-export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 캘린더 추가하기
-export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 새 캘린더 추가하기
-export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 캘린더 추가하기
+export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘린더 조회하기
+export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 캘린더 수정하기
+export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 캘린더 삭제하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
-export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 부서원 리스트 조회
+export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 일정 조회하기
+export const SCHEDULE_UPDATE_URI = `${API_SERVER_HOST}/schedule/update`; // 일정 수정하기
+export const SCHEDULE_DELETE_URI = `${API_SERVER_HOST}/schedule/delete`; // 일정 삭제하기
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
 
 // board

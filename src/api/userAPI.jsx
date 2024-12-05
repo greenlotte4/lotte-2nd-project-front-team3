@@ -7,13 +7,32 @@ import {
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
   USER_INVITE_VERIFY_URI,
+  USER_LIST_URI,
   USER_LOGIN_URI,
   USER_LOGOUT_URI,
   USER_REFRESH_URI,
+  USER_REGISTER_URI,
   USER_SEND_EMAIL_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
+
+// 유저 회원가입
+export const registerUser = async (formData) => {
+  try {
+    const response = await axios.post(USER_REGISTER_URI, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // 자동 처리
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("회원가입 실패:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || "회원가입 중 오류가 발생했습니다."
+    );
+  }
+};
 
 // 유저 로그인
 export const loginUser = async (uid, password) => {
@@ -36,6 +55,19 @@ export const loginUser = async (uid, password) => {
     throw new Error(
       error.response?.data?.message || "로그인 요청에 실패했습니다."
     );
+  }
+};
+
+// 유저 리스트 조회 (회사별)
+export const selectMembers = async (company, page = 1, size = 20) => {
+  try {
+    const response = await axios.get(USER_LIST_URI, {
+      params: { company, page, size },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("멤버 리스트 가져오기 실패:", error);
+    throw error;
   }
 };
 
@@ -110,10 +142,15 @@ export const verifyInviteToken = async (token) => {
 };
 
 // 아이디 중복 확인
-export const checkDuplicateId = async (formData) => {
+export const checkDuplicateId = async (uid) => {
   try {
-    // POST 요청을 통해 formData 전달
-    const response = await axios.post(USER_CHECK_DUPLICATE_ID_URI, formData);
+    console.log("전달된 UID:", uid);
+    // POST 요청을 통해 uid를 JSON 객체로 전달
+    const response = await axios.post(
+      USER_CHECK_DUPLICATE_ID_URI,
+      { uid }, // JSON 객체로 전달
+      { headers: { "Content-Type": "application/json" } }
+    );
     console.log("아이디 중복 확인 응답:", response.data);
     return response.data; // 필요한 데이터만 반환
   } catch (error) {

@@ -1,56 +1,35 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TermsModal from "../../components/common/modal/termsModal";
 import { checkDuplicateId, verifyInviteToken } from "../../api/userAPI";
 import useModalStore from "../../store/modalStore";
-import axios from "axios";
+import { useFormState } from "./../../hooks/user/useFormState";
+import { useTermsAgreement } from "./../../hooks/user/useTermsAgreement";
+import { registerUser } from "./../../api/userAPI";
 
 export default function RegisterPage() {
-  const openModal = useModalStore((state) => state.openModal);
   const navigate = useNavigate();
+  const openModal = useModalStore((state) => state.openModal);
+  const {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    handleChange,
+    profileImagePreview,
+    validateInput,
+    handleConfirmPasswordChange,
+    handleProfileImageChange,
+    confirmPassword,
+    passwordError,
+  } = useFormState();
+
+  const { checkedItems, handleAllCheck, handleAgree, handleItemCheck } =
+    useTermsAgreement();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token"); // URL에서 token 읽기
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isDuplicateId, setIsDuplicateId] = useState(null);
-  const [passwordError, setPasswordError] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    uid: "",
-    password: "",
-    nick: "",
-    phoneNumber: "",
-    email: "",
-    role: "",
-    profileImageUrl: "",
-  });
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // 프로필 이미지 변경 핸들러
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImagePreview(reader.result); // 미리보기 URL 설정
-      };
-      reader.readAsDataURL(file); // 파일을 데이터 URL로 변환
-    }
-  };
-
-  // 약관 동의 상태
-  const [checkedItems, setCheckedItems] = useState({
-    agreeAll: false,
-    agree1: false,
-    agree2: false,
-    agree3: false,
-  });
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
   // 초대 토큰 검증 상태
   const [isTokenValid, setIsTokenValid] = useState(false);
@@ -62,57 +41,35 @@ export default function RegisterPage() {
 
   // 초대 토큰 검증
   useEffect(() => {
-    if (currentStep === 2 && token) {
+    if (token) {
       const validateToken = async () => {
         try {
           const data = await verifyInviteToken(token);
-          console.log("data" + data.name);
-          console.log("data" + data.department);
-          setUserData(data); // 사용자 정보 설정
+
+          // 사용자 데이터 설정
+          setUserData(data);
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            tokenid: data.id,
+            email: data.email || "",
+            role: data.role || "USER",
+            position: data.position || "",
+          }));
           setIsTokenValid(true);
-          console.log("asdfa" + setUserData(data));
+          setErrorMessage("");
         } catch (error) {
           setErrorMessage(error.message || "초대 토큰이 유효하지 않습니다.");
           setIsTokenValid(false);
+        } finally {
+          setIsLoading(false); // 로딩 상태 해제
         }
       };
+
       validateToken();
-
-      if (formData.password && confirmPassword) {
-        setPasswordError(formData.password !== confirmPassword);
-      }
+    } else {
+      setIsLoading(false); // 토큰이 없으면 로딩 종료
     }
-  }, [currentStep, token, formData.password, confirmPassword]);
-
-  // 약관 동의 처리
-  const handleAgree = (type) => {
-    setCheckedItems((prev) => {
-      const updatedState = { ...prev, [type]: true };
-      updatedState.agreeAll =
-        updatedState.agree1 && updatedState.agree2 && updatedState.agree3;
-      return updatedState;
-    });
-  };
-  // 약관 전체 체크 핸들러
-  const handleAllCheck = () => {
-    const allChecked = !checkedItems.agreeAll;
-    setCheckedItems({
-      agreeAll: allChecked,
-      agree1: allChecked,
-      agree2: allChecked,
-      agree3: allChecked,
-    });
-  };
-
-  // 약관 체크 검증 핸들러
-  const handleItemCheck = (key) => {
-    setCheckedItems((prev) => {
-      const updatedState = { ...prev, [key]: !prev[key] };
-      updatedState.agreeAll =
-        updatedState.agree1 && updatedState.agree2 && updatedState.agree3;
-      return updatedState;
-    });
-  };
+  }, [token]);
 
   // 아이디 중복 확인 핸들러
   const handleCheckDuplicateId = async (
@@ -121,48 +78,95 @@ export default function RegisterPage() {
     setErrors
   ) => {
     try {
-      // checkDuplicateId 호출
-      const response = await checkDuplicateId(formData);
-      const { isAvailable } = response; // checkDuplicateId의 결과 데이터에서 isAvailable 필드 추출
+      const response = await checkDuplicateId(formData.uid);
+      const { isAvailable } = response;
 
       if (isAvailable) {
-        // 중복이 아닌 경우
-        setIsDuplicateId(false);
-        setErrors((prevErrors) => ({ ...prevErrors, uid: null })); // 에러 메시지 초기화
+        setIsDuplicateId(false); // 사용 가능
+        setErrors((prevErrors) => ({ ...prevErrors, uid: null }));
       } else {
-        // 중복인 경우
-        setIsDuplicateId(true);
+        setIsDuplicateId(true); // 중복
         setErrors((prevErrors) => ({
           ...prevErrors,
-          uid: "이미 사용 중인 아이디입니다.", // 중복 에러 메시지 설정
+          uid: "이미 사용 중인 아이디입니다.",
         }));
       }
     } catch (error) {
       console.error("중복 확인 처리 실패:", error);
+
       setErrors((prevErrors) => ({
         ...prevErrors,
-        uid: "중복 확인 실패", // 일반적인 에러 메시지 표시
+        uid: "중복 확인 실패: 서버 오류가 발생했습니다.",
       }));
     }
   };
 
-  // 사용자 입력값 검증 유틸리티 함수
-  const validateInput = (input) => {
-    if (!input || input.trim() === "") {
-      return "아이디를 입력해 주세요."; // 빈 입력값 처리
+  // 회원가입 핸들러
+  const handleRegister = async (e) => {
+    e.preventDefault(); // 기본 폼 전송 동작 방지
+
+    // 유효성 검사
+    if (!formData.uid || errors.uid) {
+      alert("아이디를 올바르게 입력해주세요.");
+      return;
     }
-    if (input.length < 3 || input.length > 20) {
-      return "아이디는 3자 이상, 20자 이하로 입력해 주세요."; // 길이 제한
+    if (isDuplicateId === true) {
+      alert("중복된 아이디입니다. 다른 아이디를 사용해주세요.");
+      return;
     }
-    if (!/^[a-zA-Z0-9_]+$/.test(input)) {
-      return "아이디는 영문자, 숫자, 밑줄(_)만 포함할 수 있습니다."; // 허용된 문자 패턴
+    if (!formData.password || errors.password) {
+      alert("비밀번호를 올바르게 입력해주세요.");
+      return;
     }
-    return null; // 유효성 검증 성공
+    if (!formData.phoneNumber || errors.phoneNumber) {
+      alert("전화번호를 올바르게 입력해주세요.");
+      return;
+    }
+
+    // FormData 객체 생성
+    const formDataToSend = new FormData();
+
+    // 이미지 파일 추가
+    if (formData.profileImage) {
+      formDataToSend.append("profileImage", formData.profileImage);
+    }
+
+    // JSON 데이터 추가
+    const jsonData = {
+      name: formData.name,
+      uid: formData.uid,
+      password: formData.password,
+      nick: formData.nick,
+      phoneNumber: formData.phoneNumber,
+      tokenid: formData.tokenid,
+      email: formData.email,
+      role: formData.role,
+      position: formData.position,
+    };
+    formDataToSend.append(
+      "formData",
+      new Blob([JSON.stringify(jsonData)], { type: "application/json" })
+    );
+
+    // 회원가입 요청
+    try {
+      const response = await registerUser(formDataToSend);
+
+      if (response.success) {
+        alert("회원가입이 성공적으로 완료되었습니다!");
+        navigate("/login"); // 로그인 페이지로 이동
+      } else {
+        alert(response.message || "회원가입 실패. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("회원가입 실패:", error);
+      alert(error.message || "회원가입 중 서버 오류가 발생했습니다.");
+    }
   };
 
   const handleSubmit = async () => {
     // 사용자 입력값 검증
-    const validationError = validateInput(formData.uid);
+    const validationError = validateInput(formData);
     if (validationError) {
       setErrors((prevErrors) => ({ ...prevErrors, uid: validationError }));
       return; // 유효하지 않은 입력값이면 종료
@@ -255,25 +259,17 @@ export default function RegisterPage() {
                   name="uid"
                   placeholder="아이디를 입력하세요"
                   value={formData.uid || ""}
-                  onChange={(e) => {
-                    const input = e.target.value;
-                    setFormData((prevData) => ({ ...prevData, uid: input }));
-
-                    // 유효성 검사
-                    const validationError = validateInput(input);
-                    if (validationError) {
-                      setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        uid: validationError,
-                      }));
-                    } else {
-                      setErrors((prevErrors) => ({ ...prevErrors, uid: null }));
-                    }
-                  }}
+                  onChange={handleChange} // `handleChange` 호출
                 />
                 <button
                   type="button"
-                  className="bg-gray-500 hover:bg-gray-600 w-40 text-white font-semibold h-10 py-2 px-4 rounded-md ml-2"
+                  className={`${
+                    isDuplicateId === false
+                      ? "bg-green-500"
+                      : isDuplicateId === true
+                      ? "bg-red-500"
+                      : "bg-gray-500"
+                  } hover:bg-gray-600 w-40 text-white font-semibold h-10 py-2 px-4 rounded-md ml-2`}
                   onClick={async () => {
                     if (!formData.uid || errors.uid) {
                       setErrors((prevErrors) => ({
@@ -282,8 +278,9 @@ export default function RegisterPage() {
                       }));
                       return;
                     }
+
                     await handleCheckDuplicateId(
-                      { uid: formData.uid },
+                      formData,
                       setIsDuplicateId,
                       setErrors
                     );
@@ -292,15 +289,19 @@ export default function RegisterPage() {
                   중복확인
                 </button>
               </div>
+
+              {/* 에러 메시지 출력 */}
               {errors.uid && (
                 <p className="text-red-500 text-sm mt-1">{errors.uid}</p>
               )}
-              {isDuplicateId === false && (
+
+              {/* 중복 확인 결과 메시지 출력 */}
+              {!errors.uid && isDuplicateId === false && (
                 <p className="text-green-500 text-sm mt-1">
                   사용 가능한 아이디입니다.
                 </p>
               )}
-              {isDuplicateId === true && (
+              {!errors.uid && isDuplicateId === true && (
                 <p className="text-red-500 text-sm mt-1">
                   이미 사용 중인 아이디입니다.
                 </p>
@@ -314,13 +315,11 @@ export default function RegisterPage() {
               </label>
               <input
                 type="password"
-                id="password"
-                className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                 name="password"
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                 placeholder="Enter your password"
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                value={formData.password || ""}
+                onChange={handleChange}
               />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -334,12 +333,12 @@ export default function RegisterPage() {
               </label>
               <input
                 type="password"
-                id="confirmPassword"
-                className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
-                name="confirmPassword"
                 placeholder="Confirm your password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
+                value={confirmPassword || ""}
+                onChange={(e) => handleConfirmPasswordChange(e.target.value)}
               />
+              qwer123
               {passwordError && (
                 <p className="text-red-500 text-sm mt-1">
                   비밀번호가 일치하지 않습니다.
@@ -359,6 +358,7 @@ export default function RegisterPage() {
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                   name="name"
                   placeholder="Enter your name"
+                  onChange={handleChange}
                 />
               </div>
 
@@ -373,6 +373,7 @@ export default function RegisterPage() {
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                   name="nick"
                   placeholder="Enter your nickname"
+                  onChange={handleChange}
                 />
               </div>
 
@@ -386,8 +387,15 @@ export default function RegisterPage() {
                   id="phoneNumber"
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                   name="phoneNumber"
-                  placeholder="Enter your phoneNumber"
+                  placeholder="010-1234-5678"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
                 />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.phoneNumber}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -396,6 +404,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-8 rounded-lg transition duration-200"
+                onClick={handleRegister}
               >
                 Sign Up
               </button>
@@ -408,7 +417,16 @@ export default function RegisterPage() {
 
   return (
     <div className="member_body">
-      {currentStep === 1 ? (
+      {isLoading ? (
+        <div className="loading-container">
+          <p>검증 중입니다. 잠시만 기다려주세요...</p>
+        </div>
+      ) : errorMessage ? (
+        <div className="error-container">
+          <h1>초대 링크 오류</h1>
+          <p>{errorMessage}</p>
+        </div>
+      ) : currentStep === 1 ? (
         // 약관 동의 단계
         <div className="terms-container">
           <div id="main">
@@ -496,7 +514,7 @@ export default function RegisterPage() {
                     onClick={() =>
                       openModal("terms", {
                         type: "agree3",
-                        onAgree: () => handleAgree("agree1"),
+                        onAgree: () => handleAgree("agree3"),
                       })
                     }
                   >
