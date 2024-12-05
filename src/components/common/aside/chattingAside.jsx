@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useInviteModal } from "../../../hooks/chatting/invitemodal";
 import useModalStore from "../../../store/modalStore";
 import useToggle from "../../../hooks/useToggle";
+import { getAllChannels } from "../../../api/chattingAPI"; // 경로 확인
+
 
 
 export default function ChattingAside({ asideVisible }) {
@@ -11,11 +13,29 @@ export default function ChattingAside({ asideVisible }) {
     isPersonalOpen: true,
   });
 
+  const [channels, setChannels] = useState([]); // 채널 목록 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
+
+
   const openModal = useModalStore((state) => state.openModal);
   const inviteModalProps = useInviteModal(); // 채팅방 초대 모달 props 호출
-  useEffect(() => {
-    console.log("==============");
-  }, [inviteModalProps]);
+  
+  
+  
+ // 채널 목록을 가져오는 함수
+ useEffect(() => {
+  const fetchChannels = async () => {
+    try {
+      const response = await getAllChannels(); // getAllChannels 함수 호출
+      setChannels(response); // API에서 받은 채널 목록 상태에 저장
+    } catch (error) {
+      console.error("채널 목록을 가져오는 데 실패했습니다:", error);
+    }
+  };
+
+  fetchChannels();
+}, []);
+
 
   return (
     <aside
@@ -125,19 +145,15 @@ export default function ChattingAside({ asideVisible }) {
         </div>
       </div>
 
-      {/* 채널 섹션 */}
-      <div className="mt-6">
+        {/* 채널 섹션 */}
+        <div className="mt-6">
         <div
           className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
           onClick={() => toggleState("isChannelOpen")}
         >
-          <span className="text-lg font-semibold text-black">
-            📢 채널 (단체 채팅)
-          </span>
+          <span className="text-lg font-semibold text-black">📢 채널 (단체 채팅)</span>
           <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
-              toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
-            }`}
+            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"}`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -156,41 +172,32 @@ export default function ChattingAside({ asideVisible }) {
           </span>
         </div>
         <div
-          className={`overflow-hidden transition-all duration-300 ${
-            toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ${toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"}`}
         >
           <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
-              <img
-                src="path/to/group-icon.svg"
-                alt="Group"
-                className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-lg text-gray-800">팀 프로젝트</p>
-              </div>
-              <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
-                3
-              </div>
-            </li>
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
-              <img
-                src="path/to/group-icon.svg"
-                alt="Group"
-                className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-lg text-gray-800">마케팅 팀</p>
-              </div>
-              <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
-                5
-              </div>
-            </li>
+            {channels.length > 0 ? (
+              channels.map((channel) => (
+                <li key={channel.id} className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
+                  <img
+                    src="path/to/group-icon.svg"
+                    alt="Group"
+                    className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-lg text-gray-800">{channel.name}</p>
+                  </div>
+                  <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
+                    {channel.unreadCount}
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-500 p-3">채널이 없습니다.</li>
+            )}
           </ul>
         </div>
       </div>
-
+      
       {/* 사용자 초대 버튼 */}
       <div className="border-t border-gray-200 pt-6 mt-6">
         <button

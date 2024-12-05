@@ -1,9 +1,23 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
+import { createChannel } from "../../../api/chattingAPI";
 
-export default function ChattingModal() {
+export default function ChattingModal( ) {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
+  // 채널 생성을 위한 로컬 상태
+  const [channelName, setChannelName] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
 
+  const [channel, setChannel] = useState({
+    name: "",
+    userId : "",
+    isPublic: "",
+  });
+  const changeHandler = (e) => {
+    e.preventDefault();
+    setChannel({ ...channel, [e.target.name]: e.target.value});
+  };
+  
   // 상태 변경 감지
   useEffect(() => {
     console.log("Modal Props Updated:", JSON.stringify(props));
@@ -35,6 +49,38 @@ export default function ChattingModal() {
     });
   };
 
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    console.log("데이터 전송 전");
+    // 채널 생성에 필요한 데이터
+    const data = {
+      name: channel.name,
+      userId: 6,  // 예시로 고정된 userId 사용 (실제 상황에 맞게 수정)
+      channelPrivacy: isPublic ? 1 : 0, 
+    };
+  
+    console.log("채널 생성 데이터 이름 들어와줘:", data);
+  
+    try {
+      // 채널 생성 API 호출
+      await createChannel(data);
+      alert("채널이 성공적으로 생성되었습니다.");
+      closeModal();  // 모달 닫기
+    } catch (error) {
+      console.error("채널 생성 실패:", error);
+      alert("채널 생성에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleNameChange = (e) => {
+    setChannel(prevChannel => ({
+      ...prevChannel,
+      name: e.target.value // 객체 내 name만 변경
+    }));
+  };
+  
+  
   const renderContent = () => {
     switch (type) {
       case "invite":
@@ -162,83 +208,104 @@ export default function ChattingModal() {
             </div>
           </div>
         );
-        /* 채널 생성 */
-        case "createChannel":
-    return (
-    <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4 border-b pb-2">채널 생성</h2>
-      <form className="flex flex-col space-y-4">
-        <div>
-          <label htmlFor="channelName" className="text-sm font-medium">
-            채널 이름
-          </label>
-          <input
-            id="channelName"
-            type="text"
-            placeholder="채널 이름을 입력하세요"
-            className="mt-2 p-2 border rounded w-full"
-          />
-        </div>
-        <div>
-          <label htmlFor="channelDescription" className="text-sm font-medium">
-            채널 설명
-          </label>
-          <textarea
-            id="channelDescription"
-            placeholder="채널에 대한 설명을 입력하세요"
-            className="mt-2 p-2 border rounded w-full h-24"
-          />
-        </div>
+              /* 채널 생성 */
+              // TODO :  프론트 연결 제대로
+      case "createChannel":
+        return (
+          <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2">채널 생성</h2>
+            <form className="flex flex-col space-y-4" onSubmit={submitHandler}>
+              <div>
+                <label htmlFor="channelName" className="text-sm font-medium">
+                  채널 이름
+                </label>
+                <input
+                  id="channelName"
+                  type="text"
+                  placeholder="채널 이름을 입력하세요"
+                  className="mt-2 p-2 border rounded w-full"
+                  value={channel.name}
+                  onChange={handleNameChange}  // 수정된 onChange 핸들러
+                />
+              </div>
+             
+              {/* 공개/비공개 선택 라디오 버튼 */}
+              <div className="mt-4">
+                <label className="text-sm font-medium">채널 공개 여부</label>
+                <div className="flex space-x-4 mt-2">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="public"
+                      name="channelPrivacy"
+                      checked={isPublic === true}
+                      value="1"
+                      onChange={(e) => {
+                        setIsPublic(true);  // 공개 채널 선택 시
+                      }}
+                      className="mr-2"
+                    />
+                    <label htmlFor="public" className="text-sm">공개</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="private"
+                      name="channelPrivacy"
+                      checked={isPublic === false}
+                      value="0"
+                      onChange={(e) => {
+                        setIsPublic(false);  // 비공개 채널 선택 시
+                      }}
+                      className="mr-2"
+                    />
+                    <label htmlFor="private" className="text-sm">비공개</label>
+                  </div>
+                </div>
+              </div>
 
-        {/* 공개/비공개 선택 라디오 버튼 */}
-        <div className="mt-4">
-          <label className="text-sm font-medium">채널 공개 여부</label>
-          <div className="flex space-x-4 mt-2">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="public"
-                name="channelPrivacy"
-                checked={!props.isPrivate}
-                onChange={() => updateProps({ isPrivate: false })}
-                className="mr-2"
-              />
-              <label htmlFor="public" className="text-sm">공개</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="private"
-                name="channelPrivacy"
-                checked={props.isPrivate}
-                onChange={() => updateProps({ isPrivate: true })}
-                className="mr-2"
-              />
-              <label htmlFor="private" className="text-sm">비공개</label>
-            </div>
+              {/* 버튼 영역 */}
+              <div className="flex justify-center space-x-4 mt-4">
+                {/* <button
+                  type="button"
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  onClick={async () => {
+                    console.log("데이터 전송 전");
+                    try {
+                      await createChannel({
+                        name: channelName,
+                        userId: 6,
+                        isPublic: isPublic
+                      })
+                      alert("생성 성공")
+                    }
+                    catch (e) {
+                      console.error("CHANNEL CREATE FAILED : ", e)
+                    } finally {
+                      closeModal()
+                    }
+                  }}
+                >
+                  추가
+                </button> */}
+                <button
+                  type="button"
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  onClick={submitHandler}  // 여기에 submitHandler 연결
+                >
+                  추가
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeModal()}
+                  className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+                >
+                  취소
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
-
-        {/* 버튼 영역 */}
-        <div className="flex justify-center space-x-4 mt-4">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          >
-            추가
-          </button>
-          <button
-            type="button"
-            onClick={() => closeModal()}
-            className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-          >
-            취소
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-
+        );
       default:
         return <div>모달 내용이 없습니다.</div>;
     }
@@ -251,6 +318,20 @@ export default function ChattingModal() {
           <h2 className="text-xl font-semibold">{type}</h2>
           <button
             onClick={closeModal}
+            className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6.293 4.293a1 1 0 011.414 0L10 7.586l2.293-3.293a1 1 0 111.414 1.414L11.414 9l3.293 2.293a1 1 0 11-1.414 1.414L10 10.414l-2.293 3.293a1 1 0 11-1.414-1.414L8.586 9 5.293 6.707a1 1 0 110-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
             className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
           >
             <svg

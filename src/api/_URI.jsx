@@ -53,6 +53,13 @@ export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장
 export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미지 업로드
 export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
 
+// chatting
+export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
+export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
+
+export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
+export const DM_GET_MESSAGES_URI = (dmId) => `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
+
 // 추가할 페이지 관련 URI
 export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
 export const PAGE_LIST_MODIFIED_URI = `${API_SERVER_HOST}/page/list/modified`; // 최근 수정된 페이지 목록
