@@ -388,4 +388,5 @@ export default function ChattingMain({ dmId }) {
       </div>
     </div>
   );
+
 }
