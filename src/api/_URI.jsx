@@ -21,7 +21,7 @@ export const USER_VERIFY_CHECK_EMAIL_URI = `${API_SERVER_HOST}/email/check-verif
 export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 이메일 발송
 
 // company
-export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
+export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert 
 
 // project
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가
@@ -59,3 +59,9 @@ export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
 export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 부서원 리스트 조회
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
+
+// board
+export const BOARD_WRITE_URI = `${API_SERVER_HOST}/board/write`; // 게시판 글쓰기
+export const BOARD_LIST_URI = `${API_SERVER_HOST}/board/list`; // 게시판 리스트 (글목록) 
+export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 (글보기)
+export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
