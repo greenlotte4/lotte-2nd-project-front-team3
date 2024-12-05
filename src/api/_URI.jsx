@@ -43,9 +43,11 @@ export const PROJECT_TASK_UPDATE_URI = `${API_SERVER_HOST}/project/task/update`;
 export const PROJECT_TASK_DELETE_URI = `${API_SERVER_HOST}/project/task/delete`; // 프로젝트 작업 삭제
 
 // drive
-export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
+export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
+export const DRIVE_FILES_INSERT_URI = `${API_SERVER_HOST}/drive/files/insert`; // 드라이브 파일 넣기(폴더없이)
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
+
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
