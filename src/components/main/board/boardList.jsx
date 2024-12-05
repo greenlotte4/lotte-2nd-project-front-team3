@@ -2,6 +2,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import BoardPagination from "./boardPagination";
 
 {
   /*
@@ -180,8 +181,8 @@ export default function BoardList() {
           </tbody>
         </table>
 
-    
-            <div className="flex justify-center items-center mt-4">
+        <BoardPagination />
+            {/* <div className="flex justify-center items-center mt-4">
               <button className=" text-gray-700 py-2 px-4 rounded-l hover:bg-gray-100">
                 이전
               </button>
@@ -198,7 +199,7 @@ export default function BoardList() {
               <button className="text-gray-700 py-2 px-4 rounded-r hover:bg-gray-100">
                 다음
               </button>
-            </div>
+            </div> */}
           </section>
         </article>
       </>
