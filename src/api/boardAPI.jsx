@@ -12,19 +12,24 @@ import {
 export const postBoard = async (data) => {
     try {
         console.log('요청 URL : ', BOARD_WRITE_URI);
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
         console.log('요청 데이터 : ', data);
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
 
         const response = await axios.post(BOARD_WRITE_URI, data, {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
 
         if (response.status !== 200 && response.status !== 201) {
             throw new Error('게시글 저장에 실패했습니다. 다시 시도해주세요.');
+            
         }
 
         console.log('응답 데이터 : ', response);
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
         return response.data;
     } catch (error) {
         console.error('게시글 글쓰기 에러 상세 : ', {
@@ -32,7 +37,9 @@ export const postBoard = async (data) => {
             statusText: error.response?.statusText,
             data: error.response?.data
         });
+        console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
         throw error;
+        
     }
 };
 
