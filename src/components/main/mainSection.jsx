@@ -3,6 +3,7 @@ import useToggle from "../../hooks/useToggle";
 import MyCalendar from "../main/Calendar/MyCalendar";
 import { Link } from "react-router-dom";
 import useAuthStore from "./../../store/AuthStore";
+import AttendanceCard from "./main/AttendanceCard";
 
 export default function MainSection() {
   const [toggles, toggleSection] = useToggle({});
@@ -14,7 +15,7 @@ export default function MainSection() {
 
   useEffect(() => {
     console.log("사용자 정보:", user);
-  }, [user]);
+  }, []);
 
   const handleToggle = () => {
     toggleSection("showMenu");
@@ -23,118 +24,70 @@ export default function MainSection() {
     setButtonText(text); // 버튼 텍스트를 클릭한 항목으로 변경
     toggleSection("showMenu"); // 메뉴를 닫음
   };
+
+  // 출,퇴근 상태 업데이트
+  const handleStatusChange = (userId, newStatus) => {
+    console.log(`${userId}의 상태가 ${newStatus}로 변경되었습니다.`);
+    // API 호출하여 서버에 상태 업데이트
+  };
+
   return (
     <>
-      <main className="gap-[20px] min-w-[1820px] max-w-[2150px] h-auto mb-5 p-[20px] rounded-lg bg-white flex mx-auto">
+      <main className="gap-[20px] min-w-[1820px] max-w-[2150px] h-auto mb-5 p-[20px] rounded-lg  bg-[#eaf0f9] flex mx-auto">
         <div className="w-[258px] min-h-[1150px] ">
-          <article className="w-[258px] h-[300px] bg-[#eaf0f9] rounded-lg p-[20px]">
-            <div className="relative">
+          <article className="w-[258px] h-[300px] bg-white rounded-lg shadow-lg p-5">
+            <div className="relative flex flex-col items-center">
               <img
-                src="../images/pngegg.png"
+                src={user?.profile || "../images/pngegg.png"}
                 alt="프로필 사진"
-                className="w-[82px] h-[82px] mx-auto bg-white rounded-full "
+                className="w-[80px] h-[80px] bg-gray-100 rounded-full shadow-md"
               />
-              <span className="absolute bottom-0 right-[70px] w-3 h-3 bg-green-400 rounded-full"></span>
+              <span className="absolute bottom-2 right-16 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
             </div>
-            <div className="text-center mt-[20px]">
-              <h1 className="text-3xl">{user?.uid || "OOO"} 님 환영합니다.</h1>
-              <span className=" opacity-60">OO 그룹 대리</span>
+            <div className="text-center mt-4">
+              <h1 className="text-xl font-semibold text-gray-800">
+                {user?.name || "OOO"} 님, 환영합니다!
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                {user?.companyName || "회사 정보 없음"} |{" "}
+                {user?.position || "직위 정보 없음"}
+              </p>
             </div>
-            <ul className="mt-[20px]">
-              <li className="flex mt-[10px]">
-                <a className="flex justify-between w-full">
-                  <span className=" ">오늘의 일정</span>
-                  <span className="opacity-60">0</span>
+            <ul className="mt-6 space-y-4">
+              <li>
+                <a className="flex justify-between items-center text-gray-700 hover:text-blue-500">
+                  <span className="text-base font-medium">오늘의 일정</span>
+                  <span className="text-sm text-gray-500">0</span>
                 </a>
               </li>
-              <li className="flex mt-[10px]">
-                <a className="flex justify-between w-full">
-                  <span className="">오늘의 일정</span>
-                  <span className="opacity-60 ">0</span>
+              <li>
+                <a className="flex justify-between items-center text-gray-700 hover:text-blue-500">
+                  <span className="text-base font-medium">대기 중인 작업</span>
+                  <span className="text-sm text-gray-500">0</span>
                 </a>
               </li>
-              <li className="flex mt-[10px]">
-                <a className="flex justify-between w-full">
-                  <span className="">오늘의 일정</span>
-                  <span className="opacity-60">0</span>
+              <li>
+                <a className="flex justify-between items-center text-gray-700 hover:text-blue-500">
+                  <span className="text-base font-medium">완료된 작업</span>
+                  <span className="text-sm text-gray-500">0</span>
                 </a>
               </li>
             </ul>
           </article>
-          <article className="w-[258px] h-[500px] bg-[#eaf0f9] rounded-lg p-[20px] mt-[20px]">
-            <span className=" text-2xl block">근태관리</span>
-            <span className=" block mt-[10px]">
-              2024년 11월 26일 (화) 17:37:18
-            </span>
-            <div className="flex justify-between items-end mt-[10px]">
-              <span className="text-4xl"> 5H 21M</span>
-              <span className="">최대 52시간</span>
-            </div>
-            <div className=" flex w-[220px] h-[50px] rounded-lg border border-white mt-[20px]">
-              <div className="w-[100px] h-[50px] -mt-px -ml-px rounded-lg border border-whites bg-white"></div>
-            </div>
-            <div className="mt-[60px] flex justify-between">
-              <span className="text-[15px]">출근시간</span>
-              <span>11:11:11</span>
-            </div>
-            <div className="mt-[10px] flex justify-between">
-              <span className="text-[15px]">퇴근시간</span>
-              <span>22:22:22</span>
-            </div>
-            <div className="border-t border-dashed border-white w-[258px] -ml-[20px] mt-[20px]"></div>
-            <div className="flex mt-[30px] justify-between">
-              <button className="w-[100px] h-[50px] rounded-3xl   bg-white">
-                출근하기
-              </button>
-              <button className="w-[100px] h-[50px] rounded-3xl   bg-white">
-                퇴근하기
-              </button>
-            </div>
-            <div className="w-[180px] flex mx-auto mt-[20px] text-[17px]">
-              <button
-                className="w-[170px] h-[50px] rounded-3xl  bg-white"
-                onClick={handleToggle}
-              >
-                {buttonText}
-              </button>
-            </div>
-            <div>
-              {toggles.showMenu && (
-                <div className="mt-2 w-[200px] h-[100px] bg-white text-black rounded-md shadow-md p-2 overflow-y-scroll absolute z-10">
-                  <ul className="flex flex-col gap-2">
-                    {[
-                      "반차",
-                      "휴가",
-                      "출장",
-                      "교육",
-                      "회의",
-                      "기타",
-                      "업무",
-                    ].map((item, index) => (
-                      <li
-                        key={index}
-                        className="hover:bg-gray-200 px-2 py-1 cursor-pointer rounded"
-                        onClick={() => handleMenuClick(item)} // 클릭 핸들러
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            <div className="w-[258px] h-[300px] bg-[#eaf0f9] rounded-lg p-[20px] mt-[70px] -ml-[20px]">
-              <span>알림부분</span>
-            </div>
-          </article>
+
+          <AttendanceCard
+            userId={user?.id}
+            userStatus={user?.status}
+            onStatusChange={handleStatusChange}
+          />
         </div>
         {/* main 게시판 시작 */}
         <article
-          className="w-full max-w-[1450px] h-auto bg-[#eaf0f9] p-[30px] rounded-lg flex  "
+          className="w-full max-w-[1450px] h-auto bg-[#eaf0f9] rounded-lg flex  "
           style={{ height: "fit-content" }}
         >
           <div className="flex mx-auto">
-            <section className="w-[450px] mt-[15px] ">
+            <section className="w-[450px] ">
               <article className="page-list mr-7">
                 <div className="content-header">
                   <h1 className="!mb-3 ">🔥 인기급상승 게시물</h1>

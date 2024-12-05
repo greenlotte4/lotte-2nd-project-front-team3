@@ -6,7 +6,6 @@ import MainPage from "./../pages/Main/MainPage";
 
 import LoginPage from "../pages/Member/LoginPage";
 import RegisterPage from "../pages/Member/RegisterPage";
-import TermsPage from "../pages/Member/TermsPage";
 
 import ChattingPage from "./../pages/Main/chatting/chattingPage";
 import DrivePage from "../pages/Main/drive/drivePage";
@@ -44,6 +43,7 @@ import LandingPayPage from "./../pages/Landing/LandingPayPage";
 import CompletePage from "./../pages/Landing/CompletePage";
 import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
 import SchedulePage from "../pages/Main/calendar/SchedulePage";
+import AdminDepartmentPage from "../pages/Main/Admin/adminDepartmentPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -56,13 +56,13 @@ const router = createBrowserRouter([
 
   // 유저 페이지
   { path: "/login", element: <LoginPage /> }, // 로그인
-  { path: "/register", element: <RegisterPage /> }, // 회원가입
-  { path: "/terms", element: <TermsPage /> }, // 회원가입
+  { path: "/register", element: <RegisterPage /> }, // 약관, 회원가입 통합
 
   // 관리자 페이지
   { path: "/admin/login", element: <AdminLoginPage /> }, // 2024/11/26(화) 최준혁 - AdminLoginPage 추가
   { path: "/antwork/admin", element: <AdminPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
   { path: "/antwork/admin/member", element: <AdminMemberPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
+  { path: "/antwork/admin/department", element: <AdminDepartmentPage /> }, // 2024/12/03(화) 최준혁 - AdminDepartmentPage 추가
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
@@ -81,12 +81,13 @@ const router = createBrowserRouter([
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
+  { path: "/antwork/drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage
   { path: "/antwork/drive/share", element: <DriveSharePage /> }, // antwork 페이지
   { path: "/antwork/drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, //
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
   { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
-  { path: "/antwork/board/view", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
+  { path: "/antwork/board/view/:id", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
   { path: "/antwork/board/boardDataRoom", element: <BoardDataRoomPage /> }, // 2024/11/29(금) 김민희 - Board Data Room 추가
   { path: "/antwork/board/boardDataView", element: <BoardDataViewPage /> }, // 2024/11/29(금) 김민희 - Board Data View 추가
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가

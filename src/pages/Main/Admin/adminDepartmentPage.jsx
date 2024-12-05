@@ -1,9 +1,9 @@
-import AdminMain from "../../../components/main/admin/AdminMain";
-import AntWorkLayout from "../../../layouts/AntWorkLayout";
+import AdminDepartment from "../../../components/main/admin/AdminDepartment";
+import AntWorkLayout from "./../../../layouts/AntWorkLayout";
 import useAuthStore from "./../../../store/AuthStore";
 import { useEffect } from "react";
 
-export default function AdminPage() {
+export default function AdminDepartmentPage() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export default function AdminPage() {
   return (
     <>
       <AntWorkLayout>
-        <AdminMain />
+        <AdminDepartment />
       </AntWorkLayout>
     </>
   );

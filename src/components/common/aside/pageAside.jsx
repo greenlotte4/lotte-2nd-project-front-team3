@@ -1,3 +1,4 @@
+import { PAGE_LIST_UID_URI } from "../../../api/_URI";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
@@ -14,7 +15,7 @@ export default function PageAside({ asideVisible }) {
     // 개인 페이지 목록을 가져오는 함수
     const fetchPersonalPages = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/page/list");
+        const response = await axios.get(PAGE_LIST_UID_URI);
         setPersonalPageList(response.data);
       } catch (error) {
         console.error("개인 페이지 목록을 가져오는데 실패했습니다:", error);

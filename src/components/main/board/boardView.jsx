@@ -1,32 +1,41 @@
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Lock, Reply, User, Send } from "lucide-react";
+import { BOARD_VIEW_URI } from "../../../api/_URI";
 
 export default function BoardView() {
-  const { uid } = useParams();
+  const { id } = useParams(); // URL에서 id(글번호) 값 추출
+  // const [board, setBoard] = useState(null); // 상세 데이터 상태 관리
 
-  // post API
-  const post = {
-    id: uid,
-    title: "안녕하세요. 퇴사하겠습니다. 그럼 이만 총총총 헤헤헤 ^^  ",
-    category1: "커뮤니티",
-    category2: "자유게시판",
+  const [board, setBoard] = useState({
+    title: '',
+    writer: '',
+    regDate: '',
+    hit: 0,
+    content: '',
+    attachedFiles: null,
+});
 
-    author: "김사원",
-    date: "2024-11-27",
-    hit: "9,697",
-    like: "1,016",
-    content: `게시글의 본문 내용입니다. 
-                        여러 줄의 텍스트를 포함할 수 있습니다.
-                        상세한 정보를 표시할 수 있습니다.
-                        `,
-    attachedFiles: [
-      { name: "첨부파일1.pdf", size: "2.5MB" },
-      { name: "첨부파일2.docx", size: "1.2MB" },
-    ],
-  };
+  useEffect(() => {
+    const fetchBoard = async () => {
+      try {
+        const response = await fetch(`${BOARD_VIEW_URI}/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch board details");
+        }
+        const data = await response.json();
+        console.log('게시글 데이터:', data); // 받아온 데이터 확인
+        setBoard(data);
+      } catch (error) {
+        console.error('게시글 데이터 로딩 실패:', error);
+      }
+    };
+  
+    fetchBoard();
+  }, [id]);
 
+  
   // 댓글쓰기 API (commnts)
   const [comments, setComments] = useState([
     {
@@ -46,6 +55,22 @@ export default function BoardView() {
       ],
     },
   ]);
+
+   // 글 상세 조회를 하지 못한 경우
+  //  if (!boards) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <div className="bg-white shadow-lg rounded-lg p-8">
+  //         <div className="animate-pulse">
+  //           <div className="h-8 bg-gray-200 w-32 mb-4"></div>
+  //           <div className="h-4 bg-gray-200 mb-2"></div>
+  //           <div className="h-4 bg-gray-200 mb-2"></div>
+  //           <div className="h-4 bg-gray-200 mb-2"></div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
@@ -122,43 +147,43 @@ export default function BoardView() {
             <div className="flex justify-between items-center ">
               <div className="mb-4 ">
                 <span className="text-sm text-gray-600 mr-2">
-                  {post.category1} {">"} {post.category2}
+                  {/* {board.cate1} {">"} {board.cate2} */}
                 </span>
                 <h1 className="text-2xl font-bold text-gray-800">
-                  {post.title}
+                  {board.title}
                 </h1>
               </div>
               <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
-                <div className="author">
+                <div className="writer">
                   <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
-                  {post.author}
+                    {board.writer?.name || ''} {/* writer 객체의 name 필드 사용 */}
                   <span className="mx-2 text-slate-300 !text-[10px]">
                     &#124;
                   </span>
                 </div>
                 <div className="date">
-                  <strong>날짜&nbsp;:&nbsp;&nbsp;</strong>
-                  {post.date}
+                  <strong>작성일&nbsp;:&nbsp;&nbsp;</strong>
+                  {new Date(board.regDate).toLocaleDateString()}
                   <span className="mx-2 text-slate-300 !text-[10px]">
                     &#124;
                   </span>
                 </div>
                 <div className="hit">
                   <strong>조회수&nbsp;:&nbsp;&nbsp;</strong>
-                  {post.hit}
+                  {board.hit}
                 </div>
               </div>
             </div>
           </div>
 
           {/* 첨부파일 섹션 */}
-          {post.attachedFiles && post.attachedFiles.length > 0 && (
+          {board.attachedFiles && board.attachedFiles.length > 0 && (
             <div className="bg-gray-50 p-4 border-t border-b border-slate-200">
               <h3 className="text-lg font-semibold mb-3 cursor-pointer">
                 첨부파일
               </h3>
               <div className="space-y-2">
-                {post.attachedFiles.map((file, index) => (
+                {board.attachedFiles.map((file, index) => (
                   <div
                     key={index}
                     className="flex justify-between items-center bg-white px-4 py-2 rounded border border-gray-200 cursor-pointer"
@@ -176,9 +201,9 @@ export default function BoardView() {
           )}
 
           {/* 게시글 본문 */}
-          <div className="pt-6 pb-12 border-slate-200">
+          <div className="pt-6 pb-12 border-t border-slate-200">
             <div className="prose max-w-none">
-              {post.content.split("\n").map((line, index) => (
+              {board.content && board.content.split("\n").map((line, index) => (
                 <p key={index} className="">
                   {line}
                 </p>
@@ -251,7 +276,7 @@ export default function BoardView() {
           {/* 버튼 영역 */}
           <div className="p-4 bg-gray-100 flex justify-between">
             <Link
-              to="/board/"
+              to="/antwork/board/list"
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
             >
               목록으로

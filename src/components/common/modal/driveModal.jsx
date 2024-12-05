@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
 import { driveFolderInsert } from "../../../api/driveAPI";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function DriveModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
@@ -8,9 +9,16 @@ export default function DriveModal() {
   const [ModifyName, setModfiyName] = useState("");
   const [isChecked, setIsChecked] = useState(false);
 
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  const driveFolderId = props.driveFolderId;
+  const driveFolderMaker = user?.uid;
+
   // 모달 열릴 때 초기화
   useEffect(() => {
     if (type === "insert") {
+      console.log("dasfaadsfadsf : " + props.driveFolderId);
+      console.log(driveFolderId);
       setdriveFolderName("");
     } else if (type === "name") {
       setModfiyName("");
@@ -23,52 +31,48 @@ export default function DriveModal() {
     return;
   };
 
+  //폴더등록
   const handleFolderSubmit = async () => {
     if (!driveFolderName.trim()) {
       alert("폴더 이름을 입력하세요!");
       return;
     }
+
     console.log("driveFolderName : " + driveFolderName);
+    console.log("ID : " + driveFolderId);
+    console.log("UID : " + driveFolderMaker);
 
     try {
-      const data = { driveFolderName };
+      const data = {
+        driveFolderName,
+        driveFolderId,
+        driveFolderMaker,
+      };
       const response = await driveFolderInsert(data);
 
       // 백엔드 응답 확인
       console.log("Response from backend:", response);
       alert("우선 백엔드한테 응답은 받음");
 
-      if (props?.onSubmit) {
-        props.onSubmit({
-          type: "insert",
-          driveFolderDTO: response, // 백엔드에서 받은 response를 전달
+      if (props?.onFolderAdd) {
+        props.onFolderAdd({
+          driveFolderName: response.driveFolderName,
+          driveFolderId: response.driveFolderId,
+          driveFolderCreatedAt: response.driveFolderCreatedAt,
+          driveFolderSize: response.driveFolderSize,
+          driveFolderMaker: response.driveFolderMaker,
+          driveParentFolderId: response.driveParentFolderId,
+          isChecked: false,
+          isStarred: false,
         });
       }
-      
+
       closeModal();
     } catch (error) {
       console.error("에러 발생:", error);
       alert("폴더 생성 중 문제가 발생했습니다.");
     }
   };
-
-  // const response = await fetch("/api/drive/folder/insert", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ folderName: folderName }),
-  // });
-
-  // if (!response.ok) {
-  //   throw new Error("폴더 생성 실패");
-  // }
-
-  // const data = await response.json();
-  // console.log("폴더 생성 성공:", data);
-
-  // // 서버 응답을 props로 업데이트 (필요 시)
-  // updateProps(data);
 
   const renderContent = () => {
     switch (type) {

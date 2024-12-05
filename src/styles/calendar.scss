@@ -123,7 +123,7 @@
 .fc-col-header-cell.fc-day {
   /* 원하는 스타일 */
   color: #eceef1;
-  text-align: right;
+  text-align: left;
   border-bottom: none; /* 상단 요일 헤더 숨김 */
 }
 
@@ -148,4 +148,13 @@ tr[role="row"]:nth-child(1) {
 .fc-day-future.fc-daygrid-day {
   border-right: none;
   border-left: none;
+}
+.fc .fc-daygrid-day-frame {
+  min-height: 90px; /* 한 칸의 최소 높이를 설정 */
+}
+.fc-daygrid-day-top {
+  flex-direction: column !important;
+}
+.fc-event {
+  --fc-bg-event-opacity: 1 !important;
 }

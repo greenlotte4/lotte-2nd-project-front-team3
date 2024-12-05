@@ -332,6 +332,20 @@ export default function ChattingModal( ) {
                 clipRule="evenodd"
               />
             </svg>
+            className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6.293 4.293a1 1 0 011.414 0L10 7.586l2.293-3.293a1 1 0 111.414 1.414L11.414 9l3.293 2.293a1 1 0 11-1.414 1.414L10 10.414l-2.293 3.293a1 1 0 11-1.414-1.414L8.586 9 5.293 6.707a1 1 0 110-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
           </button>
         </div>
         {renderContent()}

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../api/userAPI";
 
 export default function Header({ onToggleAside }) {
@@ -89,7 +89,7 @@ export default function Header({ onToggleAside }) {
                   </div>
                   <div className=" p-3 m-3 !mt-1 !pt-1 !mb-1">
                     <li className="w-full text-[14px] !hover:bg-gray-100 !hover:rounded-[10px] text-left">
-                      <a href="#">관리자 페이지</a>
+                      <Link to="/antwork/admin">관리자 페이지</Link>
                     </li>
                   </div>
                 </ul>

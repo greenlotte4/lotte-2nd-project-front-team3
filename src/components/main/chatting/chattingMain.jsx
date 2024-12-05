@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getDmMessages } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
+import useModalStore from "./../../../store/modalStore";
 
 export default function ChattingMain({ dmId }) {
   const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
@@ -124,7 +125,7 @@ export default function ChattingMain({ dmId }) {
                           />
                         </svg>
                       </button>
-                    )}
+                    )} 
                   </div>
                 )}
                 <button

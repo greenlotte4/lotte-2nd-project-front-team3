@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
-import { MyDriveFoldersView } from "../../../api/driveAPI";
+import { MyDriveSelectView, MyDriveView } from "../../../api/driveAPI";
+import { Link, useParams } from "react-router-dom";
 
 export default function DriveSection() {
   // 모달 상태 관리를 위한 useState 추가
@@ -13,28 +14,75 @@ export default function DriveSection() {
 
   const [folderStates, setFolderStates] = useState([]);
 
-  // 폴더 데이터를 받아오는 비동기 함수
-  const MyDriveView = async () => {
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+
+  const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log("파일 업로드:", file.name);
+    }
+    setIsDropdownOpen(false);
+  };
+
+  const handleFolderUpload = (e) => {
+    const folder = e.target.files;
+    if (folder.length > 0) {
+      console.log("폴더 업로드:", folder);
+    }
+    setIsDropdownOpen(false);
+  };
+
+  //////////////////////////////폴더목록 가져오기/////////////////////////////////////////////
+
+  const fetchFolderData = async (driveFolderId) => {
+    setIsLoading(true); // 로딩 시작
     try {
-      const response = await MyDriveFoldersView(); // 필요한 데이터 전송
-      console.log("Response data:", response.data);
+      let response;
+      // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
+      if (driveFolderId) {
+        response = await MyDriveSelectView(driveFolderId); // 상세 정보 API 호출
+        console.log("선택된 폴더:", response.data);
+      } else {
+        response = await MyDriveView(); // 목록 정보 API 호출
+        console.log("폴더 목록 데이터:", response.data);
+      }
 
       // 받아온 데이터를 기반으로 folderStates 배열 업데이트
       const updatedStates = response.data.map((folder) => ({
         isChecked: folder.isChecked || false, // 기본값은 false
         isStarred: folder.isStarred || false, // 기본값은 false
+        driveFolderName: folder.driveFolderName,
+        driveFolderSize: folder.driveFolderSize,
+        driveFolderCreatedAt: folder.driveFolderCreatedAt,
+        driveFolderMaker: folder.driveFolderMaker,
+        driveFolderId: folder.driveFolderId,
+        driveParentFolderId: folder.driveParentFolderId,
       }));
+
       setFolderStates(updatedStates); // 상태 배열 업데이트
     } catch (err) {
-      console.error("Error fetching data:", err);
+      console.error("폴더 데이터를 가져오는 중 오류 발생:", err);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   useEffect(() => {
-    MyDriveView(); // 컴포넌트 마운트 시 폴더 데이터 가져오기
-  }, []); // `data`가 변경될 때마다 실행
+    fetchFolderData(driveFolderId); // driveFolderId가 있을 때는 상세 정보, 없으면 목록 데이터 불러오기
+  }, [driveFolderId]); //  const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
+
+  ////////////////////////////////오른쪽 커스텀메뉴, 체크박스, 별표/////////////////////////////////////
 
   const menuRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const handleContextMenu = (event, index) => {
     event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
@@ -96,8 +144,19 @@ export default function DriveSection() {
     );
   };
 
+  // 로딩 애니메이션 컴포넌트
+  const LoadingAnimation = () => (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
+      <div className="flex space-x-2">
+        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce fast"></div>
+        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce fast animation-delay-200"></div>
+        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce fast animation-delay-400"></div>
+      </div>
+    </div>
+  );
   return (
     <>
+      {isLoading ? <LoadingAnimation /> : null}
       <div className="bg-white p-[40px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
         <article className="drive_header flex-shrink-0">
           <div className="flex justify-between">
@@ -128,11 +187,55 @@ export default function DriveSection() {
         <article className="drive_update flex-shrink-0 my-[20px]">
           <div className="flex justify-between">
             <div className="drive_active flex space-x-2">
-              <button className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white">
+              <button
+                onClick={toggleDropdown}
+                className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white"
+              >
                 업로드
               </button>
+              {/* 드롭다운 메뉴 */}
+              {isDropdownOpen && (
+                <div className="absolute mt-11 w-[150px] bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  {/* 파일 올리기 */}
+                  <label
+                    htmlFor="fileUpload"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    파일 올리기
+                  </label>
+                  <input
+                    type="file"
+                    id="fileUpload"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+
+                  {/* 폴더 올리기 */}
+                  <label
+                    htmlFor="folderUpload"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    폴더 올리기
+                  </label>
+                  <input
+                    type="file"
+                    id="folderUpload"
+                    className="hidden"
+                    webkitdirectory="true"
+                    directory="true"
+                    onChange={handleFolderUpload}
+                  />
+                </div>
+              )}
               <button
-                onClick={() => openModal("insert")}
+                onClick={() =>
+                  openModal("insert", {
+                    driveFolderId,
+                    onFolderAdd: (newFolder) => {
+                      setFolderStates((prevState) => [...prevState, newFolder]); // 기존 상태 배열에 새 폴더 추가
+                    },
+                  })
+                } // driveFolderId 값을 객체로 전달
                 className="w-[70px] h-[30px] border rounded-[4px]"
               >
                 새폴더
@@ -171,7 +274,10 @@ export default function DriveSection() {
         </article>
         <article className="drive_main flex-grow overflow-y-auto">
           <div>
-            {isListView ? (
+            {isLoading ? (
+              // 로딩 중일 때 콘텐츠 렌더링을 방지
+              <div></div>
+            ) : isListView ? (
               // 리스트 뷰
               <table className="w-full border-y">
                 <thead>
@@ -188,100 +294,133 @@ export default function DriveSection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {folderStates.map((folder, index) => (
-                    <tr
-                      key={index}
-                      className={`text-center align-middle h-16 border-t hover:bg-gray-100 ${
-                        folder.isChecked ? "bg-blue-50" : ""
-                      }`}
-                      onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
-                    >
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={folder.isChecked}
-                          onChange={() => toggleFolderCheck(index)}
-                        />
+                  {folderStates.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="7"
+                        className="text-center border-t h-[50px] font-bold"
+                      >
+                        업로드 된 파일이 없습니다
                       </td>
-                      <td>
-                        <button onClick={() => toggleFolderStar(index)}>
-                          <i
-                            className={`fa-star cursor-pointer text-xl ${
-                              folder.isStarred
-                                ? "fa-solid text-yellow-500"
-                                : "fa-regular text-gray-300"
-                            }`}
-                          ></i>
-                        </button>
-                      </td>
-                      <td>
-                        <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden"></i>
-                        <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden"></i>
-                        <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden"></i>
-                        <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden"></i>
-                        <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
-                        <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden"></i>
-                      </td>
-                      <td>폴더 {index + 1}</td>
-                      <td>3MB</td>
-                      <td>사용자</td>
-                      <td>2024-11-26</td>
                     </tr>
-                  ))}
+                  ) : (
+                    folderStates.map((folder, index) => {
+                      console.log(folder); // 폴더 객체 확인
+                      return (
+                        <tr
+                          key={index}
+                          className={`text-center align-middle h-16 border-t hover:bg-gray-100 ${
+                            folder.isChecked ? "bg-blue-50" : ""
+                          }`}
+                          onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                        >
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={folder.isChecked}
+                              onChange={() => toggleFolderCheck(index)}
+                            />
+                          </td>
+                          <td>
+                            <button onClick={() => toggleFolderStar(index)}>
+                              <i
+                                className={`fa-star cursor-pointer text-xl ${
+                                  folder.isStarred
+                                    ? "fa-solid text-yellow-500"
+                                    : "fa-regular text-gray-300"
+                                }`}
+                              ></i>
+                            </button>
+                          </td>
+                          <td>
+                            <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden"></i>
+                            <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden"></i>
+                            <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden"></i>
+                            <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden"></i>
+                            <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
+                            <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden"></i>
+                          </td>
+
+                          <td>
+                            <Link
+                              to={`/antwork/drive/folder/${folder.driveFolderId}`}
+                            >
+                              {folder.driveFolderName}
+                            </Link>
+                          </td>
+                          <td>{folder.driveFolderSize}</td>
+                          <td>{folder.driveFolderMaker}</td>
+                          <td>{folder.driveFolderCreatedAt}</td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             ) : (
               // 앨범 뷰
               <div className="grid grid-cols-10 gap-8">
-                {folderStates.map((folder, index) => (
-                  <div
-                    key={index}
-                    className={`relative border p-4 group rounded-md ${
-                      folder.isChecked
-                        ? "bg-blue-50 border-blue-500"
-                        : "hover:bg-gray-100"
-                    } transition`}
-                    onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
-                  >
-                    <div
-                      className={`absolute top-2 left-2 w-6 h-6 rounded-md flex items-center justify-center cursor-pointer border ${
-                        folder.isChecked
-                          ? "bg-blue-500 text-white border-blue-500"
-                          : "bg-white text-gray-400 border-gray-300 group-hover:border-gray-500"
-                      } ${
-                        folder.isChecked
-                          ? ""
-                          : "opacity-0 group-hover:opacity-100"
-                      } transition-opacity`}
-                      onClick={() => toggleFolderCheck(index)}
-                    >
-                      {folder.isChecked && (
-                        <i className="fa-solid fa-check"></i>
-                      )}
-                    </div>
-                    <i className="fa-solid fa-folder text-[43px] text-[#FFC558] mx-20 my-[25px]"></i>
-                    <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden mx-20 my-[25px]"></i>
-                    <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden mx-20 my-[25px]"></i>
-                    <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden mx-20 my-[25px]"></i>
-                    <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden mx-20 my-[25px]"></i>
-                    <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden mx-20 my-[25px]"></i>
-                    <div className="text-center mt-2">폴더 {index + 1}</div>
-                    <button
-                      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                        folder.isStarred
-                          ? "text-yellow-500"
-                          : "text-gray-300 group-hover:text-gray-500"
-                      }`}
-                      onClick={() => toggleFolderStar(index)}
-                    >
-                      <i
-                        className={`fa-star ${
-                          folder.isStarred ? "fa-solid" : "fa-regular"
-                        }`}
-                      ></i>
-                    </button>
+                {folderStates.length === 0 ? (
+                  <div className="border-t w-full">
+                    업로드 된 파일이 없습니다
                   </div>
-                ))}
+                ) : (
+                  folderStates.map((folder, index) => (
+                    <Link
+                      to={`/antwork/drive/folder/${folder.driveFolderId}`}
+                      key={index} // Link에 key를 추가
+                    >
+                      <div
+                        className={`relative border p-4 group rounded-md ${
+                          folder.isChecked
+                            ? "bg-blue-50 border-blue-500"
+                            : "hover:bg-gray-100"
+                        } transition`}
+                        onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                      >
+                        <div
+                          className={`absolute top-2 left-2 w-6 h-6 rounded-md flex items-center justify-center cursor-pointer border ${
+                            folder.isChecked
+                              ? "bg-blue-500 text-white border-blue-500"
+                              : "bg-white text-gray-400 border-gray-300 group-hover:border-gray-500"
+                          } ${
+                            folder.isChecked
+                              ? ""
+                              : "opacity-0 group-hover:opacity-100"
+                          } transition-opacity`}
+                          onClick={() => toggleFolderCheck(index)}
+                        >
+                          {folder.isChecked && (
+                            <i className="fa-solid fa-check"></i>
+                          )}
+                        </div>
+                        <i className="fa-solid fa-folder text-[43px] text-[#FFC558] mx-20 my-[25px]"></i>
+                        <i className="fa-solid fa-file-lines text-[16px] text-[#6D8EC2] !hidden mx-20 my-[25px]"></i>
+                        <i className="fa-solid fa-image text-[16px] text-[#779C76] !hidden mx-20 my-[25px]"></i>
+                        <i className="fa-solid fa-file-zipper text-[16px] text-[#6B5E69] !hidden mx-20 my-[25px]"></i>
+                        <i className="fa-solid fa-file-fragment text-[16px] text-[#7559AB] !hidden mx-20 my-[25px]"></i>
+                        <i className="fa-solid fa-file-import text-[16px] text-[#847E8C] !hidden mx-20 my-[25px]"></i>
+                        <div className="text-center mt-2">
+                          {folder.driveFolderName}
+                        </div>
+                        <button
+                          className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
+                            folder.isStarred
+                              ? "text-yellow-500"
+                              : "text-gray-300 group-hover:text-gray-500"
+                          }`}
+                          onClick={() => toggleFolderStar(index)}
+                        >
+                          <i
+                            className={`fa-star ${
+                              folder.isStarred ? "fa-solid" : "fa-regular"
+                            }`}
+                          ></i>
+                        </button>
+                      </div>
+                    </Link>
+                  ))
+                )}
               </div>
             )}
           </div>

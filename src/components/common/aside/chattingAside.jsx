@@ -5,6 +5,7 @@ import useToggle from "../../../hooks/useToggle";
 import { getAllChannels } from "../../../api/chattingAPI"; // 경로 확인
 
 
+
 export default function ChattingAside({ asideVisible }) {
   const [toggleStates, toggleState] = useToggle({
     isDMOpen: true,
@@ -39,7 +40,7 @@ export default function ChattingAside({ asideVisible }) {
   return (
     <aside
       className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${
-        !asideVisible ? "hidden" : ""
+        !asideVisible ? "hidden" : "" 
       }`}
     >
       {/* Header */}

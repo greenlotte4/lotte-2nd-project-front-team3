@@ -8,30 +8,44 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAuthStore from "../../../store/AuthStore";
+import { getCalendar, getUser, insertSchedule } from "../../../api/calendarAPI";
 
 export default function Schedule() {
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const department = user?.department;
+  const uid = user?.uid;
   const [formData, setFormData] = useState({
     title: "",
-    startTime: "",
-    endTime: "",
-    calendar: "",
-    attendees: [],
-    externalAttendees: [],
+    start: "",
+    end: "",
+    calendarId: "",
+    uid: uid,
+    internalAttendees: [],
     newExternalAttendee: "",
+    externalAttendees: [],
     location: "",
-    description: "",
+    content: "",
   });
 
   const [isAttendeesDropdownOpen, setIsAttendeesDropdownOpen] = useState(false);
-  const [availableAttendees, setAvailableAttendees] = useState([
-    "부서원1",
-    "부서원2",
-    "부서원3",
-    "부서원4",
-    "부서원5",
-    "부서원6",
-  ]);
+
+  const [availableAttendees, setAvailableAttendees] = useState([]);
+  const [option, setOption] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getUser(department);
+      const data2 = await getCalendar(uid);
+      console.log("55555565666666" + data);
+      setAvailableAttendees(data);
+      setOption(data2);
+    };
+    console.log("444444444" + availableAttendees);
+    fetchData();
+  }, [department]);
   const [selectedAttendees, setSelectedAttendees] = useState([]);
 
   const handleInputChange = (e) => {
@@ -63,19 +77,24 @@ export default function Schedule() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData); // 폼 제출 시 데이터 로그
-  };
-
   const toggleAttendeesDropdown = () => {
     setIsAttendeesDropdownOpen(!isAttendeesDropdownOpen);
   };
 
   const handleSelectAttendee = (attendee) => {
     if (!selectedAttendees.includes(attendee)) {
-      setSelectedAttendees([...selectedAttendees, attendee]);
+      // 새로운 참석자 추가
+      const updatedAttendees = [...selectedAttendees, attendee];
+      setSelectedAttendees(updatedAttendees);
+
+      // formData 업데이트
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        internalAttendees: updatedAttendees, // 최신 상태의 참석자를 저장
+      }));
     }
+
+    console.log("selected : ", [...selectedAttendees, attendee]);
     toggleAttendeesDropdown();
   };
 
@@ -96,6 +115,16 @@ export default function Schedule() {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData); // 폼 제출 시 데이터 로그
+    const fetchData = async () => {
+      await insertSchedule(formData);
+    };
+    fetchData();
+    navigate("/antwork/calendar");
+  };
+
   return (
     <section className="w-full max-w-[1200px] h-auto rounded-lg p-[25px] bg-white mx-auto">
       <div className="p-6">
@@ -107,7 +136,7 @@ export default function Schedule() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Event Title */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Calendar className="mr-2 text-blue-500" size={18} />
                 일정 이름
               </label>
@@ -125,28 +154,28 @@ export default function Schedule() {
             {/* Start and End Time */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                   <Clock className="mr-2 text-green-500" size={18} />
                   시작 시간
                 </label>
                 <input
                   type="datetime-local"
-                  name="startTime"
-                  value={formData.startTime}
+                  name="start"
+                  value={formData.start}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
                   required
                 />
               </div>
               <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                   <Clock className="mr-2 text-red-500" size={18} />
                   종료 시간
                 </label>
                 <input
                   type="datetime-local"
-                  name="endTime"
-                  value={formData.endTime}
+                  name="end"
+                  value={formData.end}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition-all"
                   required
@@ -156,26 +185,29 @@ export default function Schedule() {
 
             {/* Calendar Selection */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Calendar className="mr-2 text-purple-500" size={18} />
                 Calendar 선택
               </label>
               <select
-                name="calendar"
-                value={formData.calendar}
+                name="calendarId"
+                value={formData.calendarId}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
                 required
               >
                 <option value="">Calendar 선택</option>
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
+                {option.map((item) => (
+                  <option key={item.calendarId} value={item.calendarId}>
+                    {item.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* 내부 참석자 섹션 (드롭다운 토글 방식) */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Users className="mr-2 text-indigo-500" size={18} />
                 참석자 명단
               </label>
@@ -214,14 +246,14 @@ export default function Schedule() {
 
               {selectedAttendees.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  <h4 className="text-sm font-medium text-gray-600">
+                  <h4 className="text-m font-medium text-gray-600">
                     선택된 참석자
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedAttendees.map((attendee, idx) => (
                       <span
                         key={idx}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs flex items-center"
+                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-s flex items-center"
                       >
                         {attendee}
                         <button
@@ -240,7 +272,7 @@ export default function Schedule() {
 
             {/* 외부 참석자 섹션 (삭제 버튼 추가) */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <Users className="mr-2 text-teal-500" size={18} />
                 외부 참석자 명단
               </label>
@@ -268,7 +300,7 @@ export default function Schedule() {
                     {formData.externalAttendees.map((attendee, idx) => (
                       <span
                         key={idx}
-                        className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs flex items-center"
+                        className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-s flex items-center"
                       >
                         {attendee}
                         <button
@@ -287,7 +319,7 @@ export default function Schedule() {
 
             {/* Location */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 <MapPin className="mr-2 text-orange-500" size={18} />
                 장소
               </label>
@@ -304,12 +336,12 @@ export default function Schedule() {
 
             {/* Description */}
             <div>
-              <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
                 일정 내용
               </label>
               <textarea
-                name="description"
-                value={formData.description}
+                name="content"
+                value={formData.content}
                 onChange={handleInputChange}
                 placeholder="일정에 대한 자세한 내용을 입력하세요"
                 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all"
@@ -319,13 +351,19 @@ export default function Schedule() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-center">
+            <div className="flex w-[200px] mx-auto justify-between">
               <button
                 type="submit"
                 className="bg-[#b2d1ff] text-white px-8 py-3 rounded-full hover:from-blue-600 hover:to-green-600 transition-all transform hover:-translate-y-1 shadow-lg"
               >
                 일정 등록
               </button>
+              <Link
+                to="/antwork/calendar"
+                className="bg-[#eceef1] text-black px-8 py-3 rounded-full hover:from-blue-600 hover:to-green-600 transition-all transform hover:-translate-y-1 shadow-lg"
+              >
+                취소
+              </Link>
             </div>
           </form>
         </div>
