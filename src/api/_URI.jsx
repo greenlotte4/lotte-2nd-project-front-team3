@@ -54,6 +54,8 @@ export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미
 export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
 
 // chatting
+// src/api/_URI.jsx
+export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`;  // 채널 관련 URI
 export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 
