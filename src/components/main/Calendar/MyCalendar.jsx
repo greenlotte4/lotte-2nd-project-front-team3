@@ -6,25 +6,28 @@ import listPlugin from "@fullcalendar/list";
 import "../../../styles/calendar.scss";
 import axios from "axios";
 import {
+  deleteSchedule,
   getCalendar,
   getSchedule,
   insertSchedule,
+  updateScheduleDrag,
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
-
+import { useNavigate } from "react-router-dom";
 function MyCalendar({ listMonth, setListMonth }) {
+  const navigate = useNavigate();
   const calendarRef = useRef(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
-  console.log("uid::::" + uid);
   // useState 몰아넣은 곳
+  const [currentEventData, setCurrentEventData] = useState(null);
   const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
   const [option, setOption] = useState([]);
-
+  const allEvents = [...events, ...holidays];
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -49,7 +52,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       }
     }
   }, [listMonth]); // 컴포넌트가 처음 렌더링될 때 한 번 실행됨
-
   const customPrevYear = () => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -65,7 +67,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       calendarApi.gotoDate(prevYearDate); // 새로 생성한 날짜로 이동
     }
   };
-
   const customNextYear = () => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
@@ -77,7 +78,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       calendarApi.gotoDate(nextYearDate); // 새로 생성한 날짜로 이동
     }
   };
-
   useEffect(() => {
     const fetchHolidays = async () => {
       const url =
@@ -89,7 +89,6 @@ function MyCalendar({ listMonth, setListMonth }) {
           params: { numOfRows: numOfRows },
         });
         const holidayData = response.data.response.body.items.item;
-
         // 공휴일 데이터를 FullCalendar에 맞게 변환
         const formattedHolidays = holidayData.map((holiday) => {
           const locdateStr = String(holiday.locdate); // 숫자일 경우 문자열로 변환
@@ -97,7 +96,6 @@ function MyCalendar({ listMonth, setListMonth }) {
           const month = locdateStr.substring(4, 6);
           const day = locdateStr.substring(6, 8);
           const formattedDate = `${year}-${month}-${day}`;
-
           return {
             title: holiday.dateName, // 공휴일 이름
             date: formattedDate, // 공휴일 날짜 (YYYYMMDD 형식)
@@ -105,34 +103,24 @@ function MyCalendar({ listMonth, setListMonth }) {
             display: "background",
           };
         });
-
         setHolidays(formattedHolidays); // 상태에 공휴일 데이터 저장
       } catch (error) {
         console.error("API 호출 오류:", error);
       }
     };
-
     fetchHolidays();
   }, []); // 컴포넌트가 처음 렌더링될 때만 호출
-
   useEffect(() => {
     const fetchData = async () => {
       const data2 = await getSchedule(uid);
-      console.log("data2::::" + data2);
-
       setEvents(data2);
     };
-
-    console.log("sch:::::::::::::::" + events);
-
     fetchData();
   }, [uid]);
-
   // 날짜 클릭 시 모달 띄우기
   const handleDateClick = (info) => {
     const clickedDate = info.dateStr; // 클릭한 날짜
     const formattedDate = clickedDate + "T00:00"; // `datetime-local` 형식에 맞게 변환
-
     setFormData((prevState) => ({
       ...prevState,
       title: "",
@@ -146,7 +134,6 @@ function MyCalendar({ listMonth, setListMonth }) {
     setShowModal(true); // 모달 띄우기
     setCurrentEventId(null); // 수정 중인 이벤트 없음
   };
-
   // 일정 클릭 시 수정 모드로 진입
   const handleEventClick = (info) => {
     const event = info.event;
@@ -155,30 +142,45 @@ function MyCalendar({ listMonth, setListMonth }) {
       ? new Date(event.end).toLocaleString("sv-SE")
       : startDate; // 종료일도 처리
     const isHoliday = holidays.some((holiday) => holiday.title === event.title);
-
     if (isHoliday) {
       // 공휴일인 경우 드래그를 되돌려 원래 위치로 복원
       info.jsEvent.preventDefault();
       alert("공휴일은 수정할 수 없습니다!");
       return;
     }
-
+    setFormData({
+      title: event.title || "",
+      location: event.extendedProps.location || "",
+      calendarId: event.extendedProps.calendarId,
+      content: event.extendedProps.content,
+      start: startDate,
+      end: endDate,
+    });
     setEditMode(true); // 수정 모드로 설정
     setShowModal(true); // 모달 띄우기
     setCurrentEventId(event.id); // 수정하려는 이벤트의 ID 저장
+    setCurrentEventData({ event });
   };
-
-  const allEvents = [...events, ...holidays];
-
+  const navigateToEditPage = () => {
+    console.log("ccccccccccccccc:::::::" + currentEventData);
+    if (currentEventData) {
+      navigate("/antwork/schedule", {
+        state: { eventData: currentEventData }, // eventData를 state로 전달
+      });
+    }
+  };
   const handleDelete = () => {
     if (currentEventId && calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       const event = calendarApi.getEventById(currentEventId);
-
       if (event) {
         if (confirm("일정을 삭제하시겠습니까?")) {
           event.remove(); // FullCalendar의 해당 이벤트 삭제
+          const fetchData = async () => {
+            await deleteSchedule(event.id);
+          };
           alert("일정이 삭제되었습니다.");
+          fetchData();
           setShowModal(false); // 모달 닫기
         }
       } else {
@@ -188,7 +190,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       alert("삭제할 일정이 없습니다.");
     }
   };
-
   const handleDateSelect = (selectInfo) => {
     // 드래그한 범위의 날짜 정보 가져오기
     const { startStr, endStr } = selectInfo;
@@ -207,10 +208,8 @@ function MyCalendar({ listMonth, setListMonth }) {
     setShowModal(true); // 모달 띄우기
     setCurrentEventId(null); // 수정 중인 이벤트 없음
   };
-
   const renderEventContent = (eventInfo) => {
     const { location } = eventInfo.event.extendedProps;
-
     const start = eventInfo.event.start;
     if (eventInfo.event.backgroundColor === "white") {
       return (
@@ -219,7 +218,6 @@ function MyCalendar({ listMonth, setListMonth }) {
         </div>
       ); // 이벤트가 빨간색 배경일 때 렌더링하지 않음
     }
-
     return (
       <div>
         <b>{eventInfo.event.title}</b>
@@ -230,15 +228,18 @@ function MyCalendar({ listMonth, setListMonth }) {
       </div>
     );
   };
-
   const handleEventDrop = (info) => {
     const { event } = info;
     const isHoliday = holidays.some((holiday) => holiday.title === event.title);
-
     if (isHoliday) {
       // 공휴일인 경우 드래그를 되돌려 원래 위치로 복원
       info.revert();
     }
+    console.log("ppppppppppp:::" + JSON.stringify(event));
+    const fetchData = async () => {
+      await updateScheduleDrag(event.id, event.start, event.end);
+    };
+    fetchData();
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
         e.id === event.id
@@ -247,9 +248,7 @@ function MyCalendar({ listMonth, setListMonth }) {
       )
     );
   };
-
   const [dayMaxEvents, setDayMaxEvents] = useState(2); // dayMaxEvents 기본값 설정
-
   const handleDatesSet = (info) => {
     if (info.view.type === "dayGridMonth") {
       setDayMaxEvents(2); // dayGridMonth에서만 2개로 제한
@@ -257,7 +256,6 @@ function MyCalendar({ listMonth, setListMonth }) {
       setDayMaxEvents(false); // 다른 뷰에서는 제한 없음
     }
   };
-
   useEffect(() => {
     setFormData((prevState) => ({
       ...prevState,
@@ -269,7 +267,6 @@ function MyCalendar({ listMonth, setListMonth }) {
     };
     fetchData();
   }, [uid]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData); // 폼 제출 시 데이터 로그
@@ -277,7 +274,9 @@ function MyCalendar({ listMonth, setListMonth }) {
     setFormData({ uid: uid });
     const fetchData = async () => {
       console.log("form:::::::::" + JSON.stringify(formData));
-      await insertSchedule(formData);
+      const result = await insertSchedule(formData);
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.addEvent(result); // FullCalendar에 동적으로 추가
     };
     fetchData();
     setFormData({
@@ -293,7 +292,6 @@ function MyCalendar({ listMonth, setListMonth }) {
     });
     setShowModal(false);
   };
-
   return (
     <section className="w-auto h-auto bg-white mx-auto">
       <div className="w-full">
@@ -338,7 +336,6 @@ function MyCalendar({ listMonth, setListMonth }) {
             dayGridWeek: "주간 보기",
           }}
         />
-
         {/* 모달 및 오버레이 */}
         {showModal && (
           <>
@@ -347,7 +344,6 @@ function MyCalendar({ listMonth, setListMonth }) {
               className="fixed inset-0 bg-black/50 z-[100] "
               onClick={() => setShowModal(false)} // 배경 클릭 시 모달 닫기
             ></div>
-
             {/* 모달 창 */}
             <div className="fixed inset-0 flex items-center justify-center z-[101]">
               <form>
@@ -355,7 +351,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                   <h3 className="text-lg font-bold mb-4">
                     {editMode ? "일정 수정" : "일정 추가"}
                   </h3>
-
                   {/* 제목 입력 */}
                   <input
                     type="text"
@@ -366,7 +361,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                       setFormData({ ...formData, title: e.target.value })
                     }
                   />
-
                   {/* 장소 입력 */}
                   <input
                     type="text"
@@ -377,11 +371,10 @@ function MyCalendar({ listMonth, setListMonth }) {
                       setFormData({ ...formData, location: e.target.value })
                     }
                   />
-
                   {/* Calendar Selection */}
                   <select
                     name="calendarId"
-                    value={formData.calendarId}
+                    value={formData.calendarId || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, calendarId: e.target.value })
                     }
@@ -395,7 +388,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                       </option>
                     ))}
                   </select>
-
                   {/* 설명 입력 */}
                   <textarea
                     className="w-full p-2 mb-4 border rounded outline-none"
@@ -406,7 +398,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                       setFormData({ ...formData, content: e.target.value })
                     }
                   ></textarea>
-
                   {/* 시작일 입력 */}
                   <input
                     type="datetime-local"
@@ -417,7 +408,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                       setFormData({ ...formData, start: e.target.value })
                     }
                   />
-
                   {/* 종료일 입력 */}
                   <input
                     type="datetime-local"
@@ -428,7 +418,6 @@ function MyCalendar({ listMonth, setListMonth }) {
                       setFormData({ ...formData, end: e.target.value })
                     }
                   />
-
                   {/* 버튼들 */}
                   <div className="flex justify-end space-x-2 outline-none">
                     <button
@@ -438,12 +427,20 @@ function MyCalendar({ listMonth, setListMonth }) {
                       {editMode ? "수정" : "저장"}
                     </button>
                     {editMode && (
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={handleDelete}
-                      >
-                        삭제
-                      </button>
+                      <>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          onClick={handleDelete}
+                        >
+                          삭제
+                        </button>
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                          onClick={navigateToEditPage}
+                        >
+                          상세 수정
+                        </button>
+                      </>
                     )}
                     <button
                       className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
@@ -461,5 +458,4 @@ function MyCalendar({ listMonth, setListMonth }) {
     </section>
   );
 }
-
 export default MyCalendar;
