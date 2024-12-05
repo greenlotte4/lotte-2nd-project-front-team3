@@ -31,6 +31,8 @@ export const PROJECT_STATE_INSERT_URI = `${API_SERVER_HOST}/project/state/insert
 export const PROJECT_STATE_SELECT_URI = `${API_SERVER_HOST}/project/state/select`; // 프로젝트 상태 조회
 export const PROJECT_TASK_INSERT_URI = `${API_SERVER_HOST}/project/task/insert`; // 프로젝트 작업 추가
 export const PROJECT_TASK_SELECT_URI = `${API_SERVER_HOST}/project/task/select`; // 프로젝트 작업 조회
+export const PROJECT_TASK_UPDATE_URI = `${API_SERVER_HOST}/project/task/update`; // 프로젝트 작업 추가
+export const PROJECT_TASK_DELETE_URI = `${API_SERVER_HOST}/project/task/delete`; // 프로젝트 작업 삭제
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브..테스트용..
