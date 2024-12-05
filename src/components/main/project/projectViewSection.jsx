@@ -7,6 +7,7 @@ import {
   createTask,
   getProjectById,
   getProjectStates,
+  getTasksByStateId,
 } from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
@@ -98,6 +99,35 @@ export default function ProjectViewSection() {
       alert("작업 등록 중 문제가 발생했습니다.");
     }
   };
+
+  // 전체 작업 데이터 가져오기
+  useEffect(() => {
+    const fetchTasksForStates = async () => {
+      try {
+        // 여러 비동기 작업(getTasksByStateId)을 동시에 실행하고, 모든 작업이 완료될 때까지 기다림
+        const updatedStates = await Promise.all(
+          // states 배열의 각 요소에 대해 작업을 처리
+          states.map(async (state) => {
+            if (!state.items || state.items.length === 0) {
+              // 작업이 없는 상태만 요청
+              const tasks = await getTasksByStateId(state.id);
+              // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
+              return { ...state, items: tasks };
+            }
+            return state;
+          })
+        );
+        setStates(updatedStates);
+      } catch (error) {
+        console.error("Error fetching tasks for states:", error.message);
+      }
+    };
+
+    if (states.length > 0) {
+      // 상태가 존재할 때만 호출
+      fetchTasksForStates();
+    }
+  }, [states.length]); // 상태 수가 변경될 때만 트리거
 
   const handleEditItem = (stateId, updatedItem) => {
     setStates((prevStates) =>
@@ -197,10 +227,7 @@ export default function ProjectViewSection() {
                     <h1 className="text-4xl font-bold tracking-wide text-blue-700">
                       {project.projectName}
                     </h1>
-                    <p>
-                      Status:{" "}
-                      {project.status === 0 ? "In Progress" : "Completed"}
-                    </p>
+                    <p>{project.status === 0 ? "In Progress" : "Completed"}</p>
                   </div>
                   <div className="flex items-center">
                     {[...Array(3)].map((_, index) => (
@@ -238,7 +265,14 @@ export default function ProjectViewSection() {
                           {...provided.droppableProps}
                           className="flex-shrink-0 w-96 rounded-lg bg-white border border-blue-200 max-h-[800px]"
                         >
-                          <div className="p-3 border-b border-gray-100">
+                          <div
+                            className="p-3 border-b"
+                            style={{
+                              borderColor: state.color,
+                              borderBottomWidth: "2px",
+                              marginBottom: "5px",
+                            }}
+                          >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span

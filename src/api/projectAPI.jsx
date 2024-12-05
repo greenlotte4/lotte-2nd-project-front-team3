@@ -6,6 +6,7 @@ import {
   PROJECT_STATE_INSERT_URI,
   PROJECT_STATE_SELECT_URI,
   PROJECT_TASK_INSERT_URI,
+  PROJECT_TASK_SELECT_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -114,3 +115,13 @@ export const createTask = async (taskData) => {
     throw error;
   }
 };
+
+// 프로젝트 작업 조회
+export async function getTasksByStateId(stateId) {
+  console.log("작업 조회 들어옴?");
+  const response = await fetch(`${PROJECT_TASK_SELECT_URI}/${stateId}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch tasks");
+  }
+  return response.json();
+}
