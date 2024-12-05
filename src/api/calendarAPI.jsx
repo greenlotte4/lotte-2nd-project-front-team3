@@ -5,6 +5,7 @@ import {
   CALENDAR_SELECT_URI,
   CALENDAR_UPDATE_URI,
   SCHEDULE_INSERT_URI,
+  SCHEDULE_SELECT_URI,
   SCHEDULE_SELECTDEPART_URI,
 } from "./_URI";
 import axiosInstance from "../utils/axiosInstance";
@@ -104,6 +105,22 @@ export const getUser = async (department) => {
     );
     console.log("444444444" + response.data);
     return response?.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 스케줄 조회
+export const getSchedule = async (uid) => {
+  console.log("uid::::::::::::" + uid);
+  try {
+    const response = await axios.get(`${SCHEDULE_SELECT_URI}/${uid}`, {
+      headers: {
+        "Content-Type": "application/json", // JSON 형식으로 전송
+      },
+    });
+    console.log(response.data);
+    return response.data;
   } catch (err) {
     console.log(err);
   }

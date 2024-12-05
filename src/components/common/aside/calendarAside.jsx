@@ -5,6 +5,7 @@ import {
   insertCalendar,
   updateCalendar,
   deleteCalendar,
+  getSchedule,
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
 
@@ -74,14 +75,25 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   };
 
   const [data, setData] = useState([]);
-
+  const [schedule, setSchedule] = useState([]);
   useEffect(() => {
+    const currentTime = new Date();
     const fetchData = async () => {
       const data = await getCalendar(uid);
-      console.log("333333333" + data);
+      const data2 = await getSchedule(uid);
+      console.log("data::::" + data);
+      console.log("data2::::" + data2);
+
+      const updatedData = data2.filter((item) => {
+        const endTime = new Date(item.end);
+        return endTime > currentTime; // endTime이 현재 시간보다 큰 경우만 남김
+      });
 
       setData(data);
+      setSchedule(updatedData);
     };
+
+    console.log("sch:::::::::::::::" + JSON.stringify(schedule));
 
     fetchData();
   }, [uid]);
@@ -254,30 +266,20 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
               } pl-8`}
             >
               <ul>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
-                      <img
-                        src="/images/Antwork/calendar/일정 아이콘.svg"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>나의 일정 1</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4">
-                      <img
-                        src="/images/Antwork/calendar/일정 아이콘.svg"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>나의 일정 2</span>
-                    </div>
-                  </a>
-                </li>
+                {schedule.map((item, index) => (
+                  <li key={index}>
+                    <a href="#">
+                      <div className="flex items-start items-center mb-2 space-x-4 text-center">
+                        <img
+                          src="/images/Antwork/calendar/일정 아이콘.svg"
+                          alt="#"
+                          className="w-7 h-7"
+                        />
+                        <span>{item.title}</span>
+                      </div>
+                    </a>
+                  </li>
+                ))}
                 <li>
                   <a href="#">
                     <div className="flex items-start items-center mb-2 space-x-4">
