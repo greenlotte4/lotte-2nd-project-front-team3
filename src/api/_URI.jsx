@@ -56,4 +56,5 @@ export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 새 
 export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 새 캘린더 추가하기
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 새 캘린더 추가하기
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
+export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 부서원 리스트 조회
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회

@@ -9,11 +9,12 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 import { getCalendar, getUser, insertSchedule } from "../../../api/calendarAPI";
 
 export default function Schedule() {
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const department = user?.department;
   const uid = user?.uid;
@@ -22,6 +23,7 @@ export default function Schedule() {
     start: "",
     end: "",
     calendarId: "",
+    uid: uid,
     internalAttendees: [],
     newExternalAttendee: "",
     externalAttendees: [],
@@ -119,8 +121,8 @@ export default function Schedule() {
     const fetchData = async () => {
       await insertSchedule(formData);
     };
-
     fetchData();
+    navigate("/antwork/calendar");
   };
 
   return (
@@ -159,7 +161,7 @@ export default function Schedule() {
                 <input
                   type="datetime-local"
                   name="start"
-                  value={formData.startTime}
+                  value={formData.start}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
                   required
@@ -173,7 +175,7 @@ export default function Schedule() {
                 <input
                   type="datetime-local"
                   name="end"
-                  value={formData.endTime}
+                  value={formData.end}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition-all"
                   required
@@ -188,7 +190,7 @@ export default function Schedule() {
                 Calendar 선택
               </label>
               <select
-                name="calendar"
+                name="calendarId"
                 value={formData.calendarId}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"

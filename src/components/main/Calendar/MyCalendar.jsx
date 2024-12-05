@@ -5,23 +5,37 @@ import interactionPlugin from "@fullcalendar/interaction"; // 상호작용을 �
 import listPlugin from "@fullcalendar/list";
 import "../../../styles/calendar.scss";
 import axios from "axios";
+import {
+  getCalendar,
+  getSchedule,
+  insertSchedule,
+} from "../../../api/calendarAPI";
+import useAuthStore from "../../../store/AuthStore";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const calendarRef = useRef(null);
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const uid = user?.uid;
+  console.log("uid::::" + uid);
   // useState 몰아넣은 곳
   const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
   const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({
-    content_title: "",
-    description: "",
-    location: "",
-    member: "",
-    start: "",
-    end: "",
-  });
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
+  const [option, setOption] = useState([]);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    start: "",
+    end: "",
+    uid: "",
+    calendarId: "",
+    location: "",
+    internalAttendees: [],
+    externalAttendees: [],
+    content: "",
+  });
   //
   useEffect(() => {
     if (calendarRef.current) {
@@ -101,17 +115,30 @@ function MyCalendar({ listMonth, setListMonth }) {
     fetchHolidays();
   }, []); // 컴포넌트가 처음 렌더링될 때만 호출
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data2 = await getSchedule(uid);
+      console.log("data2::::" + data2);
+
+      setEvents(data2);
+    };
+
+    console.log("sch:::::::::::::::" + events);
+
+    fetchData();
+  }, [uid]);
+
   // 날짜 클릭 시 모달 띄우기
   const handleDateClick = (info) => {
     const clickedDate = info.dateStr; // 클릭한 날짜
     const formattedDate = clickedDate + "T00:00"; // `datetime-local` 형식에 맞게 변환
 
-    setNewEvent((prevState) => ({
+    setFormData((prevState) => ({
       ...prevState,
-      content_title: "",
-      description: "",
+      title: "",
+      content: "",
       location: "",
-      member: "",
+      calendarId: "",
       start: formattedDate, // 시작일에 클릭한 날짜 설정
       end: formattedDate, // 종료일에도 클릭한 날짜 설정 (같은 날짜로 초기화)
     }));
@@ -135,41 +162,10 @@ function MyCalendar({ listMonth, setListMonth }) {
       alert("공휴일은 수정할 수 없습니다!");
       return;
     }
-    setNewEvent({
-      content_title: event.title.split(" - ")[0], // 제목 분리 (예: "회의 - 설명")
-      description: event.title.split(" - ")[1] || "", // 설명 분리
-      location: event.extendedProps.location || "",
-      member: event.extendedProps.member || "",
-      start: startDate,
-      end: endDate,
-    });
 
     setEditMode(true); // 수정 모드로 설정
     setShowModal(true); // 모달 띄우기
     setCurrentEventId(event.id); // 수정하려는 이벤트의 ID 저장
-  };
-
-  const handleSave = () => {
-    const event = {
-      id: currentEventId || new Date().getTime(), // 고유 ID 설정
-      title: `${newEvent.content_title} - ${newEvent.description}`,
-      start: newEvent.start,
-      end: newEvent.end,
-      location: newEvent.location,
-      member: newEvent.member,
-    };
-
-    setEvents((prevEvents) => [...prevEvents, event]);
-
-    setNewEvent({
-      content_title: "",
-      description: "",
-      location: "",
-      member: "",
-      start: "",
-      end: "",
-    });
-    setShowModal(false);
   };
 
   const allEvents = [...events, ...holidays];
@@ -198,12 +194,12 @@ function MyCalendar({ listMonth, setListMonth }) {
     const { startStr, endStr } = selectInfo;
     console.log(selectInfo);
     // 새 일정 추가
-    setNewEvent((prevState) => ({
+    setFormData((prevState) => ({
       ...prevState,
-      content_title: "",
-      description: "",
+      title: "",
+      content: "",
       location: "",
-      member: "",
+      calendarId: "",
       start: startStr + "T00:00", // 시작일에 클릭한 날짜 설정
       end: endStr + "T00:00", // 종료일에도 클릭한 날짜 설정 (같은 날짜로 초기화)
     }));
@@ -213,7 +209,7 @@ function MyCalendar({ listMonth, setListMonth }) {
   };
 
   const renderEventContent = (eventInfo) => {
-    const { location, member } = eventInfo.event.extendedProps;
+    const { location } = eventInfo.event.extendedProps;
 
     const start = eventInfo.event.start;
     if (eventInfo.event.backgroundColor === "white") {
@@ -229,7 +225,7 @@ function MyCalendar({ listMonth, setListMonth }) {
         <b>{eventInfo.event.title}</b>
         <p>
           {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}{" "}
-          장소: {location} 참석자: {member}
+          장소: {location}
         </p>
       </div>
     );
@@ -262,6 +258,42 @@ function MyCalendar({ listMonth, setListMonth }) {
     }
   };
 
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      uid: uid,
+    }));
+    const fetchData = async () => {
+      const data2 = await getCalendar(uid);
+      setOption(data2);
+    };
+    fetchData();
+  }, [uid]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData); // 폼 제출 시 데이터 로그
+    console.log("uid---------" + uid);
+    setFormData({ uid: uid });
+    const fetchData = async () => {
+      console.log("form:::::::::" + JSON.stringify(formData));
+      await insertSchedule(formData);
+    };
+    fetchData();
+    setFormData({
+      title: "",
+      start: "",
+      end: "",
+      uid: "",
+      calendarId: "",
+      location: "",
+      internalAttendees: [],
+      externalAttendees: [],
+      content: "",
+    });
+    setShowModal(false);
+  };
+
   return (
     <section className="w-auto h-auto bg-white mx-auto">
       <div className="w-full">
@@ -271,6 +303,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           initialView="dayGridMonth"
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           events={allEvents}
+          eventTextColor="black"
           eventColor="#b2d1ff" // event에 색상 설정
           selectable={true} // 드래그로 날짜 선택 활성화
           select={handleDateSelect} // 날짜 선택 시 실행할 함수
@@ -317,97 +350,110 @@ function MyCalendar({ listMonth, setListMonth }) {
 
             {/* 모달 창 */}
             <div className="fixed inset-0 flex items-center justify-center z-[101]">
-              <div className="w-[700px] h-[450px] bg-white shadow-lg p-7 rounded-lg">
-                <h3 className="text-lg font-bold mb-4">
-                  {editMode ? "일정 수정" : "일정 추가"}
-                </h3>
+              <form>
+                <div className="w-[700px] h-[450px] bg-white shadow-lg p-7 rounded-lg">
+                  <h3 className="text-lg font-bold mb-4">
+                    {editMode ? "일정 수정" : "일정 추가"}
+                  </h3>
 
-                {/* 제목 입력 */}
-                <input
-                  type="text"
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  placeholder="제목"
-                  value={newEvent.content_title}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, content_title: e.target.value })
-                  }
-                />
+                  {/* 제목 입력 */}
+                  <input
+                    type="text"
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    placeholder="제목"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                  />
 
-                {/* 장소 입력 */}
-                <input
-                  type="text"
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  placeholder="장소"
-                  value={newEvent.location}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, location: e.target.value })
-                  }
-                />
-                {/* 인원 입력 */}
-                <input
-                  type="text"
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  placeholder="인원"
-                  value={newEvent.member}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, member: e.target.value })
-                  }
-                />
+                  {/* 장소 입력 */}
+                  <input
+                    type="text"
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    placeholder="장소"
+                    value={formData.location}
+                    onChange={(e) =>
+                      setFormData({ ...formData, location: e.target.value })
+                    }
+                  />
 
-                {/* 설명 입력 */}
-                <textarea
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  placeholder="설명"
-                  value={newEvent.description}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, description: e.target.value })
-                  }
-                ></textarea>
-
-                {/* 시작일 입력 */}
-                <input
-                  type="datetime-local"
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  value={newEvent.start}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, start: e.target.value })
-                  }
-                />
-
-                {/* 종료일 입력 */}
-                <input
-                  type="datetime-local"
-                  className="w-full p-2 mb-4 border rounded outline-none"
-                  value={newEvent.end}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, end: e.target.value })
-                  }
-                />
-
-                {/* 버튼들 */}
-                <div className="flex justify-end space-x-2 outline-none">
-                  <button
-                    className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
-                    onClick={handleSave}
+                  {/* Calendar Selection */}
+                  <select
+                    name="calendarId"
+                    value={formData.calendarId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, calendarId: e.target.value })
+                    }
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    required
                   >
-                    {editMode ? "수정" : "저장"}
-                  </button>
-                  {editMode && (
+                    <option value="">Calendar 선택</option>
+                    {option.map((item) => (
+                      <option key={item.calendarId} value={item.calendarId}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* 설명 입력 */}
+                  <textarea
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    placeholder="설명"
+                    name="content"
+                    value={formData.content}
+                    onChange={(e) =>
+                      setFormData({ ...formData, content: e.target.value })
+                    }
+                  ></textarea>
+
+                  {/* 시작일 입력 */}
+                  <input
+                    type="datetime-local"
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    name="start"
+                    value={formData.start}
+                    onChange={(e) =>
+                      setFormData({ ...formData, start: e.target.value })
+                    }
+                  />
+
+                  {/* 종료일 입력 */}
+                  <input
+                    type="datetime-local"
+                    className="w-full p-2 mb-4 border rounded outline-none"
+                    name="end"
+                    value={formData.end}
+                    onChange={(e) =>
+                      setFormData({ ...formData, end: e.target.value })
+                    }
+                  />
+
+                  {/* 버튼들 */}
+                  <div className="flex justify-end space-x-2 outline-none">
                     <button
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                      onClick={handleDelete}
+                      className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
+                      onClick={handleSubmit}
                     >
-                      삭제
+                      {editMode ? "수정" : "저장"}
                     </button>
-                  )}
-                  <button
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                    onClick={() => setShowModal(false)}
-                  >
-                    취소
-                  </button>
+                    {editMode && (
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        onClick={handleDelete}
+                      >
+                        삭제
+                      </button>
+                    )}
+                    <button
+                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                      onClick={() => setShowModal(false)}
+                    >
+                      취소
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </>
         )}
