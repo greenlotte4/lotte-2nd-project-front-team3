@@ -211,44 +211,66 @@ export default function ProjectViewSection() {
     openModal("task-edit");
   };
 
+  // 드래그앤드랍 처리
   const handleDragEnd = (result) => {
+    // {드래그가 시작된 위치 정보, 드롭된 위치 정보}
     const { source, destination } = result;
 
-    if (!destination) return;
+    // 드롭 위치가 없거나 동일한 위치면 종료
+    if (
+      !destination ||
+      (source.droppableId === destination.droppableId &&
+        source.index === destination.index)
+    )
+      return;
 
-    const sourceState = states.find((state) => state.id === source.droppableId);
-    const destinationState = states.find(
-      (state) => state.id === destination.droppableId
+    // 상태 복사본 생성
+    const newStates = [...states];
+
+    // source, destination 상태 찾기
+    // 데이터 타입이 서로 다를 수 있기 때문에 비교 전에 문자열로 변환
+    const sourceStateIndex = newStates.findIndex(
+      (state) => String(state.id) === String(source.droppableId)
+    );
+    const destinationStateIndex = newStates.findIndex(
+      (state) => String(state.id) === String(destination.droppableId)
     );
 
-    if (!sourceState || !destinationState) return;
+    // 상태를 찾지 못한 경우 처리
+    if (sourceStateIndex === -1 || destinationStateIndex === -1) {
+      console.error("Source or destination state not found");
+      return;
+    }
 
+    // source, destination 상태의 items 배열 보장
+    const sourceItems = newStates[sourceStateIndex].items || [];
+    const destinationItems = newStates[destinationStateIndex].items || [];
+
+    // 동일한 상태 내에서 드래그
     if (source.droppableId === destination.droppableId) {
-      const items = Array.from(sourceState.items);
-      const [movedItem] = items.splice(source.index, 1);
-      items.splice(destination.index, 0, movedItem);
+      const [reorderedItem] = sourceItems.splice(source.index, 1);
+      sourceItems.splice(destination.index, 0, reorderedItem);
 
-      setStates((prevStates) =>
-        prevStates.map((state) =>
-          state.id === sourceState.id ? { ...state, items } : state
-        )
-      );
-    } else {
-      const sourceItems = Array.from(sourceState.items);
-      const destinationItems = Array.from(destinationState.items);
-
+      newStates[sourceStateIndex].items = sourceItems;
+    }
+    // 다른 상태로 드래그
+    else {
       const [movedItem] = sourceItems.splice(source.index, 1);
       destinationItems.splice(destination.index, 0, movedItem);
 
-      setStates((prevStates) =>
-        prevStates.map((state) => {
-          if (state.id === sourceState.id)
-            return { ...state, items: sourceItems };
-          if (state.id === destinationState.id)
-            return { ...state, items: destinationItems };
-          return state;
-        })
-      );
+      newStates[sourceStateIndex].items = sourceItems;
+      newStates[destinationStateIndex].items = destinationItems;
+    }
+
+    // 상태 업데이트
+    setStates(newStates);
+
+    // 백엔드 API 호출로 상태 동기화
+    try {
+      // 서버에 상태 변경 요청
+      // updateTaskState(movedItem.id, destination.droppableId);
+    } catch (error) {
+      console.error("Task 상태 업데이트 중 오류:", error);
     }
   };
 
@@ -261,6 +283,8 @@ export default function ProjectViewSection() {
   }
 
   return (
+    // handleDragEnd: 드래그 종료 시 호출되는 핸들러로, 소스(source)와 목적지(destination)를 기반으로 데이터를 업데이트
+    // onDragEnd가 반드시 정의되어야 하고, 데이터 동기화를 책임짐
     <DragDropContext onDragEnd={handleDragEnd}>
       <ProjectModal
         projectId={id} // 파라미터 id값 넘김
@@ -315,7 +339,9 @@ export default function ProjectViewSection() {
                 {/* states 배열이 초기화되기전에 map 메서드가 호출되어 에러발생하는 이슈때문에 states가 배열인지 확인하는 조건 추가 */}
                 {Array.isArray(states) &&
                   states.map((state) => (
-                    <Droppable key={state.id} droppableId={state.id}>
+                    // droppableId는 문자열이어야 함
+                    // 드래그 가능한 항목(Draggable)을 포함하는 컨테이너를 정의
+                    <Droppable key={state.id} droppableId={String(state.id)}>
                       {(provided) => (
                         <article
                           ref={provided.innerRef}
@@ -359,7 +385,7 @@ export default function ProjectViewSection() {
                               {state?.items?.map((item, index) => (
                                 <Draggable
                                   key={item.id}
-                                  draggableId={item.id}
+                                  draggableId={String(item.id)}
                                   index={index}
                                 >
                                   {(provided) => (

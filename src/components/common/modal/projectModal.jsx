@@ -374,7 +374,7 @@ export default function ProjectModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block mb-2 font-medium">크기</label>
+                  <label className="block mb-2 font-medium">작업 크기</label>
                   <select
                     name="size"
                     value={taskData.size || currentTask?.size || "M"}
