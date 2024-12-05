@@ -1,19 +1,21 @@
-import { CHANNEL_URI,
-    CHANNEL_LIST_URI
- } from './_URI'
+import {
+  CHANNEL_URI,
+  CHANNEL_LIST_URI,
+  DM_GET_MESSAGES_URI
+} from './_URI'
 import axios from "axios";
 
 export const createChannel = async (channelData) => {
-    try {
-        console.log("channel create 요청 전송");
-        // 요청 전송
-        const response = await axios.post(CHANNEL_URI, channelData);
+  try {
+    console.log("channel create 요청 전송");
+    // 요청 전송
+    const response = await axios.post(CHANNEL_URI, channelData);
 
-        return response.data
-    } catch (error) {
-        console.error("Error adding company:", error.message || error);
-        throw error;
-    }
+    return response.data
+  } catch (error) {
+    console.error("Error adding company:", error.message || error);
+    throw error;
+  }
 }
 
 
@@ -30,7 +32,7 @@ export const getAllChannels = async () => {
 
 export const getDmMessages = async (dmId) => {
   try {
-    const response = await axios.get(`/api/dm/${dmId}/messages`);
+    const response = await axios.get(DM_GET_MESSAGES_URI(dmId));
     return response; // 데이터 반환
   } catch (error) {
     console.error("디엠 메시지 조회 실패:", error);

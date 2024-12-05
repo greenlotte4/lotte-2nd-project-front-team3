@@ -1,7 +1,8 @@
-import { CHANNEL_CREATE_URI,
+import {
+    CHANNEL_CREATE_URI,
     CHANNEL_LIST_URI,
     DM_GET_MESSAGES_URI,
- } from './_URI'
+} from './_URI'
 import axios from "axios";
 
 export const createChannel = async (channelData) => {
@@ -35,11 +36,11 @@ export const getAllChannels = async () => {
 
 // 디엠 메시지 조회 API 함수
 export const getDmMessages = async (dmId) => {
-  try {
-    const response = await axios.get(`/api/dm/${dmId}/messages`);
-    return response; // 서버에서 반환된 데이터를 반환
-  } catch (error) {
-    console.error('디엠 메시지 조회 실패:', error);
-    throw error; // 에러 발생 시 다시 던져서 처리
-  }
+    try {
+        const response = await axios.get(DM_GET_MESSAGES_URI(dmId));
+        return response; // 서버에서 반환된 데이터를 반환
+    } catch (error) {
+        console.error('디엠 메시지 조회 실패:', error);
+        throw error; // 에러 발생 시 다시 던져서 처리
+    }
 };
