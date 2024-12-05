@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
 import { createChannel } from "../../../api/chattingAPI";
 
-export default function ChattingModal( ) {
+export default function ChattingModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
   // 채널 생성을 위한 로컬 상태
   const [channelName, setChannelName] = useState("");
@@ -10,14 +10,14 @@ export default function ChattingModal( ) {
 
   const [channel, setChannel] = useState({
     name: "",
-    userId : "",
+    userId: "",
     isPublic: "",
   });
   const changeHandler = (e) => {
     e.preventDefault();
-    setChannel({ ...channel, [e.target.name]: e.target.value});
+    setChannel({ ...channel, [e.target.name]: e.target.value });
   };
-  
+
   // 상태 변경 감지
   useEffect(() => {
     console.log("Modal Props Updated:", JSON.stringify(props));
@@ -57,11 +57,11 @@ export default function ChattingModal( ) {
     const data = {
       name: channel.name,
       userId: 6,  // 예시로 고정된 userId 사용 (실제 상황에 맞게 수정)
-      channelPrivacy: isPublic ? 1 : 0, 
+      channelPrivacy: isPublic ? 1 : 0,
     };
-  
+
     console.log("채널 생성 데이터 이름 들어와줘:", data);
-  
+
     try {
       // 채널 생성 API 호출
       await createChannel(data);
@@ -79,8 +79,8 @@ export default function ChattingModal( ) {
       name: e.target.value // 객체 내 name만 변경
     }));
   };
-  
-  
+
+
   const renderContent = () => {
     switch (type) {
       case "invite":
@@ -208,8 +208,8 @@ export default function ChattingModal( ) {
             </div>
           </div>
         );
-              /* 채널 생성 */
-              // TODO :  프론트 연결 제대로
+      /* 채널 생성 */
+      // TODO :  프론트 연결 제대로
       case "createChannel":
         return (
           <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
@@ -228,7 +228,7 @@ export default function ChattingModal( ) {
                   onChange={handleNameChange}  // 수정된 onChange 핸들러
                 />
               </div>
-             
+
               {/* 공개/비공개 선택 라디오 버튼 */}
               <div className="mt-4">
                 <label className="text-sm font-medium">채널 공개 여부</label>
@@ -332,20 +332,9 @@ export default function ChattingModal( ) {
                 clipRule="evenodd"
               />
             </svg>
-            className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M6.293 4.293a1 1 0 011.414 0L10 7.586l2.293-3.293a1 1 0 111.414 1.414L11.414 9l3.293 2.293a1 1 0 11-1.414 1.414L10 10.414l-2.293 3.293a1 1 0 11-1.414-1.414L8.586 9 5.293 6.707a1 1 0 110-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            {/* className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+          > */}
+
           </button>
         </div>
         {renderContent()}

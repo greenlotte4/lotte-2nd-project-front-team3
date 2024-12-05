@@ -193,8 +193,199 @@ export default function ChattingMain({ dmId }) {
             </div>
           </div>
         </div>
+
+
+
+        {/* 오른쪽 토글 패널 */}
+        <div
+          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
+            } duration-300`}
+        >
+          {/* 상단 영역 */}
+          <div className="flex items-center justify-between mb-6">
+            {/* 사이드바 닫기 버튼 */}
+            <button
+              className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+              onClick={() => toggleState("isSidebarOpen")}
+            >
+              <img src="/images/ico/closechat.svg"></img>
+            </button>
+
+            {/* 채팅방 이름 */}
+            <h3 className="text-lg font-semibold text-gray-900">채팅방 이름</h3>
+
+            {/* 오른쪽 아이콘들 */}
+            <div className="flex items-center space-x-4">
+              {/* 알림 아이콘 */}
+              <button
+                className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+                onClick={() => toggleState("isAlarmOn")}
+              >
+                <img
+                  src={
+                    toggleStates.isAlarmOn
+                      ? "/images/ico/alerm.svg"
+                      : "/images/ico/alermoff.svg"
+                  }
+                  alt="알림 아이콘"
+                />
+              </button>
+
+              {/* 나가기 아이콘 */}
+              <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none">
+                <img src="/images/ico/outchat.svg"></img>
+              </button>
+            </div>
+          </div>
+
+          {/* 검색창 */}
+          <div className="flex items-center mb-6">
+            <input
+              type="text"
+              placeholder="DM 검색"
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+          {/* 대화 상대 */}
+          <div className="my-5">
+            <div
+              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+              onClick={() => toggleState("isContactOpen")}
+            >
+              <h3 className="text-lg font-semibold mb-2">대화 상대</h3>
+              <button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
+            {toggleStates.isContactOpen && (
+              <ul className="space-y-4 mt-4">
+                <li className="flex items-center">
+                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
+                  준혁
+                </li>
+                <li className="flex items-center">
+                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
+                  모라존잘
+                </li>
+                <li className="flex items-center">
+                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
+                  서영이
+                </li>
+                <li className="flex items-center">
+                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
+                  김혜민
+                </li>
+              </ul>
+            )}
+          </div>
+
+          {/* 사진 파일 */}
+          <div className="my-5">
+            <div
+              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+              onClick={() => toggleState("isPhotoOpen")}
+            >
+              <h3 className="text-lg font-semibold mb-2">사진 파일</h3>
+              <button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
+            {toggleStates.isPhotoOpen && (
+              <div className="space-y-4 mt-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <img
+                      src="https://via.placeholder.com/50"
+                      alt="파일"
+                      className="w-10 h-10 rounded-md shadow-md"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        사진 {i + 1}
+                      </p>
+                      <p className="text-sm text-gray-400">어제</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 첨부 파일 */}
+          <div className="my-5">
+            <div
+              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+              onClick={() => toggleState("isFileOpen")}
+            >
+              <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
+              <button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
+            {toggleStates.isFileOpen && (
+              <div className="space-y-4 mt-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <img
+                      src="https://via.placeholder.com/50"
+                      alt="파일"
+                      className="w-10 h-10"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        11월 회의록.pptx
+                      </p>
+                      <p className="text-sm text-gray-400">어제</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
-
 }
