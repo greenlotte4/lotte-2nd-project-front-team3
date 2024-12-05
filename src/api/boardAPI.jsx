@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 import axiosInstance from "./../utils/axiosInstance";
 import {
     BOARD_WRITE_URI, // 게시판 글쓰기
