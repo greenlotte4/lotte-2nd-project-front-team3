@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   createTask,
   deleteTask,
@@ -13,6 +13,9 @@ import {
 } from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
+  const location = useLocation(); // 현재 URL을 감지
+  console.log("location : " + location);
+
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   console.log("id : " + id);
@@ -38,8 +41,9 @@ export default function ProjectViewSection() {
       }
     };
 
+    setLoadingStates(true); // 새 요청 전 로딩 상태로 설정
     fetchProjectDetails(); // 컴포넌트 마운트 시 데이터 로드
-  }, [id]);
+  }, [id, location]); // location을 의존성 배열에 추가
 
   // 전체 상태 데이터 가져오기
   useEffect(() => {

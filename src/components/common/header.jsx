@@ -45,7 +45,13 @@ export default function Header({ onToggleAside }) {
               alt="menu"
             />
           </a>
-          <h1 className="hlogo">AntWork</h1>
+          <h1 className="hlogo">
+            <img
+              className="mt-[10px]"
+              src="/images/Landing/antwork_logo.png"
+              alt=""
+            />
+          </h1>
         </div>
         <div className="header rightside">
           <a href="#">
