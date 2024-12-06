@@ -1,12 +1,13 @@
+import axiosInstance from "../../../utils/axiosInstance";
+// import axiosInstance from "@/utils/axiosInstance";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { Lock, Reply, User, Send } from "lucide-react";
+import { Lock, Reply, User, Send, ThumbsUp } from "lucide-react";
 import { BOARD_VIEW_URI } from "../../../api/_URI";
 
 export default function BoardView() {
   const { id } = useParams(); // URL에서 id(글번호) 값 추출
-  // const [board, setBoard] = useState(null); // 상세 데이터 상태 관리
 
   const [board, setBoard] = useState({
     title: '',
@@ -14,27 +15,50 @@ export default function BoardView() {
     regDate: '',
     hit: 0,
     content: '',
+    likeCount: 0,
     attachedFiles: null,
+    likeCount: 0,
+    isLikedByCurrentUser: false
 });
+
+ // board 상태에서 값을 가져와 사용
+ const [isLiked, setIsLiked] = useState(false);
+ const [likes, setLikes] = useState(0);
 
   useEffect(() => {
     const fetchBoard = async () => {
+      // 게시글 데이터 가져오는 코드
       try {
-        const response = await fetch(`${BOARD_VIEW_URI}/${id}`);
+        const response = await axiosInstance(`${BOARD_VIEW_URI}/${id}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch board details");
+          throw new Error("게시글을 불러오는데 실패했습니다.");
         }
         const data = await response.json();
         console.log('게시글 데이터:', data); // 받아온 데이터 확인
         setBoard(data);
+        
+        // board 데이터를 받아온 후 likes와 isLiked 상태 업데이트
+        setLikes(data.likeCount || 0);
+        setIsLiked(data.isLikedByCurrentUser || false);
       } catch (error) {
         console.error('게시글 데이터 로딩 실패:', error);
       }
     };
   
     fetchBoard();
-  }, [id]);
-
+  }, [id]); // id가 변경될 때마다 게시글 데이터를 새로 가져오기 
+  const handleLike = async () => {
+    try {
+      // 백엔드 API 호출
+      const response = await axiosInstance.post(`/api/boards/${id}/like`);
+      
+      // 성공하면 상태 업데이트
+      setLikes(response.data.likeCount);
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('좋아요 처리 실패:', error);
+    }
+  };
   
   // 댓글쓰기 API (commnts)
   const [comments, setComments] = useState([
@@ -55,22 +79,6 @@ export default function BoardView() {
       ],
     },
   ]);
-
-   // 글 상세 조회를 하지 못한 경우
-  //  if (!boards) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="bg-white shadow-lg rounded-lg p-8">
-  //         <div className="animate-pulse">
-  //           <div className="h-8 bg-gray-200 w-32 mb-4"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
@@ -156,7 +164,7 @@ export default function BoardView() {
               <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
                 <div className="writer">
                   <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
-                    {board.writer?.name || ''} {/* writer 객체의 name 필드 사용 */}
+                    {board.writer?.name || '익명'} {/* writer가 없거나 name이 없으면 '익명' 출력 */}
                   <span className="mx-2 text-slate-300 !text-[10px]">
                     &#124;
                   </span>
@@ -202,18 +210,32 @@ export default function BoardView() {
 
           {/* 게시글 본문 */}
           <div className="pt-6 pb-12 border-t border-slate-200">
-            <div className="prose max-w-none">
-              {board.content && board.content.split("\n").map((line, index) => (
-                <p key={index} className="">
-                  {line}
-                </p>
-              ))}
-              <div className="w-1/2 h-auto mt-7">
-                <img
-                  className="w-full block"
-                  src="/images/Antwork/board/boardExam3.jpeg"
-                  alt="게시글 본문 이미지"
-                />
+            <div className="relative">
+              {/* 좋아요 버튼 - 우측 상단에 배치 */}
+              <div className="absolute top-0 right-0">
+                <button 
+                  onClick={handleLike} 
+                  className="flex items-center space-x-2 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <ThumbsUp size={18} />
+                  <span className="ml-1">좋아요 {likes}</span>
+                </button>
+              </div>
+
+              {/* 본문 내용 */}
+              <div className="prose max-w-none pt-12">
+                {board.content && board.content.split("\n").map((line, index) => (
+                  <p key={index} className="">
+                    {line}
+                  </p>
+                ))}
+                <div className="w-1/2 h-auto mt-7">
+                  <img
+                    className="w-full block"
+                    src="/images/Antwork/board/boardExam3.jpeg"
+                    alt="게시글 본문 이미지"
+                  />
+                </div>
               </div>
             </div>
           </div>
