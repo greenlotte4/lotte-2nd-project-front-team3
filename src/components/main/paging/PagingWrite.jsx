@@ -373,14 +373,26 @@ const PagingWrite = () => {
     };
   }, [id, componentId]);
 
-  // componentId 초기화를 위한 useEffect
+  // 대신 이 함수 사용
+  const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
+  // componentId 초기화를 위한 useEffect 수정
   useEffect(() => {
     if (!componentId) {
-      const id = crypto.randomUUID();
+      const id = generateUUID(); // uuidv4() 대신 generateUUID() 사용
       setComponentId(id);
       console.log("🔍 Component ID initialized:", id);
     }
-  }, []); // componentId 의존성 제거
+  }, []);
 
   // 제목 변경 핸들러도 공통 방송 함수 사용
   const handleTitleChange = async (e) => {
@@ -483,7 +495,7 @@ const PagingWrite = () => {
     }
   };
 
-  // 초기 마운트와 id 체크를 위한 useEffect 추가
+  // 기 마운트와 id 체크를 위한 useEffect 추가
   useEffect(() => {
     const initializePage = async () => {
       const params = new URLSearchParams(location.search);
