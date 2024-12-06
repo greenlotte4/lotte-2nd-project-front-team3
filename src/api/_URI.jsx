@@ -16,6 +16,7 @@ export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기
 export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초대
 export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회원 초대 토큰 검증
 export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
+export const USER_GET_BY_UID_URI = `${API_SERVER_HOST}/user/select`; // 로그인 유저 전체 객체 정보
 
 // attendance
 export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
@@ -29,7 +30,7 @@ export const USER_VERIFY_CHECK_EMAIL_URI = `${API_SERVER_HOST}/email/check-verif
 export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 이메일 발송
 
 // company
-export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert 
+export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
 
 // project
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가
@@ -48,7 +49,6 @@ export const DRIVE_FILES_INSERT_URI = `${API_SERVER_HOST}/drive/files/insert`; /
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
 
-
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
 export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장
@@ -57,12 +57,13 @@ export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
 
 // chatting
 // src/api/_URI.jsx
-export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`;  // 채널 관련 URI
+export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 관련 URI
 export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 
 export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
-export const DM_GET_MESSAGES_URI = (dmId) => `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
+export const DM_GET_MESSAGES_URI = (dmId) =>
+  `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
 
 // 추가할 페이지 관련 URI
 export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
@@ -87,8 +88,8 @@ export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepa
 
 // board
 export const BOARD_WRITE_URI = `${API_SERVER_HOST}/board/write`; // 게시판 글쓰기
-export const BOARD_LIST_URI = `${API_SERVER_HOST}/board/list`; // 게시판 리스트 (글목록) 
+export const BOARD_LIST_URI = `${API_SERVER_HOST}/board/list`; // 게시판 리스트 (글목록)
 export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 (글보기)
 export const BOARD_UPDATE_URI = `${API_SERVER_HOST}/board/modify`; // 게시판 글 수정
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
-console.log('API_SERVER_HOST:', import.meta.env.VITE_API_SERVER_HOST);
+console.log("API_SERVER_HOST:", import.meta.env.VITE_API_SERVER_HOST);

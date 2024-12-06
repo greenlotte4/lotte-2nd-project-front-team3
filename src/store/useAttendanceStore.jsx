@@ -18,12 +18,17 @@ const useAttendanceStore = create(
       // 출근 처리
       checkIn: async (userId) => {
         try {
-          if (!userId) throw new Error("User ID가 필요합니다."); // 유효성 검사
+          if (!userId) throw new Error("User ID가 필요합니다.");
           set({ isLoading: true, error: null });
           const data = await checkInAPI(userId);
+          console.log("dataa" + data);
+          if (!data) {
+            throw new Error("API 응답이 유효하지 않습니다.");
+          }
+
           set({
             status: "CHECKED_IN",
-            checkInTime: data.checkInTime,
+            checkInTime: data,
             error: null,
           });
         } catch (error) {
@@ -41,12 +46,16 @@ const useAttendanceStore = create(
       // 퇴근 처리
       checkOut: async (userId) => {
         try {
-          if (!userId) throw new Error("User ID가 필요합니다."); // 유효성 검사
+          if (!userId) throw new Error("User ID가 필요합니다.");
           set({ isLoading: true, error: null });
           const data = await checkOutAPI(userId);
+          if (!data) {
+            throw new Error("API 응답이 유효하지 않습니다.");
+          }
+
           set({
             status: "CHECKED_OUT",
-            checkOutTime: data.checkOutTime,
+            checkOutTime: data,
             error: null,
           });
         } catch (error) {
@@ -64,8 +73,9 @@ const useAttendanceStore = create(
       // 상태 업데이트
       updateStatus: async (userId, newStatus) => {
         try {
-          if (!userId || !newStatus)
-            throw new Error("User ID와 상태 값이 필요합니다."); // 유효성 검사
+          if (!userId || !newStatus) {
+            throw new Error("User ID와 상태 값이 필요합니다.");
+          }
           set({ isLoading: true, error: null });
           await updateStatusAPI(userId, newStatus);
           set({ status: newStatus, error: null });
@@ -98,12 +108,12 @@ const useAttendanceStore = create(
       },
     }),
     {
-      name: "attendance-store", // localStorage에 저장될 키
+      name: "attendance-store",
       partialize: (state) => ({
         status: state.status,
         checkInTime: state.checkInTime,
         checkOutTime: state.checkOutTime,
-      }), // 필요한 상태만 저장
+      }),
     }
   )
 );

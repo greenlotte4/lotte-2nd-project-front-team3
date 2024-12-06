@@ -60,7 +60,7 @@ export default function AdminAside({ asideVisible }) {
                   <Link to="/antwork/admin/member">👨‍💻&nbsp;&nbsp;멤버관리</Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/member">🔔&nbsp;&nbsp;팝업관리</Link>
+                  <Link to="/antwork/admin/popup">🔔&nbsp;&nbsp;팝업관리</Link>
                 </li>
               </ol>
             )}
@@ -143,7 +143,7 @@ export default function AdminAside({ asideVisible }) {
                 to="/antwork/page"
                 className="main-cate !text-[16px] text-[#757575]"
               >
-                최근사용목록
+                최근사용목록
               </Link>
             </div>
             <div className="lnb-header !mb-[10px]">
