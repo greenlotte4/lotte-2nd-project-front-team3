@@ -310,43 +310,49 @@ const PagingWrite = () => {
     console.log(" Initializing WebSocket connection");
     const client = new Client({
       brokerURL: WS_URL,
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      debug: function (str) {
-        console.log("🔌 WebSocket Debug:", str);
-      },
+      reconnectDelay: 2000,
+      heartbeatIncoming: 20000,
+      heartbeatOutgoing: 20000,
+      debug:
+        process.env.NODE_ENV === "development"
+          ? (str) => console.log("🔌 WebSocket Debug:", str)
+          : null,
     });
 
     client.configure({
       onConnect: () => {
         console.log(" Connected to WebSocket");
         setStompClient(client);
-        stompClientRef.current = client; // ref에 저장
+        stompClientRef.current = client;
 
-        // 구독 설정
-        const subscriptions = [`/topic/page/${id}`, `/topic/page/${id}/status`];
+        // 구독을 하나의 배열로 처리
+        const subscription = client.subscribe(
+          `/topic/page/${id}`,
+          handleWebSocketMessage
+        );
+        const statusSubscription = client.subscribe(
+          `/topic/page/${id}/status`,
+          handleWebSocketMessage
+        );
 
-        console.log("📩 Subscribing to channels:", subscriptions);
-
-        subscriptions.forEach((channel) => {
-          client.subscribe(channel, handleWebSocketMessage);
-        });
-
-        // 연결 성 후 초기 상 전송
-        const initialStatus = {
-          componentId: componentId,
-          type: "EDITOR_STATUS",
-          pageId: id,
-          uid: "ghkdtnqls95",
-          status: "viewing",
-          timestamp: Date.now(),
-        };
-
+        // 초기 상태 전송
         client.publish({
           destination: `/app/page/${id}/status`,
-          body: JSON.stringify(initialStatus),
+          body: JSON.stringify({
+            componentId,
+            type: "EDITOR_STATUS",
+            pageId: id,
+            uid: "ghkdtnqls95",
+            status: "viewing",
+            timestamp: Date.now(),
+          }),
         });
+
+        // cleanup을 위해 구독 객체 저장
+        return () => {
+          subscription.unsubscribe();
+          statusSubscription.unsubscribe();
+        };
       },
       onDisconnect: () => {
         console.log("🔴 Disconnected from WebSocket");
