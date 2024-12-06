@@ -35,6 +35,7 @@ export const postProject = async (project, uid) => {
 // 프로젝트 조회
 export const getProjects = async (uid) => {
   try {
+    console.log("백으로 가는 uid : " + uid);
     const response = await axios.get(`${PROJECT_LIST_URI}/${uid}`, {
       headers: {
         "Content-Type": "application/json",
