@@ -4,6 +4,8 @@ const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 // department
 export const DEPARTMENT_INSERT_URI = `${API_SERVER_HOST}/department/insert`; // 부서 생성
 export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; // 회사별 부서 조회
+export const DEPARTMENT_UPDATE_URI = `${API_SERVER_HOST}/department`; // 부서 이름 수정
+export const DEPARTMENT_USER_UPDATE_URI = `${API_SERVER_HOST}/department/move-user`; // 유저 부서 이동
 
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
@@ -16,7 +18,7 @@ export const USER_ADMIN_CREATE_URI = `${API_SERVER_HOST}/user/create`; // 초기
 export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초대
 export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회원 초대 토큰 검증
 export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
-export const USER_GET_BY_UID_URI = `${API_SERVER_HOST}/user/select`; // 로그인 유저 전체 객체 정보
+export const USER_DETAILS_URI = `${API_SERVER_HOST}/user`; // 로그인 유저 전체 객체 정보
 
 // attendance
 export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
