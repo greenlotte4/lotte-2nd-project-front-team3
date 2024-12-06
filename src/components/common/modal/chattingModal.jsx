@@ -6,12 +6,12 @@ export default function ChattingModal() {
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
   // 채널 생성을 위한 로컬 상태
   const [channelName, setChannelName] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
+  const [channelPrivacy, setChannelPrivacy] = useState(false);  // isPublic -> channelPrivacy
 
   const [channel, setChannel] = useState({
     name: "",
     userId: "",
-    isPublic: "",
+    channelPrivacy: false,  // isPublic -> channelPrivacy
   });
   const changeHandler = (e) => {
     e.preventDefault();
@@ -57,12 +57,13 @@ export default function ChattingModal() {
     const data = {
       name: channel.name,
       userId: 6,  // 예시로 고정된 userId 사용 (실제 상황에 맞게 수정)
-      channelPrivacy: isPublic ? 1 : 0,
+      channelPrivacy: channelPrivacy ? 1 : 0,  // channelPrivacy 사용
     };
 
     console.log("채널 생성 데이터 이름 들어와줘:", data);
 
     try {
+      console.log("채널 생성 데이터:", data);  // 데이터 로그 찍기
       // 채널 생성 API 호출
       await createChannel(data);
       alert("채널이 성공적으로 생성되었습니다.");
@@ -70,6 +71,7 @@ export default function ChattingModal() {
     } catch (error) {
       console.error("채널 생성 실패:", error);
       alert("채널 생성에 실패했습니다. 다시 시도해주세요.");
+      console.error("에러의 상세 내용:", error.response || error.message || error);
     }
   };
 
@@ -229,8 +231,8 @@ export default function ChattingModal() {
                 />
               </div>
 
-              {/* 공개/비공개 선택 라디오 버튼 */}
-              <div className="mt-4">
+               {/* 공개/비공개 선택 라디오 버튼 */}
+               <div className="mt-4">
                 <label className="text-sm font-medium">채널 공개 여부</label>
                 <div className="flex space-x-4 mt-2">
                   <div className="flex items-center">
@@ -238,10 +240,10 @@ export default function ChattingModal() {
                       type="radio"
                       id="public"
                       name="channelPrivacy"
-                      checked={isPublic === true}
+                      checked={channelPrivacy === true}
                       value="1"
                       onChange={(e) => {
-                        setIsPublic(true);  // 공개 채널 선택 시
+                        setChannelPrivacy(true);  // 공개 채널 선택 시
                       }}
                       className="mr-2"
                     />
@@ -252,10 +254,10 @@ export default function ChattingModal() {
                       type="radio"
                       id="private"
                       name="channelPrivacy"
-                      checked={isPublic === false}
+                      checked={channelPrivacy === false}
                       value="0"
                       onChange={(e) => {
-                        setIsPublic(false);  // 비공개 채널 선택 시
+                        setChannelPrivacy(false);  // 비공개 채널 선택 시
                       }}
                       className="mr-2"
                     />
@@ -288,10 +290,9 @@ export default function ChattingModal() {
                 >
                   추가
                 </button> */}
-                <button
-                  type="button"
+               <button
+                  type="submit"  // type="submit"로 변경
                   className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                  onClick={submitHandler}  // 여기에 submitHandler 연결
                 >
                   추가
                 </button>
