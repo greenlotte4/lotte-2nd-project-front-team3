@@ -54,6 +54,7 @@ export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
 export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장
 export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미지 업로드
 export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
+export const PAGE_CREATE_URI = `${API_SERVER_HOST}/page/create`; // 페이지 저장
 
 // chatting
 // src/api/_URI.jsx
@@ -93,3 +94,8 @@ export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 
 export const BOARD_UPDATE_URI = `${API_SERVER_HOST}/board/modify`; // 게시판 글 수정
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
 console.log("API_SERVER_HOST:", import.meta.env.VITE_API_SERVER_HOST);
+
+export const WS_URL =
+  process.env.NODE_ENV === "production"
+    ? import.meta.env.VITE_WS_URL
+    : import.meta.env.VITE_WS_URL;
