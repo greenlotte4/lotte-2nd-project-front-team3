@@ -236,11 +236,11 @@ export default function MainSection() {
 
               {/* 자료실 끝 */}
             </section>
-            {/* <section className="">
+            <section className="">
               <div className="w-[700px] h-[800px] bg-white rounded-lg p-4 shadow-sm mx-auto overflow-y-auto">
                 <MyCalendar />
               </div>
-            </section> */}
+            </section>
           </div>
         </article>
 
