@@ -15,28 +15,22 @@ export default function BoardView() {
     regDate: '',
     hit: 0,
     content: '',
-    likeCount: 0,
     attachedFiles: null,
-    likeCount: 0,
-    isLikedByCurrentUser: false
 });
 
- // board 상태에서 값을 가져와 사용
- const [isLiked, setIsLiked] = useState(false);
- const [likes, setLikes] = useState(0);
+  // 좋아요 관련 상태
+  const [likes, setLikes] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+
 
   useEffect(() => {
     const fetchBoard = async () => {
       // 게시글 데이터 가져오는 코드
       try {
-        const response = await axiosInstance(`${BOARD_VIEW_URI}/${id}`);
-        if (!response.ok) {
-          throw new Error("게시글을 불러오는데 실패했습니다.");
-        }
-        const data = await response.json();
+        const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
+        const data = response.data;
         console.log('게시글 데이터:', data); // 받아온 데이터 확인
         setBoard(data);
-        
         // board 데이터를 받아온 후 likes와 isLiked 상태 업데이트
         setLikes(data.likeCount || 0);
         setIsLiked(data.isLikedByCurrentUser || false);
@@ -47,20 +41,19 @@ export default function BoardView() {
   
     fetchBoard();
   }, [id]); // id가 변경될 때마다 게시글 데이터를 새로 가져오기 
-  const handleLike = async () => {
-    try {
-      // 백엔드 API 호출
-      const response = await axiosInstance.post(`/api/boards/${id}/like`);
-      
-      // 성공하면 상태 업데이트
-      setLikes(response.data.likeCount);
-      setIsLiked(!isLiked);
-    } catch (error) {
-      console.error('좋아요 처리 실패:', error);
-    }
-  };
+
+// 좋아요 처리
+const handleLike = async () => {
+  try {
+    const response = await axiosInstance.post(`/api/boards/${id}/like`);
+    setLikes(response.data.likeCount);
+    setIsLiked(!isLiked);
+  } catch (error) {
+    console.error('좋아요 처리 실패:', error);
+  }
+};
   
-  // 댓글쓰기 API (commnts)
+  // 댓글쓰기 API (comments)
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -184,6 +177,10 @@ export default function BoardView() {
             </div>
           </div>
 
+
+          
+
+
           {/* 첨부파일 섹션 */}
           {board.attachedFiles && board.attachedFiles.length > 0 && (
             <div className="bg-gray-50 p-4 border-t border-b border-slate-200">
@@ -210,20 +207,9 @@ export default function BoardView() {
 
           {/* 게시글 본문 */}
           <div className="pt-6 pb-12 border-t border-slate-200">
-            <div className="relative">
-              {/* 좋아요 버튼 - 우측 상단에 배치 */}
-              <div className="absolute top-0 right-0">
-                <button 
-                  onClick={handleLike} 
-                  className="flex items-center space-x-2 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-                >
-                  <ThumbsUp size={18} />
-                  <span className="ml-1">좋아요 {likes}</span>
-                </button>
-              </div>
-
+            <div className="flex justify-between items-start">
               {/* 본문 내용 */}
-              <div className="prose max-w-none pt-12">
+              <div className="prose max-w-[calc(100%-120px)]">
                 {board.content && board.content.split("\n").map((line, index) => (
                   <p key={index} className="">
                     {line}
@@ -237,6 +223,15 @@ export default function BoardView() {
                   />
                 </div>
               </div>
+
+              {/* 좋아요 버튼 */}
+              <button 
+                onClick={handleLike} 
+                className="flex items-center space-x-2 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                <ThumbsUp size={16} />
+                <span className="ml-1">좋아요 {likes}</span>
+              </button>
             </div>
           </div>
 
