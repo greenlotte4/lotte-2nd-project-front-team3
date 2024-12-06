@@ -143,7 +143,7 @@ export const getScheduleDetail = async (id) => {
   }
 };
 
-// 일정 update
+// 일정 drag로 update
 export const updateScheduleDrag = async (no, start, end) => {
   try {
     const response = await axiosInstance.put(

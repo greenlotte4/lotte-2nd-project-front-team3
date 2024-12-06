@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // 상호작용을 위한 플러그인
@@ -14,6 +14,7 @@ import {
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
 import { useNavigate } from "react-router-dom";
+import { useCalendarStore } from "../../../store/CalendarStore";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function MyCalendar({ listMonth, setListMonth }) {
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
   const [option, setOption] = useState([]);
-  const allEvents = [...events, ...holidays];
+
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -41,6 +42,7 @@ function MyCalendar({ listMonth, setListMonth }) {
     content: "",
   });
   //
+
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi(); // FullCalendar API 참조
@@ -128,6 +130,20 @@ function MyCalendar({ listMonth, setListMonth }) {
 
     fetchData();
   }, [uid]);
+
+  const { selectedIds } = useCalendarStore();
+
+  console.log("sseeeeeeeeeee:::" + selectedIds);
+
+  const filteredEvents = useMemo(() => {
+    if (selectedIds.length === 0) {
+      return events; // selectedIds가 비어있으면 필터링 없이 events 반환
+    } else {
+      return events.filter((event) => selectedIds.includes(event.calendarId));
+    }
+  }, [events, selectedIds]);
+
+  const allEvents = [...filteredEvents, ...holidays];
 
   // 날짜 클릭 시 모달 띄우기
   const handleDateClick = (info) => {

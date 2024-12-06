@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getCalendar,
   insertCalendar,
@@ -8,11 +8,12 @@ import {
   getSchedule,
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
+import { useCalendarStore } from "../../../store/CalendarStore";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
-
+  const navigate = useNavigate();
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const handleButtonClick = () => {
@@ -76,14 +77,20 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   const [data, setData] = useState([]);
   const [schedule, setSchedule] = useState([]);
   useEffect(() => {
-    const currentTime = new Date();
     const fetchData = async () => {
       const data = await getCalendar(uid);
       const data2 = await getSchedule(uid);
 
       const updatedData = data2.filter((item) => {
-        const endTime = new Date(item.end);
-        return endTime > currentTime; // endTime이 현재 시간보다 큰 경우만 남김
+        const startTime = new Date(item.start); // start 값을 Date 객체로 변환
+        const endTime = new Date(item.end); // end 값을 Date 객체로 변환
+        const today = new Date(); // 현재 날짜를 기준으로 검사
+        today.setHours(0, 0, 0, 0); // 오늘의 00:00:00
+        const tomorrow = new Date(today); // 내일의 00:00:00
+        tomorrow.setDate(today.getDate() + 1);
+
+        // 조건: start <= today < end
+        return startTime <= today && endTime >= tomorrow;
       });
 
       setData(data);
@@ -92,6 +99,19 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
     fetchData();
   }, [uid]);
+
+  const navigateToEditPage = (id) => {
+    console.log();
+    if (id) {
+      navigate("/antwork/schedule", {
+        state: {
+          id: id,
+        }, // eventData를 state로 전달
+      });
+    }
+  };
+
+  const { selectedIds, toggleCheckbox } = useCalendarStore();
 
   return (
     <>
@@ -141,14 +161,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   />
                 </span>
 
-                <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
-                  <img
-                    src="/images/ico/event_available_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
-                    alt="Description"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="main-cate">캘린더</span>
+                <span className="main-cate">🗓 내 캘린더</span>
               </button>
             </div>
             <div
@@ -160,10 +173,13 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                 {data.map((item) => (
                   <li key={item.calendarId}>
                     <div className="flex items-center mb-2 space-x-4">
-                      <img
-                        src="/images/Antwork/calendar/캘린더.svg"
-                        alt="캘린더"
-                        className="w-7 h-7"
+                      {/* 세련된 체크박스 */}
+                      <input
+                        type="checkbox"
+                        id={`checkbox-${item.calendarId}`}
+                        className="form-checkbox h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring focus:ring-blue-200"
+                        checked={selectedIds.includes(item.calendarId)}
+                        onChange={() => toggleCheckbox(item.calendarId)}
                       />
 
                       {/* 이름 표시 또는 수정 필드 */}
@@ -189,7 +205,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           </button>
                         </div>
                       ) : (
-                        <span>{item.name}</span>
+                        <span>📅 &nbsp; {item.name}</span>
                       )}
 
                       {/* 이름 수정 버튼 */}
@@ -245,14 +261,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   />
                 </span>
 
-                <div className="w-7 h-7 rounded-lg overflow-hidden mr-2">
-                  <img
-                    src="/images/Antwork/calendar/스케쥴.svg"
-                    alt="Description"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="main-cate">내 일정</span>
+                <span className="main-cate">⏰ 오늘의 일정</span>
               </button>
             </div>
             <div
@@ -263,29 +272,24 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
               <ul>
                 {schedule.map((item, index) => (
                   <li key={index}>
-                    <a href="#">
+                    <button onClick={() => navigateToEditPage(item.id)}>
                       <div className="flex items-start items-center mb-2 space-x-4 text-center">
-                        <img
-                          src="/images/Antwork/calendar/일정 아이콘.svg"
-                          alt="#"
-                          className="w-7 h-7"
-                        />
-                        <span>{item.title}</span>
+                        <span>📄 &nbsp; {item.title}</span>
                       </div>
-                    </a>
+                    </button>
                   </li>
                 ))}
                 <li>
-                  <a href="#">
+                  <button onClick={handleButtonClick2}>
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <button onClick={handleButtonClick2}>- 월간보기</button>
+                      <span>&nbsp; 📚 월간일정</span>
                     </div>
-                  </a>
-                  <a href="#">
+                  </button>
+                  <button onClick={handleButtonClick}>
                     <div className="flex items-start items-center mb-2 space-x-4">
-                      <button onClick={handleButtonClick}>- 주간보기</button>
+                      <span>&nbsp; 📕 주간일정</span>
                     </div>
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
