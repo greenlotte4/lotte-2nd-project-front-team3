@@ -62,9 +62,9 @@ export const getBoardList = async () => {
 
 
 // 게시글 상세 조회 
-export const getBoardById = async (uid) => {
+export const getBoardById = async (id) => {
     try {
-        const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${uid}`, {
+        const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`, {
             headers: {
                 'Content-Type': 'application/json',
             }
