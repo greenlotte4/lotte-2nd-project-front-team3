@@ -300,7 +300,7 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
       />
       {project ? (
-        <article className="page-list">
+        <article className="page-list min-h-[850px]">
           <div className="content-header">
             <div className="max-w-9xl mx-auto p-2">
               <div className="mb-3 text-center">
