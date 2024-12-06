@@ -45,6 +45,7 @@ import EmailVerificationPage from "./../pages/Landing/EmailVerificationPage";
 import SchedulePage from "../pages/Main/calendar/SchedulePage";
 import AdminDepartmentPage from "../pages/Main/Admin/adminDepartmentPage";
 import BoardUpdatePage from "../pages/Main/board/boardUpdatePage";
+import AdminPopPage from "../pages/Main/Admin/adminPopupPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
   { path: "/antwork/admin", element: <AdminPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
   { path: "/antwork/admin/member", element: <AdminMemberPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
   { path: "/antwork/admin/department", element: <AdminDepartmentPage /> }, // 2024/12/03(화) 최준혁 - AdminDepartmentPage 추가
+  { path: "/antwork/admin/popup", element: <AdminPopPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
