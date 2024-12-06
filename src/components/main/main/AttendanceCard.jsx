@@ -19,39 +19,31 @@ const AttendanceCard = () => {
   } = useAttendanceStore();
 
   const handleCheckIn = async () => {
-    const userId = user.id; // Zustand 또는 AuthStore에서 가져오기
     try {
-      await checkIn(userId); // 출근 API 호출
-      alert("출근처리완료! 오늘도 개미처럼 일하세염");
+      await checkIn(user.id); // 출근 API 호출
+      alert("출근 처리 완료! 오늘도 좋은 하루 되세요.");
     } catch (err) {
       console.error("출근 처리 실패:", err);
     }
   };
 
   const handleCheckOut = async () => {
-    const userId = user.id;
     try {
-      await checkOut(userId); // 퇴근 API 호출
-      alert("퇴근처리완료! 오늘도 개미처럼 일하셨져?");
+      await checkOut(user.id); // 퇴근 API 호출
+      alert("퇴근 처리 완료! 수고하셨습니다.");
     } catch (err) {
       console.error("퇴근 처리 실패:", err);
     }
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
   const handleTaskSelection = async (task) => {
-    const userId = user.id;
     setCurrentTask(task); // 선택한 업무 설정
     setIsMenuOpen(false); // 메뉴 닫기
-
     try {
-      await updateStatus(userId, task); // 상태 업데이트 API 호출
-      alert("열나게 일하고 계시죠? 상태변경완료~");
+      await updateStatus(user.id, task); // 상태 업데이트 API 호출
+      alert(`상태가 "${task}"(으)로 업데이트되었습니다.`);
     } catch (err) {
-      console.error("업무 상태 업데이트 실패:", err);
+      console.error("상태 업데이트 실패:", err);
     }
   };
 
@@ -68,6 +60,11 @@ const AttendanceCard = () => {
         <div className="flex justify-between items-end">
           <span className="text-3xl font-bold text-blue-600">
             {/* 근무 시간 표시 */}
+            {checkInTime && checkOutTime
+              ? `${Math.floor(
+                  (new Date(checkOutTime) - new Date(checkInTime)) / 3600000
+                )}H`
+              : "0H"}
           </span>
           <span className="text-sm text-gray-500">최대 52시간</span>
         </div>
@@ -107,7 +104,7 @@ const AttendanceCard = () => {
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
-          onClick={status !== "CHECKED_IN" ? handleCheckIn : null}
+          onClick={handleCheckIn}
           disabled={status === "CHECKED_IN"}
         >
           출근하기
@@ -118,7 +115,7 @@ const AttendanceCard = () => {
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-red-500 text-white hover:bg-red-600"
           }`}
-          onClick={status === "CHECKED_IN" ? handleCheckOut : null}
+          onClick={handleCheckOut}
           disabled={status === "CHECKED_OUT" || status === "AVAILABLE"}
         >
           퇴근하기
@@ -128,7 +125,7 @@ const AttendanceCard = () => {
       <section className="mt-6 text-center">
         <button
           className="w-[170px] h-[50px] bg-gray-200 text-gray-700 font-medium rounded-3xl hover:bg-gray-300 transition"
-          onClick={toggleMenu}
+          onClick={() => setIsMenuOpen((prev) => !prev)}
         >
           {currentTask || "업무 선택"}
         </button>
