@@ -46,6 +46,7 @@ import SchedulePage from "../pages/Main/calendar/SchedulePage";
 import AdminDepartmentPage from "../pages/Main/Admin/adminDepartmentPage";
 import BoardUpdatePage from "../pages/Main/board/boardUpdatePage";
 import AdminPopPage from "../pages/Main/Admin/adminPopupPage";
+import ChannelPage from "../pages/Main/chatting/ChannelPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -70,7 +71,10 @@ const router = createBrowserRouter([
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
   { path: "/antWork/page", element: <PagingPage /> }, // Antwork 페이지
-  { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 채팅
+  { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 채팅 main
+  { path: "/antWork/chatting/channel/:id", element: <ChannelPage /> }, // Antwork 채팅 channel
+  { path: "/antWork/chatting/dm/:id", element: <ChattingPage /> }, // Antwork 채팅 dm
+
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
 

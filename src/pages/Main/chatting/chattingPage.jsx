@@ -4,10 +4,10 @@ import AntWorkLayout from "../../../layouts/AntWorkLayout";
 import ChattingModal from "../../../components/common/modal/chattingModal";
 
 export default function ChattingPage() {
-  useEffect(() => {
-    document.body.classList.add("no-scroll");
-    return () => document.body.classList.remove("no-scroll");
-  }, []);
+  // useEffect(() => {
+  //   document.body.classList.add("no-scroll");
+  //   return () => document.body.classList.remove("no-scroll");
+  // }, []);
 
   return (
     <>

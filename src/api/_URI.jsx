@@ -63,6 +63,17 @@ export const PAGE_CREATE_URI = `${API_SERVER_HOST}/page/create`; // 페이지 �
 export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 관련 URI
 export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
+export const CHANNEL_GET_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}`; // 채널 조회
+
+export const CHANNEL_GET_MESSAGES_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/messages`; // 채널 메시지 조회
+
+export const CHANNEL_SEND_MESSAGE_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/messages`; // 채널 메시지 보내기
+
+export const CHANNEL_LEAVE_URI = (channelId, userId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/leave?userId=${userId}`; // 채널 나가기
 
 export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>
