@@ -9,6 +9,7 @@ import {
   PROJECT_TASK_SELECT_URI,
   PROJECT_TASK_UPDATE_URI,
   PROJECT_TASK_DELETE_URI,
+  PROJECT_TASK_UPDATE_POSITION_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -169,4 +170,25 @@ export const deleteTask = async (taskId) => {
     );
     throw error;
   }
+};
+
+// 드래그앤드랍시 작업 위치 update
+export const updateTaskPosition = async (taskId, stateId, position) => {
+  console.log(
+    "백엔드로 들어오는 taskId, newStateId, newPosition : " + taskId,
+    stateId,
+    position
+  );
+  return await fetch(`${PROJECT_TASK_UPDATE_POSITION_URI}/${taskId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ stateId, position }),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  });
 };
