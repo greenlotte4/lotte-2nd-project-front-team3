@@ -9,10 +9,4 @@ export default defineConfig({
   define: {
     global: {},
   },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@utils": path.resolve(__dirname, "./src/utils"),
-    },
-  },
 });
