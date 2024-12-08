@@ -6,7 +6,7 @@ import {
   PAGE_LIST_UID_URI,
   PAGE_LIST_MODIFIED_URI,
 } from "../../api/_URI";
-import axiosInstance from "@utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 
 export const usePageActions = () => {
   // 페이지 삭제

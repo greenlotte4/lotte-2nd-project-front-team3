@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "@utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 
 export const usePageList = (url, initialState = []) => {
   const [pages, setPages] = useState(initialState);
