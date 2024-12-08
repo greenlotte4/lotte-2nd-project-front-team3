@@ -15,9 +15,9 @@ import {
   WS_URL,
 } from "../../../api/_URI";
 import { Client } from "@stomp/stompjs";
-import axiosInstance from "../../../utils/axiosInstance";
+import axiosInstance from "@utils/axiosInstance";
 import { useThrottle } from "../../../hooks/paging/useThrottle"; // const - export
-import useAuthStore from "../../../store/authStore"; // export default
+import useAuthStore from "@/store/AuthStore"; // export default
 
 const PagingWrite = () => {
   // 기본 상태들
