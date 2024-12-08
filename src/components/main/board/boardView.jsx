@@ -12,7 +12,7 @@ export default function BoardView() {
   
   const [board, setBoard] = useState({
     title: '',
-    writer: '',햣 
+    writer: '',
     regDate: '',
     hit: 0,
     content: '',
