@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ChattingMain from "../../../components/main/chatting/chattingMain";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
 import ChattingModal from "../../../components/common/modal/chattingModal";
+import ChattingModalController from "../../../components/common/modal/chatting/ChattingModalController";
 
 export default function ChattingPage() {
   // useEffect(() => {
@@ -13,7 +14,7 @@ export default function ChattingPage() {
     <>
       <AntWorkLayout>
         <ChattingMain />
-        <ChattingModal />
+        <ChattingModalController />
       </AntWorkLayout>
     </>
   );
