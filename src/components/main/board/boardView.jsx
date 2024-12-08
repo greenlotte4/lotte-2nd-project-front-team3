@@ -12,7 +12,7 @@ export default function BoardView() {
   
   const [board, setBoard] = useState({
     title: '',
-    writer: '',
+    writer: '',햣 
     regDate: '',
     hit: 0,
     content: '',
@@ -20,76 +20,27 @@ export default function BoardView() {
 });
 
   // 좋아요 관련 상태
-  // const [likes, setLikes] = useState(0);
-  // const [isLiked, setIsLiked] = useState(false);
-
-
-// localStorage에서 저장된 좋아요 수를 가져와서 초기값으로 설정
-// 저장된 값이 없으면 0으로 시작
-const [likes, setLikes] = useState(() => {
-  const savedLikes = localStorage.getItem('likeCount');
-  return savedLikes ? parseInt(savedLikes) : 0;
-});
-
-// localStorage에서 저장된 좋아요 상태를 가져와서 초기값으로 설정
-// 저장된 값이 없으면 false로 시작
-const [isLiked, setIsLiked] = useState(() => {
-  const savedIsLiked = localStorage.getItem('isLiked');
-  return savedIsLiked === 'true';
-});
-
-// likes나 isLiked 값이 변경될 때마다 localStorage에 저장
-// undefined일 경우 에러 방지를 위해 체크
-useEffect(() => {
-  if (likes !== undefined) {
-    localStorage.setItem('likeCount', likes.toString());
-  }
-  if (isLiked !== undefined) {
-    localStorage.setItem('isLiked', isLiked.toString());
-  }
-}, [likes, isLiked]);
+  const [likes, setLikes] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const fetchBoard = async () => {
-      // 게시글 데이터 가져오는 코드
       try {
-        console.log('게시글 번호:', id);
-        console.log("사용자 정보:", user);
-
         if (!id || !user) {
           console.warn("ID나 사용자 정보가 없습니다. 요청을 중단합니다.");
           return;
         }
-
+  
         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
-        console.log('서버 응답 전체:', response);  // 전체 응답 구조 확인
-        console.log('응답 데이터:', response.data);  // 실제 데이터 확인
-        console.log('좋아요 수:', response.data.likes);  // 좋아요 수만 확인
-        console.log('좋아요 상태:', response.data.isLikedByCurrentUser);  // 좋아요 상태 확인
-
-        const data = response.data;
-        console.log('게시글 데이터:', data); // 받아온 데이터 확인
-
-        setBoard(data); // 게시글 데이터를 상태에 저장 (board 데이터를 받아온 후 likes와 isLiked 상태 업데이트)
-        console.log('게시글 전체 데이터:', data);  // board에 저장되는 전체 데이터 확인
-
-        setLikes(data.likeCount || 0); // 좋아요 수 설정
-        console.log('좋아요 수:', data.likes);  // 좋아요 수만 따로 확인
-
-        setIsLiked(data.isLikedByCurrentUser || false); // 현재 사용자의 좋아요 상태 설정
-        console.log('현재 사용자의 좋아요 상태:', data.isLikedByCurrentUser);  // 좋아요 상태 확인
+        console.log('서버 응답 데이터:', response.data);
         
-        // 한번에 보고 싶다면
-        console.log('데이터 정리:', {
-          전체: data,
-          좋아요수: data.likes,
-          좋아요상태: data.isLikedByCurrentUser
-        });
+        setBoard(response.data);
         
-        // 전체 데이터 구조를 더 자세히 보기 위한 콘솔
-        console.log('전체 데이터의 모든 필드:', Object.keys(data));  // 실제 어떤 필드들이 있는지
-        console.log('전체 데이터 상세 내용:', JSON.stringify(data, null, 2));  // 데이터 전체를 보기 좋게 출력
-
+        // 서버에서 받은 좋아요 수로 초기화
+        setLikes(response.data.likes || 0);
+        // 현재 사용자의 좋아요 여부 초기화
+        setIsLiked(response.data.isLiked || false);
+  
       } catch (error) {
         console.error('게시글 데이터 로딩 실패:', error);
         alert("게시글 데이터를 가져오는 중 오류가 발생했습니다.");
@@ -102,18 +53,21 @@ useEffect(() => {
 // 좋아요 처리
 const handleLike = async () => {
   try {
-    const response = await axiosInstance.post(`board/view/${user.id}/like`);
-    console.log('서버 응답 전체 데이터:', response.data);
+    const response = await axiosInstance.post(`${BOARD_VIEW_URI}/${id}/like`);
+    console.log('좋아요 응답:', response.data);
     
-    // 서버에서 받은 상태 그대로 사용
-    setLikes(response.data.likeCount);
-    setIsLiked(response.data.liked);  // 서버의 liked 상태 사용
-    
-    console.log('변경된 좋아요 수:', response.data.likeCount);
-    console.log('좋아요 상태 변경됨:', response.data.liked);
+    if (response.data.success) {
+      // 서버에서 받은 최신 상태로 업데이트
+      setLikes(response.data.likeCount);
+      setIsLiked(response.data.liked);
+    } else {
+      console.error('좋아요 처리 실패:', response.data.message);
+      alert(response.data.message);
+    }
     
   } catch (error) {
     console.error('좋아요 처리 실패:', error);
+    alert("좋아요 처리 중 오류가 발생했습니다.");
   }
 };
   
