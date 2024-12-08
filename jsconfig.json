@@ -1,11 +1,11 @@
 {
   "include": ["./src/**/*"],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
-      "@/*": ["src/*"],
-      "@utils/*": ["src/utils/*"],
-      "@store/*": ["src/store/*"]
+      "@/*": ["./*"],
+      "@utils/*": ["./utils/*"],
+      "@store/*": ["./store/*"]
     }
   },
   "exclude": ["node_modules"]
