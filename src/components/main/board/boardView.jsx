@@ -2,13 +2,14 @@ import axiosInstance from "../../../utils/axiosInstance";
 // import axiosInstance from "@/utils/axiosInstance";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import useAuthStore from "../../../store/AuthStore";
 import { Lock, Reply, User, Send, ThumbsUp } from "lucide-react";
 import { BOARD_VIEW_URI } from "../../../api/_URI";
 
 export default function BoardView() {
   const { id } = useParams(); // URL에서 id(글번호) 값 추출
-
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  
   const [board, setBoard] = useState({
     title: '',
     writer: '',
@@ -19,35 +20,98 @@ export default function BoardView() {
 });
 
   // 좋아요 관련 상태
-  const [likes, setLikes] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  // const [likes, setLikes] = useState(0);
+  // const [isLiked, setIsLiked] = useState(false);
 
+
+// localStorage에서 저장된 좋아요 수를 가져와서 초기값으로 설정
+// 저장된 값이 없으면 0으로 시작
+const [likes, setLikes] = useState(() => {
+  const savedLikes = localStorage.getItem('likeCount');
+  return savedLikes ? parseInt(savedLikes) : 0;
+});
+
+// localStorage에서 저장된 좋아요 상태를 가져와서 초기값으로 설정
+// 저장된 값이 없으면 false로 시작
+const [isLiked, setIsLiked] = useState(() => {
+  const savedIsLiked = localStorage.getItem('isLiked');
+  return savedIsLiked === 'true';
+});
+
+// likes나 isLiked 값이 변경될 때마다 localStorage에 저장
+// undefined일 경우 에러 방지를 위해 체크
+useEffect(() => {
+  if (likes !== undefined) {
+    localStorage.setItem('likeCount', likes.toString());
+  }
+  if (isLiked !== undefined) {
+    localStorage.setItem('isLiked', isLiked.toString());
+  }
+}, [likes, isLiked]);
 
   useEffect(() => {
     const fetchBoard = async () => {
       // 게시글 데이터 가져오는 코드
       try {
+        console.log('게시글 번호:', id);
+        console.log("사용자 정보:", user);
+
+        if (!id || !user) {
+          console.warn("ID나 사용자 정보가 없습니다. 요청을 중단합니다.");
+          return;
+        }
+
         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
+        console.log('서버 응답 전체:', response);  // 전체 응답 구조 확인
+        console.log('응답 데이터:', response.data);  // 실제 데이터 확인
+        console.log('좋아요 수:', response.data.likes);  // 좋아요 수만 확인
+        console.log('좋아요 상태:', response.data.isLikedByCurrentUser);  // 좋아요 상태 확인
+
         const data = response.data;
         console.log('게시글 데이터:', data); // 받아온 데이터 확인
-        setBoard(data);
-        // board 데이터를 받아온 후 likes와 isLiked 상태 업데이트
-        setLikes(data.likeCount || 0);
-        setIsLiked(data.isLikedByCurrentUser || false);
+
+        setBoard(data); // 게시글 데이터를 상태에 저장 (board 데이터를 받아온 후 likes와 isLiked 상태 업데이트)
+        console.log('게시글 전체 데이터:', data);  // board에 저장되는 전체 데이터 확인
+
+        setLikes(data.likeCount || 0); // 좋아요 수 설정
+        console.log('좋아요 수:', data.likes);  // 좋아요 수만 따로 확인
+
+        setIsLiked(data.isLikedByCurrentUser || false); // 현재 사용자의 좋아요 상태 설정
+        console.log('현재 사용자의 좋아요 상태:', data.isLikedByCurrentUser);  // 좋아요 상태 확인
+        
+        // 한번에 보고 싶다면
+        console.log('데이터 정리:', {
+          전체: data,
+          좋아요수: data.likes,
+          좋아요상태: data.isLikedByCurrentUser
+        });
+        
+        // 전체 데이터 구조를 더 자세히 보기 위한 콘솔
+        console.log('전체 데이터의 모든 필드:', Object.keys(data));  // 실제 어떤 필드들이 있는지
+        console.log('전체 데이터 상세 내용:', JSON.stringify(data, null, 2));  // 데이터 전체를 보기 좋게 출력
+
       } catch (error) {
         console.error('게시글 데이터 로딩 실패:', error);
+        alert("게시글 데이터를 가져오는 중 오류가 발생했습니다.");
       }
     };
   
     fetchBoard();
-  }, [id]); // id가 변경될 때마다 게시글 데이터를 새로 가져오기 
+  }, [id, user]); // id가 변경될 때마다 게시글 데이터를 새로 가져오기 
 
 // 좋아요 처리
 const handleLike = async () => {
   try {
-    const response = await axiosInstance.post(`/api/boards/${id}/like`);
+    const response = await axiosInstance.post(`board/view/${user.id}/like`);
+    console.log('서버 응답 전체 데이터:', response.data);
+    
+    // 서버에서 받은 상태 그대로 사용
     setLikes(response.data.likeCount);
-    setIsLiked(!isLiked);
+    setIsLiked(response.data.liked);  // 서버의 liked 상태 사용
+    
+    console.log('변경된 좋아요 수:', response.data.likeCount);
+    console.log('좋아요 상태 변경됨:', response.data.liked);
+    
   } catch (error) {
     console.error('좋아요 처리 실패:', error);
   }
@@ -155,9 +219,12 @@ const handleLike = async () => {
                 </h1>
               </div>
               <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
-                <div className="writer">
+              <div className="writer">
                   <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
-                    {board.writer?.name || '익명'} {/* writer가 없거나 name이 없으면 '익명' 출력 */}
+                  {board.writer?.name 
+                    ? board.writer.name // 게시글 작성자가 있으면 표시
+                    : user?.name || '익명' // 없으면 로그인한 사용자의 이름, 그것도 없으면 '익명'
+                  }
                   <span className="mx-2 text-slate-300 !text-[10px]">
                     &#124;
                   </span>
@@ -226,11 +293,22 @@ const handleLike = async () => {
 
               {/* 좋아요 버튼 */}
               <button 
-                onClick={handleLike} 
-                className="flex items-center space-x-2 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={handleLike}
+                className={`
+                  flex items-center space-x-2 px-4 py-2 rounded-md
+                  transition-all duration-200
+                  ${isLiked 
+                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-600' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}
+                `}
               >
-                <ThumbsUp size={16} />
-                <span className="ml-1">좋아요 {likes}</span>
+                <ThumbsUp 
+                  size={16} 
+                  className={`${isLiked ? 'fill-blue-600' : ''}`}
+                />
+                <span className="ml-1">
+                  좋아요 {likes}
+                </span>
               </button>
             </div>
           </div>
@@ -307,10 +385,6 @@ const handleLike = async () => {
               </button>
             </div>
           </div>
-
-          {/* <Link to="/board/list" className="cursor-pointer px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                        <button>목록으로</button>
-                    </Link> */}
         </section>
       </article>
     </>
