@@ -9,14 +9,15 @@ import EmojiPicker from "emoji-picker-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   PAGE_FETCH_URI,
-  PAGE_SAVE_URI,
   PAGE_IMAGE_UPLOAD_URI,
   PAGE_DELETE_URI,
   PAGE_CREATE_URI,
   WS_URL,
 } from "../../../api/_URI";
 import { Client } from "@stomp/stompjs";
-import axios from "axios";
+import axiosInstance from "@utils/axiosInstance";
+import { useThrottle } from "../../../hooks/paging/useThrottle"; // const - export
+import useAuthStore from "../../../store/authStore"; // export default
 
 const PagingWrite = () => {
   // 기본 상태들
@@ -27,24 +28,54 @@ const PagingWrite = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [stompClient, setStompClient] = useState(null);
   const [componentId, setComponentId] = useState(null);
-  const [isCurrentEditor, setIsCurrentEditor] = useState(false);
-  const [activeEditor, setActiveEditor] = useState(null);
 
-  // refs
-  const editorRef = useRef(null);
-  const contentRef = useRef(null);
-
-  // location & navigation
+  // location & navigation - 주소값에서 id값 찾기
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const [id, setId] = useState(queryParams.get("id"));
 
-  // stompClient ref 추가
+  // refs
+  const editorRef = useRef(null);
+  const contentRef = useRef(null);
+  // stompClient ref
   const stompClientRef = useRef(null);
 
-  // WebSocket 메시지 핸들러 수정
+  // 사용자 정보 가져오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user?.uid;
+
+  // uid 체크를 위한 useEffect 추가
+  useEffect(() => {
+    if (!uid) {
+      console.warn("User ID is not available");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
+      return;
+    }
+  }, [uid, navigate]);
+
+  // 페이지 데이터 가져오기
+  const fetchPageData = async () => {
+    console.log("fetchPageData - 페이��� 데이터 가져오기 시작");
+    try {
+      const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${id}`);
+      const data = response.data;
+      const parsedContent = JSON.parse(data.content);
+
+      setTitle(data.title);
+      contentRef.current = parsedContent;
+
+      if (editorRef.current) {
+        await editorRef.current.render(parsedContent);
+      }
+    } catch (error) {
+      console.error("Error fetching page data:", error);
+    }
+  };
+
+  // WebSockt 메시지 수신
   const handleWebSocketMessage = async (message) => {
+    console.log("handleWebSocketMessage - 웹소켓 메시지 수신 처리 시작");
     try {
       const data = JSON.parse(message.body);
       console.log("Received message:", data);
@@ -70,7 +101,7 @@ const PagingWrite = () => {
           const editorElement = document.getElementById("editorjs");
           const currentBlocks = await editorRef.current.save();
 
-          // 블록 개수가 다른 경우 전체 업데이트
+          // 블록 개수가 다른 우 전체 업데이트
           if (currentBlocks.blocks.length !== newContent.blocks.length) {
             await editorRef.current.render(newContent);
             return;
@@ -144,6 +175,7 @@ const PagingWrite = () => {
 
   // 공통 방송 함수
   const broadcastChanges = async (newTitle, newContent) => {
+    console.log("broadcastChanges - 변경사항 브로드캐스트 시작");
     if (!componentId) {
       console.warn("Component ID is null, cannot broadcast changes.");
       return;
@@ -163,7 +195,7 @@ const PagingWrite = () => {
         _id: id,
         title: newTitle,
         content: JSON.stringify(newContent),
-        uid: "ghkdtnqls95",
+        uid: uid,
         timestamp: Date.now(),
         componentId: componentId,
       };
@@ -179,10 +211,28 @@ const PagingWrite = () => {
     }
   };
 
+  // throttle된 브로드캐스트 함수 생성
+  const throttledBroadcast = useThrottle(async (savedData) => {
+    console.log("throttledBroadcast - throttle된 브로드캐스트 함수 실행");
+    if (stompClientRef.current?.active) {
+      const message = {
+        _id: id,
+        content: JSON.stringify(savedData),
+        componentId: componentId,
+        timestamp: Date.now(),
+        uid: uid,
+      };
+
+      stompClientRef.current.publish({
+        destination: `/app/page/${id}`,
+        body: JSON.stringify(message),
+      });
+    }
+  }, 500); // 500ms 쓰로틀
+
   // EditorJS 초기화 및 변경 감지 핸들러
   const createEditor = async (initialData = null) => {
-    console.log("🎯 에디터 생성:", { initialData: !!initialData });
-
+    console.log("createEditor - 에디터 생성 시작");
     const editor = new EditorJS({
       holder: "editorjs",
       tools: {
@@ -206,7 +256,7 @@ const PagingWrite = () => {
                 const formData = new FormData();
                 formData.append("file", file);
                 try {
-                  const response = await axios.post(
+                  const response = await axiosInstance.post(
                     PAGE_IMAGE_UPLOAD_URI,
                     formData,
                     {
@@ -231,19 +281,7 @@ const PagingWrite = () => {
         editorElement.addEventListener("input", async () => {
           try {
             const savedData = await editor.save();
-            if (stompClientRef.current?.active) {
-              const message = {
-                _id: id,
-                content: JSON.stringify(savedData),
-                componentId: componentId,
-                timestamp: Date.now(),
-              };
-
-              stompClientRef.current.publish({
-                destination: `/app/page/${id}`,
-                body: JSON.stringify(message),
-              });
-            }
+            throttledBroadcast(savedData);
           } catch (error) {
             console.error("Error in input handler:", error);
           }
@@ -256,24 +294,6 @@ const PagingWrite = () => {
     return editor;
   };
 
-  // 페이지 데이터 가져오기
-  const fetchPageData = async () => {
-    try {
-      const response = await axios.get(`${PAGE_FETCH_URI}/${id}`);
-      const data = response.data;
-      const parsedContent = JSON.parse(data.content);
-
-      setTitle(data.title);
-      contentRef.current = parsedContent;
-
-      if (editorRef.current) {
-        await editorRef.current.render(parsedContent);
-      }
-    } catch (error) {
-      console.error("Error fetching page data:", error);
-    }
-  };
-
   // 에디터 초기화 useEffect 수정
   useEffect(() => {
     if (!id || !componentId) {
@@ -283,7 +303,7 @@ const PagingWrite = () => {
 
     const initializeEditor = async () => {
       try {
-        const response = await axios.get(`${PAGE_FETCH_URI}/${id}`);
+        const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${id}`);
         const data = response.data;
         setTitle(data.title);
         const parsedContent =
@@ -302,57 +322,55 @@ const PagingWrite = () => {
 
   // WebSocket 구독 수정
   useEffect(() => {
-    if (!id || !componentId) {
-      console.log("❌ Missing required IDs:", { pageId: id, componentId });
+    if (!uid || !id || !componentId) {
+      console.log("❌ Missing required data:", {
+        uid,
+        pageId: id,
+        componentId,
+      });
       return;
     }
 
     console.log(" Initializing WebSocket connection");
     const client = new Client({
       brokerURL: WS_URL,
-      reconnectDelay: 2000,
-      heartbeatIncoming: 20000,
-      heartbeatOutgoing: 20000,
-      debug:
-        process.env.NODE_ENV === "development"
-          ? (str) => console.log("🔌 WebSocket Debug:", str)
-          : null,
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      debug: function (str) {
+        console.log("🔌 WebSocket Debug:", str);
+      },
     });
 
     client.configure({
       onConnect: () => {
-        console.log(" Connected to WebSocket");
+        console.log("🔌 Connected to WebSocket");
         setStompClient(client);
-        stompClientRef.current = client;
+        stompClientRef.current = client; // ref에 저장
 
-        // 구독을 하나의 배열로 처리
-        const subscription = client.subscribe(
-          `/topic/page/${id}`,
-          handleWebSocketMessage
-        );
-        const statusSubscription = client.subscribe(
-          `/topic/page/${id}/status`,
-          handleWebSocketMessage
-        );
+        // 독 설정
+        const subscriptions = [`/topic/page/${id}`, `/topic/page/${id}/status`];
 
-        // 초기 상태 전송
-        client.publish({
-          destination: `/app/page/${id}/status`,
-          body: JSON.stringify({
-            componentId,
-            type: "EDITOR_STATUS",
-            pageId: id,
-            uid: "ghkdtnqls95",
-            status: "viewing",
-            timestamp: Date.now(),
-          }),
+        console.log("📩 Subscribing to channels:", subscriptions);
+
+        subscriptions.forEach((channel) => {
+          client.subscribe(channel, handleWebSocketMessage);
         });
 
-        // cleanup을 위해 구독 객체 저장
-        return () => {
-          subscription.unsubscribe();
-          statusSubscription.unsubscribe();
+        // 연결 성 후 초기 상 전송
+        const initialStatus = {
+          componentId: componentId,
+          type: "EDITOR_STATUS",
+          pageId: id,
+          uid: uid,
+          status: "viewing",
+          timestamp: Date.now(),
         };
+
+        client.publish({
+          destination: `/app/page/${id}/status`,
+          body: JSON.stringify(initialStatus),
+        });
       },
       onDisconnect: () => {
         console.log("🔴 Disconnected from WebSocket");
@@ -377,7 +395,7 @@ const PagingWrite = () => {
         client.deactivate();
       }
     };
-  }, [id, componentId]);
+  }, [id, componentId, uid]); // uid 의존성 추가
 
   // 대신 이 함수 사용
   const generateUUID = () => {
@@ -393,6 +411,7 @@ const PagingWrite = () => {
 
   // componentId 초기화를 위한 useEffect 수정
   useEffect(() => {
+    console.log("useEffect - componentId 초기화 시작");
     if (!componentId) {
       const id = generateUUID(); // uuidv4() 대신 generateUUID() 사용
       setComponentId(id);
@@ -402,6 +421,7 @@ const PagingWrite = () => {
 
   // 제목 변경 핸들러도 공통 방송 함수 사용
   const handleTitleChange = async (e) => {
+    console.log("handleTitleChange - 제목 변경 처리 시작");
     const newTitle = e.target.value;
     setTitle(newTitle);
 
@@ -422,7 +442,7 @@ const PagingWrite = () => {
           content: JSON.stringify(currentContent),
           timestamp: Date.now(),
           componentId: componentId,
-          uid: "ghkdtnqls95",
+          uid: uid,
         };
 
         stompClientRef.current.publish({
@@ -437,6 +457,7 @@ const PagingWrite = () => {
 
   // 이모지 선택 핸들러
   const onEmojiClick = async (emojiData) => {
+    console.log("onEmojiClick - 이모지 선택 처리 시작");
     setSelectedIcon(emojiData.emoji);
     setShowIconPicker(false);
 
@@ -464,6 +485,7 @@ const PagingWrite = () => {
 
   // 에디터 초기 함수
   const initializeEditor = async (initialContent = null) => {
+    console.log("initializeEditor - 에디터 초기화 시작");
     if (editorRef.current) {
       await editorRef.current.destroy();
     }
@@ -474,6 +496,7 @@ const PagingWrite = () => {
 
   // 공통 메시지 전송 함수 추가
   const broadcastMessage = async (type, data) => {
+    console.log("broadcastMessage - 공통 메시지 전송 시작");
     if (!componentId || !stompClientRef.current?.active) {
       console.warn("Cannot broadcast message:", {
         componentId,
@@ -489,7 +512,7 @@ const PagingWrite = () => {
         ...data,
         componentId,
         timestamp: Date.now(),
-        uid: "ghkdtnqls95",
+        uid: uid,
       };
 
       stompClientRef.current.publish({
@@ -501,18 +524,25 @@ const PagingWrite = () => {
     }
   };
 
-  // 기 마운트와 id 체크를 위한 useEffect 추가
+  // 초기 마운트와 id 체크를 위한 useEffect 수정
   useEffect(() => {
+    console.log("useEffect - 페이지 초기화 시작");
     const initializePage = async () => {
+      if (!uid) {
+        console.warn("Cannot initialize page without user ID");
+        return;
+      }
+
       const params = new URLSearchParams(location.search);
       const pageId = params.get("id");
 
       if (!pageId) {
+        console.log("initializePage - 페이지 생성 new ID, Owner : ", uid);
         try {
-          const response = await axios.post(PAGE_CREATE_URI, {
+          const response = await axiosInstance.post(PAGE_CREATE_URI, {
             title: "",
             content: "",
-            uid: "ghkdtnqls95",
+            owner: uid,
           });
 
           const newId = response.data;
@@ -539,10 +569,11 @@ const PagingWrite = () => {
     };
 
     initializePage();
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+  }, [uid, location]); // uid 의존성 추가
 
   // location 변경 감지를 위한 useEffect 추가
   useEffect(() => {
+    console.log("useEffect - location 변경 감지");
     const params = new URLSearchParams(location.search);
     const newId = params.get("id");
 
