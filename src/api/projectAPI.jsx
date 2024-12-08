@@ -10,6 +10,8 @@ import {
   PROJECT_TASK_UPDATE_URI,
   PROJECT_TASK_DELETE_URI,
   PROJECT_TASK_UPDATE_POSITION_URI,
+  PROJECT_STATE_UPDATE_URI,
+  PROJECT_STATE_DELETE_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -191,4 +193,39 @@ export const updateTaskPosition = async (taskId, stateId, position) => {
     }
     return response.json();
   });
+};
+
+// 프로젝트 작업상태 수정
+export const updateProjectState = async (stateId, updatedState) => {
+  console.log(
+    "백엔드로 들어오는 stateId, updatedState : " + stateId,
+    updatedState
+  );
+  try {
+    const response = await fetch(`${PROJECT_STATE_UPDATE_URI}/${stateId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedState),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update state");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 프로젝트 작업상태 삭제
+export const deleteProjectState = async (stateId) => {
+  try {
+    await axios.delete(`${PROJECT_STATE_DELETE_URI}/${stateId}`);
+  } catch (error) {
+    console.error("Error deleting project state:", error);
+    throw error;
+  }
 };

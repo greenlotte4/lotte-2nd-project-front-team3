@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useLocation, useParams } from "react-router-dom";
 import {
   createTask,
+  deleteProjectState,
   deleteTask,
   getProjectById,
   getProjectStates,
@@ -29,13 +30,16 @@ export default function ProjectViewSection() {
 
   const [dropdownOpenStateId, setDropdownOpenStateId] = useState(null);
 
+  // 작업상태 드롭다운
   const toggleDropdown = (stateId) => {
     setDropdownOpenStateId((prev) => (prev === stateId ? null : stateId));
   };
-
   const closeDropdown = () => {
     setDropdownOpenStateId(null);
   };
+
+  // 작업상태 상태 관리
+  const [currentState, setCurrentState] = useState(null);
 
   useEffect(() => {
     console.log("22id : " + id);
@@ -91,11 +95,21 @@ export default function ProjectViewSection() {
     console.log("States after update:", states);
   }, [states]);
 
+  // 작업 상태 추가 핸들러
   const handleAddState = (newState) => {
     setStates((prevStates) => [
       ...prevStates,
       { id: Date.now().toString(), ...newState, items: [] },
     ]);
+  };
+
+  // 작업 상태 수정 핸들러
+  const handleEditState = (updatedState) => {
+    setStates((prevStates) =>
+      prevStates.map((state) =>
+        state.id === updatedState.id ? updatedState : state
+      )
+    );
   };
 
   // 작업 추가 핸들러
@@ -292,6 +306,30 @@ export default function ProjectViewSection() {
     }
   };
 
+  // 작업상태 삭제 핸들러
+  const handleDeleteState = async (stateId) => {
+    console.log("stateId : " + stateId);
+    if (
+      !window.confirm(
+        "정말로 이 상태를 삭제하시겠습니까? 모든 작업도 함께 삭제됩니다."
+      )
+    )
+      return;
+
+    try {
+      await deleteProjectState(stateId);
+
+      // 삭제된 상태를 상태 목록에서 제거
+      setStates((prevStates) =>
+        prevStates.filter((state) => state.id !== stateId)
+      );
+
+      alert("상태가 성공적으로 삭제되었습니다!");
+    } catch (error) {
+      alert("상태 삭제 중 문제가 발생했습니다.");
+    }
+  };
+
   if (loadingStates) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -312,6 +350,8 @@ export default function ProjectViewSection() {
         currentStateId={currentStateId} // openTaskEditModal에서 설정한 stateId
         currentTask={currentTask} // openTaskEditModal에서 설정한 task
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
+        onEditState={handleEditState}
+        currentState={currentState}
       />
       {project ? (
         <article className="page-list min-h-[850px]">
@@ -389,7 +429,7 @@ export default function ProjectViewSection() {
                                   {state.title}
                                 </h2>
                                 <span className="text-[12px] text-gray-700 bg-gray-100 rounded-full px-3 mb-1">
-                                  {state.items.length}
+                                  {state.items?.length || 0}
                                 </span>
                               </div>
                               {/* 옵션 버튼 */}
@@ -412,23 +452,17 @@ export default function ProjectViewSection() {
                                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                       onClick={() => {
                                         closeDropdown();
-                                        openTaskEditModal(
-                                          state.id,
-                                          currentTask
-                                        );
+                                        setCurrentState(state); // 현재 상태 설정
+                                        openModal("state-edit");
                                       }}
                                     >
                                       수정
                                     </button>
                                     <button
                                       className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
-                                      onClick={() => {
-                                        closeDropdown();
-                                        handleDeleteTask(
-                                          state.id,
-                                          currentTask?.id
-                                        );
-                                      }}
+                                      onClick={() =>
+                                        handleDeleteState(state.id)
+                                      }
                                     >
                                       삭제
                                     </button>

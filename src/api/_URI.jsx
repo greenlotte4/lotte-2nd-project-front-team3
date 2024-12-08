@@ -44,7 +44,9 @@ export const PROJECT_TASK_INSERT_URI = `${API_SERVER_HOST}/project/task/insert`;
 export const PROJECT_TASK_SELECT_URI = `${API_SERVER_HOST}/project/task/select`; // 프로젝트 작업 조회
 export const PROJECT_TASK_UPDATE_URI = `${API_SERVER_HOST}/project/task/update`; // 프로젝트 작업 추가
 export const PROJECT_TASK_DELETE_URI = `${API_SERVER_HOST}/project/task/delete`; // 프로젝트 작업 삭제
-export const PROJECT_TASK_UPDATE_POSITION_URI = `${API_SERVER_HOST}/project/task/updatePosition`; // 프로젝트 작업 삭제
+export const PROJECT_TASK_UPDATE_POSITION_URI = `${API_SERVER_HOST}/project/task/updatePosition`; // 프로젝트 작업 드래그앤드랍 상태 업데이트
+export const PROJECT_STATE_UPDATE_URI = `${API_SERVER_HOST}/project/state/update`; // 프로젝트 작업상태 수정
+export const PROJECT_STATE_DELETE_URI = `${API_SERVER_HOST}/project/state/delete`; // 프로젝트 작업상태 삭제
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
