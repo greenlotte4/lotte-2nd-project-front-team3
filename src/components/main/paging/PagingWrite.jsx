@@ -6,7 +6,7 @@ import ImageTool from "@editorjs/image";
 import { BsEmojiSmile, BsThreeDotsVertical } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   PAGE_FETCH_URI,
   PAGE_IMAGE_UPLOAD_URI,
@@ -32,8 +32,8 @@ const PagingWrite = () => {
   // location & navigation - 주소값에서 id값 찾기
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  const [id, setId] = useState(queryParams.get("id"));
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [id, setId] = useState(searchParams.get("id"));
 
   // refs
   const editorRef = useRef(null);
@@ -56,7 +56,7 @@ const PagingWrite = () => {
 
   // 페이지 데이터 가져오기
   const fetchPageData = async () => {
-    console.log("fetchPageData - 페이��� 데이터 가져오기 시작");
+    console.log("fetchPageData - 페이지 데이터 가져오기 시작");
     try {
       const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${id}`);
       const data = response.data;
@@ -397,7 +397,7 @@ const PagingWrite = () => {
     };
   }, [id, componentId, uid]); // uid 의존성 추가
 
-  // 대신 이 함수 사용
+  // ���신 이 함수 사용
   const generateUUID = () => {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
       /[xy]/g,
@@ -551,11 +551,7 @@ const PagingWrite = () => {
           // URL 업데이트
           const newParams = new URLSearchParams(location.search);
           newParams.set("id", newId);
-          window.history.replaceState(
-            {},
-            "",
-            `${location.pathname}?${newParams}`
-          );
+          setSearchParams({ id: newId });
 
           // 에디터 초기화
           if (editorRef.current) {
