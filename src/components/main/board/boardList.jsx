@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import BoardPagination from "./boardPagination";
 import axiosInstance from "../../../utils/axiosInstance";
