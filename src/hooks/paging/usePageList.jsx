@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "@utils/axiosInstance";
 
 export const usePageList = (url, initialState = []) => {
   const [pages, setPages] = useState(initialState);
@@ -8,7 +8,7 @@ export const usePageList = (url, initialState = []) => {
   useEffect(() => {
     const fetchPages = async () => {
       try {
-        const response = await axios.get(url);
+        const response = await axiosInstance.get(url);
         setPages(response.data);
       } catch (error) {
         console.error("페이지 목록을 가져오는데 실패했습니다:", error);
