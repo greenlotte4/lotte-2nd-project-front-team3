@@ -27,6 +27,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   const [calendars, setCalendars] = useState([]);
   const [editingId, setEditingId] = useState(null); // 수정 중인 캘린더 ID
   const [newName, setNewName] = useState(""); // 수정 중인 이름
+  const [color, setColor] = useState("");
   // 새 캘린더 추가 함수
   const addCalendar = async (e) => {
     e.preventDefault();
@@ -35,6 +36,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
         no: calendars.length,
         name: `새 캘린더`, // 기본 이름
         user_id: uid,
+        color: "#b2d1ff",
       };
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
       await insertCalendar(newCalendar);
@@ -50,13 +52,18 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   // 이름 저장
   const saveName = (no) => {
     const fetchData = async () => {
-      await updateCalendar(no, newName);
+      const finalColor = color.trim() === "" ? "not" : color;
+
+      console.log("ccoollllll::" + finalColor);
+      setColor(finalColor);
+
+      await updateCalendar(no, newName, finalColor);
     };
 
     fetchData();
     setEditingId(null); // 수정 모드 종료
     setNewName(""); // 입력 초기화
-    window.location.reload(); // 페이지 새로 고침
+    // window.location.reload(); // 페이지 새로 고침
   };
 
   // 수정 취소
@@ -113,6 +120,14 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
   const { selectedIds, toggleCheckbox } = useCalendarStore();
 
+  const handleColorChange = (newColor) => {
+    // newColor가 없으면 기본값으로 "not" 설정
+    const finalColor = newColor.trim() === "" ? "not" : newColor;
+
+    console.log("ccoollllll::" + finalColor);
+    setColor(finalColor);
+  };
+
   return (
     <>
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
@@ -167,12 +182,12 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
             <div
               className={`Mydrive_List transition-all duration-300 overflow-hidden ${
                 isMyOpen ? "max-h-screen" : "max-h-0"
-              } pl-8`}
+              }`}
             >
               <ul>
                 {data.map((item) => (
                   <li key={item.calendarId}>
-                    <div className="flex items-center mb-2 space-x-4">
+                    <div className="flex items-center mb-2">
                       {/* 세련된 체크박스 */}
                       <input
                         type="checkbox"
@@ -182,15 +197,16 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                         onChange={() => toggleCheckbox(item.calendarId)}
                       />
 
-                      {/* 이름 표시 또는 수정 필드 */}
+                      {/* 이름 표시 또는 이름 변경 필드 */}
                       {editingId === item.calendarId ? (
                         <div>
                           <input
                             type="text"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="border rounded-md w-[150px] px-2 py-1"
+                            className="border rounded-md w-[101px] px-2 py-1"
                           />
+                          <br />
                           <button
                             onClick={() => saveName(item.calendarId)}
                             className="ml-2 text-green-500"
@@ -205,7 +221,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           </button>
                         </div>
                       ) : (
-                        <span>📅 &nbsp; {item.name}</span>
+                        <span className="ml-2">📅 {item.name}</span>
                       )}
 
                       {/* 이름 수정 버튼 */}
@@ -229,13 +245,33 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                           삭제
                         </button>
                       )}
+                      {editingId === item.calendarId ? (
+                        <input
+                          type="color"
+                          value={item.color}
+                          onChange={(e) => handleColorChange(e.target.value)} // 색상 변경 시 처리
+                          id="colorCalendar"
+                          className="w-[20px] h-[20px] rounded-full appearance-none bg-transparent border-none"
+                        />
+                      ) : (
+                        <input
+                          type="color"
+                          value={item.color}
+                          disabled
+                          id="colorCalendar"
+                          className="w-[20px] h-[20px] rounded-full appearance-none bg-transparent border-none"
+                        />
+                      )}
                     </div>
                   </li>
                 ))}
 
                 {/* 새 캘린더 추가 버튼 */}
                 <li>
-                  <button onClick={addCalendar} className="text-blue-500">
+                  <button
+                    onClick={addCalendar}
+                    className="ml-[20px] text-blue-500"
+                  >
                     + 캘린더 추가
                   </button>
                 </li>
@@ -292,6 +328,11 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   </button>
                 </li>
               </ul>
+            </div>
+          </li>
+          <li>
+            <div>
+              <button className="main-cate ">🤝 캘린더 공유하기</button>
             </div>
           </li>
         </ul>
