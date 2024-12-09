@@ -1,25 +1,15 @@
 import {
   CHANNEL_URI,
   CHANNEL_LIST_URI,
-<<<<<<< feature/chatting
-<<<<<<< HEAD
-  DM_GET_MESSAGES_URI
-} from './_URI'
-=======
-=======
->>>>>>> main
   DM_GET_MESSAGES_URI,
   CHANNEL_GET_URI,
   CHANNEL_GET_MESSAGES_URI,
   CHANNEL_SEND_MESSAGE_URI,
   CHANNEL_LEAVE_URI,
-<<<<<<< feature/chatting
   CHANNEL_ADD_MEMBER_URI,
 } from "./_URI";
->>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
-=======
 } from "./_URI";
->>>>>>> main
+
 import axios from "axios";
 
 export const createChannel = async (channelData) => {
