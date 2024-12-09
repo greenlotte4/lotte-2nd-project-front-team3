@@ -26,7 +26,7 @@ const useAttendanceStore = create(
           const data = await getAttendanceStatusAPI(userId); // 서버에서 상태 가져오기
           set({
             userId,
-            status: data.status || "AVAILABLE",
+            status: data.status || "AVAILABLE", // 기본 상태 처리
             checkInTime: data.checkInTime || null,
             checkOutTime: data.checkOutTime || null,
             isLoading: false,
@@ -35,7 +35,7 @@ const useAttendanceStore = create(
           console.error("사용자 상태 초기화 실패:", error);
           set({
             userId,
-            status: "AVAILABLE",
+            status: "AVAILABLE", // 기본 상태 처리
             checkInTime: null,
             checkOutTime: null,
             error: "상태 초기화 실패",
@@ -62,16 +62,19 @@ const useAttendanceStore = create(
         try {
           if (!userId) throw new Error("User ID가 필요합니다.");
           set({ isLoading: true, error: null });
-          const data = await checkInAPI(userId);
+
+          const data = await checkInAPI(userId); // API 호출
           if (!data) {
             throw new Error("API 응답이 유효하지 않습니다.");
           }
 
           set({
             status: "CHECKED_IN",
-            checkInTime: data,
+            checkInTime: data.checkInTime, // JSON 데이터의 checkInTime 사용
             error: null,
           });
+
+          return data.checkInTime; // 반환값 추가
         } catch (error) {
           const errorMessage =
             error.response?.data?.message ||
@@ -79,6 +82,7 @@ const useAttendanceStore = create(
             "출근 처리 중 오류 발생";
           console.error("출근 처리 실패:", errorMessage);
           set({ error: errorMessage });
+          throw error; // 에러를 상위로 전달
         } finally {
           set({ isLoading: false });
         }
@@ -89,16 +93,19 @@ const useAttendanceStore = create(
         try {
           if (!userId) throw new Error("User ID가 필요합니다.");
           set({ isLoading: true, error: null });
-          const data = await checkOutAPI(userId);
-          if (!data) {
+
+          const data = await checkOutAPI(userId); // API 호출
+          if (!data || !data.checkOutTime) {
             throw new Error("API 응답이 유효하지 않습니다.");
           }
 
           set({
             status: "CHECKED_OUT",
-            checkOutTime: data,
+            checkOutTime: data.checkOutTime, // API 응답 데이터 사용
             error: null,
           });
+
+          return data.checkOutTime; // 반환값 추가
         } catch (error) {
           const errorMessage =
             error.response?.data?.message ||
@@ -106,6 +113,7 @@ const useAttendanceStore = create(
             "퇴근 처리 중 오류 발생";
           console.error("퇴근 처리 실패:", errorMessage);
           set({ error: errorMessage });
+          throw error; // 에러를 상위로 전달
         } finally {
           set({ isLoading: false });
         }

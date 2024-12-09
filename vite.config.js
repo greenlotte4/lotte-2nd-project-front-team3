@@ -7,6 +7,16 @@ import path from "path";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
 
+  server: {
+    proxy: {
+      "/ws": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+  },
+
   define: {
     global: {},
   },
