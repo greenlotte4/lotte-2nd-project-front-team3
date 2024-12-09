@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 import {
+  addProjectCollaborators,
+  getProjectCollaborators,
   postProject,
   postProjectState,
+  removeProjectCollaborator,
   updateProjectState,
 } from "../../../api/projectAPI";
 
@@ -28,6 +31,24 @@ export default function ProjectModal({
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const [departments, setDepartments] = useState([]);
   const [expandedDepartments, setExpandedDepartments] = useState({});
+  const [collaborators, setCollaborators] = useState([]);
+
+  // 협업자 목록 불러오기
+  useEffect(() => {
+    const fetchCollaborators = async () => {
+      try {
+        if (projectId) {
+          const data = await getProjectCollaborators(projectId);
+          console.log("협업자 목록data : " + JSON.stringify(data));
+          setCollaborators(data);
+        }
+      } catch (error) {
+        console.error("협업자 목록을 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchCollaborators();
+  }, [projectId]);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -57,8 +78,11 @@ export default function ProjectModal({
 
   // 2. 초대 가능한 사용자 추가
   const handleInvite = (user) => {
-    if (!selectedUsers.some((selected) => selected.id === user.id)) {
-      setSelectedUsers((prev) => [...prev, user]); // 선택된 사용자 추가
+    // 이미 초대된 사용자 또는 선택된 사용자 확인
+    if (!collaborators.some((collaborator) => collaborator.id === user.id)) {
+      setSelectedUsers((prev) => [...prev, user]);
+    } else {
+      alert("이미 초대된 사용자입니다.");
     }
   };
 
@@ -72,21 +96,44 @@ export default function ProjectModal({
   // 4. 초대 버튼 클릭 시 호출
   const handleSendInvite = async () => {
     if (selectedUsers.length === 0) {
-      alert("초대할 사용자를 선택하세요.");
+      alert("초대할 협업자를 선택하세요.");
       return;
     }
 
-    try {
-      console.log("초대 버튼 클릭 - 채널 ID:", channelId); // *** 채널 ID 로그 출력 ***
+    const userIds = selectedUsers.map((user) => user.id);
+    console.log("userIds:", userIds);
+    console.log("projectId:", projectId);
 
-      // 사용자 ID 배열 전송
-      const userIds = selectedUsers.map((user) => user.id);
-      const response = await addChannelMember(channelId, userIds);
-      alert("멤버가 성공적으로 추가되었습니다!");
-      setSelectedUsers([]); // 선택된 사용자 초기화
+    try {
+      await addProjectCollaborators(projectId, userIds);
+      alert("협업자가 성공적으로 초대되었습니다!");
+
+      // 협업자 목록 다시 불러오기
+      const updatedCollaborators = await getProjectCollaborators(projectId);
+      console.log("updatedCollaborators : " + updatedCollaborators);
+      setCollaborators(updatedCollaborators);
+
+      // 선택된 사용자 초기화
+      setSelectedUsers([]);
+      closeModal();
     } catch (error) {
-      console.error("멤버 추가 실패:", error);
-      alert("멤버 초대에 실패했습니다. 다시 시도해주세요.");
+      console.error("협업자 추가 실패:", error);
+      alert("협업자 추가에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  // 기존 협업자 삭제
+  const handleRemoveCollaborator = async (userId) => {
+    console.log("백엔드로 가는 userId : " + userId);
+    try {
+      await removeProjectCollaborator(projectId, userId);
+      // 협업자 목록 갱신
+      const updatedCollaborators = await getProjectCollaborators(projectId);
+      setCollaborators(updatedCollaborators);
+      alert("협업자가 삭제되었습니다.");
+    } catch (error) {
+      console.error("협업자 삭제 실패:", error);
+      alert("협업자 삭제에 실패했습니다.");
     }
   };
 
@@ -412,12 +459,6 @@ export default function ProjectModal({
     ) {
       setSelectedCollaborators((prev) => [...prev, { ...user, role: "Write" }]);
     }
-  };
-
-  const handleRemoveCollaborator = (username) => {
-    setSelectedCollaborators((prev) =>
-      prev.filter((collaborator) => collaborator.username !== username)
-    );
   };
 
   const handleRoleChange = (username, newRole) => {
@@ -815,7 +856,33 @@ export default function ProjectModal({
 
                 {/* 선택된 협업자 목록 */}
                 <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
-                  <h3 className="font-semibold text-lg mb-2">선택된 협업자</h3>
+                  <h3 className="font-semibold text-lg mb-2">기존 협업자</h3>
+                  {collaborators.length > 0 ? (
+                    <ul>
+                      {collaborators.map((user) => (
+                        <li
+                          key={user.id}
+                          className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
+                        >
+                          <span className="text-gray-800 font-medium">
+                            {user.name} ({user.position})
+                          </span>
+                          <button
+                            onClick={() => handleRemoveCollaborator(user.id)}
+                            className="text-red-500 hover:underline"
+                          >
+                            삭제
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">협업자가 없습니다.</p>
+                  )}
+
+                  <h3 className="font-semibold text-lg mb-2 mt-[38px]">
+                    선택된 협업자
+                  </h3>
                   {selectedUsers.length > 0 ? (
                     <ul>
                       {selectedUsers.map((user) => (
@@ -823,13 +890,9 @@ export default function ProjectModal({
                           key={user.id}
                           className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
                         >
-                          <div className="flex items-center space-x-4">
-                            <span className="text-gray-800 font-medium">
-                              {user.position}
-                            </span>
-                            <span className="text-gray-800">{user.name}</span>
-                          </div>
-
+                          <span className="text-gray-800 font-medium">
+                            {user.name} ({user.position})
+                          </span>
                           <button
                             onClick={() => handleRemove(user)}
                             className="text-red-500 hover:underline"
@@ -840,7 +903,7 @@ export default function ProjectModal({
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-gray-500">선택된 사용자가 없습니다.</p>
+                    <p className="text-gray-500">선택된 협업자가 없습니다.</p>
                   )}
                 </div>
               </div>
