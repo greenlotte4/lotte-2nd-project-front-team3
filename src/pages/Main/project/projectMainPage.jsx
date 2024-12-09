@@ -10,6 +10,7 @@ export default function ProjectMainPage() {
   useEffect(() => {
     initializeAuth(); // 앱 로드 시 Access Token 갱신
   }, [initializeAuth]);
+
   return (
     <>
       <AntWorkLayout>

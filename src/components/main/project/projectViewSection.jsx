@@ -10,9 +10,11 @@ import {
   getProjectById,
   getProjectStates,
   getTasksByStateId,
+  updateProject,
   updateTask,
   updateTaskPosition,
 } from "../../../api/projectAPI";
+import { AiOutlineEdit } from "react-icons/ai";
 
 export default function ProjectViewSection() {
   const location = useLocation(); // 현재 URL을 감지
@@ -22,13 +24,16 @@ export default function ProjectViewSection() {
   const id = queryParams.get("id");
   console.log("id : " + id);
 
+  // 상태관리
   const [loadingStates, setLoadingStates] = useState(true); // 상태 로딩 플래그
-
   const [project, setProject] = useState();
-
-  const openModal = useModalStore((state) => state.openModal);
-
   const [dropdownOpenStateId, setDropdownOpenStateId] = useState(null);
+  const openModal = useModalStore((state) => state.openModal);
+  // 작업상태 상태 관리
+  const [currentState, setCurrentState] = useState(null);
+  const [states, setStates] = useState([]);
+  const [editingProject, setEditingProject] = useState(null);
+  const [newProjectName, setNewProjectName] = useState(""); // 새로운 프로젝트 이름
 
   // 작업상태 드롭다운
   const toggleDropdown = (stateId) => {
@@ -37,9 +42,6 @@ export default function ProjectViewSection() {
   const closeDropdown = () => {
     setDropdownOpenStateId(null);
   };
-
-  // 작업상태 상태 관리
-  const [currentState, setCurrentState] = useState(null);
 
   useEffect(() => {
     console.log("22id : " + id);
@@ -83,8 +85,6 @@ export default function ProjectViewSection() {
 
     fetchStates();
   }, [id]);
-
-  const [states, setStates] = useState([]);
 
   // 현재 작업이 속한 작업상태의 id 상태관리
   const [currentStateId, setCurrentStateId] = useState(null);
@@ -330,6 +330,34 @@ export default function ProjectViewSection() {
     }
   };
 
+  // 프로젝트 이름 저장 핸들러
+  const handleSaveProjectName = async () => {
+    try {
+      if (!newProjectName.trim()) return;
+
+      const updatedProject = await updateProject(project.id, {
+        projectName: newProjectName,
+        status: project.status,
+      });
+      console.log("updatedProject : " + updatedProject);
+
+      setProject(updatedProject); // 수정된 프로젝트를 상태에 반영
+
+      alert("프로젝트 이름이 성공적으로 수정되었습니다.");
+
+      setEditingProject(null); // 편집 모드 종료
+    } catch (error) {
+      console.error("프로젝트 수정 중 오류 발생:", error.message || error);
+      alert("프로젝트 이름 수정 중 문제가 발생했습니다.");
+    }
+  };
+
+  // 프로젝트 이름 수정 취소 핸들러
+  const handleCancelEdit = () => {
+    setEditingProject(null);
+    setNewProjectName(project.projectName); // 원래 이름으로 초기화
+  };
+
   if (loadingStates) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -360,12 +388,33 @@ export default function ProjectViewSection() {
               <div className="mb-3 text-center">
                 <div className="flex justify-between items-center">
                   <div className="flex justify-center items-center space-x-3">
-                    <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
-                      {project.projectName}
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                      {project.status === 0 ? "In Progress" : "Completed"}
-                    </p>
+                    {editingProject === project.id ? (
+                      <input
+                        type="text"
+                        value={newProjectName}
+                        onChange={(e) => setNewProjectName(e.target.value)}
+                        className="text-2xl font-semibold tracking-tight text-blue-800 border-b-2 border-blue-500 focus:outline-none"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSaveProjectName(); // Enter 키로 저장
+                          if (e.key === "Escape") handleCancelEdit(); // Esc 키로 취소
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
+                        {project.projectName}
+                      </h1>
+                    )}
+
+                    <button
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        setEditingProject(project.id);
+                        setNewProjectName(project.projectName); // 현재 프로젝트 이름으로 초기화
+                      }}
+                    >
+                      <AiOutlineEdit />
+                    </button>
                   </div>
 
                   <div className="flex items-center">

@@ -12,6 +12,7 @@ import {
   PROJECT_TASK_UPDATE_POSITION_URI,
   PROJECT_STATE_UPDATE_URI,
   PROJECT_STATE_DELETE_URI,
+  PROJECT_UPDATE_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -227,5 +228,24 @@ export const deleteProjectState = async (stateId) => {
   } catch (error) {
     console.error("Error deleting project state:", error);
     throw error;
+  }
+};
+
+// 프로젝트 수정
+export const updateProject = async (projectId, projectData) => {
+  console.log(
+    "백엔드로 들어오는 projectId, projectData : " + projectId,
+    projectData
+  );
+  try {
+    const response = await axios.put(
+      `${PROJECT_UPDATE_URI}/${projectId}`,
+      projectData
+    );
+    console.log("백엔드에서 반환된 데이터 : " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error; // 오류를 호출한 곳으로 전달
   }
 };
