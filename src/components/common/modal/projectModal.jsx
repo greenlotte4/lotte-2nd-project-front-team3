@@ -8,6 +8,9 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
+import { getAllUser } from "@/api/userAPI";
+import { fetchDepartmentsByCompanyId } from "@/api/departmentAPI";
+import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
 export default function ProjectModal({
   projectId,
@@ -22,7 +25,70 @@ export default function ProjectModal({
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
-  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기l
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const [departments, setDepartments] = useState([]);
+  const [expandedDepartments, setExpandedDepartments] = useState({});
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        if (user?.company) {
+          const data = await fetchDepartmentsByCompanyId(user.company);
+          setDepartments(data);
+        }
+      } catch (error) {
+        console.error("부서 데이터를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchDepartments();
+  }, [user]);
+
+  // 초대 가능한 사용자와 선택된 사용자 상태
+  const [selectedUsers, setSelectedUsers] = useState([]); // 선택된 사용자
+
+  // 부서 확장/축소 토글
+  const toggleDepartment = (departmentId) => {
+    setExpandedDepartments((prev) => ({
+      ...prev,
+      [departmentId]: !prev[departmentId],
+    }));
+  };
+
+  // 2. 초대 가능한 사용자 추가
+  const handleInvite = (user) => {
+    if (!selectedUsers.some((selected) => selected.id === user.id)) {
+      setSelectedUsers((prev) => [...prev, user]); // 선택된 사용자 추가
+    }
+  };
+
+  // 3. 선택된 사용자 제거
+  const handleRemove = (user) => {
+    setSelectedUsers((prev) =>
+      prev.filter((selected) => selected.id !== user.id)
+    );
+  };
+
+  // 4. 초대 버튼 클릭 시 호출
+  const handleSendInvite = async () => {
+    if (selectedUsers.length === 0) {
+      alert("초대할 사용자를 선택하세요.");
+      return;
+    }
+
+    try {
+      console.log("초대 버튼 클릭 - 채널 ID:", channelId); // *** 채널 ID 로그 출력 ***
+
+      // 사용자 ID 배열 전송
+      const userIds = selectedUsers.map((user) => user.id);
+      const response = await addChannelMember(channelId, userIds);
+      alert("멤버가 성공적으로 추가되었습니다!");
+      setSelectedUsers([]); // 선택된 사용자 초기화
+    } catch (error) {
+      console.error("멤버 추가 실패:", error);
+      alert("멤버 초대에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   useEffect(() => {
     console.log("사용자 정보:", user);
@@ -674,118 +740,124 @@ export default function ProjectModal({
         );
       case "project-invite":
         return (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[600px] h-[60vh] p-6 overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">협업자 설정</h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  ✕
-                </button>
-              </div>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg w-[700px] h-[570px] p-6 flex flex-col">
+              <h2 className="text-2xl font-bold mb-4">협업자 초대</h2>
 
-              <div className="space-y-4">
-                {/* 검색 및 추가 */}
-                <div className="mb-4">
-                  <label className="block mb-2 font-medium">협업자 검색</label>
-                  <div className="flex items-center">
-                    <input
-                      type="text"
-                      className="w-full border rounded p-2"
-                      placeholder="사용자 이름을 입력하세요"
-                      value={searchQuery}
-                      onChange={handleSearch}
-                    />
-                  </div>
-
-                  {/* 검색 결과 */}
-                  {searchQuery && (
-                    <div className="mt-3 border rounded p-2">
-                      {searchResults.length > 0 ? (
-                        searchResults.map((user, index) => (
+              <div className="flex h-[86%]">
+                {/* 부서별 사용자 트리 */}
+                <div className="w-1/2 border rounded-lg p-4 overflow-y-auto mr-4">
+                  {departments.length > 0 ? (
+                    <ul>
+                      {departments.map((department) => (
+                        <li key={department.id} className="mb-3">
                           <div
-                            key={index}
-                            className="flex justify-between items-center p-2 border-b"
+                            className="flex items-center cursor-pointer"
+                            onClick={() => toggleDepartment(department.id)}
                           >
-                            <span>{user.username}</span>
-                            <button
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handleAddCollaborator(user)}
-                            >
-                              선택
-                            </button>
+                            {expandedDepartments[department.id] ? (
+                              <AiOutlineMinus className="mr-2" />
+                            ) : (
+                              <AiOutlinePlus className="mr-2" />
+                            )}
+                            <span className="font-semibold text-gray-700">
+                              {department.name}
+                            </span>
                           </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">검색 결과가 없습니다.</p>
-                      )}
-                    </div>
+
+                          {/* 부서 확장 시 사용자 목록 표시 */}
+                          {expandedDepartments[department.id] && (
+                            <ul className="ml-6 mt-2 border-l-2 border-gray-300 pl-2">
+                              {department.users &&
+                              department.users.length > 0 ? (
+                                department.users.map((user) => (
+                                  <li
+                                    key={user.id}
+                                    className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
+                                  >
+                                    <div className="flex items-center space-x-4">
+                                      <span className="text-gray-800 font-medium">
+                                        {user.position}
+                                      </span>
+                                      <span className="text-gray-800">
+                                        {user.name}
+                                      </span>
+                                    </div>
+
+                                    {!selectedUsers.some(
+                                      (selected) => selected.id === user.id
+                                    ) && (
+                                      <button
+                                        onClick={() => handleInvite(user)}
+                                        className="text-blue-500 hover:underline"
+                                      >
+                                        추가
+                                      </button>
+                                    )}
+                                  </li>
+                                ))
+                              ) : (
+                                <li className="text-gray-500 ml-4">
+                                  이 부서에 사용자가 없습니다.
+                                </li>
+                              )}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">
+                      부서 데이터를 불러오는 중...
+                    </p>
                   )}
                 </div>
 
                 {/* 선택된 협업자 목록 */}
-                <div>
-                  <h3 className="font-medium mb-3">선택된 협업자</h3>
-                  <div className="border rounded p-4 max-h-[200px] overflow-y-auto">
-                    {selectedCollaborators.length > 0 ? (
-                      selectedCollaborators.map((collaborator, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center p-2 border rounded mb-2"
+                <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
+                  <h3 className="font-semibold text-lg mb-2">선택된 협업자</h3>
+                  {selectedUsers.length > 0 ? (
+                    <ul>
+                      {selectedUsers.map((user) => (
+                        <li
+                          key={user.id}
+                          className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
                         >
-                          <div className="flex items-center">
-                            <span className="font-medium">
-                              {collaborator.username}
+                          <div className="flex items-center space-x-4">
+                            <span className="text-gray-800 font-medium">
+                              {user.position}
                             </span>
+                            <span className="text-gray-800">{user.name}</span>
                           </div>
-                          <div className="flex items-center">
-                            <select
-                              className="border rounded p-2 mr-3"
-                              value={collaborator.role}
-                              onChange={(e) =>
-                                handleRoleChange(
-                                  collaborator.username,
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="Admin">Admin</option>
-                              <option value="Write">Write</option>
-                              <option value="Read">Read</option>
-                            </select>
-                            <button
-                              className="text-red-500 hover:text-red-700"
-                              onClick={() =>
-                                handleRemoveCollaborator(collaborator.username)
-                              }
-                            >
-                              삭제
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">선택된 협업자가 없습니다.</p>
-                    )}
-                  </div>
+
+                          <button
+                            onClick={() => handleRemove(user)}
+                            className="text-red-500 hover:underline"
+                          >
+                            삭제
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">선택된 사용자가 없습니다.</p>
+                  )}
                 </div>
               </div>
 
-              {/* 저장 버튼 */}
-              <div className="flex justify-end mt-6">
+              {/* 하단 버튼 */}
+              <div className="flex justify-end space-x-4 mt-4">
                 <button
-                  onClick={() => {
-                    console.log(
-                      "Selected collaborators:",
-                      selectedCollaborators
-                    );
-                    closeModal();
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={handleSendInvite}
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
                 >
                   초대
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                >
+                  취소
                 </button>
               </div>
             </div>
