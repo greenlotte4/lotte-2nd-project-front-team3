@@ -8,6 +8,7 @@ export default function InviteModal({ closeModal }) {
   const [inviteableUsers, setInviteableUsers] = useState([]); // 초대 가능한 사용자
   const [selectedUsers, setSelectedUsers] = useState([]); // 선택된 사용자
   const { id: channelId } = useParams();
+
   // 1. 초대 가능한 사용자 목록 불러오기
   useEffect(() => {
     console.log(`channel Id : ${channelId}`)
@@ -37,8 +38,6 @@ export default function InviteModal({ closeModal }) {
   };
 
   // 4. 초대 버튼 클릭 시 호출
-  // InviteModal.jsx
-
   const handleSendInvite = async () => {
     if (selectedUsers.length === 0) {
       alert("초대할 사용자를 선택하세요.");
@@ -66,12 +65,7 @@ export default function InviteModal({ closeModal }) {
       <h2 className="text-xl font-bold mb-4 border-b pb-2 text-gray-700">
         대화상대 초대
       </h2>
-
       {/* 검색 필드 */}
-<<<<<<< HEAD
-=======
-
->>>>>>> 07817b4987e5e6f46b067084262c4358fc561211
       <div className="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-50">
         <input
           type="text"
@@ -79,14 +73,9 @@ export default function InviteModal({ closeModal }) {
           className="flex-1 border-none bg-transparent focus:outline-none text-gray-600"
         />
       </div>
-
       {/* 초대 가능한 사용자와 선택된 사용자 영역 */}
       <div className="flex flex-1 space-x-4 h-full overflow-auto">
         {/* 초대 가능한 사용자 */}
-<<<<<<< HEAD
-=======
-
->>>>>>> 07817b4987e5e6f46b067084262c4358fc561211
         <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
           <h3 className="text-lg font-semibold">초대 가능한 사용자</h3>
           <ul className="space-y-3">
@@ -106,7 +95,6 @@ export default function InviteModal({ closeModal }) {
             ))}
           </ul>
         </div>
-
         {/* 선택된 사용자 */}
         <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
           <h3 className="text-lg font-semibold">선택한 사용자</h3>
@@ -128,7 +116,6 @@ export default function InviteModal({ closeModal }) {
           </ul>
         </div>
       </div>
-
       {/* 하단 버튼 */}
       <div className="flex justify-center space-x-4 mt-4">
         <button
