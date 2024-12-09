@@ -53,6 +53,9 @@ export const PROJECT_TASK_UPDATE_POSITION_URI = `${API_SERVER_HOST}/project/task
 export const PROJECT_STATE_UPDATE_URI = `${API_SERVER_HOST}/project/state/update`; // 프로젝트 작업상태 수정
 export const PROJECT_STATE_DELETE_URI = `${API_SERVER_HOST}/project/state/delete`; // 프로젝트 작업상태 삭제
 export const PROJECT_UPDATE_URI = `${API_SERVER_HOST}/project/update`; // 프로젝트 수정
+export const PROJECT_COLLABORATOR_INSERT_URI = `${API_SERVER_HOST}/project/collaborator/insert`; // 프로젝트 협업자 추가
+export const PROJECT_COLLABORATOR_SELECT_URI = `${API_SERVER_HOST}/project/collaborator/select`; // 프로젝트 협업자 조회
+export const PROJECT_COLLABORATOR_DELETE_URI = `${API_SERVER_HOST}/project/collaborator/delete`; // 프로젝트 협업자 삭제
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기

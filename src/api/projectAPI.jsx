@@ -13,6 +13,9 @@ import {
   PROJECT_STATE_UPDATE_URI,
   PROJECT_STATE_DELETE_URI,
   PROJECT_UPDATE_URI,
+  PROJECT_COLLABORATOR_INSERT_URI,
+  PROJECT_COLLABORATOR_SELECT_URI,
+  PROJECT_COLLABORATOR_DELETE_URI,
 } from "./_URI";
 
 // 프로젝트 등록
@@ -247,5 +250,57 @@ export const updateProject = async (projectId, projectData) => {
   } catch (error) {
     console.error("Error updating project:", error);
     throw error; // 오류를 호출한 곳으로 전달
+  }
+};
+
+// 프로젝트별 협업자 초대
+export const addProjectCollaborators = async (projectId, userIds) => {
+  console.log("백엔드로 가는 projectId, userIds : " + projectId, userIds);
+
+  try {
+    const response = await axios.post(
+      `${PROJECT_COLLABORATOR_INSERT_URI}/${projectId}`,
+      userIds
+    );
+
+    console.log("response.data : " + response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("협업자 추가 실패:", error);
+    throw error;
+  }
+};
+
+// 프로젝트별 협업자 조회
+export const getProjectCollaborators = async (projectId) => {
+  console.log("백엔드로 들어오는 협업자조회 projectId :" + projectId);
+  try {
+    const response = await axios.get(
+      `${PROJECT_COLLABORATOR_SELECT_URI}/${projectId}`
+    );
+
+    console.log("백엔드에서 나온 response.data : " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching project collaborators:", error);
+    throw error;
+  }
+};
+
+// 프로젝트별 협업자 삭제
+export const removeProjectCollaborator = async (projectId, userId) => {
+  console.log(
+    "백엔드로 가는 협업자 삭제 projectId, userId : " + projectId,
+    userId
+  );
+  try {
+    const response = await axios.delete(
+      `${PROJECT_COLLABORATOR_DELETE_URI}/${projectId}/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error removing collaborator:", error);
+    throw error;
   }
 };
