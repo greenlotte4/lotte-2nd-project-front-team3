@@ -1,4 +1,7 @@
+import useAuthStore from "./../../../store/AuthStore";
+
 export default function SettingMyinfo() {
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   return (
     <article className="page-list ">
       <div className="content-header">
@@ -61,19 +64,6 @@ export default function SettingMyinfo() {
             <input
               type="text"
               placeholder="홍길동"
-              className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
-              수정
-            </button>
-          </div>
-
-          {/* 생년월일 */}
-          <div className="flex items-center mx-[10px]">
-            <label className="w-1/3 text-gray-700 font-medium">생년월일</label>
-            <input
-              type="date"
-              placeholder="생년월일"
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
             <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">

@@ -2,17 +2,22 @@ import { useEffect, useState } from "react";
 import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   createTask,
+  deleteProjectState,
   deleteTask,
   getProjectById,
   getProjectStates,
   getTasksByStateId,
   updateTask,
+  updateTaskPosition,
 } from "../../../api/projectAPI";
 
 export default function ProjectViewSection() {
+  const location = useLocation(); // 현재 URL을 감지
+  console.log("location : " + location);
+
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   console.log("id : " + id);
@@ -22,6 +27,19 @@ export default function ProjectViewSection() {
   const [project, setProject] = useState();
 
   const openModal = useModalStore((state) => state.openModal);
+
+  const [dropdownOpenStateId, setDropdownOpenStateId] = useState(null);
+
+  // 작업상태 드롭다운
+  const toggleDropdown = (stateId) => {
+    setDropdownOpenStateId((prev) => (prev === stateId ? null : stateId));
+  };
+  const closeDropdown = () => {
+    setDropdownOpenStateId(null);
+  };
+
+  // 작업상태 상태 관리
+  const [currentState, setCurrentState] = useState(null);
 
   useEffect(() => {
     console.log("22id : " + id);
@@ -38,8 +56,9 @@ export default function ProjectViewSection() {
       }
     };
 
+    setLoadingStates(true); // 새 요청 전 로딩 상태로 설정
     fetchProjectDetails(); // 컴포넌트 마운트 시 데이터 로드
-  }, [id]);
+  }, [id, location]); // location을 의존성 배열에 추가
 
   // 전체 상태 데이터 가져오기
   useEffect(() => {
@@ -76,11 +95,21 @@ export default function ProjectViewSection() {
     console.log("States after update:", states);
   }, [states]);
 
+  // 작업 상태 추가 핸들러
   const handleAddState = (newState) => {
     setStates((prevStates) => [
       ...prevStates,
       { id: Date.now().toString(), ...newState, items: [] },
     ]);
+  };
+
+  // 작업 상태 수정 핸들러
+  const handleEditState = (updatedState) => {
+    setStates((prevStates) =>
+      prevStates.map((state) =>
+        state.id === updatedState.id ? updatedState : state
+      )
+    );
   };
 
   // 작업 추가 핸들러
@@ -212,23 +241,24 @@ export default function ProjectViewSection() {
   };
 
   // 드래그앤드랍 처리
-  const handleDragEnd = (result) => {
-    // {드래그가 시작된 위치 정보, 드롭된 위치 정보}
+  const handleDragEnd = async (result) => {
     const { source, destination } = result;
 
-    // 드롭 위치가 없거나 동일한 위치면 종료
-    if (
-      !destination ||
-      (source.droppableId === destination.droppableId &&
-        source.index === destination.index)
-    )
-      return;
+    if (!destination) return;
 
-    // 상태 복사본 생성
+    // 같은 위치로 드래그한 경우 아무 작업도 하지 않음
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    console.log("Source Index:", source.index);
+    console.log("Destination Index:", destination.index);
+
     const newStates = [...states];
 
-    // source, destination 상태 찾기
-    // 데이터 타입이 서로 다를 수 있기 때문에 비교 전에 문자열로 변환
     const sourceStateIndex = newStates.findIndex(
       (state) => String(state.id) === String(source.droppableId)
     );
@@ -236,41 +266,67 @@ export default function ProjectViewSection() {
       (state) => String(state.id) === String(destination.droppableId)
     );
 
-    // 상태를 찾지 못한 경우 처리
     if (sourceStateIndex === -1 || destinationStateIndex === -1) {
       console.error("Source or destination state not found");
       return;
     }
 
-    // source, destination 상태의 items 배열 보장
-    const sourceItems = newStates[sourceStateIndex].items || [];
-    const destinationItems = newStates[destinationStateIndex].items || [];
+    const sourceItems = Array.from(newStates[sourceStateIndex].items);
+    const destinationItems = Array.from(newStates[destinationStateIndex].items);
 
-    // 동일한 상태 내에서 드래그
+    const [movedItem] = sourceItems.splice(source.index, 1);
+
+    destinationItems.splice(destination.index, 0, movedItem);
+
     if (source.droppableId === destination.droppableId) {
-      const [reorderedItem] = sourceItems.splice(source.index, 1);
-      sourceItems.splice(destination.index, 0, reorderedItem);
-
-      newStates[sourceStateIndex].items = sourceItems;
-    }
-    // 다른 상태로 드래그
-    else {
-      const [movedItem] = sourceItems.splice(source.index, 1);
-      destinationItems.splice(destination.index, 0, movedItem);
-
+      newStates[sourceStateIndex].items = destinationItems;
+    } else {
       newStates[sourceStateIndex].items = sourceItems;
       newStates[destinationStateIndex].items = destinationItems;
     }
 
-    // 상태 업데이트
     setStates(newStates);
+    console.log("Updated States:", newStates);
 
-    // 백엔드 API 호출로 상태 동기화
     try {
-      // 서버에 상태 변경 요청
-      // updateTaskState(movedItem.id, destination.droppableId);
+      await updateTaskPosition(
+        movedItem.id,
+        destination.droppableId,
+        destination.index
+      );
+      console.log(
+        "Updated Task on Server:",
+        movedItem.id,
+        destination.droppableId,
+        destination.index
+      );
     } catch (error) {
-      console.error("Task 상태 업데이트 중 오류:", error);
+      console.error("Error updating task position on the server:", error);
+      alert("작업 위치 업데이트 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 작업상태 삭제 핸들러
+  const handleDeleteState = async (stateId) => {
+    console.log("stateId : " + stateId);
+    if (
+      !window.confirm(
+        "정말로 이 상태를 삭제하시겠습니까? 모든 작업도 함께 삭제됩니다."
+      )
+    )
+      return;
+
+    try {
+      await deleteProjectState(stateId);
+
+      // 삭제된 상태를 상태 목록에서 제거
+      setStates((prevStates) =>
+        prevStates.filter((state) => state.id !== stateId)
+      );
+
+      alert("상태가 성공적으로 삭제되었습니다!");
+    } catch (error) {
+      alert("상태 삭제 중 문제가 발생했습니다.");
     }
   };
 
@@ -294,9 +350,11 @@ export default function ProjectViewSection() {
         currentStateId={currentStateId} // openTaskEditModal에서 설정한 stateId
         currentTask={currentTask} // openTaskEditModal에서 설정한 task
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
+        onEditState={handleEditState}
+        currentState={currentState}
       />
       {project ? (
-        <article className="page-list">
+        <article className="page-list min-h-[850px]">
           <div className="content-header">
             <div className="max-w-9xl mx-auto p-2">
               <div className="mb-3 text-center">
@@ -371,8 +429,45 @@ export default function ProjectViewSection() {
                                   {state.title}
                                 </h2>
                                 <span className="text-[12px] text-gray-700 bg-gray-100 rounded-full px-3 mb-1">
-                                  {state.items.length}
+                                  {state.items?.length || 0}
                                 </span>
+                              </div>
+                              {/* 옵션 버튼 */}
+                              <div className="relative">
+                                <button
+                                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                  onClick={() => toggleDropdown(state.id)}
+                                >
+                                  <img
+                                    src="/images/Antwork/project/project_icon.png"
+                                    alt="옵션"
+                                    className="w-6 h-6"
+                                  />
+                                </button>
+
+                                {/* 드롭다운 메뉴 */}
+                                {dropdownOpenStateId === state.id && (
+                                  <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                    <button
+                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      onClick={() => {
+                                        closeDropdown();
+                                        setCurrentState(state); // 현재 상태 설정
+                                        openModal("state-edit");
+                                      }}
+                                    >
+                                      수정
+                                    </button>
+                                    <button
+                                      className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                                      onClick={() =>
+                                        handleDeleteState(state.id)
+                                      }
+                                    >
+                                      삭제
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <p className="text-[14px] text-gray-600 mt-3">

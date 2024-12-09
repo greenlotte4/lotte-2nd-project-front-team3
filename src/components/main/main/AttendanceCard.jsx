@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useAttendanceStore from "./../../../store/useAttendanceStore";
 import useAuthStore from "./../../../store/AuthStore";
 
 const AttendanceCard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState("");
-  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const [workHours, setWorkHours] = useState("0H");
+  const [progressWidth, setProgressWidth] = useState("0%");
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const MAX_WORK_HOURS = 9; // 하루 근무 시간 기준 9시간
+
+  const user = useAuthStore((state) => state.user);
 
   const {
     status,
@@ -18,40 +23,84 @@ const AttendanceCard = () => {
     updateStatus,
   } = useAttendanceStore();
 
+  // 실시간 현재 시간 업데이트
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // 매 초마다 갱신
+
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 클린업
+  }, []);
+
+  // 근무 시간 및 진행률 계산
+  useEffect(() => {
+    let interval;
+
+    const parseTime = (time) => {
+      if (typeof time === "string" && !isNaN(new Date(time).getTime())) {
+        return new Date(time);
+      }
+      if (typeof time === "string" && time.match(/^\d{2}:\d{2}:\d{2}$/)) {
+        const [hours, minutes, seconds] = time.split(":").map(Number);
+        const now = new Date();
+        now.setHours(hours, minutes, seconds, 0);
+        return now;
+      }
+      return null;
+    };
+
+    const startTime = parseTime(checkInTime);
+    const endTime = checkOutTime ? parseTime(checkOutTime) : null;
+
+    if (startTime && !endTime) {
+      interval = setInterval(() => {
+        const now = new Date();
+        const elapsedHours = Math.floor((now - startTime) / 3600000);
+        setWorkHours(`${elapsedHours}H`);
+        setProgressWidth(
+          `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
+        );
+      }, 1000);
+    } else if (startTime && endTime) {
+      const elapsedHours = Math.floor((endTime - startTime) / 3600000);
+      setWorkHours(`${elapsedHours}H`);
+      setProgressWidth(
+        `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
+      );
+    } else {
+      setWorkHours("0H");
+      setProgressWidth("0%");
+    }
+
+    return () => clearInterval(interval);
+  }, [checkInTime, checkOutTime]);
+
   const handleCheckIn = async () => {
-    const userId = user.id; // Zustand 또는 AuthStore에서 가져오기
     try {
-      await checkIn(userId); // 출근 API 호출
-      alert("출근처리완료! 오늘도 개미처럼 일하세염");
+      await checkIn(user.id);
+      alert("출근 처리 완료! 오늘도 좋은 하루 되세요.");
     } catch (err) {
       console.error("출근 처리 실패:", err);
     }
   };
 
   const handleCheckOut = async () => {
-    const userId = user.id;
     try {
-      await checkOut(userId); // 퇴근 API 호출
-      alert("퇴근처리완료! 오늘도 개미처럼 일하셨져?");
+      await checkOut(user.id);
+      alert("퇴근 처리 완료! 수고하셨습니다.");
     } catch (err) {
       console.error("퇴근 처리 실패:", err);
     }
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
   const handleTaskSelection = async (task) => {
-    const userId = user.id;
-    setCurrentTask(task); // 선택한 업무 설정
-    setIsMenuOpen(false); // 메뉴 닫기
-
+    setCurrentTask(task);
+    setIsMenuOpen(false);
     try {
-      await updateStatus(userId, task); // 상태 업데이트 API 호출
-      alert("열나게 일하고 계시죠? 상태변경완료~");
+      await updateStatus(user.id, task);
+      alert(`상태가 "${task}"(으)로 업데이트되었습니다.`);
     } catch (err) {
-      console.error("업무 상태 업데이트 실패:", err);
+      console.error("상태 업데이트 실패:", err);
     }
   };
 
@@ -60,21 +109,21 @@ const AttendanceCard = () => {
       <div className="text-center mb-4">
         <h1 className="text-xl font-semibold text-gray-800">근태관리</h1>
         <p className="text-sm text-gray-500 mt-2">
-          {new Date().toLocaleString()}
+          {currentTime.toLocaleString()}
         </p>
       </div>
 
       <section className="mb-6">
         <div className="flex justify-between items-end">
-          <span className="text-3xl font-bold text-blue-600">
-            {/* 근무 시간 표시 */}
+          <span className="text-3xl font-bold text-blue-600">{workHours}</span>
+          <span className="text-sm text-gray-500">
+            최대 {MAX_WORK_HOURS}시간
           </span>
-          <span className="text-sm text-gray-500">최대 52시간</span>
         </div>
         <div className="relative w-full h-4 bg-gray-200 rounded-full mt-4">
           <div
             className="absolute h-4 bg-blue-500 rounded-full"
-            style={{ width: "50%" }} // 동적 비율로 변경 가능
+            style={{ width: progressWidth }}
           ></div>
         </div>
       </section>
@@ -83,16 +132,16 @@ const AttendanceCard = () => {
         <div className="flex justify-between text-gray-700">
           <span>출근시간</span>
           <span>
-            {checkInTime
-              ? new Date(checkInTime).toLocaleTimeString()
+            {checkInTime && typeof checkInTime === "string"
+              ? checkInTime
               : "--:--:--"}
           </span>
         </div>
         <div className="flex justify-between text-gray-700">
           <span>퇴근시간</span>
           <span>
-            {checkOutTime
-              ? new Date(checkOutTime).toLocaleTimeString()
+            {checkOutTime && typeof checkOutTime === "string"
+              ? checkOutTime
               : "--:--:--"}
           </span>
         </div>
@@ -107,7 +156,7 @@ const AttendanceCard = () => {
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
-          onClick={status !== "CHECKED_IN" ? handleCheckIn : null}
+          onClick={handleCheckIn}
           disabled={status === "CHECKED_IN"}
         >
           출근하기
@@ -118,7 +167,7 @@ const AttendanceCard = () => {
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-red-500 text-white hover:bg-red-600"
           }`}
-          onClick={status === "CHECKED_IN" ? handleCheckOut : null}
+          onClick={handleCheckOut}
           disabled={status === "CHECKED_OUT" || status === "AVAILABLE"}
         >
           퇴근하기
@@ -127,8 +176,15 @@ const AttendanceCard = () => {
 
       <section className="mt-6 text-center">
         <button
-          className="w-[170px] h-[50px] bg-gray-200 text-gray-700 font-medium rounded-3xl hover:bg-gray-300 transition"
-          onClick={toggleMenu}
+          className={`w-[170px] h-[50px] font-medium rounded-3xl ${
+            status === "CHECKED_IN"
+              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          } transition`}
+          onClick={() =>
+            status === "CHECKED_IN" && setIsMenuOpen((prev) => !prev)
+          }
+          disabled={status !== "CHECKED_IN"}
         >
           {currentTask || "업무 선택"}
         </button>

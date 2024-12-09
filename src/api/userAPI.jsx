@@ -4,11 +4,15 @@ import axiosInstance from "./../utils/axiosInstance";
 import {
   USER_ADMIN_CREATE_URI,
   USER_CHECK_DUPLICATE_ID_URI,
+<<<<<<< feature/chatting
 <<<<<<< HEAD
 =======
   USER_DETAILS_URI,
   USER_GET_ALL_URI,
 >>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
+=======
+  USER_DETAILS_URI,
+>>>>>>> main
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
   USER_INVITE_VERIFY_URI,
@@ -63,8 +67,6 @@ export const loginUser = async (uid, password) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 // 유저 UID로 유저 조회
 export const getUserByUid = async (uid) => {
   try {
@@ -81,7 +83,7 @@ export const getUserByUid = async (uid) => {
     );
   }
 };
->>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
+
 // 유저 리스트 조회 (회사별)
 export const selectMembers = async (company, page = 1, size = 20) => {
   try {

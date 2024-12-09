@@ -3,15 +3,49 @@ import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 import useModalStore from "../../../store/modalStore";
 import ProjectModal from "../modal/projectModal";
+import { getProjects } from "../../../api/projectAPI";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function ProjectAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  // 토글 상태
   const [toggles, toggleSection] = useToggle({
     ongoingProjects: true,
     completedProjects: true,
   });
+
+  // 프로젝트 상태
+  const [projects, setProjects] = useState({
+    ongoing: [],
+    completed: [],
+  });
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        console.log("사용자 정보:", user);
+        const response = await getProjects(user?.uid);
+        console.log("response : " + response);
+
+        // 상태(진행, 완료)에 따라 데이터 분리
+        const ongoing = response.filter((project) => project.status === 0);
+        const completed = response.filter((project) => project.status === 1);
+        console.log("ongoing :" + ongoing);
+        console.log("completed :" + completed);
+
+        setProjects({ ongoing, completed });
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        alert("프로젝트 데이터를 가져오는 중 오류가 발생했습니다.");
+      }
+    };
+
+    fetchProjects(); // 컴포넌트 마운트 시 데이터 가져오기
+  }, [user]); // UID 변경 시 데이터 다시 가져오기
 
   return (
     <>
@@ -76,15 +110,13 @@ export default function ProjectAside({ asideVisible }) {
             </div>
             {toggles.ongoingProjects && (
               <ol>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
+                {projects.ongoing.map((project) => (
+                  <li key={project.id}>
+                    <Link to={`/antwork/project/view?id=${project.id}`}>
+                      📋&nbsp;&nbsp;{project.projectName}
+                    </Link>
+                  </li>
+                ))}
               </ol>
             )}
           </li>
@@ -107,15 +139,11 @@ export default function ProjectAside({ asideVisible }) {
             </div>
             {toggles.completedProjects && (
               <ol>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;갓생살기 프로젝트</a>
-                </li>
+                {projects.completed.map((project) => (
+                  <Link to={`/antwork/project/view?id=${project.id}`}>
+                    📋&nbsp;&nbsp;{project.projectName}
+                  </Link>
+                ))}
               </ol>
             )}
           </li>

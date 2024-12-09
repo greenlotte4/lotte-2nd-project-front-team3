@@ -62,7 +62,8 @@
     "sass-loader": "^16.0.3",
     "sockjs-client": "^1.6.1",
     "style-loader": "^4.0.0",
-    "zustand": "^5.0.1"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
