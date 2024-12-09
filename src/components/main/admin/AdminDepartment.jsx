@@ -259,12 +259,42 @@ export default function AdminDepartment() {
             <h2 className="text-lg font-bold mb-4 text-gray-700">
               {selectedDepartment.name} 정보
             </h2>
-            <div>
-              <span className="text-gray-500">소속 회사: </span>
-              <span className="text-gray-800 font-medium">
-                {user?.companyName}
-              </span>
+            <div className="mb-4">
+              <div>
+                <span className="text-gray-500">부서 ID: </span>
+                <span className="text-gray-800 font-medium">
+                  {selectedDepartment.id}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-500">소속 회사: </span>
+                <span className="text-gray-800 font-medium">
+                  {user?.companyName || "정보 없음"}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-500">구성원 수: </span>
+                <span className="text-gray-800 font-medium">
+                  {selectedDepartment.users?.length || 0} 명
+                </span>
+              </div>
             </div>
+            <h3 className="text-md font-bold text-gray-600 mt-4 mb-2">
+              구성원 목록
+            </h3>
+            <ul className="list-disc ml-4">
+              {selectedDepartment.users?.map((user) => (
+                <li key={user.id} className="text-gray-700">
+                  {user.name} ({user.position || "직급 없음"})
+                </li>
+              ))}
+            </ul>
+            <h3 className="text-md font-bold text-gray-600 mt-4 mb-2">
+              최근 활동
+            </h3>
+            <p className="text-gray-500">
+              이 부서는 최근 "XYZ 프로젝트"에 참여했습니다.
+            </p>
           </div>
         ) : (
           <p className="text-gray-500">부서를 선택하세요.</p>

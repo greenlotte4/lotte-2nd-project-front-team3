@@ -3,7 +3,21 @@ import {
   USER_CHANGE_STATUS_URI,
   USER_CHECK_IN_URI,
   USER_CHECK_OUT_URI,
+  USER_CHECK_STATUS_URI,
 } from "./_URI";
+
+// 현재 출근 상태 가져오기
+export const getAttendanceStatusAPI = async (userId) => {
+  try {
+    const response = await axiosInstance.get(
+      `${USER_CHECK_STATUS_URI}/${userId}`
+    );
+    return response.data; // 서버에서 반환하는 출근 상태 데이터
+  } catch (error) {
+    console.error("현재 출근 상태 가져오기 실패:", error);
+    throw error;
+  }
+};
 
 // 출근 처리
 export const checkInAPI = async (userId) => {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+
 import useAttendanceStore from "./../../../store/useAttendanceStore";
-import useAuthStore from "./../../../store/AuthStore";
+import useAuthStore from "@/store/AuthStore";
+import { format } from "date-fns";
 
 const AttendanceCard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +23,15 @@ const AttendanceCard = () => {
     checkIn,
     checkOut,
     updateStatus,
+    initializeForUser,
   } = useAttendanceStore();
+
+  // 로그인 시 상태 동기화
+  useEffect(() => {
+    if (user?.id) {
+      initializeForUser(user.id);
+    }
+  }, [user?.id]);
 
   // 실시간 현재 시간 업데이트
   useEffect(() => {
@@ -104,6 +114,16 @@ const AttendanceCard = () => {
     }
   };
 
+  // 시간 포맷 함수
+  const formatDateTime = (dateTime) => {
+    if (!dateTime) return "--:--:--";
+    try {
+      return format(new Date(dateTime), "yyyy-MM-dd HH:mm:ss"); // 원하는 형식으로 포맷팅
+    } catch {
+      return "--:--:--"; // 에러 발생 시 기본 값 반환
+    }
+  };
+
   return (
     <div className="w-[260px] bg-white rounded-lg shadow-md p-5 mt-5">
       <div className="text-center mb-4">
@@ -131,19 +151,11 @@ const AttendanceCard = () => {
       <section className="space-y-4">
         <div className="flex justify-between text-gray-700">
           <span>출근시간</span>
-          <span>
-            {checkInTime && typeof checkInTime === "string"
-              ? checkInTime
-              : "--:--:--"}
-          </span>
+          <span>{formatDateTime(checkInTime)}</span>
         </div>
         <div className="flex justify-between text-gray-700">
           <span>퇴근시간</span>
-          <span>
-            {checkOutTime && typeof checkOutTime === "string"
-              ? checkOutTime
-              : "--:--:--"}
-          </span>
+          <span>{formatDateTime(checkOutTime)}</span>
         </div>
       </section>
 
