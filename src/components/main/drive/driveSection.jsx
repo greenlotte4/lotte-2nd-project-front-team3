@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import {
+  driveFileDownload,
   driveFilesInsert,
+  driveFolderInsert,
   MyDriveSelectView,
   MyDriveView,
 } from "../../../api/driveAPI";
@@ -11,11 +13,13 @@ import useAuthStore from "../../../store/AuthStore";
 
 export default function DriveSection() {
   const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
+
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const driveFileMaker = user?.uid;
+  const driveFolderMaker = user?.uid;
 
   const [menuVisible, setMenuVisible] = useState(false); // 컨텍스트 메뉴 표시 상태
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
@@ -37,15 +41,20 @@ export default function DriveSection() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  //파일업로드
   const handleFileUpload = async () => {
     const driveFiles = driveFilesRef.current.files;
     if (driveFiles.length > 0) {
       const formData = new FormData();
-
       Array.from(driveFiles).forEach((file) => {
         formData.append("driveFiles", file);
+        console.log("야옹이거어캐나와 ? :", file);
       });
       formData.append("driveFileMaker", driveFileMaker);
+      if (driveFolderId) {
+        formData.append("driveFolderId", driveFolderId);
+      }
+      console.log("드라이브파일아이디 : " + driveFolderId);
 
       try {
         const response = await driveFilesInsert(formData);
@@ -58,12 +67,91 @@ export default function DriveSection() {
     }
   };
 
-  const handleFolderUpload = (e) => {
-    const folder = e.target.files;
-    if (folder.length > 0) {
-      console.log("폴더 업로드:", folder);
+  //폴더 업로드/////
+  const handleFolderUpload = async (e) => {
+    const files = e.target.files;
+    const fileList = Array.from(files);
+
+    // 폴더 이름 추출 (첫 번째 파일의 경로를 기준으로)
+    const driveFolderName = fileList[0].webkitRelativePath.split("/")[0];
+    console.log("먀오오오오옹:", driveFolderName);
+    console.log("드라이브폴더아이뒤 : ", driveFolderId);
+    try {
+      const data = {
+        driveFolderName,
+        driveFolderMaker,
+        driveFolderId,
+      };
+      const folderResponse = await driveFolderInsert(data);
+      const driveFolderId1 = folderResponse.driveFolderId;
+
+      // 폴더 ID와 파일 데이터 설정
+      const formData = new FormData();
+      formData.append("driveFolderId", driveFolderId1);
+      console.log("마요는귀여웡 : " + driveFolderId1);
+      formData.append("driveFileMaker", driveFileMaker);
+
+      for (let file of fileList) {
+        formData.append("driveFiles", file, file.webkitRelativePath); // 상대 경로 포함
+        console.log("웨에에에에에에옭 : ", file);
+      }
+
+      // 서버로 파일 업로드 요청
+      const fileResponse = await driveFilesInsert(formData);
+
+      if (fileResponse.status === 200) {
+        alert("폴더 업로드 성공!");
+      } else {
+        throw new Error("폴더 업로드 실패");
+      }
+
+      // 드롭다운 닫기
+      setIsDropdownOpen(false);
+    } catch (error) {
+      console.error("폴더 업로드 에러:", error.message);
+      alert("폴더 업로드 중 문제가 발생했습니다.");
     }
-    setIsDropdownOpen(false);
+  };
+
+  /////////////파일다운로드//////////////
+
+  const handleDownload = async (driveFileId) => {
+    try {
+      const response = await driveFileDownload(driveFileId);
+
+      // 서버 응답에서 Content-Disposition 헤더와 Content-Type을 사용하여 파일 저장
+      const contentDisposition = response.headers["content-disposition"];
+      let fileName = "downloaded_file";
+
+      // Content-Disposition에서 파일 이름 추출
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (fileNameMatch) {
+          fileName = fileNameMatch[1];
+        }
+      }
+
+      // MIME 타입 설정
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+
+      // 파일 다운로드
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName; // 추출된 파일 이름 사용
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      console.log("파일 다운로드 완료:", fileName);
+      return response;
+    } catch (error) {
+      console.error("파일 다운로드 중 오류 발생:", error);
+      throw error;
+    }
   };
 
   //////////////////////////////MyDrive목록 가져오기/////////////////////////////////////////////
@@ -88,7 +176,7 @@ export default function DriveSection() {
       const files = Array.isArray(response.data.files)
         ? response.data.files
         : [];
-
+      console.log("폴더 데이터 매핑:", folders);
       setFolderStates(
         folders.map((folder) => ({
           isChecked: folder.isChecked || false,
@@ -106,6 +194,7 @@ export default function DriveSection() {
         files.map((file) => ({
           isChecked: file.isChecked || false,
           isStarred: file.isStarred || false,
+          driveFileSsName: file.driveFileSName,
           driveFileSName: file.driveFileSName.includes("_")
             ? file.driveFileSName.split("_")[1]
             : file.driveFileSName,
@@ -131,19 +220,45 @@ export default function DriveSection() {
 
   ////////////////////////////////오른쪽 커스텀메뉴, 체크박스, 별표/////////////////////////////////////
 
-  const handleContextMenu = (event, index) => {
+  const handleContextMenu = (event, index, type) => {
     event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
     const { clientX, clientY } = event; // 클릭한 위치 좌표
     setMenuPosition({ x: clientX, y: clientY });
     setMenuVisible(true); // 커스텀 메뉴 열기
 
-    // 클릭한 폴더만 체크박스 선택, 나머지는 해제
-    setFolderStates((prevStates) =>
-      prevStates.map((state, idx) => ({
-        ...state,
-        isChecked: idx === index, // 클릭한 인덱스만 true
-      }))
-    );
+    if (type === "folder") {
+      // 폴더를 클릭하면 폴더 체크 상태 설정
+      setFolderStates((prevStates) =>
+        prevStates.map((state, idx) => ({
+          ...state,
+          isChecked: idx === index, // 클릭한 폴더만 체크
+        }))
+      );
+
+      // 폴더 클릭 시, 폴더 내의 파일 상태도 체크하도록
+      setFileStates((prevStates) =>
+        prevStates.map((file) => ({
+          ...file,
+          isChecked: false, // 폴더 클릭 시 모든 파일 체크 해제
+        }))
+      );
+    } else if (type === "file") {
+      // 파일을 클릭하면 해당 파일만 체크, 폴더 체크 상태 해제
+      setFileStates((prevStates) =>
+        prevStates.map((state, idx) => ({
+          ...state,
+          isChecked: idx === index, // 클릭한 파일만 체크
+        }))
+      );
+
+      // 파일 클릭 시, 폴더의 체크 상태를 해제
+      setFolderStates((prevStates) =>
+        prevStates.map((state) => ({
+          ...state,
+          isChecked: false, // 폴더 체크 해제
+        }))
+      );
+    }
   };
 
   const handleCloseMenu = () => {
@@ -156,9 +271,7 @@ export default function DriveSection() {
         handleCloseMenu(); // 메뉴 외부 클릭 시 닫기
       }
     };
-
     document.addEventListener("click", handleClickOutside);
-
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -288,7 +401,6 @@ export default function DriveSection() {
                     id="folderUpload"
                     className="hidden"
                     webkitdirectory="true"
-                    directory="true"
                     onChange={handleFolderUpload}
                   />
                 </div>
@@ -380,7 +492,9 @@ export default function DriveSection() {
                             className={`text-center align-middle h-16 border-t hover:bg-gray-100 ${
                               folder.isChecked ? "bg-blue-50" : ""
                             }`}
-                            onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                            onContextMenu={(e) =>
+                              handleContextMenu(e, index, "folder")
+                            } // 커스텀 메뉴 표시
                           >
                             <td>
                               <input
@@ -426,7 +540,9 @@ export default function DriveSection() {
                             className={`text-center align-middle h-16 border-t hover:bg-gray-100 ${
                               file.isChecked ? "bg-blue-50" : ""
                             }`}
-                            onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                            onContextMenu={(e) =>
+                              handleContextMenu(e, index, "file")
+                            } // 커스텀 메뉴 표시
                           >
                             <td>
                               <input
@@ -471,7 +587,11 @@ export default function DriveSection() {
                                 <i className="fa-solid fa-file-import text-[16px] text-[#847E8C]"></i>
                               )}
                             </td>
-                            <td>{file.driveFileSName}</td>
+                            <td
+                              onClick={() => handleDownload(file.driveFileId)}
+                            >
+                              {file.driveFileSName}
+                            </td>
                             <td>{file.driveFileSize}</td>
                             <td>{file.driveFileMaker}</td>
                             <td>{file.driveFileCreatedAt}</td>
@@ -496,6 +616,13 @@ export default function DriveSection() {
                       <Link
                         to={`/antwork/drive/folder/${folder.driveFolderId}`}
                         key={index}
+                        onClick={(e) => {
+                          // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
+                          if (folder.isChecked) {
+                            e.preventDefault(); // 링크 이동 방지
+                            toggleFolderCheck(index); // 체크 해제
+                          }
+                        }}
                       >
                         <div
                           className={`relative border p-4 group rounded-md ${
@@ -503,7 +630,9 @@ export default function DriveSection() {
                               ? "bg-blue-50 border-blue-500"
                               : "hover:bg-gray-100"
                           } transition`}
-                          onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                          onContextMenu={(e) =>
+                            handleContextMenu(e, index, "folder")
+                          } // 커스텀 메뉴 표시
                         >
                           <div
                             className={`absolute top-2 left-2 w-6 h-6 rounded-md flex items-center justify-center cursor-pointer border ${
@@ -515,7 +644,10 @@ export default function DriveSection() {
                                 ? ""
                                 : "opacity-0 group-hover:opacity-100"
                             } transition-opacity`}
-                            onClick={() => toggleFolderCheck(index)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFolderCheck(index);
+                            }}
                           >
                             {folder.isChecked && (
                               <i className="fa-solid fa-check"></i>
@@ -546,12 +678,21 @@ export default function DriveSection() {
                     {fileStates.map((file, index) => (
                       <div
                         key={index}
+                        onClick={(e) => {
+                          // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
+                          if (file.isChecked) {
+                            e.preventDefault(); // 링크 이동 방지
+                            toggleFileCheck(index); // 체크 해제
+                          }
+                        }}
                         className={`relative border p-4 group rounded-md ${
                           file.isChecked
                             ? "bg-blue-50 border-blue-500"
                             : "hover:bg-gray-100"
                         } transition`}
-                        onContextMenu={(e) => handleContextMenu(e, index)} // 커스텀 메뉴 표시
+                        onContextMenu={(e) =>
+                          handleContextMenu(e, index, "file")
+                        } // 커스텀 메뉴 표시
                       >
                         <div
                           className={`absolute top-2 left-2 w-6 h-6 rounded-md flex items-center justify-center cursor-pointer border ${
@@ -563,7 +704,10 @@ export default function DriveSection() {
                               ? ""
                               : "opacity-0 group-hover:opacity-100"
                           } transition-opacity`}
-                          onClick={() => toggleFileCheck(index)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFileCheck(index);
+                          }}
                         >
                           {file.isChecked && (
                             <i className="fa-solid fa-check"></i>
@@ -592,7 +736,10 @@ export default function DriveSection() {
                         ].includes(file.Ext) && (
                           <i className="fa-solid fa-file-import text-[43px] text-[#847E8C] mx-20 my-[25px]"></i>
                         )}
-                        <div className="text-center mt-2">
+                        <div
+                          onClick={() => handleDownload(file.driveFileId)}
+                          className="text-center mt-2"
+                        >
                           {file.driveFileSName}
                         </div>
                         <button
