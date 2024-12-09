@@ -4,7 +4,7 @@ import { Client } from "@stomp/stompjs";
 import useAuthStore from "@/store/AuthStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { fetchNotifications } from "@/api/notificationAPI";
-import { WS_URL } from "./../../api/_URI";
+import { NOTIFICATION_MY_SELECT_URI, WS_URL } from "./../../api/_URI";
 
 export default function Header({ onToggleAside }) {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default function Header({ onToggleAside }) {
     }
 
     const client = new Client({
-      brokerURL: WS_URL, // WebSocket 서버 URL
+      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000, // Heartbeat 설정 (수신)
       heartbeatOutgoing: 4000, // Heartbeat 설정 (송신)
@@ -59,7 +59,7 @@ export default function Header({ onToggleAside }) {
 
       // 구독 설정
       const subscription = client.subscribe(
-        `/topic/notifications/${user.id}`,
+        `/topic/notifications/${user.id}`, // 표준 WebSocket 경로
         (message) => {
           try {
             const notification = JSON.parse(message.body);
