@@ -1,8 +1,18 @@
 import {
   CHANNEL_URI,
   CHANNEL_LIST_URI,
+<<<<<<< HEAD
   DM_GET_MESSAGES_URI
 } from './_URI'
+=======
+  DM_GET_MESSAGES_URI,
+  CHANNEL_GET_URI,
+  CHANNEL_GET_MESSAGES_URI,
+  CHANNEL_SEND_MESSAGE_URI,
+  CHANNEL_LEAVE_URI,
+  CHANNEL_ADD_MEMBER_URI,
+} from "./_URI";
+>>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
 import axios from "axios";
 
 export const createChannel = async (channelData) => {
@@ -29,6 +39,28 @@ export const getAllChannels = async () => {
   }
 };
 
+<<<<<<< HEAD
+=======
+// 채널 멤버 추가 API 함수
+export const addChannelMember = async (channelId, users) => {
+  try {
+    console.log(`[JS] 채널 멤버 추가 요청: 채널 ID ${channelId}`);
+
+    // users 배열에서 ID만 추출
+    const userIds = users.map((user) => user.id);
+
+    const response = await axios.post(CHANNEL_ADD_MEMBER_URI(channelId), {
+      userIds, // 서버로 ID만 전송
+    });
+
+    console.log(`[JS] 멤버 추가 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 채널 멤버 추가 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+};
+>>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
 
 export const getDmMessages = async (dmId) => {
   try {

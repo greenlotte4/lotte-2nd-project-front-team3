@@ -4,6 +4,11 @@ import axiosInstance from "./../utils/axiosInstance";
 import {
   USER_ADMIN_CREATE_URI,
   USER_CHECK_DUPLICATE_ID_URI,
+<<<<<<< HEAD
+=======
+  USER_DETAILS_URI,
+  USER_GET_ALL_URI,
+>>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
   USER_INVITE_VERIFY_URI,
@@ -58,6 +63,25 @@ export const loginUser = async (uid, password) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+// 유저 UID로 유저 조회
+export const getUserByUid = async (uid) => {
+  try {
+    const response = await axios.get(`${USER_DETAILS_URI}/${uid}`);
+    return response.data; // 서버에서 받은 유저 데이터 반환
+  } catch (error) {
+    console.error(
+      `유저 조회 실패 (UID: ${uid}):`,
+      error.response || error.message
+    );
+    throw new Error(
+      error.response?.data?.message ||
+      "유저 정보를 가져오는 중 오류가 발생했습니다."
+    );
+  }
+};
+>>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
 // 유저 리스트 조회 (회사별)
 export const selectMembers = async (company, page = 1, size = 20) => {
   try {
@@ -230,5 +254,16 @@ export const inviteUser = async (userData) => {
     throw new Error(
       error.response?.data?.message || "초대 요청 중 문제가 발생했습니다."
     );
+  }
+};
+
+
+export const getAllUser = async () => {
+  try {
+    const response = await axiosInstance.get(USER_GET_ALL_URI);
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error)
+    throw error;
   }
 };
