@@ -27,6 +27,7 @@ export const POPUP_URI = `${API_SERVER_HOST}/popups`;
 // attendance
 export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
 export const USER_CHECK_OUT_URI = `${API_SERVER_HOST}/attendance/check-out`; // 퇴근 처리
+export const USER_CHECK_STATUS_URI = `${API_SERVER_HOST}/attendance/status`; // 출퇴근 상태확인
 export const USER_CHANGE_STATUS_URI = `${API_SERVER_HOST}/attendance/update-status`; // 상태업데이트 처리
 
 // email

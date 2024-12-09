@@ -62,6 +62,11 @@ export default function AdminAside({ asideVisible }) {
                 <li>
                   <Link to="/antwork/admin/popup">🔔&nbsp;&nbsp;팝업관리</Link>
                 </li>
+                <li>
+                  <Link to="/antwork/admin/notification">
+                    📩&nbsp;&nbsp;알림관리
+                  </Link>
+                </li>
               </ol>
             )}
             {/* 조직관리*/}

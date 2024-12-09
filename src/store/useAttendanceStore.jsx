@@ -3,17 +3,59 @@ import { persist } from "zustand/middleware";
 import {
   checkInAPI,
   checkOutAPI,
+  getAttendanceStatusAPI,
   updateStatusAPI,
 } from "./../api/attendanceAPI";
 
 const useAttendanceStore = create(
   persist(
     (set, get) => ({
+      userId: null,
       status: "AVAILABLE",
       checkInTime: null,
       checkOutTime: null,
       isLoading: false,
       error: null,
+
+      // 사용자 상태 초기화 및 동기화
+      initializeForUser: async (userId) => {
+        if (!userId) throw new Error("User ID가 필요합니다.");
+        set({ isLoading: true, error: null });
+
+        try {
+          const data = await getAttendanceStatusAPI(userId); // 서버에서 상태 가져오기
+          set({
+            userId,
+            status: data.status || "AVAILABLE",
+            checkInTime: data.checkInTime || null,
+            checkOutTime: data.checkOutTime || null,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error("사용자 상태 초기화 실패:", error);
+          set({
+            userId,
+            status: "AVAILABLE",
+            checkInTime: null,
+            checkOutTime: null,
+            error: "상태 초기화 실패",
+            isLoading: false,
+          });
+        }
+      },
+
+      // 사용자 로그인 시 초기화
+      login: (userId) => {
+        if (!userId) throw new Error("User ID가 필요합니다.");
+        set({
+          userId,
+          status: "AVAILABLE",
+          checkInTime: null,
+          checkOutTime: null,
+          isLoading: false,
+          error: null,
+        });
+      },
 
       // 출근 처리
       checkIn: async (userId) => {
@@ -21,7 +63,6 @@ const useAttendanceStore = create(
           if (!userId) throw new Error("User ID가 필요합니다.");
           set({ isLoading: true, error: null });
           const data = await checkInAPI(userId);
-          console.log("dataa" + data);
           if (!data) {
             throw new Error("API 응답이 유효하지 않습니다.");
           }
@@ -94,6 +135,7 @@ const useAttendanceStore = create(
       // 상태 초기화
       resetAttendance: () =>
         set({
+          userId: null,
           status: "AVAILABLE",
           checkInTime: null,
           checkOutTime: null,
@@ -108,7 +150,7 @@ const useAttendanceStore = create(
       },
     }),
     {
-      name: "attendance-store",
+      name: (set, get) => `attendance-store-${get().userId || "guest"}`, // 사용자별 저장소 키
       partialize: (state) => ({
         status: state.status,
         checkInTime: state.checkInTime,
