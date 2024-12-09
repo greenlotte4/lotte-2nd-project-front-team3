@@ -45,10 +45,12 @@ export const getCalendar = async (uid) => {
 };
 
 // 캘린더 update
-export const updateCalendar = async (no, newName) => {
+export const updateCalendar = async (no, newName, color) => {
+  console.log("555555::" + newName);
+  console.log("555555::" + color);
   try {
     const response = await axiosInstance.put(
-      `${CALENDAR_UPDATE_URI}/${no}/${newName}`,
+      `${CALENDAR_UPDATE_URI}/${no}/${newName}/${encodeURIComponent(color)}`,
       {
         headers: {
           "Content-Type": "application/json", // JSON 형식으로 전송
@@ -163,11 +165,15 @@ export const updateScheduleDrag = async (no, start, end) => {
 // 일정 상세update
 export const updateSchedule = async (formData) => {
   try {
-    const response = await axios.put(SCHEDULE_UPDATEDETAIL_URI, formData, {
-      headers: {
-        "Content-Type": "application/json", // JSON 형식으로 전송
-      },
-    });
+    const response = await axiosInstance.put(
+      SCHEDULE_UPDATEDETAIL_URI,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
     return response.data;
   } catch (err) {
     console.log(err);

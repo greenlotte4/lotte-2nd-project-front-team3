@@ -15,6 +15,7 @@ import {
 import useAuthStore from "../../../store/AuthStore";
 import { useNavigate } from "react-router-dom";
 import { useCalendarStore } from "../../../store/CalendarStore";
+import { Calendar, Clock, MapPin } from "lucide-react";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const navigate = useNavigate();
@@ -314,11 +315,11 @@ function MyCalendar({ listMonth, setListMonth }) {
       const data2 = await getCalendar(uid);
       setOption(data2);
     };
+    console.log("4444444444444444444444" + option);
     fetchData();
   }, [uid]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     console.log(formData); // 폼 제출 시 데이터 로그
     console.log("uid---------" + uid);
     setFormData({ uid: uid });
@@ -358,7 +359,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           selectable={true} // 드래그로 날짜 선택 활성화
           select={handleDateSelect} // 날짜 선택 시 실행할 함수
           slotWidth="auto" // slot의 너비를 자동으로 조정
-          height="750px" // 일정 내용 영역의 높이를 200px로 고정
+          contentHeight="700px" // 일정 내용 영역의 높이를 200px로 고정
           dayMaxEvents={dayMaxEvents} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
           datesSet={handleDatesSet} // 뷰 변경시마다 호출되는 이벤트
           moreLinkText={(n) => `+${n}개의 일정 더보기`} // 3개 이상일 때 나타날 + 텍스트
@@ -400,107 +401,156 @@ function MyCalendar({ listMonth, setListMonth }) {
 
             {/* 모달 창 */}
             <div className="fixed inset-0 flex items-center justify-center z-[101]">
-              <form>
-                <div className="w-[700px] h-[450px] bg-white shadow-lg p-7 rounded-lg">
+              <form onSubmit={handleSubmit}>
+                <div className="w-[700px] h-[500px] bg-white shadow-lg p-7 rounded-lg">
                   <h3 className="text-lg font-bold mb-4">
                     {editMode ? "일정 수정" : "일정 추가"}
                   </h3>
 
                   {/* 제목 입력 */}
-                  <input
-                    type="text"
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    placeholder="제목"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                  />
+                  <div>
+                    <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                      <Calendar className="mr-2 text-blue-500" size={18} />
+                      일정 이름
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                      placeholder="일정 제목을 입력하세요"
+                      required
+                      disabled={editMode}
+                    />
+                  </div>
 
                   {/* 장소 입력 */}
-                  <input
-                    type="text"
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    placeholder="장소"
-                    value={formData.location}
-                    onChange={(e) =>
-                      setFormData({ ...formData, location: e.target.value })
-                    }
-                  />
+                  <div className="mt-[10px]">
+                    <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                      <MapPin className="mr-2 text-orange-500" size={18} />
+                      장소
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location}
+                      onChange={(e) =>
+                        setFormData({ ...formData, location: e.target.value })
+                      }
+                      placeholder="장소를 입력하세요"
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
+                      disabled={editMode}
+                    />
+                  </div>
 
                   {/* Calendar Selection */}
-                  <select
-                    name="calendarId"
-                    value={formData.calendarId || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, calendarId: e.target.value })
-                    }
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    required
-                  >
-                    <option value="">Calendar 선택</option>
-                    {option.map((item) => (
-                      <option key={item.calendarId} value={item.calendarId}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="mt-[10px]">
+                    <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                      <Calendar className="mr-2 text-purple-500" size={18} />
+                      Calendar 선택
+                    </label>
+                    <select
+                      name="calendarId"
+                      value={formData.calendarId}
+                      onChange={(e) =>
+                        setFormData({ ...formData, calendarId: e.target.value })
+                      }
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                      required
+                      disabled={editMode}
+                    >
+                      <option value="">Calendar 선택</option>
+                      {option.map((item) => (
+                        <option key={item.calendarId} value={item.calendarId}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   {/* 설명 입력 */}
-                  <textarea
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    placeholder="설명"
-                    name="content"
-                    value={formData.content}
-                    onChange={(e) =>
-                      setFormData({ ...formData, content: e.target.value })
-                    }
-                  ></textarea>
+                  <div className="mt-[10px]">
+                    <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                      일정 내용
+                    </label>
+                    <textarea
+                      name="content"
+                      value={formData.content}
+                      onChange={(e) =>
+                        setFormData({ ...formData, content: e.target.value })
+                      }
+                      placeholder="일정에 대한 자세한 내용을 입력하세요"
+                      className="resize-none w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all"
+                      rows="4"
+                      disabled={editMode}
+                    />
+                  </div>
 
-                  {/* 시작일 입력 */}
-                  <input
-                    type="datetime-local"
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    name="start"
-                    value={formData.start}
-                    onChange={(e) =>
-                      setFormData({ ...formData, start: e.target.value })
-                    }
-                  />
-
-                  {/* 종료일 입력 */}
-                  <input
-                    type="datetime-local"
-                    className="w-full p-2 mb-4 border rounded outline-none"
-                    name="end"
-                    value={formData.end}
-                    onChange={(e) =>
-                      setFormData({ ...formData, end: e.target.value })
-                    }
-                  />
+                  {/* Start and End Time */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                        <Clock className="mr-2 text-green-500" size={18} />
+                        시작 시간
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="start"
+                        value={formData.start}
+                        onChange={(e) =>
+                          setFormData({ ...formData, start: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+                        required
+                        disabled={editMode}
+                      />
+                    </div>
+                    <div>
+                      <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                        <Clock className="mr-2 text-red-500" size={18} />
+                        종료 시간
+                      </label>
+                      <input
+                        type="datetime-local"
+                        name="end"
+                        value={formData.end}
+                        onChange={(e) =>
+                          setFormData({ ...formData, end: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition-all"
+                        required
+                        disabled={editMode}
+                      />
+                    </div>
+                  </div>
 
                   {/* 버튼들 */}
-                  <div className="flex justify-end space-x-2 outline-none">
-                    <button
-                      className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
-                      onClick={handleSubmit}
-                    >
-                      {editMode ? "수정" : "저장"}
-                    </button>
+                  <div className="flex justify-end space-x-2 outline-none mt-[15px] ">
+                    {!editMode && (
+                      <button
+                        className="bg-[#A0C3F7] text-white px-4 py-2 rounded hover:bg-blue-400 outline-none"
+                        type="submit"
+                      >
+                        저장
+                      </button>
+                    )}
                     {editMode && (
                       <>
-                        <button
-                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                          onClick={handleDelete}
-                        >
-                          삭제
-                        </button>
                         <button
                           type="button"
                           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                           onClick={navigateToEditPage}
                         >
                           상세 수정
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          onClick={handleDelete}
+                        >
+                          삭제
                         </button>
                       </>
                     )}

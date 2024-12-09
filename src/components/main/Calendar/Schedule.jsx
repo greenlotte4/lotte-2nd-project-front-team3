@@ -388,7 +388,6 @@ export default function Schedule() {
                 onChange={handleInputChange}
                 placeholder="장소를 입력하세요"
                 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
-                required
               />
             </div>
 
@@ -404,7 +403,6 @@ export default function Schedule() {
                 placeholder="일정에 대한 자세한 내용을 입력하세요"
                 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all"
                 rows="4"
-                required
               />
             </div>
 

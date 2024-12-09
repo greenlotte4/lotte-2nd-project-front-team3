@@ -484,3 +484,8 @@ aside.hidden + .main-content {
     }
   }
 }
+
+#colorCalendar::-webkit-color-swatch {
+  border-radius: 30px;
+  border: none;
+}
