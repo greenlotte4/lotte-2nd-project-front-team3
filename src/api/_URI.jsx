@@ -20,6 +20,8 @@ export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회�
 export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
 export const USER_DETAILS_URI = `${API_SERVER_HOST}/user`; // 로그인 유저 전체 객체 정보
 
+export const USER_GET_ALL_URI = `${API_SERVER_HOST}/user/all`; // 유저 리스트 전부 불러오기
+
 // attendance
 export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
 export const USER_CHECK_OUT_URI = `${API_SERVER_HOST}/attendance/check-out`; // 퇴근 처리
@@ -74,6 +76,10 @@ export const CHANNEL_SEND_MESSAGE_URI = (channelId) =>
 
 export const CHANNEL_LEAVE_URI = (channelId, userId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/leave?userId=${userId}`; // 채널 나가기
+
+export const CHANNEL_ADD_MEMBER_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/member`; // 채널 멤버 추가
+
 
 export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>

@@ -5,6 +5,7 @@ import {
   USER_ADMIN_CREATE_URI,
   USER_CHECK_DUPLICATE_ID_URI,
   USER_DETAILS_URI,
+  USER_GET_ALL_URI,
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
   USER_INVITE_VERIFY_URI,
@@ -71,7 +72,7 @@ export const getUserByUid = async (uid) => {
     );
     throw new Error(
       error.response?.data?.message ||
-        "유저 정보를 가져오는 중 오류가 발생했습니다."
+      "유저 정보를 가져오는 중 오류가 발생했습니다."
     );
   }
 };
@@ -247,5 +248,16 @@ export const inviteUser = async (userData) => {
     throw new Error(
       error.response?.data?.message || "초대 요청 중 문제가 발생했습니다."
     );
+  }
+};
+
+
+export const getAllUser = async () => {
+  try {
+    const response = await axiosInstance.get(USER_GET_ALL_URI);
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error)
+    throw error;
   }
 };
