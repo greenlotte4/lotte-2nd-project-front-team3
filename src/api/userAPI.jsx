@@ -76,6 +76,7 @@ export const getUserByUid = async (uid) => {
     );
   }
 };
+
 // 유저 리스트 조회 (회사별)
 export const selectMembers = async (company, page = 1, size = 20) => {
   try {

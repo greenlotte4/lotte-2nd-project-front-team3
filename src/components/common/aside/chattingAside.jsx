@@ -3,8 +3,8 @@ import { useInviteModal } from "../../../hooks/chatting/invitemodal";
 import useModalStore from "../../../store/modalStore";
 import useToggle from "../../../hooks/useToggle";
 import { getAllChannels } from "../../../api/chattingAPI"; // 경로 확인
-import { Link, NavLink } from "react-router-dom";
-import { channelStore } from "../../../store/chattingStore";
+
+
 
 export default function ChattingAside({ asideVisible, channelId }) {
   const [toggleStates, toggleState] = useToggle({
@@ -13,8 +13,7 @@ export default function ChattingAside({ asideVisible, channelId }) {
     isPersonalOpen: true,
   });
 
-  const channels = channelStore((state) => state.channels);
-  const setChannels = channelStore((state) => state.setChannels);
+  const [channels, setChannels] = useState([]); // 채널 목록 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
 
   const openModal = useModalStore((state) => state.openModal);
@@ -25,7 +24,6 @@ export default function ChattingAside({ asideVisible, channelId }) {
     const fetchChannels = async () => {
       try {
         const response = await getAllChannels(); // getAllChannels 함수 호출
-        console.log(response);
         setChannels(response); // API에서 받은 채널 목록 상태에 저장
       } catch (error) {
         console.error("채널 목록을 가져오는 데 실패했습니다:", error);
@@ -145,9 +143,7 @@ export default function ChattingAside({ asideVisible, channelId }) {
           className="flex items-center justify-between cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
           onClick={() => toggleState("isChannelOpen")}
         >
-          <span className="text-lg font-semibold text-black">
-            📢 채널 (단체 채팅)
-          </span>
+          <span className="text-lg font-semibold text-black">📢 채널 (단체 채팅)</span>
           <span
             className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
               }`}
@@ -175,25 +171,18 @@ export default function ChattingAside({ asideVisible, channelId }) {
           <ul className="space-y-4">
             {channels.length > 0 ? (
               channels.map((channel) => (
-                <li key={channel.id}>
-                  <NavLink
-                    to={`/antwork/chatting/channel/${channel.id}`}
-                    className={`flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition`}
-                  >
-                    <img
-                      src="path/to/group-icon.svg"
-                      alt="Group"
-                      className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-                    />
-                    <div className="flex-1">
-                      <p className="font-medium text-lg text-gray-800">
-                        {channel.name}
-                      </p>
-                    </div>
-                    <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
-                      {channel.unreadCount}
-                    </div>
-                  </NavLink>
+                <li key={channel.id} className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
+                  <img
+                    src="path/to/group-icon.svg"
+                    alt="Group"
+                    className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-lg text-gray-800">{channel.name}</p>
+                  </div>
+                  <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
+                    {channel.unreadCount}
+                  </div>
                 </li>
               ))
             ) : (

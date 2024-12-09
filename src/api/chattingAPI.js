@@ -8,6 +8,8 @@ import {
   CHANNEL_LEAVE_URI,
   CHANNEL_ADD_MEMBER_URI,
 } from "./_URI";
+} from "./_URI";
+
 import axios from "axios";
 
 export const createChannel = async (channelData) => {

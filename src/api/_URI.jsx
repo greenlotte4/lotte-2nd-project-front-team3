@@ -19,8 +19,10 @@ export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초�
 export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회원 초대 토큰 검증
 export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
 export const USER_DETAILS_URI = `${API_SERVER_HOST}/user`; // 로그인 유저 전체 객체 정보
-
 export const USER_GET_ALL_URI = `${API_SERVER_HOST}/user/all`; // 유저 리스트 전부 불러오기
+
+// popup
+export const POPUP_URI = `${API_SERVER_HOST}/popups`;
 
 // attendance
 export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // 출근 처리
@@ -46,6 +48,9 @@ export const PROJECT_TASK_INSERT_URI = `${API_SERVER_HOST}/project/task/insert`;
 export const PROJECT_TASK_SELECT_URI = `${API_SERVER_HOST}/project/task/select`; // 프로젝트 작업 조회
 export const PROJECT_TASK_UPDATE_URI = `${API_SERVER_HOST}/project/task/update`; // 프로젝트 작업 추가
 export const PROJECT_TASK_DELETE_URI = `${API_SERVER_HOST}/project/task/delete`; // 프로젝트 작업 삭제
+export const PROJECT_TASK_UPDATE_POSITION_URI = `${API_SERVER_HOST}/project/task/updatePosition`; // 프로젝트 작업 드래그앤드랍 상태 업데이트
+export const PROJECT_STATE_UPDATE_URI = `${API_SERVER_HOST}/project/state/update`; // 프로젝트 작업상태 수정
+export const PROJECT_STATE_DELETE_URI = `${API_SERVER_HOST}/project/state/delete`; // 프로젝트 작업상태 삭제
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
@@ -79,7 +84,6 @@ export const CHANNEL_LEAVE_URI = (channelId, userId) =>
 
 export const CHANNEL_ADD_MEMBER_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/member`; // 채널 멤버 추가
-
 
 export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>

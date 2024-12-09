@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
-import { postProject, postProjectState } from "../../../api/projectAPI";
+import {
+  postProject,
+  postProjectState,
+  updateProjectState,
+} from "../../../api/projectAPI";
 
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
@@ -13,6 +17,8 @@ export default function ProjectModal({
   currentStateId,
   currentTask,
   setCurrentTask,
+  onEditState,
+  currentState,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -121,6 +127,56 @@ export default function ProjectModal({
     } catch (error) {
       console.error("Error adding state:", error);
       alert("상태 추가 중 문제가 발생했습니다.");
+    }
+  };
+
+  // 프로젝트 작업 상태 수정
+  useEffect(() => {
+    if (type === "state-edit" && currentState) {
+      setStateData({
+        title: currentState.title || "",
+        description: currentState.description || "",
+        color: currentState.color || "#00FF00",
+        projectId: projectId,
+      });
+    } else if (type === "state-add") {
+      setStateData({
+        title: "",
+        description: "",
+        color: "#00FF00",
+        projectId: projectId,
+      });
+    }
+  }, [type, currentState, projectId]);
+
+  // 프로젝트 작업 상태 수정 핸들러
+  const handleEditState = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(
+        "백엔드로 갈 currentState.id, stateData : " + currentState.id,
+        stateData
+      );
+      const updatedStateFromServer = await updateProjectState(
+        currentState.id,
+        stateData
+      );
+
+      // 기존 items를 유지하면서 상태 업데이트
+      const updatedState = {
+        ...updatedStateFromServer,
+        items: currentState.items || [], // 기존 items를 유지
+      };
+
+      console.log("updatedState : " + updatedState);
+
+      // 부모 컴포넌트에 상태 수정 알림
+      onEditState(updatedState);
+      alert("상태가 성공적으로 수정되었습니다!");
+      closeModal();
+    } catch (error) {
+      console.error("Error editing state:", error);
+      alert("상태 수정 중 문제가 발생했습니다.");
     }
   };
 
@@ -737,11 +793,15 @@ export default function ProjectModal({
         );
 
       case "state-add":
+      case "state-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
             <div className="bg-white rounded-lg w-[500px] h-[39vh] p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">새 작업상태 추가</h2>
+                <h2 className="text-2xl font-bold">
+                  {" "}
+                  {type === "state-add" ? "새 작업상태 추가" : "작업상태 수정"}
+                </h2>
                 <button
                   onClick={closeModal}
                   className="text-gray-600 hover:text-gray-900"
@@ -750,7 +810,12 @@ export default function ProjectModal({
                 </button>
               </div>
 
-              <form onSubmit={handleAddState} className="space-y-4">
+              <form
+                onSubmit={
+                  type === "state-add" ? handleAddState : handleEditState
+                }
+                className="space-y-4"
+              >
                 {/* 색상 선택 */}
                 <div>
                   <label className="block mb-2 font-medium">
@@ -809,7 +874,7 @@ export default function ProjectModal({
                     type="submit"
                     className="px-4 py-2 bg-[#A0C3F7] text-white rounded hover:bg-blue-700"
                   >
-                    저장
+                    {type === "state-add" ? "추가" : "수정"}
                   </button>
                 </div>
               </form>
