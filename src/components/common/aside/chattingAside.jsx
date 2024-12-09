@@ -6,7 +6,7 @@ import { getAllChannels } from "../../../api/chattingAPI"; // 경로 확인
 import { Link, NavLink } from "react-router-dom";
 import { channelStore } from "../../../store/chattingStore";
 
-export default function ChattingAside({ asideVisible }) {
+export default function ChattingAside({ asideVisible, channelId }) {
   const [toggleStates, toggleState] = useToggle({
     isDMOpen: true,
     isChannelOpen: true,
@@ -37,9 +37,14 @@ export default function ChattingAside({ asideVisible }) {
 
   return (
     <aside
+<<<<<<< HEAD
       className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${
         !asideVisible ? "hidden" : ""
       }`}
+=======
+      className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${!asideVisible ? "hidden" : ""
+        }`}
+>>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
     >
       {/* Header */}
       <div className="pb-4 border-b border-gray-200 mb-4 flex items-center justify-between">
@@ -80,9 +85,8 @@ export default function ChattingAside({ asideVisible }) {
         >
           <span className="text-lg font-semibold text-black">👤 개인 채팅</span>
           <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
-              toggleStates.isPersonalOpen ? "rotate-180" : "rotate-0"
-            }`}
+            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isPersonalOpen ? "rotate-180" : "rotate-0"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -101,9 +105,8 @@ export default function ChattingAside({ asideVisible }) {
           </span>
         </div>
         <div
-          className={`overflow-hidden transition-all duration-300 ${
-            toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ${toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
+            }`}
         >
           <ul className="space-y-4">
             <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
@@ -152,9 +155,8 @@ export default function ChattingAside({ asideVisible }) {
             📢 채널 (단체 채팅)
           </span>
           <span
-            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${
-              toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
-            }`}
+            className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -213,8 +215,8 @@ export default function ChattingAside({ asideVisible }) {
         <button
           className="w-full flex items-center justify-center gap-3 bg-blue-500 text-white px-6 py-3 rounded-full hover:shadow-xl transition-transform hover:scale-105"
           onClick={() => {
-            console.log("Modal Props:", inviteModalProps); // 로그 추가
-            openModal("invite", { ...inviteModalProps });
+            console.log("채널 ID 전달:", channelId); // *** 로그 추가 ***
+            openModal("invite", { channelId }); // channelId를 전달
           }}
         >
           <svg

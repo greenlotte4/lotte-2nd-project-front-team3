@@ -27,7 +27,6 @@ export default function ChannelMain() {
       try {
         const channel = await getChannel(channelId);
         setChannelData(channel);
-        console.log(response);
       } catch (err) {
         console.error(err);
       }
@@ -130,11 +129,10 @@ export default function ChannelMain() {
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
         <div
-          className={`flex flex-col h-full transition-all duration-300 ${
-            toggleStates.isSidebarOpen
-              ? "w-[78%] min-w-[300px]"
-              : "w-full min-w-[300px]"
-          }`}
+          className={`flex flex-col h-full transition-all duration-300 ${toggleStates.isSidebarOpen
+            ? "w-[78%] min-w-[300px]"
+            : "w-full min-w-[300px]"
+            }`}
         >
           {/* 채팅 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
@@ -245,11 +243,10 @@ export default function ChannelMain() {
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${
-                    message.senderId === user?.id
-                      ? "flex-row-reverse"
-                      : "flex-row"
-                  }`}
+                  className={`flex ${message.senderId === user?.id
+                    ? "flex-row-reverse"
+                    : "flex-row"
+                    }`}
                 >
                   <img
                     src="https://via.placeholder.com/50"
@@ -257,11 +254,10 @@ export default function ChannelMain() {
                     className="w-10 h-10 rounded-full"
                   />
                   <div
-                    className={`p-4 ${
-                      message.senderId === user?.id
-                        ? "bg-blue-100"
-                        : "bg-gray-100"
-                    } rounded-lg`}
+                    className={`p-4 ${message.senderId === user?.id
+                      ? "bg-blue-100"
+                      : "bg-gray-100"
+                      } rounded-lg`}
                   >
                     <p>{message.content}</p>
                     <span>{message.createdAt}</span>
@@ -300,9 +296,8 @@ export default function ChannelMain() {
 
         {/* 오른쪽 토글 패널 */}
         <div
-          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${
-            toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
-          } duration-300`}
+          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
+            } duration-300`}
         >
           {/* 상단 영역 */}
           <div className="flex items-center justify-between mb-6">
@@ -359,9 +354,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -407,9 +401,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -454,9 +447,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
