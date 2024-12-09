@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 import axios from "axios";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -11,19 +12,23 @@ export default function PageAside({ asideVisible }) {
   });
   const [personalPageList, setPersonalPageList] = useState([]);
 
-  useEffect(() => {
-    // 개인 페이지 목록을 가져오는 함수
-    const fetchPersonalPages = async () => {
-      try {
-        const response = await axios.get(PAGE_LIST_UID_URI);
-        setPersonalPageList(response.data);
-      } catch (error) {
-        console.error("개인 페이지 목록을 가져오는데 실패했습니다:", error);
-      }
-    };
+  const user = useAuthStore((state) => state.user);
+  const uid = user?.uid;
 
-    fetchPersonalPages();
-  }, []);
+  useEffect(() => {
+    if (uid) {
+      const fetchPersonalPages = async () => {
+        try {
+          const response = await axios.get(`${PAGE_LIST_UID_URI}/${uid}`);
+          setPersonalPageList(response.data);
+        } catch (error) {
+          console.error("개인 페이지 목록을 가져오는데 실패했습니다:", error);
+        }
+      };
+
+      fetchPersonalPages();
+    }
+  }, [uid]);
 
   return (
     <>

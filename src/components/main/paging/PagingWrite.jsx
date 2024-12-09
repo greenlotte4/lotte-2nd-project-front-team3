@@ -45,7 +45,7 @@ const PagingWrite = () => {
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
 
-  // uid 체크를 위한 useEffect 추가
+  // uid 체크 로그인 안되어 있으면 로그인 페이지로
   useEffect(() => {
     if (!uid) {
       console.warn("User ID is not available");
@@ -54,7 +54,7 @@ const PagingWrite = () => {
     }
   }, [uid, navigate]);
 
-  // 페이지 데이터 가져오기
+  // 주소값 id로 페이지 데이터 가져오기
   const fetchPageData = async () => {
     console.log("fetchPageData - 페이지 데이터 가져오기 시작");
     try {
