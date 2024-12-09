@@ -51,6 +51,7 @@ export const PROJECT_TASK_DELETE_URI = `${API_SERVER_HOST}/project/task/delete`;
 export const PROJECT_TASK_UPDATE_POSITION_URI = `${API_SERVER_HOST}/project/task/updatePosition`; // 프로젝트 작업 드래그앤드랍 상태 업데이트
 export const PROJECT_STATE_UPDATE_URI = `${API_SERVER_HOST}/project/state/update`; // 프로젝트 작업상태 수정
 export const PROJECT_STATE_DELETE_URI = `${API_SERVER_HOST}/project/state/delete`; // 프로젝트 작업상태 삭제
+export const PROJECT_UPDATE_URI = `${API_SERVER_HOST}/project/update`; // 프로젝트 수정
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
