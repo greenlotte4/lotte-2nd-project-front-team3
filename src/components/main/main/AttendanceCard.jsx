@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import useAttendanceStore from "./../../../store/useAttendanceStore";
 import useAuthStore from "@/store/AuthStore";
 import { format } from "date-fns";
@@ -10,7 +9,7 @@ const AttendanceCard = () => {
   const [workHours, setWorkHours] = useState("0H");
   const [progressWidth, setProgressWidth] = useState("0%");
   const [currentTime, setCurrentTime] = useState(new Date());
-  const MAX_WORK_HOURS = 9; // 하루 근무 시간 기준 9시간
+  const MAX_WORK_HOURS = 9;
 
   const user = useAuthStore((state) => state.user);
 
@@ -37,58 +36,49 @@ const AttendanceCard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000); // 매 초마다 갱신
+    }, 1000);
 
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 클린업
+    return () => clearInterval(interval);
   }, []);
 
   // 근무 시간 및 진행률 계산
   useEffect(() => {
     let interval;
 
-    const parseTime = (time) => {
-      if (typeof time === "string" && !isNaN(new Date(time).getTime())) {
-        return new Date(time);
-      }
-      if (typeof time === "string" && time.match(/^\d{2}:\d{2}:\d{2}$/)) {
-        const [hours, minutes, seconds] = time.split(":").map(Number);
-        const now = new Date();
-        now.setHours(hours, minutes, seconds, 0);
-        return now;
-      }
-      return null;
-    };
+    const calculateProgress = () => {
+      const startTime = checkInTime ? new Date(checkInTime) : null;
+      const endTime = checkOutTime ? new Date(checkOutTime) : null;
 
-    const startTime = parseTime(checkInTime);
-    const endTime = checkOutTime ? parseTime(checkOutTime) : null;
-
-    if (startTime && !endTime) {
-      interval = setInterval(() => {
-        const now = new Date();
-        const elapsedHours = Math.floor((now - startTime) / 3600000);
+      if (startTime && !endTime) {
+        interval = setInterval(() => {
+          const now = new Date();
+          const elapsedHours = Math.floor((now - startTime) / 3600000);
+          setWorkHours(`${elapsedHours}H`);
+          setProgressWidth(
+            `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
+          );
+        }, 1000);
+      } else if (startTime && endTime) {
+        const elapsedHours = Math.floor((endTime - startTime) / 3600000);
         setWorkHours(`${elapsedHours}H`);
         setProgressWidth(
           `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
         );
-      }, 1000);
-    } else if (startTime && endTime) {
-      const elapsedHours = Math.floor((endTime - startTime) / 3600000);
-      setWorkHours(`${elapsedHours}H`);
-      setProgressWidth(
-        `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
-      );
-    } else {
-      setWorkHours("0H");
-      setProgressWidth("0%");
-    }
+      } else {
+        setWorkHours("0H");
+        setProgressWidth("0%");
+      }
+    };
 
+    calculateProgress();
     return () => clearInterval(interval);
   }, [checkInTime, checkOutTime]);
 
   const handleCheckIn = async () => {
     try {
-      await checkIn(user.id);
-      alert("출근 처리 완료! 오늘도 좋은 하루 되세요.");
+      const newCheckInTime = await checkIn(user.id); // API 호출 후 반환된 시간
+      setCurrentTask(""); // 초기화
+      alert(`출근 처리 완료! 출근 시간: ${formatDateTime(newCheckInTime)}`);
     } catch (err) {
       console.error("출근 처리 실패:", err);
     }
@@ -96,8 +86,8 @@ const AttendanceCard = () => {
 
   const handleCheckOut = async () => {
     try {
-      await checkOut(user.id);
-      alert("퇴근 처리 완료! 수고하셨습니다.");
+      const newCheckOutTime = await checkOut(user.id); // API 호출 후 반환된 시간
+      alert(`퇴근 처리 완료! 퇴근 시간: ${formatDateTime(newCheckOutTime)}`);
     } catch (err) {
       console.error("퇴근 처리 실패:", err);
     }
@@ -114,13 +104,12 @@ const AttendanceCard = () => {
     }
   };
 
-  // 시간 포맷 함수
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "--:--:--";
     try {
-      return format(new Date(dateTime), "yyyy-MM-dd HH:mm:ss"); // 원하는 형식으로 포맷팅
+      return format(new Date(dateTime), "yyyy-MM-dd HH:mm:ss");
     } catch {
-      return "--:--:--"; // 에러 발생 시 기본 값 반환
+      return "--:--:--";
     }
   };
 
@@ -151,13 +140,27 @@ const AttendanceCard = () => {
       <section className="space-y-4">
         <div className="flex justify-between text-gray-700">
           <span>출근시간</span>
-          <span>{formatDateTime(checkInTime)}</span>
+          <span>
+            {status === "AVAILABLE" || !checkInTime
+              ? "기록 없음"
+              : formatDateTime(checkInTime)}
+          </span>
         </div>
         <div className="flex justify-between text-gray-700">
           <span>퇴근시간</span>
-          <span>{formatDateTime(checkOutTime)}</span>
+          <span>
+            {status === "AVAILABLE" || !checkOutTime
+              ? "기록 없음"
+              : formatDateTime(checkOutTime)}
+          </span>
         </div>
       </section>
+
+      {status === "AVAILABLE" && (
+        <section className="mt-6 text-center">
+          <p>출근 기록이 없습니다. 출근 버튼을 눌러 시작하세요.</p>
+        </section>
+      )}
 
       <hr className="border-t border-dashed border-gray-300 my-6" />
 

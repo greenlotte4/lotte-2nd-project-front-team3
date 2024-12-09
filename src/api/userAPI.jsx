@@ -14,6 +14,7 @@ import {
   USER_LOGOUT_URI,
   USER_REFRESH_URI,
   USER_REGISTER_URI,
+  USER_SELECT_URI,
   USER_SEND_EMAIL_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
@@ -72,12 +73,12 @@ export const getUserByUid = async (uid) => {
     );
     throw new Error(
       error.response?.data?.message ||
-      "유저 정보를 가져오는 중 오류가 발생했습니다."
+        "유저 정보를 가져오는 중 오류가 발생했습니다."
     );
   }
 };
 
-// 유저 리스트 조회 (회사별)
+// 유저 리스트 조회 (회사별 + 페이징)
 export const selectMembers = async (company, page = 1, size = 20) => {
   try {
     const response = await axios.get(USER_LIST_URI, {
@@ -86,6 +87,19 @@ export const selectMembers = async (company, page = 1, size = 20) => {
     return response.data;
   } catch (error) {
     console.error("멤버 리스트 가져오기 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 리스트 조회 (부서별)
+export const fetchUsersByDepartmentId = async (departmentId) => {
+  try {
+    const response = await axiosInstance.get(
+      `${USER_SELECT_URI}/${departmentId}`
+    );
+    return response.data; // 사용자 데이터 반환
+  } catch (error) {
+    console.error("사용자 데이터를 가져오는 중 오류 발생:", error);
     throw error;
   }
 };
@@ -252,13 +266,13 @@ export const inviteUser = async (userData) => {
   }
 };
 
-
+// 모든 유저 조회
 export const getAllUser = async () => {
   try {
     const response = await axiosInstance.get(USER_GET_ALL_URI);
     return response.data;
   } catch (error) {
-    console.error("유저 가져오기 요청 실패:", error)
+    console.error("유저 가져오기 요청 실패:", error);
     throw error;
   }
 };
