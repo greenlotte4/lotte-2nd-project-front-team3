@@ -6,100 +6,234 @@ import ImageTool from "@editorjs/image";
 import { BsEmojiSmile, BsThreeDotsVertical } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   PAGE_FETCH_URI,
-  PAGE_SAVE_URI,
   PAGE_IMAGE_UPLOAD_URI,
   PAGE_DELETE_URI,
+  PAGE_CREATE_URI,
+  WS_URL,
 } from "../../../api/_URI";
+import { Client } from "@stomp/stompjs";
+import axiosInstance from "@utils/axiosInstance";
+import { useThrottle } from "../../../hooks/paging/useThrottle"; // const - export
+import useAuthStore from "@/store/AuthStore"; // export default
 
 const PagingWrite = () => {
-  const ejInstance = useRef();
+  // 기본 상태들
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState(null);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const [id, setId] = useState(queryParams.get("id"));
-  const titleRef = useRef("");
   const [showMenu, setShowMenu] = useState(false);
-  const navigate = useNavigate();
+  const [stompClient, setStompClient] = useState(null);
+  const [componentId, setComponentId] = useState(null);
 
+  // location & navigation - 주소값에서 id값 찾기
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [id, setId] = useState(searchParams.get("id"));
+
+  // refs
+  const editorRef = useRef(null);
+  const contentRef = useRef(null);
+  // stompClient ref
+  const stompClientRef = useRef(null);
+
+  // 사용자 정보 가져오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user?.uid;
+
+  // uid 체크를 위한 useEffect 추가
+  useEffect(() => {
+    if (!uid) {
+      console.warn("User ID is not available");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
+      return;
+    }
+  }, [uid, navigate]);
+
+  // 페이지 데이터 가져오기
   const fetchPageData = async () => {
+    console.log("fetchPageData - 페이지 데이터 가져오기 시작");
     try {
-      const response = await fetch(`${PAGE_FETCH_URI}/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTitle(data.title);
-        titleRef.current = data.title;
-        if (ejInstance.current) {
-          await ejInstance.current.render(JSON.parse(data.content));
-          setContent(JSON.parse(data.content));
-        }
+      const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${id}`);
+      const data = response.data;
+      const parsedContent = JSON.parse(data.content);
+
+      setTitle(data.title);
+      contentRef.current = parsedContent;
+
+      if (editorRef.current) {
+        await editorRef.current.render(parsedContent);
       }
     } catch (error) {
       console.error("Error fetching page data:", error);
     }
   };
 
-  const createPage = async () => {
+  // WebSockt 메시지 수신
+  const handleWebSocketMessage = async (message) => {
+    console.log("handleWebSocketMessage - 웹소켓 메시지 수신 처리 시작");
     try {
-      const response = await fetch(PAGE_SAVE_URI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: "", content: "" }),
-      });
+      const data = JSON.parse(message.body);
+      console.log("Received message:", data);
 
-      if (response.ok) {
-        const result = await response.text();
-        setId(result);
-        queryParams.set("id", result);
-        window.history.replaceState(
-          {},
-          "",
-          `${location.pathname}?${queryParams}`
-        );
-      } else {
-        console.error("Error creating page:", response.statusText);
+      if (componentId === data.componentId) {
+        console.log("Ignoring own changes");
+        return;
+      }
+
+      // 제목 변경 처리
+      if (data.title) {
+        setTitle(data.title);
+      }
+
+      // 내용 변경 처리 - DOM 직접 조작
+      if (data.content && editorRef.current) {
+        try {
+          const newContent =
+            typeof data.content === "string"
+              ? JSON.parse(data.content)
+              : data.content;
+
+          const editorElement = document.getElementById("editorjs");
+          const currentBlocks = await editorRef.current.save();
+
+          // 블록 개수가 다른 우 전체 업데이트
+          if (currentBlocks.blocks.length !== newContent.blocks.length) {
+            await editorRef.current.render(newContent);
+            return;
+          }
+
+          // 각 블록 업데이트
+          newContent.blocks.forEach((block, index) => {
+            const blockElement = editorElement.querySelector(
+              `[data-id="${block.id}"]`
+            );
+            if (blockElement) {
+              const currentBlock = currentBlocks.blocks[index];
+
+              // 블록 타입이 다른 경우
+              if (currentBlock.type !== block.type) {
+                editorRef.current.blocks.update(index, block);
+                return;
+              }
+
+              // 텍스트 블록인 경우
+              if (block.type === "paragraph") {
+                const textElement = blockElement.querySelector(
+                  '[contenteditable="true"]'
+                );
+                if (textElement && textElement.innerHTML !== block.data.text) {
+                  textElement.innerHTML = block.data.text;
+                }
+              }
+              // 헤더인 경우
+              else if (block.type === "header") {
+                const headerElement = blockElement.querySelector(
+                  '[contenteditable="true"]'
+                );
+                if (
+                  headerElement &&
+                  headerElement.innerHTML !== block.data.text
+                ) {
+                  headerElement.innerHTML = block.data.text;
+                }
+              }
+              // 리스트인 경우
+              else if (block.type === "list") {
+                const listItems = blockElement.querySelectorAll(
+                  '[contenteditable="true"]'
+                );
+                block.data.items.forEach((item, i) => {
+                  if (listItems[i] && listItems[i].innerHTML !== item) {
+                    listItems[i].innerHTML = item;
+                  }
+                });
+              }
+              // 이미지인 경우
+              else if (block.type === "image") {
+                const imgElement = blockElement.querySelector("img");
+                if (imgElement && imgElement.src !== block.data.file.url) {
+                  imgElement.src = block.data.file.url;
+                }
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error updating content:", error);
+          // 에러 발생 시 전체 업데이트로 폴백
+          await editorRef.current.render(newContent);
+        }
       }
     } catch (error) {
-      console.error("Error creating page:", error);
+      console.error("Error in handleWebSocketMessage:", error);
     }
   };
 
-  const savePage = async (currentTitle, currentContent) => {
+  // 공통 방송 함수
+  const broadcastChanges = async (newTitle, newContent) => {
+    console.log("broadcastChanges - 변경사항 브로드캐스트 시작");
+    if (!componentId) {
+      console.warn("Component ID is null, cannot broadcast changes.");
+      return;
+    }
     try {
-      const saveData = {
+      console.log(
+        "📡 Broadcasting attempt - WebSocket status:",
+        stompClient?.active
+      );
+
+      if (!stompClient?.active) {
+        console.log("❌ WebSocket not active, attempting reconnection...");
+        return;
+      }
+      console.log(" Component ID in broadcastChanges:", componentId);
+      const changes = {
         _id: id,
-        title: currentTitle || titleRef.current,
-        content: JSON.stringify(currentContent || content),
+        title: newTitle,
+        content: JSON.stringify(newContent),
+        uid: uid,
+        timestamp: Date.now(),
+        componentId: componentId,
       };
 
-      console.log("Saving with title:", saveData.title);
-
-      const response = await fetch(PAGE_SAVE_URI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveData),
+      console.log(" Broadcasting changes:", changes);
+      stompClient.publish({
+        destination: `/app/page/${id}`,
+        body: JSON.stringify(changes),
       });
-
-      if (response.ok) {
-        console.log("Saved successfully");
-      }
+      console.log("✅ Broadcast successful");
     } catch (error) {
-      console.error("Error saving page:", error);
+      console.error("❌ Error broadcasting changes:", error);
     }
   };
 
-  const initializeEditor = () => {
-    ejInstance.current = new EditorJS({
+  // throttle된 브로드캐스트 함수 생성
+  const throttledBroadcast = useThrottle(async (savedData) => {
+    console.log("throttledBroadcast - throttle된 브로드캐스트 함수 실행");
+    if (stompClientRef.current?.active) {
+      const message = {
+        _id: id,
+        content: JSON.stringify(savedData),
+        componentId: componentId,
+        timestamp: Date.now(),
+        uid: uid,
+      };
+
+      stompClientRef.current.publish({
+        destination: `/app/page/${id}`,
+        body: JSON.stringify(message),
+      });
+    }
+  }, 500); // 500ms 쓰로틀
+
+  // EditorJS 초기화 및 변경 감지 핸들러
+  const createEditor = async (initialData = null) => {
+    console.log("createEditor - 에디터 생성 시작");
+    const editor = new EditorJS({
       holder: "editorjs",
       tools: {
         header: {
@@ -121,130 +255,342 @@ const PagingWrite = () => {
               uploadByFile: async (file) => {
                 const formData = new FormData();
                 formData.append("file", file);
-
-                const response = await fetch(PAGE_IMAGE_UPLOAD_URI, {
-                  method: "POST",
-                  body: formData,
-                });
-
-                if (response.ok) {
-                  const imageUrl = await response.text();
-                  return {
-                    success: 1,
-                    file: {
-                      url: imageUrl,
-                    },
-                  };
-                } else {
-                  return {
-                    success: 0,
-                    message: "Upload failed",
-                  };
+                try {
+                  const response = await axiosInstance.post(
+                    PAGE_IMAGE_UPLOAD_URI,
+                    formData,
+                    {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                      },
+                    }
+                  );
+                  return { success: 1, file: { url: response.data } };
+                } catch (error) {
+                  console.error("Upload failed:", error);
+                  return { success: 0, message: "Upload failed" };
                 }
               },
             },
           },
         },
       },
-      onChange: async () => {
-        const updatedContent = await ejInstance.current.save();
-        setContent(updatedContent);
-        await savePage(titleRef.current, updatedContent);
+      data: initialData,
+      onReady: () => {
+        const editorElement = document.getElementById("editorjs");
+        editorElement.addEventListener("input", async () => {
+          try {
+            const savedData = await editor.save();
+            throttledBroadcast(savedData);
+          } catch (error) {
+            console.error("Error in input handler:", error);
+          }
+        });
       },
     });
+
+    await editor.isReady;
+    console.log("🚀 Editor initialized successfully");
+    return editor;
   };
 
+  // 에디터 초기화 useEffect 수정
+  useEffect(() => {
+    if (!id || !componentId) {
+      console.log("Waiting for IDs...", { id, componentId });
+      return;
+    }
+
+    const initializeEditor = async () => {
+      try {
+        const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${id}`);
+        const data = response.data;
+        setTitle(data.title);
+        const parsedContent =
+          typeof data.content === "string"
+            ? JSON.parse(data.content)
+            : data.content;
+        const editor = await createEditor(parsedContent);
+        editorRef.current = editor;
+      } catch (error) {
+        console.error("Error initializing editor:", error);
+      }
+    };
+
+    initializeEditor();
+  }, [id, componentId]); // componentId를 의존성 배열에 추가
+
+  // WebSocket 구독 수정
+  useEffect(() => {
+    if (!uid || !id || !componentId) {
+      console.log("❌ Missing required data:", {
+        uid,
+        pageId: id,
+        componentId,
+      });
+      return;
+    }
+
+    console.log(" Initializing WebSocket connection");
+    const client = new Client({
+      brokerURL: WS_URL,
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      debug: function (str) {
+        console.log("🔌 WebSocket Debug:", str);
+      },
+    });
+
+    client.configure({
+      onConnect: () => {
+        console.log("🔌 Connected to WebSocket");
+        setStompClient(client);
+        stompClientRef.current = client; // ref에 저장
+
+        // 독 설정
+        const subscriptions = [`/topic/page/${id}`, `/topic/page/${id}/status`];
+
+        console.log("📩 Subscribing to channels:", subscriptions);
+
+        subscriptions.forEach((channel) => {
+          client.subscribe(channel, handleWebSocketMessage);
+        });
+
+        // 연결 성 후 초기 상 전송
+        const initialStatus = {
+          componentId: componentId,
+          type: "EDITOR_STATUS",
+          pageId: id,
+          uid: uid,
+          status: "viewing",
+          timestamp: Date.now(),
+        };
+
+        client.publish({
+          destination: `/app/page/${id}/status`,
+          body: JSON.stringify(initialStatus),
+        });
+      },
+      onDisconnect: () => {
+        console.log("🔴 Disconnected from WebSocket");
+        setStompClient(null);
+        stompClientRef.current = null; // ref 초기화
+      },
+      onStompError: (frame) => {
+        console.error("❌ STOMP Error:", frame);
+      },
+    });
+
+    try {
+      console.log("🔌 Activating WebSocket client");
+      client.activate();
+    } catch (error) {
+      console.error("❌ Error activating WebSocket:", error);
+    }
+
+    return () => {
+      if (client.active) {
+        console.log("🔌 Cleaning up WebSocket connection");
+        client.deactivate();
+      }
+    };
+  }, [id, componentId, uid]); // uid 의존성 추가
+
+  // ���신 이 함수 사용
+  const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
+  // componentId 초기화를 위한 useEffect 수정
+  useEffect(() => {
+    console.log("useEffect - componentId 초기화 시작");
+    if (!componentId) {
+      const id = generateUUID(); // uuidv4() 대신 generateUUID() 사용
+      setComponentId(id);
+      console.log("🔍 Component ID initialized:", id);
+    }
+  }, []);
+
+  // 제목 변경 핸들러도 공통 방송 함수 사용
   const handleTitleChange = async (e) => {
+    console.log("handleTitleChange - 제목 변경 처리 시작");
     const newTitle = e.target.value;
     setTitle(newTitle);
-    titleRef.current = newTitle;
 
-    const currentContent = await ejInstance.current.save();
-    await savePage(newTitle, currentContent);
+    try {
+      if (!componentId || !stompClientRef.current?.active) {
+        console.warn("Cannot broadcast title change:", {
+          componentId,
+          isConnected: stompClientRef.current?.active,
+        });
+        return;
+      }
+
+      if (editorRef.current) {
+        const currentContent = await editorRef.current.save();
+        const changes = {
+          _id: id,
+          title: newTitle,
+          content: JSON.stringify(currentContent),
+          timestamp: Date.now(),
+          componentId: componentId,
+          uid: uid,
+        };
+
+        stompClientRef.current.publish({
+          destination: `/app/page/${id}`,
+          body: JSON.stringify(changes),
+        });
+      }
+    } catch (error) {
+      console.error("❌ 제목 변경 중 에러:", error);
+    }
   };
 
-  const onEmojiClick = (emojiData) => {
+  // 이모지 선택 핸들러
+  const onEmojiClick = async (emojiData) => {
+    console.log("onEmojiClick - 이모지 선택 처리 시작");
     setSelectedIcon(emojiData.emoji);
     setShowIconPicker(false);
 
     const newTitle = emojiData.emoji + " " + title;
     setTitle(newTitle);
-    titleRef.current = newTitle;
 
-    savePage(newTitle, content);
+    try {
+      if (editorRef.current) {
+        const currentContent = await editorRef.current.save();
+
+        // 저장할 데이터 구성
+        const pageData = {
+          _id: id,
+          title: newTitle,
+          content: JSON.stringify(currentContent),
+        };
+
+        // 서버에 저장
+        await savePage(pageData);
+      }
+    } catch (error) {
+      console.error("Error in onEmojiClick:", error);
+    }
   };
 
-  const handleDeletePage = async () => {
-    if (!id) return;
+  // 에디터 초기 함수
+  const initializeEditor = async (initialContent = null) => {
+    console.log("initializeEditor - 에디터 초기화 시작");
+    if (editorRef.current) {
+      await editorRef.current.destroy();
+    }
 
-    if (window.confirm("정말로 이 페이지를 삭제하시겠습니까?")) {
-      try {
-        const response = await fetch(`${PAGE_DELETE_URI}/${id}/soft`, {
-          method: "DELETE",
-        });
+    editorRef.current = await createEditor(initialContent);
+    return editorRef.current;
+  };
 
-        if (response.ok) {
-          alert("페이지가 삭제되었습니다.");
-          navigate("/antwork/page"); // 페이지 목록으로 이동
-        } else {
-          alert("페이지 삭제에 실패했습니다.");
+  // 공통 메시지 전송 함수 추가
+  const broadcastMessage = async (type, data) => {
+    console.log("broadcastMessage - 공통 메시지 전송 시작");
+    if (!componentId || !stompClientRef.current?.active) {
+      console.warn("Cannot broadcast message:", {
+        componentId,
+        isConnected: stompClientRef.current?.active,
+      });
+      return;
+    }
+
+    try {
+      const message = {
+        _id: id,
+        type,
+        ...data,
+        componentId,
+        timestamp: Date.now(),
+        uid: uid,
+      };
+
+      stompClientRef.current.publish({
+        destination: `/app/page/${id}`,
+        body: JSON.stringify(message),
+      });
+    } catch (error) {
+      console.error(`Error broadcasting ${type}:`, error);
+    }
+  };
+
+  // 초기 마운트와 id 체크를 위한 useEffect 수정
+  useEffect(() => {
+    console.log("useEffect - 페이지 초기화 시작");
+    const initializePage = async () => {
+      if (!uid) {
+        console.warn("Cannot initialize page without user ID");
+        return;
+      }
+
+      const params = new URLSearchParams(location.search);
+      const pageId = params.get("id");
+
+      if (!pageId) {
+        console.log("initializePage - 페이지 생성 new ID, Owner : ", uid);
+        try {
+          const response = await axiosInstance.post(PAGE_CREATE_URI, {
+            title: "",
+            content: "",
+            owner: uid,
+          });
+
+          const newId = response.data;
+          setId(newId);
+
+          // URL 업데이트
+          const newParams = new URLSearchParams(location.search);
+          newParams.set("id", newId);
+          setSearchParams({ id: newId });
+
+          // 에디터 초기화
+          if (editorRef.current) {
+            await editorRef.current.destroy();
+          }
+          initializeEditor();
+        } catch (error) {
+          console.error("Error creating new page:", error);
         }
-      } catch (error) {
-        console.error("Error deleting page:", error);
-        alert("페이지 삭제 중 오류가 발생했습니다.");
       }
-    }
-  };
+    };
 
+    initializePage();
+  }, [uid, location]); // uid 의존성 추가
+
+  // location 변경 감지를 위한 useEffect 추가
   useEffect(() => {
-    const setupPage = async () => {
-      // 기존 에디터 인스턴스 정리
-      if (ejInstance.current) {
-        ejInstance.current = null;
-        document.getElementById("editorjs").innerHTML = "";
+    console.log("useEffect - location 변경 감지");
+    const params = new URLSearchParams(location.search);
+    const newId = params.get("id");
+
+    if (newId !== id) {
+      // WebSocket 연결 정리
+      if (stompClientRef.current?.active) {
+        stompClientRef.current.deactivate();
       }
 
-      if (!id) {
-        await createPage();
-      } else {
-        initializeEditor();
-        await fetchPageData();
+      // 에디터 정리
+      if (editorRef.current) {
+        editorRef.current.destroy();
       }
-    };
 
-    setupPage();
-
-    return () => {
-      if (ejInstance.current) {
-        ejInstance.current.destroy();
-      }
-    };
-  }, [id]);
-
-  useEffect(() => {
-    const setupPage = async () => {
-      // 기존 로직 유지
-    };
-
-    const newId = queryParams.get("id");
-    if (id !== newId) {
+      // 새 id로 상태 업데이트
       setId(newId);
-      setupPage();
+
+      // 에디터 다시 초기화
+      initializeEditor();
     }
-  }, [location]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showMenu && !event.target.closest(".menu-container")) {
-        setShowMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showMenu]);
+  }, [location.search]); // URL 변경 감지
 
   return (
     <div className="w-full">
@@ -269,15 +615,13 @@ const PagingWrite = () => {
                     >
                       페이지 삭제
                     </button>
-                    <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200">
-                      공유 멤버 관리
-                    </button>
+                    <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"></button>
                   </div>
                   <div className="p-3">
                     <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
                       페이지 설정
                       <p className="!text-[11px] !text-slate-400 mt-[2px]">
-                        &nbsp;설정페이지로 이동
+                        &nbsp;설정페지 동
                       </p>
                     </button>
                   </div>
@@ -294,16 +638,14 @@ const PagingWrite = () => {
           >
             <div className="relative w-[40px] h-[40px]">
               {selectedIcon ? (
-                <button className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]"></button>
+                <button className="w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 text-[24px]">
+                  {selectedIcon}
+                </button>
               ) : (
                 <button
                   onClick={() => setShowIconPicker(true)}
                   className={`w-[30px] h-[30px] flex items-center justify-center rounded hover:bg-gray-100 transition-opacity duration-200
-                                        ${
-                                          isHovering
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        }`}
+                    ${isHovering ? "opacity-100" : "opacity-0"}`}
                 >
                   <BsEmojiSmile size={20} className="text-gray-400" />
                 </button>
@@ -317,7 +659,10 @@ const PagingWrite = () => {
                       width={400}
                       height={500}
                     />
-                    <button className="ml-2 p-1 hover:bg-gray-100 rounded-full transition-colors h-[30px] w-[30px] flex items-center justify-center">
+                    <button
+                      onClick={() => setShowIconPicker(false)}
+                      className="ml-2 p-1 hover:bg-gray-100 rounded-full transition-colors h-[30px] w-[30px] flex items-center justify-center"
+                    >
                       <IoCloseOutline size={20} className="text-gray-500" />
                     </button>
                   </div>
@@ -327,14 +672,14 @@ const PagingWrite = () => {
 
             <input
               className="text-[30px] text-gray-500 !border-none focus:outline-none flex-1"
-              placeholder="새 페이지"
+              placeholder="새 페이지111"
               value={title}
               onChange={handleTitleChange}
             />
           </div>
           <div
             id="editorjs"
-            className="editorSection min-h-[800px] !h-[auto] !mt-14 "
+            className="editorSection min-h-[800px] !h-[auto] !mt-14"
           ></div>
         </article>
       </article>

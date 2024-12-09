@@ -68,6 +68,7 @@ export default function InviteModal({ closeModal }) {
       </h2>
 
       {/* 검색 필드 */}
+
       <div className="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-50">
         <input
           type="text"
@@ -79,6 +80,7 @@ export default function InviteModal({ closeModal }) {
       {/* 초대 가능한 사용자와 선택된 사용자 영역 */}
       <div className="flex flex-1 space-x-4 h-full overflow-auto">
         {/* 초대 가능한 사용자 */}
+
         <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
           <h3 className="text-lg font-semibold">초대 가능한 사용자</h3>
           <ul className="space-y-3">

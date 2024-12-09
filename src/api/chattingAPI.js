@@ -1,33 +1,80 @@
 import {
   CHANNEL_URI,
   CHANNEL_LIST_URI,
+<<<<<<< feature/chatting
 <<<<<<< HEAD
   DM_GET_MESSAGES_URI
 } from './_URI'
 =======
+=======
+>>>>>>> main
   DM_GET_MESSAGES_URI,
   CHANNEL_GET_URI,
   CHANNEL_GET_MESSAGES_URI,
   CHANNEL_SEND_MESSAGE_URI,
   CHANNEL_LEAVE_URI,
+<<<<<<< feature/chatting
   CHANNEL_ADD_MEMBER_URI,
 } from "./_URI";
 >>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
+=======
+} from "./_URI";
+>>>>>>> main
 import axios from "axios";
 
 export const createChannel = async (channelData) => {
   try {
-    console.log("channel create 요청 전송");
+    console.log("[JS] channel create 요청 전송");
     // 요청 전송
     const response = await axios.post(CHANNEL_URI, channelData);
 
-    return response.data
+    return response.data;
   } catch (error) {
-    console.error("Error adding company:", error.message || error);
+    console.error("[JS] Error adding company:", error.message || error);
     throw error;
   }
-}
+};
 
+export const getChannel = async (channelId) => {
+  try {
+    const response = await axios.get(CHANNEL_GET_URI(channelId));
+    return response.data;
+  } catch (error) {
+    console.error("채널 상세조회 오류:", error);
+    throw error;
+  }
+};
+
+export const getChannelMessages = async (channelId) => {
+  try {
+    const response = await axios.get(CHANNEL_GET_MESSAGES_URI(channelId));
+    return response.data;
+  } catch (error) {
+    console.error("채널 메시지 조회 오류:", error);
+    throw error;
+  }
+};
+
+export const sendChannelMessage = async ({ channelId, content, senderId }) => {
+  try {
+    await axios.post(CHANNEL_SEND_MESSAGE_URI(channelId), {
+      content,
+      senderId,
+    });
+  } catch (error) {
+    console.error("채널 메시지 전송 오류:", error);
+    throw error;
+  }
+};
+
+export const leaveChannel = async ({ channelId, userId }) => {
+  try {
+    await axios.put(CHANNEL_LEAVE_URI(channelId, userId));
+  } catch (error) {
+    console.error("채널 나가기 오류:", error);
+    throw error;
+  }
+};
 
 export const getAllChannels = async () => {
   try {
@@ -39,8 +86,6 @@ export const getAllChannels = async () => {
   }
 };
 
-<<<<<<< HEAD
-=======
 // 채널 멤버 추가 API 함수
 export const addChannelMember = async (channelId, users) => {
   try {
@@ -60,7 +105,6 @@ export const addChannelMember = async (channelId, users) => {
     throw error; // 에러를 호출한 곳으로 전달
   }
 };
->>>>>>> fb32f37 (채팅 채널 멤버 추가(모달))
 
 export const getDmMessages = async (dmId) => {
   try {

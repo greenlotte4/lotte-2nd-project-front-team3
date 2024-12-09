@@ -1,13 +1,15 @@
+import axiosInstance from "../../../utils/axiosInstance";
+// import axiosInstance from "@/utils/axiosInstance";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-import { Lock, Reply, User, Send } from "lucide-react";
+import useAuthStore from "../../../store/AuthStore";
+import { Lock, Reply, User, Send, ThumbsUp } from "lucide-react";
 import { BOARD_VIEW_URI } from "../../../api/_URI";
 
 export default function BoardView() {
   const { id } = useParams(); // URL에서 id(글번호) 값 추출
-  // const [board, setBoard] = useState(null); // 상세 데이터 상태 관리
-
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  
   const [board, setBoard] = useState({
     title: '',
     writer: '',
@@ -17,26 +19,59 @@ export default function BoardView() {
     attachedFiles: null,
 });
 
+  // 좋아요 관련 상태
+  const [likes, setLikes] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+
   useEffect(() => {
     const fetchBoard = async () => {
       try {
-        const response = await fetch(`${BOARD_VIEW_URI}/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch board details");
+        if (!id || !user) {
+          console.warn("ID나 사용자 정보가 없습니다. 요청을 중단합니다.");
+          return;
         }
-        const data = await response.json();
-        console.log('게시글 데이터:', data); // 받아온 데이터 확인
-        setBoard(data);
+  
+        const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
+        console.log('서버 응답 데이터:', response.data);
+        
+        setBoard(response.data);
+        
+        // 서버에서 받은 좋아요 수로 초기화
+        setLikes(response.data.likes || 0);
+        // 현재 사용자의 좋아요 여부 초기화
+        setIsLiked(response.data.isLiked || false);
+  
       } catch (error) {
         console.error('게시글 데이터 로딩 실패:', error);
+        alert("게시글 데이터를 가져오는 중 오류가 발생했습니다.");
       }
     };
   
     fetchBoard();
-  }, [id]);
+  }, [id, user]); // id가 변경될 때마다 게시글 데이터를 새로 가져오기 
 
+// 좋아요 처리
+const handleLike = async () => {
+  try {
+    const response = await axiosInstance.post(`${BOARD_VIEW_URI}/${id}/like`);
+    console.log('좋아요 응답:', response.data);
+    
+    if (response.data.success) {
+      // 서버에서 받은 최신 상태로 업데이트
+      setLikes(response.data.likeCount);
+      setIsLiked(response.data.liked);
+    } else {
+      console.error('좋아요 처리 실패:', response.data.message);
+      alert(response.data.message);
+    }
+    
+  } catch (error) {
+    console.error('좋아요 처리 실패:', error);
+    alert("좋아요 처리 중 오류가 발생했습니다.");
+  }
+};
   
-  // 댓글쓰기 API (commnts)
+  // 댓글쓰기 API (comments)
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -55,22 +90,6 @@ export default function BoardView() {
       ],
     },
   ]);
-
-   // 글 상세 조회를 하지 못한 경우
-  //  if (!boards) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="bg-white shadow-lg rounded-lg p-8">
-  //         <div className="animate-pulse">
-  //           <div className="h-8 bg-gray-200 w-32 mb-4"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //           <div className="h-4 bg-gray-200 mb-2"></div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
@@ -154,9 +173,12 @@ export default function BoardView() {
                 </h1>
               </div>
               <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
-                <div className="writer">
+              <div className="writer">
                   <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
-                    {board.writer?.name || ''} {/* writer 객체의 name 필드 사용 */}
+                  {board.writer?.name 
+                    ? board.writer.name // 게시글 작성자가 있으면 표시
+                    : user?.name || '익명' // 없으면 로그인한 사용자의 이름, 그것도 없으면 '익명'
+                  }
                   <span className="mx-2 text-slate-300 !text-[10px]">
                     &#124;
                   </span>
@@ -175,6 +197,10 @@ export default function BoardView() {
               </div>
             </div>
           </div>
+
+
+          
+
 
           {/* 첨부파일 섹션 */}
           {board.attachedFiles && board.attachedFiles.length > 0 && (
@@ -202,19 +228,42 @@ export default function BoardView() {
 
           {/* 게시글 본문 */}
           <div className="pt-6 pb-12 border-t border-slate-200">
-            <div className="prose max-w-none">
-              {board.content && board.content.split("\n").map((line, index) => (
-                <p key={index} className="">
-                  {line}
-                </p>
-              ))}
-              <div className="w-1/2 h-auto mt-7">
-                <img
-                  className="w-full block"
-                  src="/images/Antwork/board/boardExam3.jpeg"
-                  alt="게시글 본문 이미지"
-                />
+            <div className="flex justify-between items-start">
+              {/* 본문 내용 */}
+              <div className="prose max-w-[calc(100%-120px)]">
+                {board.content && board.content.split("\n").map((line, index) => (
+                  <p key={index} className="">
+                    {line}
+                  </p>
+                ))}
+                <div className="w-1/2 h-auto mt-7">
+                  <img
+                    className="w-full block"
+                    src="/images/Antwork/board/boardExam3.jpeg"
+                    alt="게시글 본문 이미지"
+                  />
+                </div>
               </div>
+
+              {/* 좋아요 버튼 */}
+              <button 
+                onClick={handleLike}
+                className={`
+                  flex items-center space-x-2 px-4 py-2 rounded-md
+                  transition-all duration-200
+                  ${isLiked 
+                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-600' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}
+                `}
+              >
+                <ThumbsUp 
+                  size={16} 
+                  className={`${isLiked ? 'fill-blue-600' : ''}`}
+                />
+                <span className="ml-1">
+                  좋아요 {likes}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -290,10 +339,6 @@ export default function BoardView() {
               </button>
             </div>
           </div>
-
-          {/* <Link to="/board/list" className="cursor-pointer px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                        <button>목록으로</button>
-                    </Link> */}
         </section>
       </article>
     </>

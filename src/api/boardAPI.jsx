@@ -62,20 +62,46 @@ export const getBoardList = async () => {
 
 
 // 게시글 상세 조회 
-export const getBoardById = async (uid) => {
+// export const getBoardById = async (id) => {
+//     try {
+//         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`, {
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             }
+//         });
+//         console.log('게시글 데이터:', response.data);
+//         return response.data;
+//     } catch (error) {
+//         console.error('게시글 조회 에러:', error);
+//         throw error;
+//     }
+// };
+
+export const getBoardById = async (id) => {
     try {
-        const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${uid}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        console.log('게시글 데이터:', response.data);
-        return response.data;
+        const { data } = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
+        console.log('게시글 데이터:', data);
+        return data;
     } catch (error) {
-        console.error('게시글 조회 에러:', error);
-        throw error;
+        // 좀 더 구체적인 에러 처리
+        if (error.response) {
+            // 서버가 응답을 반환했지만 2xx 범위를 벗어난 상태 코드
+            console.error('게시글 조회 실패:', error.response.status, error.response.data);
+            throw new Error(error.response.data.message || '게시글을 불러오는데 실패했습니다');
+        } else if (error.request) {
+            // 요청이 전송되었지만 응답을 받지 못함
+            console.error('서버 응답 없음:', error.request);
+            throw new Error('서버에서 응답이 없습니다');
+        } else {
+            // 요청 설정 중에 문제가 발생
+            console.error('요청 설정 오류:', error.message);
+            throw new Error('요청 중 오류가 발생했습니다');
+        }
     }
 };
+
+
+
 
 // 게시글 글 수정
     export const updateBoard = async (uid, data) => {

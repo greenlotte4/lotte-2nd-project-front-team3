@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
 import { createChannel } from "../../../api/chattingAPI";
+import { channelStore } from "../../../store/chattingStore";
+import useAuthStore from "../../../store/AuthStore";
 
 export default function ChattingModal() {
+  const addChannel = channelStore((state) => state.addChannel);
   const { isOpen, type, props, closeModal, updateProps } = useModalStore();
   // 채널 생성을 위한 로컬 상태
   const [channelName, setChannelName] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
-
+  const [channelPrivacy, setChannelPrivacy] = useState(false); // isPublic -> channelPrivacy
+  const user = useAuthStore((state) => state.user);
   const [channel, setChannel] = useState({
     name: "",
     userId: "",
-    isPublic: "",
+    channelPrivacy: false, // isPublic -> channelPrivacy
   });
   const changeHandler = (e) => {
     e.preventDefault();
@@ -51,35 +54,48 @@ export default function ChattingModal() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (user === null) {
+      return;
+    }
 
     console.log("데이터 전송 전");
     // 채널 생성에 필요한 데이터
     const data = {
       name: channel.name,
-      userId: 6,  // 예시로 고정된 userId 사용 (실제 상황에 맞게 수정)
-      channelPrivacy: isPublic ? 1 : 0,
+      userId: user?.id, // 예시로 고정된 userId 사용 (실제 상황에 맞게 수정)
+      channelPrivacy: channelPrivacy ? 1 : 0, // channelPrivacy 사용
     };
 
     console.log("채널 생성 데이터 이름 들어와줘:", data);
 
     try {
+      console.log("채널 생성 데이터:", data); // 데이터 로그 찍기
       // 채널 생성 API 호출
-      await createChannel(data);
+      const channelIdData = await createChannel(data);
+      addChannel({
+        ChannelPrivacy: channelPrivacy,
+        id: channelIdData.data,
+        name: channel.name,
+        ownerId: user?.id,
+      });
       alert("채널이 성공적으로 생성되었습니다.");
-      closeModal();  // 모달 닫기
+      closeModal(); // 모달 닫기
     } catch (error) {
       console.error("채널 생성 실패:", error);
       alert("채널 생성에 실패했습니다. 다시 시도해주세요.");
+      console.error(
+        "에러의 상세 내용:",
+        error.response || error.message || error
+      );
     }
   };
 
   const handleNameChange = (e) => {
-    setChannel(prevChannel => ({
+    setChannel((prevChannel) => ({
       ...prevChannel,
-      name: e.target.value // 객체 내 name만 변경
+      name: e.target.value, // 객체 내 name만 변경
     }));
   };
-
 
   const renderContent = () => {
     switch (type) {
@@ -225,7 +241,7 @@ export default function ChattingModal() {
                   placeholder="채널 이름을 입력하세요"
                   className="mt-2 p-2 border rounded w-full"
                   value={channel.name}
-                  onChange={handleNameChange}  // 수정된 onChange 핸들러
+                  onChange={handleNameChange} // 수정된 onChange 핸들러
                 />
               </div>
 
@@ -238,28 +254,32 @@ export default function ChattingModal() {
                       type="radio"
                       id="public"
                       name="channelPrivacy"
-                      checked={isPublic === true}
+                      checked={channelPrivacy === true}
                       value="1"
                       onChange={(e) => {
-                        setIsPublic(true);  // 공개 채널 선택 시
+                        setChannelPrivacy(true); // 공개 채널 선택 시
                       }}
                       className="mr-2"
                     />
-                    <label htmlFor="public" className="text-sm">공개</label>
+                    <label htmlFor="public" className="text-sm">
+                      공개
+                    </label>
                   </div>
                   <div className="flex items-center">
                     <input
                       type="radio"
                       id="private"
                       name="channelPrivacy"
-                      checked={isPublic === false}
+                      checked={channelPrivacy === false}
                       value="0"
                       onChange={(e) => {
-                        setIsPublic(false);  // 비공개 채널 선택 시
+                        setChannelPrivacy(false); // 비공개 채널 선택 시
                       }}
                       className="mr-2"
                     />
-                    <label htmlFor="private" className="text-sm">비공개</label>
+                    <label htmlFor="private" className="text-sm">
+                      비공개
+                    </label>
                   </div>
                 </div>
               </div>
@@ -289,9 +309,8 @@ export default function ChattingModal() {
                   추가
                 </button> */}
                 <button
-                  type="button"
+                  type="submit" // type="submit"로 변경
                   className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                  onClick={submitHandler}  // 여기에 submitHandler 연결
                 >
                   추가
                 </button>
@@ -334,7 +353,6 @@ export default function ChattingModal() {
             </svg>
             {/* className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
           > */}
-
           </button>
         </div>
         {renderContent()}

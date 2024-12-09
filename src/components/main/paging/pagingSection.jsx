@@ -87,7 +87,7 @@ export default function PagingSection() {
   // 개인 페이지 섹션 수정
   const displayedPersonalPages = showAllPersonal
     ? personalPageList
-    : personalPageList.slice(0, 3);
+    : personalPageList.slice(0, 6);
 
   // 최근 수정된 페이지 섹션 수정
   const displayedLatestPages = showAllLatest

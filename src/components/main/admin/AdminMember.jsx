@@ -111,11 +111,12 @@ export default function AdminMember() {
                   key={member.id}
                   className="border-b border-gray-200 hover:bg-gray-100"
                 >
-                  <td>
-                    <input type="checkbox" />
+                  <td className="text-center">
+                    <input type="checkbox" className="mx-auto" />
                   </td>
+
                   <td className="py-3 px-6">{member.name}</td>
-                  <td className="py-3 px-6">{member.department}</td>
+                  <td className="py-3 px-6">{member.departmentName}</td>
                   <td className="py-3 px-6">{member.position}</td>
                   <td className="py-3 px-6">{member.email}</td>
                   <td className="py-3 px-6">{member.status}</td>
