@@ -1,39 +1,42 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
-import ImageTool from "@editorjs/image";
+
 import {
   PAGE_LIST_UID_URI,
   PAGE_LIST_MODIFIED_URI,
   PAGE_LIST_DELETED_URI,
-  PAGE_RESTORE_URI,
-  PAGE_SOFT_DELETE_URI,
-  PAGE_HARD_DELETE_URI,
 } from "../../../api/_URI";
+
 import { usePageList } from "../../../hooks/paging/usePageList";
 import { usePageActions } from "../../../hooks/paging/usePageActions";
 import { PageCard } from "./PageCard";
+import useAuthStore from "@/store/AuthStore";
 
+// prettier-ignore
 export default function PagingSection() {
-  const { pages: personalPageList, setPages: setPersonalPageList } =
-    usePageList(PAGE_LIST_UID_URI);
-  const { pages: latestPages, setPages: setLatestPages } = usePageList(
-    PAGE_LIST_MODIFIED_URI
-  );
-  const { pages: deletedPages, setPages: setDeletedPages } = usePageList(
-    PAGE_LIST_DELETED_URI
-  );
 
+  // 유저 정보 불러오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user?.uid;
+
+  // 개인 페이지 목록 불러오기
+  const { pages: personalPageList, setPages: setPersonalPageList }
+        = usePageList(`${PAGE_LIST_UID_URI}/${uid}`);
+  // 최근 수정된 페이지 목록 불러오기 
+        const { pages: latestPages, setPages: setLatestPages }
+        = usePageList(`${PAGE_LIST_MODIFIED_URI}/${uid}`);
+  // 삭제된 페이지 목록 불러오기
+  const { pages: deletedPages, setPages: setDeletedPages } 
+        = usePageList(`${PAGE_LIST_DELETED_URI}/${uid}`);
+
+  // 페이지 메뉴 상태 관리
   const [personalActiveMenu, setPersonalActiveMenu] = useState(null);
   const [latestActiveMenu, setLatestActiveMenu] = useState(null);
   const [deletedActiveMenu, setDeletedActiveMenu] = useState(null);
 
-  const { handleDeletePage, handleRestorePage } = usePageActions();
+  // 페이지 삭제, 복구, 영구 삭제 기능 
+  const { handleDeletePage, handleRestorePage, handleHardDeletePage } = usePageActions();
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -50,36 +53,7 @@ export default function PagingSection() {
     };
   }, []);
 
-  const handleHardDeletePage = async (pageId) => {
-    if (!pageId) return;
-
-    if (window.confirm("정말로 이 페이지를 영구적으로 삭제하시겠습니까?")) {
-      try {
-        const response = await fetch(
-          PAGE_HARD_DELETE_URI.replace(":id", pageId),
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          alert("페이지가 영구적으로 삭제되었습니다.");
-          // 삭제된 페이지 목록에서 제거
-          const updatedDeletedPages = deletedPages.filter(
-            (page) => page._id !== pageId
-          );
-          setDeletedPages(updatedDeletedPages);
-        } else {
-          alert("페이지 영구 삭제에 실패했습니다.");
-        }
-      } catch (error) {
-        console.error("Error permanently deleting page:", error);
-        alert("페이지 영구 삭제 중 오류가 발생했습니다.");
-      }
-    }
-    setDeletedActiveMenu(null);
-  };
-
+ 
   const [showAllPersonal, setShowAllPersonal] = useState(false);
   const [showAllLatest, setShowAllLatest] = useState(false);
   const [showAllDeleted, setShowAllDeleted] = useState(false);
@@ -106,7 +80,7 @@ export default function PagingSection() {
           <h1>Home</h1>
           <p> 페이지 Home 입니다.</p>
 
-          <article className="page-list !mt-5">
+          <article className="page-list !mt-5 !min-h-[300px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 개인 페이지</h1>
@@ -167,7 +141,7 @@ export default function PagingSection() {
               ))}
             </div>
           </article>
-          <article className="page-list !mt-5">
+          <article className="page-list !mt-5 !min-h-[300px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 공유 페이지</h1>{" "}
@@ -216,7 +190,7 @@ export default function PagingSection() {
               </div>
             </div>
           </article>
-          <article className="page-list">
+          <article className="page-list !mt-5 !min-h-[300px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>
@@ -278,7 +252,7 @@ export default function PagingSection() {
             </div>
           </article>
 
-          <article className="page-list">
+          <article className="page-list !mt-5 !min-h-[300px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 최근 삭제된 페이지</h1>
@@ -307,10 +281,11 @@ export default function PagingSection() {
                         <div className="border-t border-gray-300 border-b border-gray-300 p-3 !mb-3">
                           <button
                             onClick={() =>
-                              handleRestorePage(page._id, {
+                              handleRestorePage(page._id, uid,{
                                 setDeletedPages,
                                 setPersonalPageList,
                                 setLatestPages,
+                          
                               })
                             }
                             className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left"
