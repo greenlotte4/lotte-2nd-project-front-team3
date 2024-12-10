@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useInviteModal } from "../../../hooks/chatting/invitemodal";
 import useModalStore from "../../../store/modalStore";
 import useToggle from "../../../hooks/useToggle";
-import { getAllChannels } from "../../../api/chattingAPI"; // 경로 확인
+import { getAllChannels, getDmList } from "../../../api/chattingAPI"; // 경로 확인
 import { Link, NavLink } from "react-router-dom";
 import { channelStore } from "../../../store/chattingStore";
+import useAuthStore from "../../../store/AuthStore"; // userId 가져오기 위한 import
 
 export default function ChattingAside({ asideVisible, channelId }) {
   const [toggleStates, toggleState] = useToggle({
@@ -15,10 +16,15 @@ export default function ChattingAside({ asideVisible, channelId }) {
 
   const channels = channelStore((state) => state.channels);
   const setChannels = channelStore((state) => state.setChannels);
+const [dms, setDms] = useState([]); // 디엠 방 목록 상태의 기본값을 빈 배열로 설정
   const [loading, setLoading] = useState(true); // 로딩 상태
 
   const openModal = useModalStore((state) => state.openModal);
   const inviteModalProps = useInviteModal(); // 채팅방 초대 모달 props 호출
+
+  const user = useAuthStore((state) => state.user); // user 정보가 state에 저장되어 있다고 가정
+  // userId를 상태에서 가져옵니다.
+  const { userId } = useAuthStore((state) => state); 
 
   // 채널 목록을 가져오는 함수
   useEffect(() => {
@@ -34,6 +40,38 @@ export default function ChattingAside({ asideVisible, channelId }) {
     fetchChannels();
   }, []);
 
+  useEffect(() => {
+    const fetchDMs = async () => {
+      if (user.id) {
+        try {
+          const response = await getDmList(user.id);
+          
+          // 데이터 로깅 추가
+          console.log('Raw response:', response);
+          console.log('Response type:', typeof response);
+          console.log('Is Array:', Array.isArray(response));
+  
+          // 안전한 배열 설정
+          if (Array.isArray(response)) {
+            setDms(response);
+          } else if (response && typeof response === 'object') {
+            // 객체인 경우 처리 (예: { data: [] })
+            const dataArray = response.data || [];
+            setDms(Array.isArray(dataArray) ? dataArray : []);
+          } else {
+            // 예상치 못한 데이터 형태
+            console.error('Unexpected response format:', response);
+            setDms([]);
+          }
+        } catch (error) {
+          console.error("디엠 목록을 가져오는 데 실패했습니다:", error);
+          setDms([]);
+        }
+      }
+    };
+  
+    fetchDMs();
+  }, [user.id]);
   return (
     <aside
       className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${!asideVisible ? "hidden" : ""
@@ -42,17 +80,6 @@ export default function ChattingAside({ asideVisible, channelId }) {
       {/* Header */}
       <div className="pb-4 border-b border-gray-200 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-black">💬 채팅</h1>
-        {/* 플러스 버튼 */}
-        {/* <button
-          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
-          onClick={() => {
-            console.log("Modal Props:", inviteModalProps); // 로그 추가
-            openModal("invite", { ...inviteModalProps });
-          }}
-        >
-          +
-        </button> */}
-        {/* 채널 생성 플러스 버튼 */}
         <button
           className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
           onClick={() => openModal("createChannel", {})} // 모달 열기
@@ -101,43 +128,38 @@ export default function ChattingAside({ asideVisible, channelId }) {
           className={`overflow-hidden transition-all duration-300 ${toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
             }`}
         >
-          <ul className="space-y-4">
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
-              <img
-                src="path/to/avatar1.jpg"
-                alt="User"
-                className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-lg text-gray-800">
-                  강은경
-                  <span className="ml-2 w-3 h-3 bg-green-400 rounded-full inline-block"></span>
-                </p>
-                <p className="text-sm text-gray-500">
-                  새로운 메시지가 있습니다.
-                </p>
-              </div>
-              <span className="text-sm text-gray-400">11:30</span>
-            </li>
-            <li className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
-              <img
-                src="path/to/avatar2.jpg"
-                alt="User"
-                className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-lg text-gray-800">
-                  김민희
-                  <span className="ml-2 w-3 h-3 bg-gray-400 rounded-full inline-block"></span>
-                </p>
-                <p className="text-sm text-gray-500">"잠시 후 회의 시작..."</p>
-              </div>
-              <span className="text-sm text-gray-400">10:15</span>
-            </li>
+  <ul className="space-y-4">
+  {dms.length > 0 ? (
+  dms.map((dm) => (
+    <li key={dm.id}> {/* 각 li에 고유한 key를 추가 */}
+      <NavLink to={`/antwork/chatting/dm/${dm.id}`} className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
+        <img src="path/to/avatar.jpg" alt="User" className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm" />
+        <div className="flex-1">
+          <p className="font-medium text-lg text-gray-800">
+          {dm.members && Array.isArray(dm.members) && dm.members.length > 0 
+  ? dm.members.map((member, index) => (
+      <span key={member.id}> {/* 중첩된 리스트에도 key 추가 */}
+        {member.name}
+        {index < dm.members.length - 1 ? ", " : ""}
+      </span>
+    ))
+  : "알 수 없는 멤버"
+}
+
+          </p>
+          <p className="text-sm text-gray-500">새로운 메시지가 있습니다.</p>
+        </div>
+        <span className="text-sm text-gray-400">11:30</span>
+      </NavLink>
+    </li>
+  ))
+) : (
+  <li className="text-gray-500 p-3">디엠방이 없습니다.</li>
+)}
+
           </ul>
         </div>
       </div>
-
       {/* 채널 섹션 */}
       <div className="mt-6">
         <div
