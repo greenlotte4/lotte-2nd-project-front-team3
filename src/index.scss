@@ -23,12 +23,6 @@
   .ce-code > textarea {
     font-size: 12px !important;
   }
-  // + 공간 더 넓게 만들기
-  .ce-block__content {
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-  }
 
   // editor - text font
   .ce-paragraph {
@@ -82,5 +76,17 @@
   }
   .cdx-list__item-content {
     font-size: 14px;
+  }
+
+  #editorjs {
+    .ce-toolbar__content {
+      max-width: 1200px !important;
+      width: 100% !important;
+    }
+
+    .ce-block__content {
+      max-width: 1200px !important;
+      width: 100% !important;
+    }
   }
 }
