@@ -25,6 +25,7 @@ export default function ProjectModal({
   setCurrentTask,
   onEditState,
   currentState,
+  onCollaboratorsUpdate,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -41,6 +42,7 @@ export default function ProjectModal({
           const data = await getProjectCollaborators(projectId);
           console.log("협업자 목록data : " + JSON.stringify(data));
           setCollaborators(data);
+          onCollaboratorsUpdate(data);
         }
       } catch (error) {
         console.error("협업자 목록을 불러오는 중 오류 발생:", error);
@@ -115,6 +117,15 @@ export default function ProjectModal({
 
       // 선택된 사용자 초기화
       setSelectedUsers([]);
+
+      // 상태 업데이트를 위한 콜백 호출
+      // 협업자를 추가한 후 api로 최신목록 받아오면 이를 부모로 전달
+      // onCollaboratorsUpdate가 부모 컴포넌트에서 전달된 콜백 함수인지 확인
+      // 최신 협업자 목록 updatedCollaborators를 부모에게 전달
+      if (onCollaboratorsUpdate) {
+        onCollaboratorsUpdate(updatedCollaborators); // 부모 상태 업데이트
+      }
+
       closeModal();
     } catch (error) {
       console.error("협업자 추가 실패:", error);
@@ -130,6 +141,12 @@ export default function ProjectModal({
       // 협업자 목록 갱신
       const updatedCollaborators = await getProjectCollaborators(projectId);
       setCollaborators(updatedCollaborators);
+
+      // 상태 업데이트를 위한 콜백 호출
+      if (onCollaboratorsUpdate) {
+        onCollaboratorsUpdate(updatedCollaborators); // 부모 상태 업데이트
+      }
+
       alert("협업자가 삭제되었습니다.");
     } catch (error) {
       console.error("협업자 삭제 실패:", error);
@@ -911,16 +928,16 @@ export default function ProjectModal({
               {/* 하단 버튼 */}
               <div className="flex justify-end space-x-4 mt-4">
                 <button
-                  onClick={closeModal}
-                  className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-                >
-                  취소
-                </button>
-                <button
                   onClick={handleSendInvite}
                   className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
                 >
                   초대
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                >
+                  취소
                 </button>
               </div>
             </div>
