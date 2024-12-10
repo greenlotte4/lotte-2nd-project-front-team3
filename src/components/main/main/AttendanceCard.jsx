@@ -1,38 +1,47 @@
 import React, { useState, useEffect } from "react";
-import useAttendanceStore from "./../../../store/useAttendanceStore";
-import useAuthStore from "@/store/AuthStore";
 import { format } from "date-fns";
+import {
+  checkInAPI,
+  checkOutAPI,
+  getAttendanceStatusAPI,
+} from "@/api/attendanceAPI";
 
-const AttendanceCard = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentTask, setCurrentTask] = useState("");
+const AttendanceCard = ({ userId }) => {
+  const [status, setStatus] = useState("AVAILABLE");
+  const [checkInTime, setCheckInTime] = useState(null);
+  const [checkOutTime, setCheckOutTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const MAX_WORK_HOURS = 9;
   const [workHours, setWorkHours] = useState("0H");
   const [progressWidth, setProgressWidth] = useState("0%");
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const MAX_WORK_HOURS = 9;
 
-  const user = useAuthStore((state) => state.user);
-
-  const {
-    status,
-    checkInTime,
-    checkOutTime,
-    isLoading,
-    error,
-    checkIn,
-    checkOut,
-    updateStatus,
-    initializeForUser,
-  } = useAttendanceStore();
-
-  // 로그인 시 상태 동기화
+  // API를 사용하여 초기 상태 동기화
   useEffect(() => {
-    if (user?.id) {
-      initializeForUser(user.id);
-    }
-  }, [user?.id]);
+    const fetchAttendanceStatus = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getAttendanceStatusAPI(userId);
+        setStatus(data.status);
+        setCheckInTime(data.checkInTime);
+        setCheckOutTime(data.checkOutTime);
+        setError(null);
+      } catch (err) {
+        console.error("출퇴근 상태를 가져오는 중 오류 발생:", err);
+        setError("출퇴근 상태를 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // 실시간 현재 시간 업데이트
+    if (userId) {
+      fetchAttendanceStatus();
+    }
+  }, [userId]);
+
+  // 현재 시간 업데이트
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -41,23 +50,19 @@ const AttendanceCard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 근무 시간 및 진행률 계산
+  // 근무 시간 계산
   useEffect(() => {
-    let interval;
-
-    const calculateProgress = () => {
+    const calculateWorkProgress = () => {
       const startTime = checkInTime ? new Date(checkInTime) : null;
       const endTime = checkOutTime ? new Date(checkOutTime) : null;
 
       if (startTime && !endTime) {
-        interval = setInterval(() => {
-          const now = new Date();
-          const elapsedHours = Math.floor((now - startTime) / 3600000);
-          setWorkHours(`${elapsedHours}H`);
-          setProgressWidth(
-            `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
-          );
-        }, 1000);
+        const now = new Date();
+        const elapsedHours = Math.floor((now - startTime) / 3600000);
+        setWorkHours(`${elapsedHours}H`);
+        setProgressWidth(
+          `${Math.min((elapsedHours / MAX_WORK_HOURS) * 100, 100)}%`
+        );
       } else if (startTime && endTime) {
         const elapsedHours = Math.floor((endTime - startTime) / 3600000);
         setWorkHours(`${elapsedHours}H`);
@@ -70,37 +75,40 @@ const AttendanceCard = () => {
       }
     };
 
-    calculateProgress();
-    return () => clearInterval(interval);
+    calculateWorkProgress();
   }, [checkInTime, checkOutTime]);
 
   const handleCheckIn = async () => {
+    if (checkInTime || checkOutTime) {
+      alert("이미 출근 처리되었습니다.");
+      return;
+    }
+
     try {
-      const newCheckInTime = await checkIn(user.id); // API 호출 후 반환된 시간
-      setCurrentTask(""); // 초기화
-      alert(`출근 처리 완료! 출근 시간: ${formatDateTime(newCheckInTime)}`);
-    } catch (err) {
-      console.error("출근 처리 실패:", err);
+      const response = await checkInAPI(userId); // API 호출
+      setCheckInTime(response.checkInTime); // API에서 반환된 checkInTime 설정
+      setStatus("WORKING");
+      alert(`출근 완료: ${formatDateTime(response.checkInTime)}`);
+    } catch (error) {
+      console.error("출근 처리 실패:", error);
+      setError(error.message || "출근 처리 중 오류가 발생했습니다.");
     }
   };
 
   const handleCheckOut = async () => {
-    try {
-      const newCheckOutTime = await checkOut(user.id); // API 호출 후 반환된 시간
-      alert(`퇴근 처리 완료! 퇴근 시간: ${formatDateTime(newCheckOutTime)}`);
-    } catch (err) {
-      console.error("퇴근 처리 실패:", err);
+    if (!checkInTime || checkOutTime) {
+      alert("퇴근 처리할 수 없는 상태입니다.");
+      return;
     }
-  };
 
-  const handleTaskSelection = async (task) => {
-    setCurrentTask(task);
-    setIsMenuOpen(false);
     try {
-      await updateStatus(user.id, task);
-      alert(`상태가 "${task}"(으)로 업데이트되었습니다.`);
-    } catch (err) {
-      console.error("상태 업데이트 실패:", err);
+      const response = await checkOutAPI(userId); // API 호출
+      setCheckOutTime(response.checkOutTime); // API에서 반환된 checkOutTime 설정
+      setStatus("COMPLETED");
+      alert(`퇴근 완료: ${formatDateTime(response.checkOutTime)}`);
+    } catch (error) {
+      console.error("퇴근 처리 실패:", error);
+      setError(error.message || "퇴근 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -112,6 +120,10 @@ const AttendanceCard = () => {
       return "--:--:--";
     }
   };
+
+  // 버튼 활성화 조건
+  const isCheckInDisabled = !!checkInTime || !!checkOutTime;
+  const isCheckOutDisabled = !!checkOutTime || !checkInTime;
 
   return (
     <div className="w-[260px] bg-white rounded-lg shadow-md p-5 mt-5">
@@ -156,70 +168,31 @@ const AttendanceCard = () => {
         </div>
       </section>
 
-      {status === "AVAILABLE" && (
-        <section className="mt-6 text-center">
-          <p>출근 기록이 없습니다. 출근 버튼을 눌러 시작하세요.</p>
-        </section>
-      )}
-
       <hr className="border-t border-dashed border-gray-300 my-6" />
 
       <section className="flex justify-between">
         <button
           className={`w-[100px] h-[50px] font-medium rounded-3xl transition ${
-            status === "CHECKED_IN"
+            isCheckInDisabled
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
           onClick={handleCheckIn}
-          disabled={status === "CHECKED_IN"}
+          disabled={isCheckInDisabled}
         >
           출근하기
         </button>
         <button
           className={`w-[100px] h-[50px] font-medium rounded-3xl transition ${
-            status === "CHECKED_OUT"
+            isCheckOutDisabled
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-red-500 text-white hover:bg-red-600"
           }`}
           onClick={handleCheckOut}
-          disabled={status === "CHECKED_OUT" || status === "AVAILABLE"}
+          disabled={isCheckOutDisabled}
         >
           퇴근하기
         </button>
-      </section>
-
-      <section className="mt-6 text-center">
-        <button
-          className={`w-[170px] h-[50px] font-medium rounded-3xl ${
-            status === "CHECKED_IN"
-              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          } transition`}
-          onClick={() =>
-            status === "CHECKED_IN" && setIsMenuOpen((prev) => !prev)
-          }
-          disabled={status !== "CHECKED_IN"}
-        >
-          {currentTask || "업무 선택"}
-        </button>
-        {isMenuOpen && (
-          <div className="mt-4 w-[200px] bg-white text-gray-700 rounded-lg shadow-lg p-3 absolute z-10">
-            <ul className="space-y-2">
-              {["반차", "휴가", "출장", "교육", "회의", "기타", "업무"].map(
-                (item) => (
-                  <li
-                    key={item}
-                    className="cursor-pointer hover:bg-gray-100 px-3 py-1 rounded-md"
-                    onClick={() => handleTaskSelection(item)}
-                  >
-                    {item}
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
-        )}
       </section>
 
       {isLoading && (

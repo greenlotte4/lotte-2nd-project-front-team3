@@ -19,7 +19,6 @@ export const fetchNotifications = async (targetId) => {
   if (!targetId) {
     throw new Error("Target ID is required for fetching notifications.");
   }
-
   try {
     const response = await axiosInstance.get(
       `${NOTIFICATION_MY_SELECT_URI}?targetId=${targetId}`
