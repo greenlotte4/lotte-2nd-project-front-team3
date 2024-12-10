@@ -7,6 +7,7 @@ import {
   CHANNEL_SEND_MESSAGE_URI,
   CHANNEL_LEAVE_URI,
   CHANNEL_ADD_MEMBER_URI,
+  DM_LIST_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -101,6 +102,17 @@ export const getDmMessages = async (dmId) => {
     return response; // 데이터 반환
   } catch (error) {
     console.error("디엠 메시지 조회 실패:", error);
+    throw error; // 에러 발생 시 처리
+  }
+};
+
+// 디엠 방 목록을 가져오는 함수 (user.id를 사용하여 디엠 방 목록을 가져옴)
+export const getDmList = async (userId) => {
+  try {
+    const response = await axios.get(`${DM_LIST_URI}?userId=${userId}`);
+    return response.data; // 디엠 방 목록 데이터 반환
+  } catch (error) {
+    console.error("디엠 방 목록 조회 실패:", error);
     throw error; // 에러 발생 시 처리
   }
 };

@@ -77,8 +77,16 @@ export const PAGE_IMAGE_UPLOAD_URI = `${API_SERVER_HOST}/page/upload`; // 이미
 export const PAGE_DELETE_URI = `${API_SERVER_HOST}/page`; // 페이지 삭제
 export const PAGE_CREATE_URI = `${API_SERVER_HOST}/page/create`; // 페이지 저장
 
+// 추가할 페이지 관련 URI
+export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
+export const PAGE_LIST_MODIFIED_URI = `${API_SERVER_HOST}/page/list/modified`; // 최근 수정된 페이지 목록
+export const PAGE_LIST_DELETED_URI = `${API_SERVER_HOST}/page/list/deleted`; // 삭제된 페이지 목록
+export const PAGE_RESTORE_URI = `${API_SERVER_HOST}/page/:id/restore`; // 페이지 복구
+export const PAGE_SOFT_DELETE_URI = `${API_SERVER_HOST}/page/:id/soft`; // 소프트 삭제
+export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하드 삭제
+
 // chatting
-// src/api/_URI.jsx
+// 채널 관련 URI
 export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 관련 URI
 export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
@@ -97,18 +105,15 @@ export const CHANNEL_LEAVE_URI = (channelId, userId) =>
 export const CHANNEL_ADD_MEMBER_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/member`; // 채널 멤버 추가
 
+// 디엠 관련 URI
+export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
+export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회
+export const DM_GET_URI = (dmId) =>
+  `${API_SERVER_HOST}/chatting/dm/${dmId}`; // 디엠방 조회
+
 export const DM_SEND_MESSAGE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
-
-// 추가할 페이지 관련 URI
-export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
-export const PAGE_LIST_MODIFIED_URI = `${API_SERVER_HOST}/page/list/modified`; // 최근 수정된 페이지 목록
-export const PAGE_LIST_DELETED_URI = `${API_SERVER_HOST}/page/list/deleted`; // 삭제된 페이지 목록
-export const PAGE_RESTORE_URI = `${API_SERVER_HOST}/page/:id/restore`; // 페이지 복구
-export const PAGE_SOFT_DELETE_URI = `${API_SERVER_HOST}/page/:id/soft`; // 소프트 삭제
-export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하드 삭제
-
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘린더 조회하기
