@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 import axios from "axios";
 import useAuthStore from "../../../store/AuthStore";
+import { getSharedPages } from "../../../api/pageAPI";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -11,6 +12,8 @@ export default function PageAside({ asideVisible }) {
     sharedPages: true,
   });
   const [personalPageList, setPersonalPageList] = useState([]);
+  const [sharedPageList, setSharedPageList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
@@ -27,6 +30,20 @@ export default function PageAside({ asideVisible }) {
       };
 
       fetchPersonalPages();
+
+      const fetchSharedPages = async () => {
+        try {
+          setIsLoading(true);
+          const response = await getSharedPages(uid);
+          setSharedPageList(response);
+        } catch (error) {
+          console.error("공유된 페이지 목록을 가져오는데 실패했습니다:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchSharedPages();
     }
   }, [uid]);
 
@@ -70,7 +87,7 @@ export default function PageAside({ asideVisible }) {
               onClick={() => toggleSection("personalPages")}
             >
               <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex ">
-                개인 페이지{" "}
+                나의 페이지{" "}
                 <img
                   src={
                     toggles.personalPages
@@ -86,7 +103,7 @@ export default function PageAside({ asideVisible }) {
                 {personalPageList.map((page) => (
                   <li key={page.id}>
                     <Link to={`/antwork/page/write?id=${page._id}`}>
-                      {page.icon}&nbsp;&nbsp;{page.title}
+                      {page.title}
                     </Link>
                   </li>
                 ))}
@@ -99,7 +116,7 @@ export default function PageAside({ asideVisible }) {
               onClick={() => toggleSection("sharedPages")}
             >
               <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex !mt-[12px] ">
-                공유중인 페이지{" "}
+                공유받은 페이지{" "}
                 <img
                   src={
                     toggles.sharedPages
@@ -112,12 +129,21 @@ export default function PageAside({ asideVisible }) {
             </div>
             {toggles.sharedPages && (
               <ol>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;OO병원 사이트맵</a>
-                </li>
-                <li>
-                  <a href="#">📃&nbsp;&nbsp;OO학교 사이트맵</a>
-                </li>
+                {isLoading ? (
+                  <li className="text-gray-500 text-center">로딩 중...</li>
+                ) : sharedPageList && sharedPageList.length > 0 ? (
+                  sharedPageList.map((page) => (
+                    <li key={page._id}>
+                      <Link to={`/antwork/page/write?id=${page._id}`}>
+                        {page.title || "제목 없음"}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500 text-center">
+                    공유된 페이지가 없습니다.
+                  </li>
+                )}
               </ol>
             )}
           </li>

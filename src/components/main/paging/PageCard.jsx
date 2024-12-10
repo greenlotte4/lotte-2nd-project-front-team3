@@ -22,7 +22,7 @@ export const PageCard = ({
             </Link>
           ) : (
             <h3 className="!text-[15px] !mb-3 !font-normal">
-              {page.icon}&nbsp;{page.title}
+              {page.icon}&nbsp;&nbsp;{page.title}
             </h3>
           )}
           <div className="user-info !ml-3">
