@@ -195,7 +195,6 @@ export default function PageCollaboratorModal({
   const isUserSelected = (userId) => {
     console.log("Current User:", {
       user,
-      userId,
       userUid: user?.uid,
       userId: user?.id,
       userIdType: typeof userId,
