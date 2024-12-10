@@ -211,21 +211,21 @@ export default function ChannelMain() {
                 </button>
                 <button
                   className="p-2 rounded-full hover:bg-gray-300 focus:outline-none transition"
-                  onClick={async () => {
-                    if (user === null) return;
-
-                    const proceed = confirm("정말 방에서 나가시겠습니까?");
-                    if (proceed) {
-                      console.log(user?.id);
-                      await leaveChannel({ channelId, userId: user?.id });
-                      console.log("나가기 성공");
-                    } else {
-                    }
-                  }}
+                  onClick={onClickLeaveButton()}
                 >
                   <img
-                    src="/images/ico/logout_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                    src="/images/ico/outchat.svg"
                     alt="Search"
+                    className="w-8 h-8"
+                  />
+                </button>
+                <button
+                  className="p-2 rounded-full focus:outline-none "
+                  onClick={() => toggleState("isSidebarOpen")}
+                >
+                  <img
+                    src="/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
+                    alt="Menu"
                     className="w-8 h-8"
                   />
                 </button>
@@ -330,7 +330,9 @@ export default function ChannelMain() {
               </button>
 
               {/* 나가기 아이콘 */}
-              <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none">
+              <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+                onClick={onClickLeaveButton()}
+              >
                 <img src="/images/ico/outchat.svg"></img>
               </button>
             </div>
@@ -486,4 +488,18 @@ export default function ChannelMain() {
       </div>
     </div>
   );
+
+  function onClickLeaveButton() {
+    return async () => {
+      if (user === null) return;
+
+      const proceed = confirm("정말 방에서 나가시겠습니까?");
+      if (proceed) {
+        console.log(user?.id);
+        await leaveChannel({ channelId, userId: user?.id });
+        console.log("나가기 성공");
+      } else {
+      }
+    };
+  }
 }

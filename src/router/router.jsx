@@ -50,6 +50,7 @@ import ChannelPage from "../pages/Main/chatting/ChannelPage";
 import AdminNotificationPage from "./../pages/Main/Admin/adminNotificationPage";
 import AdminAttendancePage from "@/pages/Main/Admin/adminAttendancePage";
 import PaymentPage from "./../pages/Main/setting/paymentPage";
+import DmChattingPage from "@/pages/Main/chatting/DmPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -78,7 +79,7 @@ const router = createBrowserRouter([
   { path: "/antWork/page", element: <PagingPage /> }, // Antwork 페이지
   { path: "/antWork/chatting", element: <ChattingPage /> }, // Antwork 채팅 main
   { path: "/antWork/chatting/channel/:id", element: <ChannelPage /> }, // Antwork 채팅 channel
-  { path: "/antWork/chatting/dm/:id", element: <ChattingPage /> }, // Antwork 채팅 dm
+  { path: "/antWork/chatting/dm/:id", element: <DmChattingPage /> }, // Antwork 채팅 dm
 
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정

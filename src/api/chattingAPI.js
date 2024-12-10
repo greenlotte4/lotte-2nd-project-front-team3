@@ -8,6 +8,7 @@ import {
   CHANNEL_LEAVE_URI,
   CHANNEL_ADD_MEMBER_URI,
   DM_LIST_URI,
+  DM_CREATE_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -116,3 +117,14 @@ export const getDmList = async (userId) => {
     throw error; // 에러 발생 시 처리
   }
 };
+
+export const createDm = async ({ creatorId, receiverIds }) => {
+  try {
+    const response = await axios.post(`${DM_CREATE_URI}`, { creatorId, receiverIds });
+    return response.data; // 디엠 방 목록 데이터 반환
+  } catch (error) {
+    console.error("디엠 방 생성 실패:", error);
+    throw error; // 에러 발생 시 처리
+  }
+
+}
