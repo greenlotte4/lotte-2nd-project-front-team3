@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import useModalStore from "./../../../store/modalStore";
-import { driveFolderInsert } from "../../../api/driveAPI";
+import {
+  driveFolderInsert,
+  driveFolderNewNameUpDate,
+  driveFolderTrashUpDate,
+} from "../../../api/driveAPI";
 import useAuthStore from "../../../store/AuthStore";
 
 export default function DriveModal() {
@@ -11,6 +15,8 @@ export default function DriveModal() {
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
+  const driveFolderNameId = props.id;
+  const driveFolderNewName = props.name;
   const driveFolderId = props.driveFolderId;
   const driveFolderMaker = user?.uid;
 
@@ -20,14 +26,37 @@ export default function DriveModal() {
       console.log("dasfaadsfadsf : " + props.driveFolderId);
       console.log(driveFolderId);
       setdriveFolderName("");
-    } else if (type === "name") {
-      setModfiyName("");
+    } else if (type === "name" && driveFolderNameId) {
+      setModfiyName(driveFolderNewName);
+    } else if (type === "recycle") {
+      console.log("오로오롱 : " + driveFolderNameId);
     }
   }, [type]);
 
   if (!isOpen) return null;
 
+  //이름바꾸기
   const handleNameSubmit = async () => {
+    if (!ModifyName.trim()) {
+      alert("폴더 이름을 입력하세요!");
+      return;
+    }
+    console.log("asdf  : " + driveFolderNameId);
+    try {
+      if (driveFolderNameId) {
+        const data = {
+          driveFolderId: driveFolderNameId,
+          driveFolderName: ModifyName,
+        };
+        console.log("datadata : ", data);
+        const response = await driveFolderNewNameUpDate(data);
+        console.log("ㅇㅁㄴㅇㄹ : ", response);
+
+        closeModal();
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+    }
     return;
   };
 
@@ -37,11 +66,6 @@ export default function DriveModal() {
       alert("폴더 이름을 입력하세요!");
       return;
     }
-
-    console.log("driveFolderName : " + driveFolderName);
-    console.log("ID : " + driveFolderId);
-    console.log("UID : " + driveFolderMaker);
-
     try {
       const data = {
         driveFolderName,
@@ -72,6 +96,25 @@ export default function DriveModal() {
       console.error("에러 발생:", error);
       alert("폴더 생성 중 문제가 발생했습니다.");
     }
+  };
+
+  //휴지통이동
+  const handleRecycleSubmit = async () => {
+    try {
+      if (driveFolderNameId) {
+        const data = {
+          driveFolderId: driveFolderNameId,
+        };
+        console.log("datadata : ", data);
+        const response = await driveFolderTrashUpDate(driveFolderNameId);
+        console.log("ㅇㅁㄴㅇㄹ : ", response);
+
+        closeModal();
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+    }
+    return;
   };
 
   const renderContent = () => {
@@ -337,7 +380,7 @@ export default function DriveModal() {
 
               <div className="flex justify-center items-center gap-4 px-6 pt-4 pb-8">
                 <button
-                  onClick={handleNameSubmit}
+                  onClick={handleRecycleSubmit}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 >
                   확인
