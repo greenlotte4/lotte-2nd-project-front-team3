@@ -3,6 +3,8 @@ import {
   DRIVE_FILES_INSERT_URI,
   DRIVE_FOLDER_FILE_INSERT_URI,
   DRIVE_FOLDER_INSERT_URI,
+  DRIVE_FOLDER_NAME,
+  DRIVE_FOLDER_TRASH,
   MY_DRIVE_FILE_DOWNLOAD,
   MY_DRIVE_SELECT_URI,
   MY_DRIVE_URI,
@@ -18,6 +20,40 @@ export const driveFolderInsert = async (data) => {
     console.log(err);
   }
 };
+
+//드라이브 폴더 등록
+export const driveFolderNewNameUpDate = async (data) => {
+  try {
+    const response = await axios.post(`${DRIVE_FOLDER_NAME}`, data);
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//드라이브 휴지통 보내기
+export const driveFolderTrashUpDate = async (driveFolderNameId) => {
+  try {
+    const response = await axios.get(`${DRIVE_FOLDER_TRASH}/${driveFolderNameId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// //드라이브 이름 바꾸기(폴더찾기)
+// export const driveFolderFind = async (driveFolderNameId) => {
+//   try {
+//     const response = await axios.get(`${DRIVE_FOLDER_FIND}/${driveFolderNameId}`);
+//     console.log("마이 드라이브 선택보기:", response.data);
+//     return response;
+//   } catch (error) {
+//     console.error("Error verifying email:", error);
+//     throw error; // 예외를 호출한 쪽으로 전달
+//   }
+// };
 
 //드라이브 파일 등록
 export const driveFilesInsert = async (formData) => {
@@ -37,11 +73,15 @@ export const driveFilesInsert = async (formData) => {
 //드라이브 폴더 등록
 export const driveFolderFileInsert = async (formData) => {
   try {
-    const response = await axios.post(`${DRIVE_FOLDER_FILE_INSERT_URI}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      `${DRIVE_FOLDER_FILE_INSERT_URI}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     console.log(response.data);
     return response.data;
   } catch (err) {
@@ -63,7 +103,6 @@ export const driveFileDownload = async (driveFileId) => {
     throw error; // 예외를 호출한 쪽으로 전달
   }
 };
-
 
 //마이 드라이브 전체보기
 export const MyDriveView = async () => {

@@ -69,6 +69,8 @@ export const DRIVE_FOLDER_FILE_INSERT_URI = `${API_SERVER_HOST}/drive/folder/fil
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
 export const MY_DRIVE_FILE_DOWNLOAD = `${API_SERVER_HOST}/drive/files/MyDriveFileDownload`;
+export const DRIVE_FOLDER_NAME = `${API_SERVER_HOST}/drive/folder/name`;
+export const DRIVE_FOLDER_TRASH = `${API_SERVER_HOST}/drive/folder/trash`;
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회

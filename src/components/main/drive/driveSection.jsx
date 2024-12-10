@@ -32,6 +32,10 @@ export default function DriveSection() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const [selectedDriveIds, setSelectedDriveIds] = useState([]); // 체크된 폴더들의 ID
+  const [selectedDriveName, setSelectedDriveName] = useState([]); // 체크된 폴더들의 ID
+
+  const aa = selectedDriveIds[0];
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const driveFilesRef = useRef(null);
@@ -218,12 +222,23 @@ export default function DriveSection() {
     fetchFolderData(driveFolderId); // driveFolderId가 있을 때는 상세 정보, 없으면 목록 데이터 불러오기
   }, [driveFolderId]); //  const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
 
+  // useEffect(() => {
+  //   if (menuVisible) {
+  //     console.log("현재 선택된 Drive ID:", selectedDriveId);
+  //   }
+  // }, [menuVisible, selectedDriveId]);
+
   ////////////////////////////////오른쪽 커스텀메뉴, 체크박스, 별표/////////////////////////////////////
 
   const handleContextMenu = (event, index, type) => {
-    event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
-    const { clientX, clientY } = event; // 클릭한 위치 좌표
-    setMenuPosition({ x: clientX, y: clientY });
+    event.preventDefault(); // 기본 우클릭 메뉴 방지
+
+    // 우클릭한 항목만 선택
+    toggleFolderCheck(index, true); // forceExclusive = true
+
+    // 클릭 위치 저장
+    const { clientX, clientY } = event;
+    setMenuPosition({ x: clientX, y: clientY }); // 커스텀 메뉴 위치 설정
     setMenuVisible(true); // 커스텀 메뉴 열기
 
     if (type === "folder") {
@@ -286,13 +301,39 @@ export default function DriveSection() {
     }
   };
 
-  // 체크박스 상태 토글
-  const toggleFolderCheck = (index) => {
-    setFolderStates((prevStates) =>
-      prevStates.map((state, idx) =>
-        idx === index ? { ...state, isChecked: !state.isChecked } : state
-      )
-    );
+  //폴더 체크박스
+  const toggleFolderCheck = (index, forceExclusive = false) => {
+    const updatedFolders = [...folderStates];
+
+    if (forceExclusive) {
+      // 모든 선택 해제
+      updatedFolders.forEach((folder) => (folder.isChecked = false));
+      // 현재 항목만 선택
+      updatedFolders[index].isChecked = true;
+    } else {
+      // 선택 상태를 토글 (좌클릭 동작)
+      updatedFolders[index].isChecked = !updatedFolders[index].isChecked;
+    }
+
+    // 선택된 폴더들의 ID 추출
+    const updatedSelectedIds = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderId); // ID 추출
+
+    const updatedSelectedName = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderName); // 이름 추출
+
+    // 상태 업데이트
+    setFolderStates(updatedFolders);
+    setSelectedDriveIds(updatedSelectedIds);
+    setSelectedDriveName(updatedSelectedName);
+
+    console.log("현재 체크된 폴더 IDs:", updatedSelectedIds);
+    console.log("이름 : ", updatedSelectedName);
+
+    // 최신 선택된 ID 반환
+    return updatedSelectedIds;
   };
 
   // 중요도 별표 상태 토글
@@ -330,6 +371,19 @@ export default function DriveSection() {
       </div>
     </div>
   );
+
+  //   /////// 폴더이름 조회
+  // const FolderName = async (driveFolderNameId) => {
+  //   try {
+  //     const response = await driveFolderFind(driveFolderNameId);
+  //     console.log("response: ", response);
+
+  //     // 폴더 이름과 ID를 함께 모달로 전달
+  //     openModal("name", { id: driveFolderNameId, name: response.data });
+  //   } catch (err) {
+  //     console.error("에러 발생: ", err);
+  //   }
+  // };
   return (
     <>
       {isLoading ? <LoadingAnimation /> : null}
@@ -797,7 +851,8 @@ export default function DriveSection() {
               onClick={() => {
                 console.log("asdf");
                 setMenuVisible(false);
-                openModal("recycle");
+                openModal("recycle", { id: selectedDriveIds[0] });
+                console.log("이거 찍혀? : " + selectedDriveIds[0]);
               }}
               className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
             >
@@ -826,7 +881,12 @@ export default function DriveSection() {
             <li
               onClick={() => {
                 setMenuVisible(false);
-                openModal("name");
+                openModal("name", {
+                  name: selectedDriveName[0],
+                  id: selectedDriveIds[0],
+                }); // 선택된 ID 하나만 전달
+                console.log("이거 찍혀? : " + selectedDriveIds[0]);
+                console.log("이거는 찍혀 ?  : " + selectedDriveName[0]);
               }}
               className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
             >
