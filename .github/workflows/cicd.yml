@@ -28,7 +28,7 @@ jobs:
 
     # 4. 의존성 설치
     - name: Install dependencies
-      run: npm clean install
+      run: npm ci
 
     # 5. 네이티브 모듈 재빌드
     - name: Rebuild native modules
