@@ -1,8 +1,12 @@
 import axios from "axios";
 import {
   CALENDAR_DELETE_URI,
+  CALENDAR_DELETESHARE_URI,
   CALENDAR_INSERT_URI,
   CALENDAR_SELECT_URI,
+  CALENDAR_SELECTMODAL_URI,
+  CALENDAR_SELECTSHARE_URI,
+  CALENDAR_SHARE_URI,
   CALENDAR_UPDATE_URI,
   SCHEDULE_DELETE_URI,
   SCHEDULE_DETAIL_URI,
@@ -38,6 +42,42 @@ export const getCalendar = async (uid) => {
         "Content-Type": "application/json", // JSON 형식으로 전송
       },
     });
+    console.log("데이터 들어오는값이?" + response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 캘린더 모달 select
+export const getCalendarModal = async (uid) => {
+  try {
+    const response = await axiosInstance.get(
+      `${CALENDAR_SELECTMODAL_URI}/${uid}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 캘린더 모달 select
+export const getCalendarShare = async (id) => {
+  console.log("캘린더api 모달에서 사용하는 공유캘린더 사용 아이디 ::" + id);
+  try {
+    const response = await axiosInstance.get(
+      `${CALENDAR_SELECTSHARE_URI}/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
     return response.data;
   } catch (err) {
     console.log(err);
@@ -68,6 +108,26 @@ export const deleteCalendar = async (no) => {
   try {
     const response = await axiosInstance.delete(
       `${CALENDAR_DELETE_URI}/${no}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 캘린더 delete
+export const shareCalendar = async (id, userIds) => {
+  console.log("가는값이???" + id);
+  console.log("가는값이???" + userIds);
+  try {
+    const response = await axiosInstance.put(
+      `${CALENDAR_SHARE_URI}/${id}`,
+      userIds,
       {
         headers: {
           "Content-Type": "application/json", // JSON 형식으로 전송
@@ -119,6 +179,7 @@ export const getUser = async (department) => {
 
 // 스케줄 select
 export const getSchedule = async (uid) => {
+  console.log("유아이디값값값값" + uid);
   try {
     const response = await axiosInstance.get(`${SCHEDULE_SELECT_URI}/${uid}`, {
       headers: {
@@ -185,6 +246,23 @@ export const deleteSchedule = async (no) => {
   try {
     const response = await axiosInstance.delete(
       `${SCHEDULE_DELETE_URI}/${no}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 공유멤버 삭제하기
+export const deleteShare = async (cId, userId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `${CALENDAR_DELETESHARE_URI}/${cId}/${userId}`,
       {
         headers: {
           "Content-Type": "application/json", // JSON 형식으로 전송

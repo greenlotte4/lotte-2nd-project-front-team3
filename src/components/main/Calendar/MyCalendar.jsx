@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // 상호작용을 위한 플러그인
@@ -16,12 +16,14 @@ import useAuthStore from "../../../store/AuthStore";
 import { useNavigate } from "react-router-dom";
 import { useCalendarStore } from "../../../store/CalendarStore";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import CalendarModal from "@/components/common/modal/calendarModal";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const navigate = useNavigate();
   const calendarRef = useRef(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
+  const id = user?.id;
   // useState 몰아넣은 곳
   const [currentEventData, setCurrentEventData] = useState(null);
   const [holidays, setHolidays] = useState([]); // 공휴일 데이터를 저장할 상태
@@ -125,16 +127,17 @@ function MyCalendar({ listMonth, setListMonth }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data2 = await getSchedule(uid);
+      console.log("idididididididididid" + id);
+      const data2 = await getSchedule(id);
+      console.log(data2);
       setEvents(data2);
     };
 
     fetchData();
-  }, [uid]);
+  }, [id]);
 
-  const { selectedIds } = useCalendarStore();
-
-  console.log("sseeeeeeeeeee:::" + selectedIds);
+  const selectedIds = useCalendarStore((state) => state.selectedIds);
+  const isModalOpen = useCalendarStore((state) => state.isModalOpen);
 
   const filteredEvents = useMemo(() => {
     if (selectedIds.length === 0) {
@@ -312,7 +315,7 @@ function MyCalendar({ listMonth, setListMonth }) {
       uid: uid,
     }));
     const fetchData = async () => {
-      const data2 = await getCalendar(uid);
+      const data2 = await getCalendar(id);
       setOption(data2);
     };
     console.log("4444444444444444444444" + option);
@@ -564,6 +567,11 @@ function MyCalendar({ listMonth, setListMonth }) {
                 </div>
               </form>
             </div>
+          </>
+        )}
+        {isModalOpen && (
+          <>
+            <CalendarModal />
           </>
         )}
       </div>
