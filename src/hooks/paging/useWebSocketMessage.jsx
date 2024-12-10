@@ -7,6 +7,7 @@ export const useWebSocketMessage = (
   setTitle
 ) => {
   const lastUpdateRef = useRef(Date.now());
+  const isEditingRef = useRef(false);
 
   return useCallback(
     async (message) => {
@@ -25,6 +26,12 @@ export const useWebSocketMessage = (
           data.timestamp <= lastUpdateRef.current
         ) {
           console.log("Ignoring own changes or old message");
+          return;
+        }
+
+        const editorElement = document.getElementById("editorjs");
+        if (editorElement && editorElement.contains(document.activeElement)) {
+          console.log("Currently editing, ignoring update");
           return;
         }
 
