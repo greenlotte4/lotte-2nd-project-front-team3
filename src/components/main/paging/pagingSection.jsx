@@ -11,6 +11,9 @@ import { usePageList } from "../../../hooks/paging/usePageList";
 import { usePageActions } from "../../../hooks/paging/usePageActions";
 import { PageCard } from "./PageCard";
 import useAuthStore from "@/store/AuthStore";
+import PageCollaboratorModal from "../../common/modal/pageCollaboratorModal";
+import useModalStore from "../../../store/modalStore";
+import { getSharedPages } from "../../../api/pageAPI";
 
 // prettier-ignore
 export default function PagingSection() {
@@ -37,6 +40,11 @@ export default function PagingSection() {
   // 페이지 삭제, 복구, 영구 삭제 기능 
   const { handleDeletePage, handleRestorePage, handleHardDeletePage } = usePageActions();
 
+  const openModal = useModalStore((state) => state.openModal);
+  const { isOpen, type } = useModalStore();
+
+  const [sharedPages, setSharedPages] = useState([]);
+  const [showAllShared, setShowAllShared] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -53,7 +61,29 @@ export default function PagingSection() {
     };
   }, []);
 
- 
+  useEffect(() => {
+    if (!isOpen && type === "page-collaborator") {
+      // 모달이 닫힐 때 selectedPageId를 초기화하지 않음
+      // setSelectedPageId(null);  // 이 부분을 제거하거나 주석 처리
+    }
+  }, [isOpen, type]);
+
+  useEffect(() => {
+    if (uid) {
+      // 공유 페이지 가져오기
+      const fetchSharedPages = async () => {
+        try {
+          const response = await getSharedPages(uid);
+          setSharedPages(response);
+        } catch (error) {
+          console.error("공유 페이지 목록을 가져오는데 실패했습니다:", error);
+        }
+      };
+
+      fetchSharedPages();
+    }
+  }, [uid]);
+
   const [showAllPersonal, setShowAllPersonal] = useState(false);
   const [showAllLatest, setShowAllLatest] = useState(false);
   const [showAllDeleted, setShowAllDeleted] = useState(false);
@@ -73,6 +103,19 @@ export default function PagingSection() {
     ? deletedPages
     : deletedPages.slice(0, 3);
 
+  // 페이지 ID 상태 추가
+  const [selectedPageId, setSelectedPageId] = useState(null);
+
+  // 공유 멤버 관리 버튼 클릭 핸들러
+  const handleCollaboratorModal = (pageId) => {
+    setSelectedPageId(pageId);
+    openModal("page-collaborator");
+    setPersonalActiveMenu(null);
+  };
+
+  // 표시할 공유 페이지 개수 제한
+  const displayedSharedPages = showAllShared ? sharedPages : sharedPages.slice(0, 3);
+
   return (
     <>
       <article className="page-list">
@@ -83,7 +126,7 @@ export default function PagingSection() {
           <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
-                <h1 className="!text-[19px]"> 개인 페이지</h1>
+                <h1 className="!text-[19px]"> 나의 페이지</h1>
                 {personalPageList.length > 3 && !showAllPersonal && (
                   <button
                     onClick={() => setShowAllPersonal(true)}
@@ -93,7 +136,7 @@ export default function PagingSection() {
                   </button>
                 )}
               </div>
-              <p className="!text-[14px]">나의 페이지 입니다.</p>
+              <p className="!text-[14px]">내가 만든 페이지 입니다.</p>
             </div>
 
             <div className="page-grid">
@@ -122,7 +165,10 @@ export default function PagingSection() {
                           >
                             페이지 삭제
                           </button>
-                          <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200">
+                          <button 
+                            onClick={() => handleCollaboratorModal(page._id)}
+                            className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"
+                          >
                             공유 멤버 관리
                           </button>
                         </div>
@@ -144,50 +190,49 @@ export default function PagingSection() {
           <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
-                <h1 className="!text-[19px]"> 공유 페이지</h1>{" "}
-                <Link to="/antwork/page/mypage" className="!ml-3 text-gray-500">
-                  더보기
-                </Link>
+                <h1 className="!text-[19px]"> 공유 페이지</h1>
+                {sharedPages.length > 3 && !showAllShared && (
+                  <button
+                    onClick={() => setShowAllShared(true)}
+                    className="!ml-3 text-gray-500"
+                  >
+                    더보기 ({sharedPages.length - 3}개)
+                  </button>
+                )}
               </div>
               <p className="!text-[14px]">내가 공유 멤버인 페이지 입니다.</p>
             </div>
             <div className="page-grid">
-              <div className="page-card">
-                <div className="card-content">
-                  <div className="user-details ">
-                    <h3 className="!text-[15px] !mb-3 !font-normal">
-                      📃 OO병원 업무일지
-                    </h3>
-                    <div className="user-info !ml-3">
-                      <img
-                        src="/api/placeholder/32/32"
-                        alt="profile"
-                        className="avatar"
-                      />
-                      <p className="!text-[13px]">황수빈</p>
+              {displayedSharedPages.map((page) => (
+                <PageCard
+                  key={page._id}
+                  page={page}
+                  menuActive={personalActiveMenu}
+                  setMenuActive={setPersonalActiveMenu}
+                  menuOptions={
+                    <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                      <div className="py-1">
+                        <div className="border-t border-gray-300 border-b border-gray-300 p-3">
+                          <button 
+                            onClick={() => handleCollaboratorModal(page._id)}
+                            className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"
+                          >
+                            공유 멤버 관리
+                          </button>
+                        </div>
+                        <div className="p-3">
+                          <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
+                            페이지 설정
+                            <p className="!text-[11px] !text-slate-400 mt-[2px]">
+                              &nbsp;설정페이지로 이동
+                            </p>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <button className="options-btn">⋮</button>
-                </div>
-              </div>
-              <div className="page-card">
-                <div className="card-content">
-                  <div className="user-details ">
-                    <h3 className="!text-[15px] !mb-3 !font-normal">
-                      📃 OO학교 CheckList
-                    </h3>
-                    <div className="user-info !ml-3">
-                      <img
-                        src="/api/placeholder/32/32"
-                        alt="profile"
-                        className="avatar"
-                      />
-                      <p className="!text-[13px]">황수빈</p>
-                    </div>
-                  </div>
-                  <button className="options-btn">⋮</button>
-                </div>
-              </div>
+                  }
+                />
+              ))}
             </div>
           </article>
           <article className="page-list !mt-5 !min-h-[200px]">
@@ -217,22 +262,27 @@ export default function PagingSection() {
                     <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                       <div className="py-1">
                         <div className="border-t border-gray-300 border-b border-gray-300 p-3">
-                          <button
-                            onClick={() =>
-                              handleDeletePage(page._id, {
-                                personalPageList,
-                                setPersonalPageList,
-                                latestPages,
-                                setLatestPages,
-                                deletedPages,
-                                setDeletedPages,
-                              })
-                            }
-                            className="w-full px-4 py-3 text-[14px] text-red-600 hover:bg-gray-100 hover:rounded-[10px] text-left"
+                          {page.owner === uid && (
+                            <button
+                              onClick={() =>
+                                handleDeletePage(page._id, {
+                                  personalPageList,
+                                  setPersonalPageList,
+                                  latestPages,
+                                  setLatestPages,
+                                  deletedPages,
+                                  setDeletedPages,
+                                })
+                              }
+                              className="w-full px-4 py-3 text-[14px] text-red-600 hover:bg-gray-100 hover:rounded-[10px] text-left"
+                            >
+                              페이지 삭제
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => handleCollaboratorModal(page._id)}
+                            className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"
                           >
-                            페이지 삭제
-                          </button>
-                          <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200">
                             공유 멤버 관리
                           </button>
                         </div>
@@ -308,6 +358,12 @@ export default function PagingSection() {
           </article>
         </div>
       </article>
+      <PageCollaboratorModal 
+        pageId={selectedPageId}
+        onCollaboratorsUpdate={(collaborators) => {
+          console.log("Updated collaborators:", collaborators);
+        }}
+      />
     </>
   );
 }
