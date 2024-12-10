@@ -35,6 +35,13 @@ export default function ProjectViewSection() {
   const [editingProject, setEditingProject] = useState(null);
   const [newProjectName, setNewProjectName] = useState(""); // 새로운 프로젝트 이름
 
+  const [collaborators, setCollaborators] = useState([]);
+
+  const handleCollaboratorsUpdate = (data) => {
+    console.log("핸들러 실행? " + data);
+    setCollaborators(data); // 협업자 데이터를 상태에 저장
+  };
+
   // 작업상태 드롭다운
   const toggleDropdown = (stateId) => {
     setDropdownOpenStateId((prev) => (prev === stateId ? null : stateId));
@@ -84,7 +91,7 @@ export default function ProjectViewSection() {
     };
 
     fetchStates();
-  }, [id]);
+  }, [id, collaborators]);
 
   // 현재 작업이 속한 작업상태의 id 상태관리
   const [currentStateId, setCurrentStateId] = useState(null);
@@ -380,6 +387,10 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
         onEditState={handleEditState}
         currentState={currentState}
+        // 부모컴포넌트는 onCollaboratorsUpdate를 통해 전달받은 setCollaborators를 사용해 상태 업데이트
+        onCollaboratorsUpdate={(updatedCollaborators) =>
+          setCollaborators(updatedCollaborators)
+        } // 콜백 전달
       />
       {project ? (
         <article className="page-list min-h-[850px]">
@@ -418,17 +429,35 @@ export default function ProjectViewSection() {
                   </div>
 
                   <div className="flex items-center">
-                    {[...Array(3)].map((_, index) => (
-                      <img
-                        key={index}
-                        src={`/images/Antwork/project/project_profile.png`}
-                        alt={`Profile ${index + 1}`}
-                        className="w-10 h-10 rounded-full border-2 border-white -ml-2"
-                      />
+                    {collaborators.slice(0, 3).map((user) => (
+                      <div key={user.id} className="relative group">
+                        <img
+                          src={
+                            user.profileImageUrl ||
+                            "/images/default_profile.png"
+                          }
+                          alt={`Profile of ${user.name}`}
+                          className="w-10 h-10 rounded-full border-2 border-white -ml-2"
+                        />
+                        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-sm px-2 py-1 rounded-lg whitespace-nowrap z-10">
+                          {user.name}
+                        </div>
+                      </div>
                     ))}
-                    <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
-                      +3
-                    </div>
+
+                    {collaborators.length > 3 && (
+                      <div className="relative group">
+                        <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
+                          +{collaborators.length - 3}
+                        </div>
+                        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-sm px-2 py-1 rounded-lg whitespace-nowrap z-10">
+                          {collaborators.slice(3).map((user) => (
+                            <div key={user.id}>{user.name}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <button
                       onClick={() => openModal("project-invite")}
                       className="p-2 rounded-full hover:bg-gray-100"
