@@ -23,7 +23,7 @@ import SettinngAside from "./settingAside";
   */
 }
 
-export default function Aside({ asideVisible, setListMonth }) {
+export default function Aside({ asideVisible, setListMonth, isDm }) {
   const location = useLocation();
 
   //http://localhost:5137/anwork/_______ 여기 주소값을 찾음
@@ -53,7 +53,7 @@ export default function Aside({ asideVisible, setListMonth }) {
       {mainPath === "project" && <ProjectAside asideVisible={asideVisible} />}
       {mainPath === "board" && <BoardAside asideVisible={asideVisible} />}
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
-      {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} />}
+      {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} isDm={isDm} />}
       {(mainPath === "calendar" || mainPath === "schedule") && (
         <CalendarAside
           asideVisible={asideVisible}

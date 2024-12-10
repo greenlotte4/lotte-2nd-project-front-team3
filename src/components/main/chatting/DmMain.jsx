@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
-  getDm,
-  getDmMessages,
-  sendDmMessage,
+  // getDm,
+  // getDmMessages,
+  // sendDmMessage,
 } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
@@ -22,12 +22,12 @@ export default function DmMain() {
 
   useEffect(() => {
     const fetchDm = async () => {
-      try {
-        const dm = await getDm(dmId);
-        setDmData(dm);
-      } catch (error) {
-        console.error(error);
-      }
+      // try {
+      //   const dm = await getDm(dmId);
+      //   setDmData(dm);
+      // } catch (error) {
+      //   console.error(error);
+      // }
     };
 
     const fetchMessages = async () => {
@@ -53,11 +53,11 @@ export default function DmMain() {
     }
 
     try {
-      await sendDmMessage({
-        dmId,
-        content: messageInput,
-        senderId: user?.id,
-      });
+      // await sendDmMessage({
+      //   dmId,
+      //   content: messageInput,
+      //   senderId: user?.id,
+      // });
       setMessageInput("");
     } catch (error) {
       console.error(error);
@@ -108,9 +108,8 @@ export default function DmMain() {
                 className={`flex ${message.senderId === user?.id ? "justify-end" : ""}`}
               >
                 <div
-                  className={`p-4 max-w-xs rounded-lg shadow ${
-                    message.senderId === user?.id ? "bg-blue-100" : "bg-gray-100"
-                  }`}
+                  className={`p-4 max-w-xs rounded-lg shadow ${message.senderId === user?.id ? "bg-blue-100" : "bg-gray-100"
+                    }`}
                 >
                   <p>{message.content}</p>
                   <small className="text-gray-500">{message.createdAt}</small>

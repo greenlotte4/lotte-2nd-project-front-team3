@@ -2,6 +2,7 @@
 import InviteModal from "./InviteModal";
 import CreateChannelModal from "./CreateChannelModal";
 import useModalStore from "../../../../store/modalStore";
+import DmCreateModal from "./dmCreateModal";
 
 export default function ChattingModalController() {
   const { isOpen, type, closeModal } = useModalStore();
@@ -14,6 +15,8 @@ export default function ChattingModalController() {
         return <InviteModal closeModal={closeModal} />;
       case "createChannel":
         return <CreateChannelModal closeModal={closeModal} />;
+      case "createDm":
+        return <DmCreateModal closeModal={closeModal} />
       default:
         return <div>모달 내용이 없습니다.</div>;
     }
