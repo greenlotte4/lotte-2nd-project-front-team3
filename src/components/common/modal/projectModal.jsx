@@ -193,6 +193,7 @@ export default function ProjectModal({
     if (type === "task-create") {
       // 작업 추가 시 상태 초기화
       setTaskData({ title: "", content: "", priority: "2", size: "M" });
+      setSelectedCollaborators([]);
     } else if (type === "task-edit" && currentTask) {
       console.log("currentTask : " + JSON.stringify(currentTask, null, 2));
 
@@ -208,8 +209,8 @@ export default function ProjectModal({
         assignedUserIds: currentTask.assignedUserIds || [], // 수정된 작업의 담당자 ID 배열
       });
 
-      // selectedCollaborators에 담당자 정보 할당
-      setSelectedCollaborators(currentTask.assignedUserIds || []); // assignedUserIds가 있다면 그 값을 사용
+      // 작업 수정 시 현재 작업에 할당된 담당자 정보 설정
+      setSelectedCollaborators(currentTask.assignedUserDetails || []);
     }
   }, [type, currentTask]); // currentTask가 변경될 때마다 실행
 
@@ -379,9 +380,9 @@ export default function ProjectModal({
       size: taskData.size,
       stateId: currentStateId,
       status: 0,
-      assignedUserIds: selectedCollaborators.map(
+      assignedUser: selectedCollaborators.map(
         (collaborator) => collaborator.id
-      ), // 협업자의 ID만 저장
+      ), // ID만 추출
     };
 
     console.log("newTask:", newTask);
@@ -394,7 +395,7 @@ export default function ProjectModal({
       content: "",
       priority: "2",
       size: "M",
-      assignedUserIds: [],
+      assignedUser: [],
     });
     setSelectedCollaborators([]); // 선택된 담당자 초기화
     closeModal();
@@ -418,7 +419,7 @@ export default function ProjectModal({
       size: taskData.size,
       stateId: currentStateId,
       status: currentTask?.status || 0, // 기존 상태 유지
-      assignedUserIds: selectedCollaborators.map(
+      assignedUser: selectedCollaborators.map(
         (collaborator) => collaborator.id
       ), // 선택된 협업자들의 ID를 저장
     };
