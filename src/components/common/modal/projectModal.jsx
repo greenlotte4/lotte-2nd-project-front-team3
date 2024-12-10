@@ -432,6 +432,7 @@ export default function ProjectModal({
 
       alert("작업이 수정되었습니다!");
       setTaskData({ title: "", content: "", priority: "2", size: "M" }); // 초기화
+      setSelectedCollaborators([]); // 선택된 담당자 초기화
       closeModal();
     } catch (error) {
       console.error("작업 수정 중 오류 발생:", error.message || error);
