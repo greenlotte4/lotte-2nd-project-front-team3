@@ -28,7 +28,9 @@ jobs:
 
     # 4. 의존성 설치
     - name: Install dependencies
-      run: npm install
+      run: |
+    npm install
+    npm install postcss@latest autoprefixer@latest @jridgewell/gen-mapping --save-dev
 
     # 5. 네이티브 모듈 재빌드
     - name: Rebuild native modules
