@@ -135,10 +135,40 @@ const updateTextBlock = (element, block) => {
 };
 
 const updateListBlock = (element, block) => {
-  const listItems = element.querySelectorAll('[contenteditable="true"]');
-  block.data.items.forEach((item, i) => {
-    if (listItems[i] && listItems[i].innerHTML !== item) {
-      listItems[i].innerHTML = item;
+  console.log("Updating list block:", {
+    blockData: block.data,
+    style: block.data.style,
+    items: block.data.items,
+  });
+
+  const listItems = element.querySelectorAll(
+    ".ce-block__content .cdx-list__item"
+  );
+
+  block.data.items.forEach((item, index) => {
+    if (listItems[index]) {
+      const contentElement = listItems[index].querySelector(
+        '[contenteditable="true"]'
+      );
+      if (contentElement) {
+        let newText;
+        // 체크리스트인 경우
+        if (block.data.style === "checked") {
+          newText = typeof item === "object" ? item.text : item;
+          console.log(`Checklist item ${index}:`, { item, newText });
+        } else {
+          // 일반 목록인 경우
+          newText = item;
+          console.log(`List item ${index}:`, { item, newText });
+        }
+
+        if (contentElement.innerHTML !== newText) {
+          console.log(
+            `Updating item ${index} from "${contentElement.innerHTML}" to "${newText}"`
+          );
+          contentElement.innerHTML = newText;
+        }
+      }
     }
   });
 };
