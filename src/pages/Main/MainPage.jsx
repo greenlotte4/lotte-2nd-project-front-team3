@@ -11,6 +11,7 @@ export default function MainPage() {
   }, [initializeAuth]);
   return (
     <>
+      z
       <AntWorkLayout>
         <MainSection />
       </AntWorkLayout>
