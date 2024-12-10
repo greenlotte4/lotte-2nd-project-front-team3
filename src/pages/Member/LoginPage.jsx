@@ -110,10 +110,6 @@ export default function LoginPage() {
                 로그인
               </button>
             </form>
-
-            <p className="signup-text">
-              계정이 없으신가요? <Link to="/terms">회원가입</Link>
-            </p>
           </div>
         </div>
       </div>

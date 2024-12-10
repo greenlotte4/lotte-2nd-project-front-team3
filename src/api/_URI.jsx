@@ -34,6 +34,7 @@ export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // �
 export const USER_CHECK_OUT_URI = `${API_SERVER_HOST}/attendance/check-out`; // 퇴근 처리
 export const USER_CHECK_STATUS_URI = `${API_SERVER_HOST}/attendance/status`; // 출퇴근 상태확인
 export const USER_CHANGE_STATUS_URI = `${API_SERVER_HOST}/attendance/update-status`; // 상태업데이트 처리
+export const ATTENDACNE_ADMIN_SELECT_URI = `${API_SERVER_HOST}/attendance/summary`; // 관리자 출퇴근 기록 조회
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송

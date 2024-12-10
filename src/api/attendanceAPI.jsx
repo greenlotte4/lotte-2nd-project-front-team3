@@ -1,5 +1,6 @@
 import axiosInstance from "./../utils/axiosInstance";
 import {
+  ATTENDACNE_ADMIN_SELECT_URI,
   USER_CHANGE_STATUS_URI,
   USER_CHECK_IN_URI,
   USER_CHECK_OUT_URI,
@@ -62,5 +63,32 @@ export const updateStatusAPI = async (userId, newStatus) => {
     throw new Error(
       error.response?.data?.message || "상태 업데이트 중 오류 발생"
     );
+  }
+};
+
+// 관리자 근태 조회
+export const getAttendanceData = async (
+  companyId,
+  startDate,
+  endDate,
+  period, // 추가
+  page,
+  size
+) => {
+  try {
+    const response = await axiosInstance.get(`${ATTENDACNE_ADMIN_SELECT_URI}`, {
+      params: {
+        companyId,
+        startDate,
+        endDate,
+        period, // 추가
+        page,
+        size,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("근태 데이터를 가져오는 중 오류 발생:", error);
+    throw error;
   }
 };

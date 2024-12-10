@@ -48,6 +48,8 @@ import BoardUpdatePage from "../pages/Main/board/boardUpdatePage";
 import AdminPopPage from "../pages/Main/Admin/adminPopupPage";
 import ChannelPage from "../pages/Main/chatting/ChannelPage";
 import AdminNotificationPage from "./../pages/Main/Admin/adminNotificationPage";
+import AdminAttendancePage from "@/pages/Main/Admin/adminAttendancePage";
+import PaymentPage from "./../pages/Main/setting/paymentPage";
 
 const router = createBrowserRouter([
   // 랜딩 페이지
@@ -69,6 +71,7 @@ const router = createBrowserRouter([
   { path: "/antwork/admin/department", element: <AdminDepartmentPage /> }, // 2024/12/03(화) 최준혁 - AdminDepartmentPage 추가
   { path: "/antwork/admin/popup", element: <AdminPopPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
   { path: "/antwork/admin/notification", element: <AdminNotificationPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
+  { path: "/antwork/admin/attendance", element: <AdminAttendancePage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
@@ -79,6 +82,7 @@ const router = createBrowserRouter([
 
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
+  { path: "/antwork/setting/electronic-approval", element: <PaymentPage /> }, // 전자결제
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가

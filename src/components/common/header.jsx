@@ -224,8 +224,12 @@ export default function Header({ onToggleAside }) {
           {showDropdown && (
             <div className={`dropdown-menu ${showDropdown ? "show" : ""}`}>
               <ul>
-                <li className="p-3 hover:bg-gray-100">나의 정보 수정</li>
-                <li className="p-3 hover:bg-gray-100">설정 페이지</li>
+                <li className="p-3 hover:bg-gray-100">
+                  <Link to="/antwork/setting/myinfo">나의 정보 수정</Link>
+                </li>
+                <li className="p-3 hover:bg-gray-100">
+                  <Link to="/antwork/setting">설정 페이지</Link>
+                </li>
                 <li className="p-3 hover:bg-gray-100">
                   <Link to="/antwork/admin">관리자 페이지</Link>
                 </li>
