@@ -30,7 +30,9 @@ const PagingWrite = () => {
   // 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
-
+  const name = user?.name;
+  const profile = user?.profile;
+  console.log("🔍 user:", user);
   // uid 체크 로그인 안되어 있으면 로그인 페이지로
   useEffect(() => {
     if (!uid) {
@@ -127,6 +129,8 @@ const PagingWrite = () => {
             title: "",
             content: "",
             owner: uid,
+            ownerName: name,
+            ownerImage: profile,
           });
 
           const newId = response.data;

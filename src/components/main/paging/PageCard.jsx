@@ -22,16 +22,16 @@ export const PageCard = ({
             </Link>
           ) : (
             <h3 className="!text-[15px] !mb-3 !font-normal">
-              {page.icon}&nbsp;&nbsp;{page.title}
+              {page.icon}&nbsp;{page.title}
             </h3>
           )}
           <div className="user-info !ml-3">
             <img
-              src="/api/placeholder/32/32"
+              src={page.ownerImage || "/api/placeholder/32/32"}
               alt="profile"
               className="avatar"
             />
-            <p className="!text-[13px]">황수빈</p>
+            <p className="!text-[13px]">{page.ownerName || "Unknown"}</p>
           </div>
         </div>
         <div className="relative menu-container">
