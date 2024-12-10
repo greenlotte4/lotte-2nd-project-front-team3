@@ -603,23 +603,50 @@ export default function ProjectViewSection() {
                                         </div>
                                       </div>
 
-                                      <div className="absolute top-2 right-2 flex -space-x-4">
-                                        <img
-                                          src="/images/Antwork/project/project_profile.png"
-                                          alt="Profile"
-                                          className="w-8 h-8 rounded-full border border-gray-300 z-10"
-                                        />
-                                        <img
-                                          src="/images/Antwork/project/project_profile.png"
-                                          alt="Profile"
-                                          className="w-8 h-8 rounded-full border border-gray-300 z-20"
-                                        />
-                                        <img
-                                          src="/images/Antwork/project/project_profile.png"
-                                          alt="Profile"
-                                          className="w-8 h-8 rounded-full border border-gray-300 z-30"
-                                        />
+                                      <div className="relative">
+                                        <div className="absolute top-[-2.5rem] right-2 flex">
+                                          {" "}
+                                          {/* space-x-3으로 간격 조정 */}
+                                          {item.assignedUserDetails &&
+                                          item.assignedUserDetails.length >
+                                            0 ? (
+                                            // 첫 3명의 사용자만 표시
+                                            item.assignedUserDetails
+                                              .slice(0, 3)
+                                              .map((user, index) => (
+                                                <img
+                                                  key={user.id}
+                                                  src={
+                                                    user.profileImageUrl ||
+                                                    "/images/default_profile.png"
+                                                  }
+                                                  alt={`Profile of ${user.name}`}
+                                                  className={`w-8 h-8 rounded-full border border-gray-300 z-${
+                                                    index + 10
+                                                  }`}
+                                                />
+                                              ))
+                                          ) : (
+                                            <span className="text-gray-500 text-xs">
+                                              No Assignees
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        {/* 3명을 초과한 사용자 수 표시 */}
+                                        {item.assignedUserDetails &&
+                                          item.assignedUserDetails.length >
+                                            3 && (
+                                            <div className="absolute top-[-2.5rem] right-0 flex items-center">
+                                              <div className="w-8 h-8 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white">
+                                                +
+                                                {item.assignedUserDetails
+                                                  .length - 3}
+                                              </div>
+                                            </div>
+                                          )}
                                       </div>
+
                                       <div className="flex gap-1">
                                         <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700">
                                           {item.priority === 0
