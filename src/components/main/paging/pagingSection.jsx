@@ -80,7 +80,7 @@ export default function PagingSection() {
           <h1>Home</h1>
           <p> 페이지 Home 입니다.</p>
 
-          <article className="page-list !mt-5 !min-h-[300px]">
+          <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 개인 페이지</h1>
@@ -141,7 +141,7 @@ export default function PagingSection() {
               ))}
             </div>
           </article>
-          <article className="page-list !mt-5 !min-h-[300px]">
+          <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 공유 페이지</h1>{" "}
@@ -190,7 +190,7 @@ export default function PagingSection() {
               </div>
             </div>
           </article>
-          <article className="page-list !mt-5 !min-h-[300px]">
+          <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>
@@ -252,7 +252,7 @@ export default function PagingSection() {
             </div>
           </article>
 
-          <article className="page-list !mt-5 !min-h-[300px]">
+          <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
               <div className="!inline-flex">
                 <h1 className="!text-[19px]"> 최근 삭제된 페이지</h1>
