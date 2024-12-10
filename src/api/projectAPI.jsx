@@ -130,6 +130,7 @@ export const createTask = async (taskData) => {
 export async function getTasksByStateId(stateId) {
   console.log("작업 조회 들어옴?");
   const response = await fetch(`${PROJECT_TASK_SELECT_URI}/${stateId}`);
+  console.log("22222반환되는 값 : " + response);
   if (!response.ok) {
     throw new Error("Failed to fetch tasks");
   }

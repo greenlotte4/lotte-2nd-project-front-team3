@@ -14,6 +14,7 @@ import useAuthStore from "../../../store/AuthStore";
 import { getAllUser } from "@/api/userAPI";
 import { fetchDepartmentsByCompanyId } from "@/api/departmentAPI";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
+import { ChevronDown, ChevronUp, Users, X } from "lucide-react";
 
 export default function ProjectModal({
   projectId,
@@ -34,6 +35,22 @@ export default function ProjectModal({
   const [expandedDepartments, setExpandedDepartments] = useState({});
   const [collaborators, setCollaborators] = useState([]);
 
+  const [isCollaboratorsDropdownOpen, setIsCollaboratorsDropdownOpen] =
+    useState(false);
+
+  const toggleCollaboratorsDropdown = () => {
+    setIsCollaboratorsDropdownOpen(!isCollaboratorsDropdownOpen);
+  };
+
+  const [availableCollaborators, setAvailableCollaborators] = useState([]);
+  console.log("availableCollaborators : " + availableCollaborators);
+
+  // 선택된 작업담당자 관리하기 위한 상태
+  const [selectedCollaborators, setSelectedCollaborators] = useState([]);
+  console.log(
+    "selectedCollaborators : " + JSON.stringify(selectedCollaborators)
+  );
+
   // 협업자 목록 불러오기
   useEffect(() => {
     const fetchCollaborators = async () => {
@@ -43,6 +60,7 @@ export default function ProjectModal({
           console.log("협업자 목록data : " + JSON.stringify(data));
           setCollaborators(data);
           onCollaboratorsUpdate(data);
+          setAvailableCollaborators(data);
         }
       } catch (error) {
         console.error("협업자 목록을 불러오는 중 오류 발생:", error);
@@ -51,6 +69,18 @@ export default function ProjectModal({
 
     fetchCollaborators();
   }, [projectId]);
+
+  // 작업담당자 선택 핸들러
+  const handleSelectCollaborator = (collaborator) => {
+    if (!selectedCollaborators.some((c) => c.id === collaborator.id)) {
+      setSelectedCollaborators((prev) => [...prev, collaborator]); // collaborator 객체를 추가
+    }
+  };
+
+  // 작업담당자 삭제 핸들러
+  const handleRemoveAssignedUser = (id) => {
+    setSelectedCollaborators((prev) => prev.filter((c) => c.id !== id)); // 객체를 삭제
+  };
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -164,6 +194,8 @@ export default function ProjectModal({
       // 작업 추가 시 상태 초기화
       setTaskData({ title: "", content: "", priority: "2", size: "M" });
     } else if (type === "task-edit" && currentTask) {
+      console.log("currentTask : " + JSON.stringify(currentTask, null, 2));
+
       // 작업 수정 시 현재 작업 데이터를 로드
       setTaskData({
         title: currentTask.title || "",
@@ -173,9 +205,13 @@ export default function ProjectModal({
             ? String(currentTask.priority)
             : "2", // 숫자를 문자열로 변환
         size: currentTask.size || "M",
+        assignedUserIds: currentTask.assignedUserIds || [], // 수정된 작업의 담당자 ID 배열
       });
+
+      // selectedCollaborators에 담당자 정보 할당
+      setSelectedCollaborators(currentTask.assignedUserIds || []); // assignedUserIds가 있다면 그 값을 사용
     }
-  }, [type, currentTask]);
+  }, [type, currentTask]); // currentTask가 변경될 때마다 실행
 
   // 프로젝트 추가 상태 관리
   const [project, setProject] = useState({
@@ -343,6 +379,9 @@ export default function ProjectModal({
       size: taskData.size,
       stateId: currentStateId,
       status: 0,
+      assignedUserIds: selectedCollaborators.map(
+        (collaborator) => collaborator.id
+      ), // 협업자의 ID만 저장
     };
 
     console.log("newTask:", newTask);
@@ -350,7 +389,14 @@ export default function ProjectModal({
     onAddItem(newTask);
 
     alert("작업이 등록되었습니다!");
-    setTaskData({ title: "", content: "", priority: "2", size: "M" });
+    setTaskData({
+      title: "",
+      content: "",
+      priority: "2",
+      size: "M",
+      assignedUserIds: [],
+    });
+    setSelectedCollaborators([]); // 선택된 담당자 초기화
     closeModal();
   };
 
@@ -372,6 +418,9 @@ export default function ProjectModal({
       size: taskData.size,
       stateId: currentStateId,
       status: currentTask?.status || 0, // 기존 상태 유지
+      assignedUserIds: selectedCollaborators.map(
+        (collaborator) => collaborator.id
+      ), // 선택된 협업자들의 ID를 저장
     };
 
     console.log("updatedTask : " + updatedTask);
@@ -391,102 +440,6 @@ export default function ProjectModal({
 
   // 프로젝트 이름 상태 추가
   const [projectName, setProjectName] = useState("");
-
-  // 협업자 관련 상태
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedCollaborators, setSelectedCollaborators] = useState([]);
-
-  // useEffect(() => {
-  //   if (currentTask) {
-  //     setTaskTitle(currentTask.title);
-  //     setTaskContent(currentTask.content);
-  //     setPriority(currentTask.priority);
-  //     setSize(currentTask.size);
-
-  //     // 선택된 담당자 설정
-  //     if (currentTask.assignees) {
-  //       setSelectedCollaborators(currentTask.assignees); // 담당자 설정
-  //     }
-  //   } else {
-  //     setTaskTitle("");
-  //     setTaskContent("");
-  //     setPriority("P2");
-  //     setSize("M");
-
-  //     // 담당자 상태 초기화
-  //     setSearchQuery("");
-  //     setSearchResults([]);
-  //     setSelectedCollaborators([]);
-  //   }
-  // }, [currentTask]);
-
-  // const handleSaveTask = (e) => {
-  //   e.preventDefault();
-
-  //   const taskData = {
-  //     id: currentTask?.id || Date.now(), // 수정 시 기존 ID 유지
-  //     title: taskTitle,
-  //     content: taskContent,
-  //     priority,
-  //     size,
-  //     assignees: selectedCollaborators, // 선택된 담당자 추가
-  //   };
-
-  //   console.log("Task Data to Save:", taskData);
-
-  //   if (type === "task-create") {
-  //     onAddItem(currentStateId, taskData);
-  //   } else if (type === "task-edit") {
-  //     console.log("Calling onEditItem with:", currentStateId, taskData);
-  //     onEditItem(currentStateId, taskData);
-  //   }
-
-  //   closeModal();
-  //   setTimeout(() => {
-  //     setCurrentTask(null);
-  //   }, 0); // 상태 업데이트 후 초기화
-  // };
-
-  const handleSearch = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    // 예제 사용자 데이터 (검색 API 대신)
-    const exampleUsers = [
-      { username: "ekkang1" },
-      { username: "ekkang2" },
-      { username: "ekkang3" },
-      { username: "ekkang4" },
-      { username: "ekkang5" },
-      { username: "ekkang6" },
-    ];
-
-    const filteredUsers = exampleUsers.filter((user) =>
-      user.username.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchResults(filteredUsers);
-  };
-
-  const handleAddCollaborator = (user) => {
-    if (
-      !selectedCollaborators.find(
-        (collaborator) => collaborator.username === user.username
-      )
-    ) {
-      setSelectedCollaborators((prev) => [...prev, { ...user, role: "Write" }]);
-    }
-  };
-
-  const handleRoleChange = (username, newRole) => {
-    setSelectedCollaborators((prev) =>
-      prev.map((collaborator) =>
-        collaborator.username === username
-          ? { ...collaborator, role: newRole }
-          : collaborator
-      )
-    );
-  };
 
   if (!isOpen) return null;
 
@@ -567,68 +520,79 @@ export default function ProjectModal({
                     <option value="XL">XL</option>
                   </select>
                 </div>
-                {/* 담당자 검색 및 선택 */}
-                {/* <div>
-                  <label className="block mb-2 font-medium">담당자 검색</label>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    className="w-full border rounded p-2"
-                    placeholder="담당자 이름을 입력하세요"
-                  />
-                  {searchQuery && (
-                    <div className="mt-2 border rounded p-2 max-h-[100px] overflow-y-auto">
-                      {searchResults.length > 0 ? (
-                        searchResults.map((user, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-2"
-                          >
-                            <span>{user.username}</span>
-                            <button
-                              type="button"
-                              className="text-blue-500 hover:text-blue-700"
-                              onClick={() => handleAddCollaborator(user)}
-                            >
-                              선택
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">검색 결과가 없습니다.</p>
-                      )}
-                    </div>
-                  )}
-                </div> */}
 
-                {/* 선택된 담당자 목록 */}
-                {/* <div>
-                  <h3 className="font-medium mb-3">선택된 담당자</h3>
-                  <div className="border rounded p-4 max-h-[100px] overflow-y-auto">
-                    {selectedCollaborators.length > 0 ? (
-                      selectedCollaborators.map((collaborator, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center p-2"
-                        >
-                          <span>{collaborator.username}</span>
-                          <button
-                            type="button"
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() =>
-                              handleRemoveCollaborator(collaborator.username)
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      ))
+                <div>
+                  <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                    작업담당자 선택
+                  </label>
+
+                  {/* 드롭다운 헤더 */}
+                  <div
+                    onClick={toggleCollaboratorsDropdown}
+                    className="flex justify-between items-center w-full px-4 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-all"
+                  >
+                    <span>선택</span>
+                    {isCollaboratorsDropdownOpen ? (
+                      <ChevronUp size={20} />
                     ) : (
-                      <p className="text-gray-500">선택된 담당자가 없습니다.</p>
+                      <ChevronDown size={20} />
                     )}
                   </div>
-                </div> */}
+
+                  {/* 드롭다운 내용 */}
+                  {isCollaboratorsDropdownOpen && (
+                    <div className="mt-2 border-2 border-gray-200 rounded-lg">
+                      <ul className="max-h-48 overflow-y-auto">
+                        {availableCollaborators.length > 0 ? (
+                          availableCollaborators.map((collaborator) => (
+                            <li key={collaborator.id}>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleSelectCollaborator(collaborator)
+                                }
+                                className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                              >
+                                {collaborator.name} ({collaborator.position})
+                              </button>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="px-4 py-2 text-gray-500">
+                            협업자가 없습니다.
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  {selectedCollaborators.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <h4 className="text-m font-medium text-gray-600">
+                        선택된 작업담당자
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCollaborators.map((collaborator) => (
+                          <span
+                            key={collaborator.id}
+                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-s flex items-center"
+                          >
+                            {collaborator.name} ({collaborator.position})
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveAssignedUser(collaborator.id)
+                              }
+                              className="ml-1 text-blue-500 hover:text-blue-700"
+                            >
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex justify-end space-x-2 mt-6">
                   <button

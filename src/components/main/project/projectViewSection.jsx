@@ -151,8 +151,15 @@ export default function ProjectViewSection() {
             if (!state.items || state.items.length === 0) {
               // 작업이 없는 상태만 요청
               const tasks = await getTasksByStateId(state.id);
+              console.log("1111tasks:", JSON.stringify(tasks));
               // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
-              return { ...state, items: tasks };
+              return {
+                ...state,
+                items: tasks.map((task) => ({
+                  ...task,
+                  assignedUserIds: task.assignedUserIds || [], // 기본값을 빈 배열로 설정
+                })),
+              };
             }
             return state;
           })
@@ -243,7 +250,9 @@ export default function ProjectViewSection() {
   const openTaskEditModal = (stateId, task) => {
     console.log("수정모달 열때 stateId와 task : " + stateId, task);
     setCurrentStateId(stateId);
-    setCurrentTask(task);
+    setCurrentTask({
+      ...task,
+    });
     openModal("task-edit");
   };
 
