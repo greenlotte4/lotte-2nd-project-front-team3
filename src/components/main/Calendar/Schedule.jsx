@@ -24,6 +24,7 @@ export default function Schedule() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const department = user?.department;
   const uid = user?.uid;
+  const userId = user?.id;
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -62,7 +63,9 @@ export default function Schedule() {
           ...selectedAttendees,
           ...data2.internalAttendees, // data2.internalAttendees의 각 항목을 펼쳐서 추가
         ];
-        setSelectedAttendees(updatedAttendees);
+        if (selectedAttendees.length == 0) {
+          setSelectedAttendees(updatedAttendees);
+        }
       };
       fetchData();
       console.log("ffffffff::::::::::" + JSON.stringify(formData));
@@ -77,7 +80,8 @@ export default function Schedule() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getUser(department);
-      const data2 = await getCalendar(uid);
+      const data2 = await getCalendar(userId);
+
       setAvailableAttendees(data);
       setOption(data2);
     };
@@ -159,6 +163,8 @@ export default function Schedule() {
     const fetchData = async () => {
       if (id) {
         // 수정일 때 updateSchedule 호출
+        console.log("가나다라마바사" + JSON.stringify(formData));
+        formData.internalAttendees = selectedAttendees;
         await updateSchedule(formData);
       } else {
         // 일정 등록일 때 insertSchedule 호출

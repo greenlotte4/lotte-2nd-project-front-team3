@@ -13,6 +13,7 @@ import { useCalendarStore } from "../../../store/CalendarStore";
 export default function CalendarAside({ asideVisible, setListMonth }) {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
+  const id = user?.id;
   const navigate = useNavigate();
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -36,6 +37,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
         no: calendars.length,
         name: `새 캘린더`, // 기본 이름
         user_id: uid,
+        view: id,
         color: "#b2d1ff",
       };
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
@@ -74,19 +76,21 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
   // 캘린더 삭제
   const deleteCal = (no) => {
-    const fetchData = async () => {
-      await deleteCalendar(no);
-    };
-    fetchData();
-    window.location.reload(); // 페이지 새로 고침
+    if (confirm("정말 삭제하시겠습니까? 일정도 같이 삭제됩니다.")) {
+      const fetchData = async () => {
+        await deleteCalendar(no);
+      };
+      fetchData();
+      window.location.reload(); // 페이지 새로 고침
+    }
   };
 
   const [data, setData] = useState([]);
   const [schedule, setSchedule] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getCalendar(uid);
-      const data2 = await getSchedule(uid);
+      const data = await getCalendar(id);
+      const data2 = await getSchedule(id);
 
       const updatedData = data2.filter((item) => {
         const startTime = new Date(item.start); // start 값을 Date 객체로 변환
@@ -127,6 +131,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     console.log("ccoollllll::" + finalColor);
     setColor(finalColor);
   };
+
+  const openModal = useCalendarStore((state) => state.openModal);
 
   return (
     <>
@@ -332,7 +338,9 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
           </li>
           <li>
             <div>
-              <button className="main-cate ">🤝 캘린더 공유하기</button>
+              <button className="main-cate " onClick={openModal}>
+                🤝 캘린더 공유하기
+              </button>
             </div>
           </li>
         </ul>

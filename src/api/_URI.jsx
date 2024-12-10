@@ -119,8 +119,12 @@ export const DM_GET_MESSAGES_URI = (dmId) =>
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘린더 조회하기
+export const CALENDAR_SELECTMODAL_URI = `${API_SERVER_HOST}/calendar/select/modal`; // 캘린더 모달 조회하기
+export const CALENDAR_SELECTSHARE_URI = `${API_SERVER_HOST}/calendar/select/share`; // 캘린더 모달 공유인원 조회하기
+export const CALENDAR_DELETESHARE_URI = `${API_SERVER_HOST}/calendar/delete/share`; // 캘린더 모달 공유인원 조회하기
 export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 캘린더 수정하기
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 캘린더 삭제하기
+export const CALENDAR_SHARE_URI = `${API_SERVER_HOST}/calendar/share`; // 부서원 공유캘린더 초대
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
 export const SCHEDULE_SELECT_URI = `${API_SERVER_HOST}/schedule/select`; // 일정 조회하기
 export const SCHEDULE_DETAIL_URI = `${API_SERVER_HOST}/schedule/select/detail`; // 일정 상세조회하기
