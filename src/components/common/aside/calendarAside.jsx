@@ -42,7 +42,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       };
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
       await insertCalendar(newCalendar);
-      window.location.reload(); // 페이지 새로 고침
+      const data = await getCalendar(id);
+      setData(data);
     }
   };
 
@@ -76,12 +77,14 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
   // 캘린더 삭제
   const deleteCal = (no) => {
+    console.log(no);
     if (confirm("정말 삭제하시겠습니까? 일정도 같이 삭제됩니다.")) {
       const fetchData = async () => {
         await deleteCalendar(no);
+        const data = await getCalendar(id);
+        setData(data);
       };
       fetchData();
-      window.location.reload(); // 페이지 새로 고침
     }
   };
 
@@ -210,7 +213,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                             type="text"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="border rounded-md w-[101px] px-2 py-1"
+                            className="border rounded-md w-[101px] px-2 py-1 ml-[10px]"
                           />
                           <br />
                           <button
