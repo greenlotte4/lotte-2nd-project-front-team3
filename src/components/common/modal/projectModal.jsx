@@ -27,6 +27,7 @@ export default function ProjectModal({
   onEditState,
   currentState,
   onCollaboratorsUpdate,
+  onUpdateAssignedUsers, // 부모에서 받은 함수
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -383,6 +384,12 @@ export default function ProjectModal({
       assignedUser: selectedCollaborators.map(
         (collaborator) => collaborator.id
       ), // ID만 추출
+      assignedUserDetails: selectedCollaborators.map((collaborator) => ({
+        id: collaborator.id,
+        name: collaborator.name,
+        profileImageUrl: collaborator.profileImageUrl,
+        position: collaborator.position,
+      })), // 협업자 상세 정보 추가
     };
 
     console.log("newTask:", newTask);
