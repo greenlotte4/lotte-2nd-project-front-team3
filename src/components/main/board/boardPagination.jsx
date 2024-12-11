@@ -18,7 +18,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 export default function BoardPagination({ onPageChange }) {
 const [isLoading, setIsLoading] = useState(false);
 const [currentPage, setCurrentPage] = useState(1);  // 1페이지부터 시작
-const [totalPages, setTotalPages] = useState(0);    // 초기 totalPages는 0
+const [totalPages, setTotalPages] = useState(5);    // 초기 totalPages는 0
 
 const fetchBoardData = async (page) => {
     setIsLoading(true);
@@ -145,7 +145,7 @@ return (
                 </button>
 
                 {/* 로딩 상태 표시 */}
-                {isLoading && <span className="ml-2 text-gray-500">로딩중...</span>}
+                {/* {isLoading && <span className="ml-2 text-gray-500">로딩중...</span>} */}
             </div>
 
             {/* 게시글 목록 */}

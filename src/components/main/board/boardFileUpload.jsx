@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
+// import axiosInstance from "../../../utils/axiosInstance";
 import { Upload , X } from 'lucide-react';
 import { useState } from "react";
 
 {
-  /*
+   /*
     날짜 : 2024/12/04(수)
     생성자 : 김민희
     내용 : BoardFileUpload.jsx - 글쓰기 파일 업로드 드래그 앤 드롭 화면구현
@@ -18,8 +19,9 @@ export default function BoardFileUpload({ onFileSelect }) {
     // 드래그 상태와 선택된 파일 상태 관리
     const [dragActive, setDragActive] = useState(false);  // 드래그 중인지 여부
     const [selectedFile, setSelectedFile] = useState(null);  // 선택된 파일 정보
+    // const [isUploading, setIsUploading] = useState(false); // 업로드 상태
     
-    //드래그 앤 드롭 이벤트 핸들러
+    // 파일 드래그 
     const handleDrag = (e) => {
         e.preventDefault();  // 브라우저 기본 동작 방지
         e.stopPropagation();  // 이벤트 버블링 방지
@@ -30,28 +32,32 @@ export default function BoardFileUpload({ onFileSelect }) {
         }
     };
 
-    // 파일 드롭
+    // 파일 드롭 (onDrop)
     const handleDrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);  // 드래그 상태 해제
     
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {  // 드롭된 파일이 있는지 확인
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {  // 드롭된 파일 확인
             const file = e.dataTransfer.files[0];  // 첫 번째 파일만 가져옴
             setSelectedFile(file);  // 파일 상태 업데이트
             onFileSelect(file);  // 부모 컴포넌트에 파일 정보 전달
+            
         }
     };
 
+    // 파일 선택 (onChange)
     const handleChange = (e) => {
         e.preventDefault();
         if (e.target.files && e.target.files[0]) {  // 선택된 파일이 있는지 확인
-            const file = e.target.files[0];  // 첫 번째 파일만 가져옴
-            setSelectedFile(file);
-            onFileSelect(file);
+            const file = e.target.files[0];  // 첫 번째 파일만 선택
+            setSelectedFile(file);  // 선택된 파일 상태 업데이트
+            onFileSelect(file);  // 부모 컴포넌트에 파일 정보 전달
+    
         }
     };
 
+    
     // 파일 제거
     const handleRemove = () => {
         setSelectedFile(null);  // 선택된 파일 상태 초기화
@@ -110,6 +116,7 @@ export default function BoardFileUpload({ onFileSelect }) {
                             <X className="w-5 h-5" />
                         </button>
                     </div>
+                    {/* {isUploading && <p className="text-sm text-blue-500 mt-2">업로드 중...</p>} */}
                 </div>
             )}
         </div>

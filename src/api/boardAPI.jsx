@@ -5,7 +5,7 @@ import {
     BOARD_LIST_URI, // 게시판 리스트 (글목록)
     BOARD_VIEW_URI, // 게시판 뷰 (글보기)
     //BOARD_MAIN_URI, // 게시판 메인
-    BOARD_UPDATE_URI
+
 } from "./_URI";
 
 // 글쓰기
