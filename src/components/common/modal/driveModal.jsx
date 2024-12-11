@@ -16,6 +16,7 @@ export default function DriveModal() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const driveFolderNameId = props.id;
+  const selectedDriveFileId = props.fileid;
   const driveFolderNewName = props.name;
   const driveFolderId = props.driveFolderId;
   const driveFolderMaker = user?.uid;
@@ -29,7 +30,7 @@ export default function DriveModal() {
     } else if (type === "name" && driveFolderNameId) {
       setModfiyName(driveFolderNewName);
     } else if (type === "recycle") {
-      console.log("오로오롱 : " + driveFolderNameId);
+      console.log("오로오롱 : " + driveFolderNameId, selectedDriveFileId);
     }
   }, [type]);
 
@@ -101,16 +102,12 @@ export default function DriveModal() {
   //휴지통이동
   const handleRecycleSubmit = async () => {
     try {
-      if (driveFolderNameId) {
-        const data = {
-          driveFolderId: driveFolderNameId,
-        };
-        console.log("datadata : ", data);
-        const response = await driveFolderTrashUpDate(driveFolderNameId);
-        console.log("ㅇㅁㄴㅇㄹ : ", response);
-
-        closeModal();
-      }
+      const response = await driveFolderTrashUpDate(
+        driveFolderNameId,
+        selectedDriveFileId
+      );
+      console.log("ㅇㅁㄴㅇㄹ : ", response);
+      closeModal();
     } catch (error) {
       console.error("에러 발생:", error);
     }

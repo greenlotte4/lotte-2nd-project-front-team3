@@ -7,6 +7,7 @@ import {
   driveFolderInsert,
   MyDriveSelectView,
   MyDriveView,
+  ToMyTrash,
 } from "../../../api/driveAPI";
 import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
@@ -34,6 +35,9 @@ export default function DriveSection() {
 
   const [selectedDriveIds, setSelectedDriveIds] = useState([]); // 체크된 폴더들의 ID
   const [selectedDriveName, setSelectedDriveName] = useState([]); // 체크된 폴더들의 ID
+
+  const [selectedDriveFileIds, setSelectedDriveFileIds] = useState([]); // 체크된 폴더들의 ID
+  const [selectedDriveFileName, setSelectedDriveFileName] = useState([]); // 체크된 폴더들의 ID
 
   const aa = selectedDriveIds[0];
   const menuRef = useRef(null);
@@ -198,6 +202,7 @@ export default function DriveSection() {
         files.map((file) => ({
           isChecked: file.isChecked || false,
           isStarred: file.isStarred || false,
+          driveFolderId: file.driveFolderId,
           driveFileSsName: file.driveFileSName,
           driveFileSName: file.driveFileSName.includes("_")
             ? file.driveFileSName.split("_")[1]
@@ -233,46 +238,37 @@ export default function DriveSection() {
   const handleContextMenu = (event, index, type) => {
     event.preventDefault(); // 기본 우클릭 메뉴 방지
 
-    // 우클릭한 항목만 선택
-    toggleFolderCheck(index, true); // forceExclusive = true
-
     // 클릭 위치 저장
     const { clientX, clientY } = event;
     setMenuPosition({ x: clientX, y: clientY }); // 커스텀 메뉴 위치 설정
     setMenuVisible(true); // 커스텀 메뉴 열기
 
     if (type === "folder") {
-      // 폴더를 클릭하면 폴더 체크 상태 설정
-      setFolderStates((prevStates) =>
-        prevStates.map((state, idx) => ({
-          ...state,
-          isChecked: idx === index, // 클릭한 폴더만 체크
-        }))
-      );
+      // 폴더 우클릭: 폴더만 체크하고 파일 관련 상태 초기화
+      toggleFolderCheck(index, true); // forceExclusive=true로 현재 폴더만 체크
 
-      // 폴더 클릭 시, 폴더 내의 파일 상태도 체크하도록
+      // 파일 선택 상태와 관련된 상태 초기화
       setFileStates((prevStates) =>
         prevStates.map((file) => ({
           ...file,
-          isChecked: false, // 폴더 클릭 시 모든 파일 체크 해제
+          isChecked: false, // 모든 파일 선택 해제
         }))
       );
+      setSelectedDriveFileIds([]); // 선택된 파일 ID 초기화
+      setSelectedDriveFileName([]); // 선택된 파일 이름 초기화
     } else if (type === "file") {
-      // 파일을 클릭하면 해당 파일만 체크, 폴더 체크 상태 해제
-      setFileStates((prevStates) =>
-        prevStates.map((state, idx) => ({
-          ...state,
-          isChecked: idx === index, // 클릭한 파일만 체크
-        }))
-      );
+      // 파일 우클릭: 파일만 체크하고 폴더 관련 상태 초기화
+      toggleFileCheck(index, true); // forceExclusive=true로 현재 파일만 체크
 
-      // 파일 클릭 시, 폴더의 체크 상태를 해제
+      // 폴더 선택 상태와 관련된 상태 초기화
       setFolderStates((prevStates) =>
-        prevStates.map((state) => ({
-          ...state,
-          isChecked: false, // 폴더 체크 해제
+        prevStates.map((folder) => ({
+          ...folder,
+          isChecked: false, // 모든 폴더 선택 해제
         }))
       );
+      setSelectedDriveIds([]); // 선택된 폴더 ID 초기화
+      setSelectedDriveName([]); // 선택된 폴더 이름 초기화
     }
   };
 
@@ -301,7 +297,7 @@ export default function DriveSection() {
     }
   };
 
-  //폴더 체크박스
+  //폴더 체크박스⭐⭐
   const toggleFolderCheck = (index, forceExclusive = false) => {
     const updatedFolders = [...folderStates];
 
@@ -344,13 +340,39 @@ export default function DriveSection() {
       )
     );
   };
+  ////파일체크❤️❤️
+  const toggleFileCheck = (index, forceExclusive = false) => {
+    const updatedFiles = [...fileStates];
 
-  const toggleFileCheck = (index) => {
-    setFileStates((prevStates) =>
-      prevStates.map((state, idx) =>
-        idx === index ? { ...state, isChecked: !state.isChecked } : state
-      )
-    );
+    if (forceExclusive) {
+      // 모든 선택 해제
+      updatedFiles.forEach((File) => (File.isChecked = false));
+      // 현재 항목만 선택
+      updatedFiles[index].isChecked = true;
+    } else {
+      // 선택 상태를 토글 (좌클릭 동작)
+      updatedFiles[index].isChecked = !updatedFiles[index].isChecked;
+    }
+
+    // 선택된 폴더들의 ID 추출
+    const updatedSelectedIds = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileId); // ID 추출
+
+    const updatedSelectedName = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileSsName); // 이름 추출
+
+    // 상태 업데이트
+    setFileStates(updatedFiles);
+    setSelectedDriveFileIds(updatedSelectedIds);
+    setSelectedDriveFileName(updatedSelectedName);
+
+    console.log("현재 체크된 파일 IDs:", updatedSelectedIds);
+    console.log("이름 : ", updatedSelectedName);
+
+    // 최신 선택된 ID 반환
+    return updatedSelectedIds;
   };
 
   const toggleFileStar = (index) => {
@@ -359,6 +381,42 @@ export default function DriveSection() {
         idx === index ? { ...state, isStarred: !state.isStarred } : state
       )
     );
+  };
+
+  // 폴더에서 체크된 항목의 수
+  const selectedFolderCount = folderStates.filter(
+    (folder) => folder.isChecked
+  ).length;
+
+  // 파일에서 체크된 항목의 수
+  const selectedFileCount = fileStates.filter((file) => file.isChecked).length;
+
+  // 체크된 항목들의 총합
+  const totalSelectedCount = selectedFolderCount + selectedFileCount;
+
+  //휴지통으로
+  const ToMyDrive = async (updatedSelectedIds, selectedDriveFileIds) => {
+    try {
+      console.log(
+        "선택된 아이디들 : ",
+        updatedSelectedIds,
+        selectedDriveFileIds
+      ); // 배열 형태로 출력
+      // updatedSelectedIds를 사용하여 서버로 요청하거나 다른 작업을 진행
+      const response = await ToMyTrash(
+        updatedSelectedIds,
+        selectedDriveFileIds
+      ); // MyTrashSelectView는 선택된 항목들로 작업을 처리
+      console.log("응답 : ", response);
+    } catch (err) {
+      console.error("휴지통 폴더 데이터를 가져오는 중 오류 발생:", err);
+    }
+  };
+
+  // 복원 버튼 클릭 시 ToMyDrive 호출
+  const handleRestoreClick = () => {
+    // 상태에서 selectedDriveIds 값을 가져와서 ToMyDrive에 전달
+    ToMyDrive(selectedDriveIds, selectedDriveFileIds);
   };
 
   // 로딩 애니메이션 컴포넌트
@@ -475,6 +533,20 @@ export default function DriveSection() {
               <button className="w-[70px] h-[30px] border rounded-[4px]">
                 파일유형
               </button>
+              {totalSelectedCount > 0 && (
+                <div>
+                  <button
+                    onClick={handleRestoreClick}
+                    className="w-[45px] h-[30px] border rounded-[4px]"
+                  >
+                    휴지통
+                  </button>
+                  <span className="ml-[5px]">
+                    <span className="text-blue-500">{totalSelectedCount}</span>
+                    개 선택
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex space-x-4">
               <button className="drive_List" onClick={() => toggleView("list")}>
@@ -851,8 +923,12 @@ export default function DriveSection() {
               onClick={() => {
                 console.log("asdf");
                 setMenuVisible(false);
-                openModal("recycle", { id: selectedDriveIds[0] });
+                openModal("recycle", {
+                  id: selectedDriveIds[0],
+                  fileid: selectedDriveFileIds[0],
+                });
                 console.log("이거 찍혀? : " + selectedDriveIds[0]);
+                console.log("오호오오호오호호 : " + selectedDriveFileIds[0]);
               }}
               className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
             >

@@ -8,6 +8,10 @@ import {
   MY_DRIVE_FILE_DOWNLOAD,
   MY_DRIVE_SELECT_URI,
   MY_DRIVE_URI,
+  MY_TRASH_SELECT_URI,
+  MY_TRASH_URI,
+  ONE_DRIVE_FOLDER_TRASH,
+  TRASH_FOLDER_DRIVE,
 } from "./_URI";
 
 //드라이브 폴더 등록
@@ -33,9 +37,16 @@ export const driveFolderNewNameUpDate = async (data) => {
 };
 
 //드라이브 휴지통 보내기
-export const driveFolderTrashUpDate = async (driveFolderNameId) => {
+export const driveFolderTrashUpDate = async (
+  driveFolderNameId,
+  selectedDriveFileId
+) => {
   try {
-    const response = await axios.get(`${DRIVE_FOLDER_TRASH}/${driveFolderNameId}`);
+    const response = await axios.get(
+      `${ONE_DRIVE_FOLDER_TRASH}/${driveFolderNameId || "null"}/${
+        selectedDriveFileId || "0"
+      }`
+    );
     console.log(response.data);
     return response.data;
   } catch (err) {
@@ -125,5 +136,59 @@ export const MyDriveSelectView = async (driveFolderId) => {
   } catch (error) {
     console.error("Error verifying email:", error);
     throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+//마이 휴지통 전체보기
+export const MyTrashView = async () => {
+  try {
+    const response = await axios.get(`${MY_TRASH_URI}`);
+    console.log("Email verification response:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+// 마이 드라이브 선택보기
+export const MyTrashSelectView = async (driveFolderId) => {
+  try {
+    const response = await axios.get(`${MY_TRASH_SELECT_URI}/${driveFolderId}`);
+    console.log("마이 드라이브 선택보기:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+//휴지통복원하기
+export const ToMyDrive = async (updatedSelectedIds) => {
+  try {
+    console.log("오에에에엥? : " + updatedSelectedIds);
+    const response = await axios.post(
+      `${TRASH_FOLDER_DRIVE}`,
+      updatedSelectedIds
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//휴지통으로
+export const ToMyTrash = async (driveFolderId, selectedDriveFileIds) => {
+  try {
+    console.log("오에에에엥? : " + driveFolderId, selectedDriveFileIds);
+    const response = await axios.post(`${DRIVE_FOLDER_TRASH}`, {
+      driveFolderId: driveFolderId || [],
+      selectedDriveFileIds: selectedDriveFileIds || [],
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
   }
 };
