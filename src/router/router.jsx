@@ -47,11 +47,14 @@ import AdminDepartmentPage from "../pages/Main/Admin/adminDepartmentPage";
 import BoardUpdatePage from "../pages/Main/board/boardUpdatePage";
 import AdminPopPage from "../pages/Main/Admin/adminPopupPage";
 import ChannelPage from "../pages/Main/chatting/ChannelPage";
+
 import AdminNotificationPage from "./../pages/Main/Admin/adminNotificationPage";
 import AdminAttendancePage from "@/pages/Main/Admin/adminAttendancePage";
 import PaymentPage from "./../pages/Main/setting/paymentPage";
 import DmChattingPage from "@/pages/Main/chatting/DmPage";
 import ApprovalMainPage from "@/pages/Main/approval/approvalMainPage";
+import BoardCommentPage from "@/pages/Main/board/boardCommentPage";
+
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -104,7 +107,8 @@ const router = createBrowserRouter([
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
   { path: "/antwork/board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
   { path: "/antwork/board/view/:id", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
-  { path: "/antwork/board/update/:id", element: <BoardUpdatePage /> }, // 2024/12/05(목) 김민희 - Board Modify 추가
+  { path: "/antwork/board/comment", element: <BoardCommentPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
+  { path: "/antwork/board/update/:id", element: <BoardUpdatePage /> }, // 2024/12/05(목) 김민희 - Board Update 추가
   { path: "/antwork/board/boardDataRoom", element: <BoardDataRoomPage /> }, // 2024/11/29(금) 김민희 - Board Data Room 추가
   { path: "/antwork/board/boardDataView", element: <BoardDataViewPage /> }, // 2024/11/29(금) 김민희 - Board Data View 추가
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가

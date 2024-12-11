@@ -8,7 +8,7 @@ import {
     BOARD_UPDATE_URI
 } from "./_URI";
 
-// 게시글 작성 
+// 글쓰기
 export const postBoard = async (data) => {
     try {
         console.log('요청 URL : ', BOARD_WRITE_URI);
@@ -43,6 +43,25 @@ export const postBoard = async (data) => {
     }
 };
 
+// 파일 업로드
+export const uploadBoardFile = async (formData) => {
+    try {
+        const response = await axiosInstance.post('/board/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error('파일 업로드에 실패했습니다.');
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('파일 업로드 에러:', error);
+        throw error;
+    }
+};
 
 // 게시글 목록 조회
 export const getBoardList = async () => {

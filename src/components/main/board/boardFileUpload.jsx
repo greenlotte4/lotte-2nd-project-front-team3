@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Upload } from 'lucide-react';
+import { Upload , X } from 'lucide-react';
 import { useState } from "react";
 
 {
@@ -9,7 +9,8 @@ import { useState } from "react";
     내용 : BoardFileUpload.jsx - 글쓰기 파일 업로드 드래그 앤 드롭 화면구현
 
     수정 내역 : 
-    
+    2024/12/10(화) - 김민희 : 백엔드 연결 , 업로드 기능구현
+
   */
 }
 

@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import BoardPagination from "./boardPagination";
+import useAuthStore from "../../../store/AuthStore";
 import axiosInstance from "../../../utils/axiosInstance";
 
 {
@@ -16,9 +17,11 @@ import axiosInstance from "../../../utils/axiosInstance";
 }
 
 export default function BoardList() {
-  
+  const user = useAuthStore((state) => state.user);
+  console.log("사용자 정보:", user);
+
   const [boards, setBoards] = useState([]);
-  //const { id } = useParams();
+
 
   useEffect(() => {
     //console.log("useEffect에서 가져온 id:", id);
@@ -27,12 +30,17 @@ export default function BoardList() {
       try {
 
         const response = await axiosInstance.get("/board/list");
+        console.log("응답 데이터 : ", response.data);
 
-        // axios는 2xx 상태 코드의 경우 자동으로 response.data에 데이터를 넣습니다
-        setBoards(response.data); // 성공 시 데이터 확인
+
+        if (response.data && Array.isArray(response.data.content)) {
+          setBoards(response.data.content); // PageImpl의 content 사용
+        } else {
+          throw new Error("예상치 못한 응답 형식");
+        }
       } catch (error) {
         // console.error("게시글 목록을 가져오는데 실패했습니다:", error);
-        console.error("에러 상세:", {
+        console.error("에러 상세 : ", {
           message: error.message,
           response: error.response?.data,  // 서버에서 보낸 에러 메시지
           status: error.response?.status
@@ -43,15 +51,20 @@ export default function BoardList() {
     fetchBoards();
   }, []);
 
- 
 
- // 날짜 포맷팅 함수
- const formatDate = (dateString) => {
+  
+  // BoardPagination으로부터 데이터를 받아 상태 업데이트
+  const handlePageData = (newData) => {
+    setBoards(newData);
+  };
+
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
 
     const date = new Date(dateString);
     return date.toLocaleDateString();
 
-};
+  };
 
   return (
     <>
@@ -183,25 +196,8 @@ export default function BoardList() {
           </tbody>
         </table>
 
-        <BoardPagination />
-            {/* <div className="flex justify-center items-center mt-4">
-              <button className=" text-gray-700 py-2 px-4 rounded-l hover:bg-gray-100">
-                이전
-              </button>
-              <Link to="" className="mx-4 text-black-600">
-                1
-              </Link>
-              <Link to="" className="mx-4 text-gray-600">
-                2
-              </Link>
-              <Link to="" className="mx-4 text-gray-600">
-                3
-              </Link>
+        <BoardPagination onPageChange={handlePageData}/>
 
-              <button className="text-gray-700 py-2 px-4 rounded-r hover:bg-gray-100">
-                다음
-              </button>
-            </div> */}
           </section>
         </article>
       </>
