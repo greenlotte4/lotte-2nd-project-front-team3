@@ -9,6 +9,7 @@ import {
   CHANNEL_ADD_MEMBER_URI,
   DM_LIST_URI,
   DM_CREATE_URI,
+  DM_SEND_MESSAGE_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -48,10 +49,12 @@ export const getChannelMessages = async (channelId) => {
 
 export const sendChannelMessage = async ({ channelId, content, senderId }) => {
   try {
-    await axios.post(CHANNEL_SEND_MESSAGE_URI(channelId), {
+    const response = await axios.post(CHANNEL_SEND_MESSAGE_URI(channelId), {
       content,
       senderId,
     });
+
+    return response.data;
   } catch (error) {
     console.error("채널 메시지 전송 오류:", error);
     throw error;
@@ -100,10 +103,24 @@ export const addChannelMember = async (channelId, users) => {
 export const getDmMessages = async (dmId) => {
   try {
     const response = await axios.get(DM_GET_MESSAGES_URI(dmId));
-    return response; // 데이터 반환
+    return response.data; // 데이터 반환
   } catch (error) {
     console.error("디엠 메시지 조회 실패:", error);
     throw error; // 에러 발생 시 처리
+  }
+};
+
+export const sendDmMessage = async ({ dmId, content, senderId }) => {
+  try {
+    const response = await axios.post(DM_SEND_MESSAGE_URI(dmId), {
+      content,
+      senderId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("채널 메시지 전송 오류:", error);
+    throw error;
   }
 };
 

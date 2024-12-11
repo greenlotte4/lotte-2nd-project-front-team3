@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 import { Client } from "@stomp/stompjs";
 import { WS_URL } from "@/api/_URI";
+import formatChatTime from "@/utils/chatTime";
 
 export default function ChannelMain() {
   const { id: channelId } = useParams();
@@ -26,7 +27,8 @@ export default function ChannelMain() {
   const [messageInput, setMessageInput] = useState("");
   useEffect(() => {
     console.log(user);
-  }, [user]);
+    console.log("messages :", messages)
+  }, [user, messages]);
 
   useEffect(() => {
     const fetchChannel = async () => {
@@ -96,31 +98,45 @@ export default function ChannelMain() {
       alert("메시지를 입력하세요.");
       return;
     }
-  
+
     const newMessage = {
-      id: Date.now(),
       content: messageInput.trim(),
       senderId: user?.id,
-      userName: user?.name,
       channelId,
+      createdAt: new Date()
     };
-  
+
     try {
-      await sendChannelMessage(newMessage); // 서버 전송
+      const result = await sendChannelMessage(newMessage); // 서버 전송
+
+      const msg = {
+        id: result.data,
+        senderId: user?.id,
+        content: messageInput.trim(),
+        createdAt: new Date()
+      };
+      console.log(`소켓 보낸 메시지 : ${msg}`)
+      // TODO: 소켓 보내기
+      stompClientRef.current.publish({
+        destination: `/app/chatting/channel/${channelId}/send`,
+        body: JSON.stringify(msg),
+      });
+
+
       setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
       setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error("메시지 전송 실패:", error);
     }
   };
-  
+
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
   };
-  
+
   const fetchMessages = async () => {
     try {
       setLoading(true);
@@ -161,51 +177,52 @@ export default function ChannelMain() {
     }
   }, [messages]); // 메시지가 변경될 때마다 스크롤 조정
 
-  
+
   useEffect(() => {
     if (!user?.id || !channelId) {
       console.error("❌ User ID 또는 Channel ID가 없어요.");
       return;
     }
-  
+
     const client = new Client({
       brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       debug: (msg) => console.log("🔌 [ChannelMain.jsx] WebSocket Debug:", msg),
-      
+
     });
-  
+
     client.onConnect = () => {
-      console.log("✅ WebSocket 연결 성공");
+      console.log("✅ [channel] WebSocket 연결 성공");
       stompClientRef.current = client;
-  
+
       client.subscribe(`/topic/chatting/channel/${channelId}/messages`, (message) => {
         try {
           const newMessage = JSON.parse(message.body);
+          if (newMessage.senderId === user?.id) {
+            return;
+          }
           console.log("📩 새 메시지 수신:", newMessage); // 메시지 수신 확인
           setMessages((prevMessages) => {
-            if (prevMessages.some((msg) => msg.id === newMessage.id)) {
-              return prevMessages; // 중복 메시지 무시
-            }
             return [...prevMessages, newMessage];
           });
+          // TODO: 맨아래 스크롤
         } catch (error) {
           console.error("❌ 메시지 처리 중 에러:", error);
         }
       });
     };
-  
+
     client.activate();
-  
+
     return () => {
       if (client.active) {
         client.deactivate();
       }
     };
   }, [user?.id, channelId]); // 의존성 배열
-  
+
 
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
@@ -326,7 +343,7 @@ export default function ChannelMain() {
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.senderId === user?.id
+                  className={`flex gap-2 mb-3 ${message.senderId === user?.id
                     ? "flex-row-reverse"
                     : "flex-row"
                     }`}
@@ -343,8 +360,8 @@ export default function ChannelMain() {
                       } rounded-lg`}
                   >
                     <p>{message.content}</p>
-                    <span>{message.createdAt}</span>
                   </div>
+                  <span className="text-slate-400 self-end text-sm">{formatChatTime(message.createdAt)}</span>
                 </div>
               ))
             )}
