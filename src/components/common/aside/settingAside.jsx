@@ -105,7 +105,7 @@ export default function SettinngAside({ asideVisible }) {
               onClick={() => toggleSection("organizationalManagement")}
             >
               <span className="main-cate !text-[14px] text-[#757575] cursor-pointer !inline-flex !mt-[12px] ">
-                메뉴 설정{" "}
+                메뉴 설정{" "}
                 <img
                   src={
                     toggles.organizationalManagement
@@ -130,7 +130,7 @@ export default function SettinngAside({ asideVisible }) {
                 </li>
                 <li>
                   <Link to="/admin/member-integration">
-                    🗒️&nbsp;&nbsp;페이지 설정
+                    🗒️&nbsp;&nbsp;페이지 설정
                   </Link>
                 </li>
 
@@ -163,7 +163,7 @@ export default function SettinngAside({ asideVisible }) {
                 to="/antwork/page"
                 className="main-cate !text-[16px] text-[#757575]"
               >
-                최근사용목록
+                최근사용목록
               </Link>
             </div>
           </li>
