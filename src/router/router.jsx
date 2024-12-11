@@ -55,6 +55,7 @@ import DmChattingPage from "@/pages/Main/chatting/DmPage";
 import ApprovalMainPage from "@/pages/Main/approval/approvalMainPage";
 import BoardCommentPage from "@/pages/Main/board/boardCommentPage";
 
+import TemplatePage from "@/pages/Main/Paging/TemplatePage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -98,6 +99,7 @@ const router = createBrowserRouter([
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
   { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
+  { path: "/antwork/page/template", element: <TemplatePage /> }, // 2024/12/11(수) 황수빈 - TemplatePage 추가
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage

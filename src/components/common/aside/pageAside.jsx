@@ -5,6 +5,7 @@ import useToggle from "../../../hooks/useToggle";
 import axios from "axios";
 import useAuthStore from "../../../store/AuthStore";
 import { getSharedPages } from "../../../api/pageAPI";
+import { useWebSocket } from "../../../hooks/paging/useWebSocket";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -14,6 +15,7 @@ export default function PageAside({ asideVisible }) {
   const [personalPageList, setPersonalPageList] = useState([]);
   const [sharedPageList, setSharedPageList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pageTitles, setPageTitles] = useState({});
 
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
@@ -24,6 +26,13 @@ export default function PageAside({ asideVisible }) {
         try {
           const response = await axios.get(`${PAGE_LIST_UID_URI}/${uid}`);
           setPersonalPageList(response.data);
+          console.log("Fetched personal pages:", response.data);
+          const titles = response.data.reduce((acc, page) => {
+            acc[page._id] = page.title;
+            return acc;
+          }, {});
+          setPageTitles(titles);
+          console.log("Page titles set:", titles);
         } catch (error) {
           console.error("개인 페이지 목록을 가져오는데 실패했습니다:", error);
         }
@@ -36,6 +45,7 @@ export default function PageAside({ asideVisible }) {
           setIsLoading(true);
           const response = await getSharedPages(uid);
           setSharedPageList(response);
+          console.log("Fetched shared pages:", response);
         } catch (error) {
           console.error("공유된 페이지 목록을 가져오는데 실패했습니다:", error);
         } finally {
@@ -81,7 +91,6 @@ export default function PageAside({ asideVisible }) {
           </li>
 
           <li className="lnb-item !mt-[15px] !h-[500px] border-b border-[#ddd]">
-            {/* 개인 페이지 토글 */}
             <div
               className="lnb-header cursor-pointer "
               onClick={() => toggleSection("personalPages")}
@@ -91,8 +100,8 @@ export default function PageAside({ asideVisible }) {
                 <img
                   src={
                     toggles.personalPages
-                      ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
-                      : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                      ? "/images/ico/page_dropup_20_999999.svg"
+                      : "/images/ico/page_dropdown_20_999999.svg"
                   }
                   alt="toggle"
                 />
@@ -103,14 +112,13 @@ export default function PageAside({ asideVisible }) {
                 {personalPageList.map((page) => (
                   <li key={page.id}>
                     <Link to={`/antwork/page/write?id=${page._id}`}>
-                      {page.title}
+                      {pageTitles[page._id] || page.title}
                     </Link>
                   </li>
                 ))}
               </ol>
             )}
 
-            {/* 개인 페이지 토글 */}
             <div
               className="lnb-header cursor-pointer "
               onClick={() => toggleSection("sharedPages")}
@@ -120,8 +128,8 @@ export default function PageAside({ asideVisible }) {
                 <img
                   src={
                     toggles.sharedPages
-                      ? "/images/ico/page_dropup_20_999999.svg" // 열렸을 때 이미지
-                      : "/images/ico/page_dropdown_20_999999.svg" // 닫혔을 때 이미지
+                      ? "/images/ico/page_dropup_20_999999.svg"
+                      : "/images/ico/page_dropdown_20_999999.svg"
                   }
                   alt="toggle"
                 />
@@ -146,45 +154,6 @@ export default function PageAside({ asideVisible }) {
                 )}
               </ol>
             )}
-          </li>
-          <li className="lnb-item">
-            <div className="lnb-header !mb-[10px]">
-              <img
-                src="/images/ico/page_template_22_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
-                템플릿
-              </Link>
-            </div>
-
-            <div className="lnb-header !mb-[10px]">
-              <img
-                src="/images/ico/page_delete24_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
-                휴지통
-              </Link>
-            </div>
-            <div className="lnb-header !mb-[10px]">
-              <img
-                src="/images/ico/page_setting_22_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
-                설정
-              </Link>
-            </div>
           </li>
         </ul>
       </aside>

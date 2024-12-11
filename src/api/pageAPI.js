@@ -64,3 +64,41 @@ export const getSharedPages = async (userId) => {
     throw error;
   }
 };
+
+export const getPageDetails = async (pageId) => {
+  try {
+    const response = await axiosInstance.get(`/api/pages/${pageId}`);
+    return response.data; // 페이지 세부정보 반환
+  } catch (error) {
+    console.error("페이지 세부정보 가져오기 실패:", error);
+    throw new Error("페이지 세부정보를 가져오는 데 실패했습니다.");
+  }
+};
+
+// 템플릿 목록 가져오기
+export const getTemplates = async () => {
+  try {
+    const response = await axiosInstance.get(PAGE_LIST_TEMPLATE_URI);
+    return response.data; // 템플릿 목록 반환
+  } catch (error) {
+    console.error("템플릿 목록을 가져오는 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 템플릿으로부터 페이지 생성
+export const createPageFromTemplate = async (templateId, userId) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/pages/create-from-template",
+      {
+        templateId,
+        userId,
+      }
+    );
+    return response.data; // 생성된 페이지 반환
+  } catch (error) {
+    console.error("템플릿으로부터 페이지 생성 중 오류 발생:", error);
+    throw error;
+  }
+};
