@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { useCalendarStore } from "../../../store/CalendarStore";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import CalendarModal from "@/components/common/modal/calendarModal";
+import { Client } from "@stomp/stompjs";
+import useCalendarWebSocket from "@/hooks/calendar/useCalendarWebSocket";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const navigate = useNavigate();
@@ -32,7 +34,6 @@ function MyCalendar({ listMonth, setListMonth }) {
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
   const [option, setOption] = useState([]);
-
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -127,14 +128,18 @@ function MyCalendar({ listMonth, setListMonth }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("idididididididididid" + id);
       const data2 = await getSchedule(id);
-      console.log(data2);
       setEvents(data2);
     };
 
     fetchData();
   }, [id]);
+
+  // WebSocket 설정
+  useCalendarWebSocket({
+    userId: user?.id,
+    calendarRef,
+  });
 
   const selectedIds = useCalendarStore((state) => state.selectedIds);
   const isModalOpen = useCalendarStore((state) => state.isModalOpen);
@@ -224,6 +229,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           };
           alert("일정이 삭제되었습니다.");
           fetchData();
+          setFormData({ internalAttendees: [], externalAttendees: [] });
           setShowModal(false); // 모달 닫기
         }
       } else {
@@ -317,8 +323,8 @@ function MyCalendar({ listMonth, setListMonth }) {
     const fetchData = async () => {
       const data2 = await getCalendar(id);
       setOption(data2);
+      console.log("4444444444444444444444" + JSON.stringify(data2));
     };
-    console.log("4444444444444444444444" + option);
     fetchData();
   }, [uid]);
 
@@ -328,10 +334,7 @@ function MyCalendar({ listMonth, setListMonth }) {
     setFormData({ uid: uid });
     const fetchData = async () => {
       console.log("form:::::::::" + JSON.stringify(formData));
-      const result = await insertSchedule(formData);
-
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.addEvent(result); // FullCalendar에 동적으로 추가
+      await insertSchedule(formData);
     };
     fetchData();
     setFormData({
@@ -450,29 +453,34 @@ function MyCalendar({ listMonth, setListMonth }) {
                   </div>
 
                   {/* Calendar Selection */}
-                  <div className="mt-[10px]">
-                    <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
-                      <Calendar className="mr-2 text-purple-500" size={18} />
-                      Calendar 선택
-                    </label>
-                    <select
-                      name="calendarId"
-                      value={formData.calendarId}
-                      onChange={(e) =>
-                        setFormData({ ...formData, calendarId: e.target.value })
-                      }
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
-                      required
-                      disabled={editMode}
-                    >
-                      <option value="">Calendar 선택</option>
-                      {option.map((item) => (
-                        <option key={item.calendarId} value={item.calendarId}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {!editMode && (
+                    <div className="mt-[10px]">
+                      <label className="flex items-center text-m font-semibold text-gray-700 mb-2">
+                        <Calendar className="mr-2 text-purple-500" size={18} />
+                        Calendar 선택
+                      </label>
+                      <select
+                        name="calendarId"
+                        value={formData.calendarId}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            calendarId: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                        required
+                        disabled={editMode}
+                      >
+                        <option value="">Calendar 선택</option>
+                        {option.map((item) => (
+                          <option key={item.calendarId} value={item.calendarId}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* 설명 입력 */}
                   <div className="mt-[10px]">
