@@ -2,7 +2,12 @@ import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import { update } from "lodash";
 
-const useProjectWebSocket = ({ userId, projectRef }) => {
+const useProjectWebSocket = ({
+  userId,
+  projectRef,
+  setCollaborators,
+  collaborators,
+}) => {
   const stompClientRef = useRef(null);
 
   useEffect(() => {
@@ -31,30 +36,20 @@ const useProjectWebSocket = ({ userId, projectRef }) => {
         (message) => {
           try {
             const data = JSON.parse(message.body); // 메시지 파싱
-            console.log("🔔 알림 메시지 수신:", data);
+            console.log("🔔 알림 메시지 수신:", JSON.stringify(data));
 
-            const calendarApi = calendarRef.current.getApi();
-            console.log("과연??" + data.id);
-            const updateEvent = calendarApi.getEventById(data.id);
+            console.log("2222collaborators : " + collaborators);
 
-            // 메시지의 action에 따라 처리
-            switch (data.action) {
-              case "insert":
-                calendarApi.addEvent(data); // 새 이벤트 추가
-                console.log("✅ 이벤트 추가됨:", data.event);
-                break;
-              case "update":
-                console.log("간다ㅏ라" + updateEvent.id);
-                updateEvent.remove();
-                calendarApi.addEvent(data);
-                break;
-              case "delete":
-                updateEvent.remove();
-                break;
-              default:
-                console.warn("⚠️ 알 수 없는 액션:", data.action);
-                break;
-            }
+            setCollaborators((prevCollaborators) => {
+              console.log("2222prevCollaborators:", prevCollaborators); // 상태 업데이트 전에 현재 상태를 찍어봄
+              const updatedCollaborators = prevCollaborators.filter(
+                (collaborator) => collaborator.id !== data
+              );
+              console.log("updatedCollaborators:", updatedCollaborators); // 상태 업데이트 후 새 배열을 찍어봄
+              return updatedCollaborators;
+            });
+
+            console.log("11111collaborators : " + collaborators);
           } catch (error) {
             console.error("❌ 메시지 처리 중 에러:", error);
           }
