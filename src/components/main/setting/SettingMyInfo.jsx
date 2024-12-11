@@ -1,9 +1,33 @@
+import { useEffect, useState } from "react";
 import useAuthStore from "./../../../store/AuthStore";
+import { getUserByUid, updateName } from "@/api/userAPI";
 
 export default function SettingMyinfo() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  console.log("12345" + JSON.stringify(user));
+
+  const [userInfo, setUserInfo] = useState();
+  const [name, setName] = useState(userInfo?.name);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data2 = await getUserByUid(user?.uid);
+      setUserInfo(data2);
+      console.log(JSON.stringify(data2));
+      console.log(userInfo);
+    };
+
+    fetchData();
+  }, []);
+
+  const updateName1 = (name) => {
+    const fetchData = async () => {
+      updateName(name, user?.uid);
+    };
+    fetchData();
+  };
+
   return (
-    <article className="page-list ">
+    <article className="page-list w-[1100px] mx-auto">
       <div className="content-header">
         <h1>Setting</h1>
         <p className="!mb-5">개인 설정 페이지 입니다.</p>
@@ -12,9 +36,9 @@ export default function SettingMyinfo() {
         <div className="flex items-center mx-[15px] mt-[10px]">
           <div className="relative w-50 h-50 ml-4 ">
             <img
-              src="https://via.placeholder.com/150"
+              src={userInfo?.profileImageUrl}
               alt="프로필"
-              className="w-full h-full rounded-full border border-gray-300 object-cover"
+              className="w-[150px] h-[150px] rounded-full border border-gray-300 object-cover"
             />
 
             <button className="absolute bottom-0 right-0 p-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition">
@@ -42,7 +66,7 @@ export default function SettingMyinfo() {
             </label>
             <input
               type="text"
-              placeholder="개발부"
+              placeholder={userInfo?.departmentName}
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               readOnly
             />
@@ -52,7 +76,7 @@ export default function SettingMyinfo() {
             <label className="w-1/3 text-gray-700 font-medium">직급</label>
             <input
               type="text"
-              placeholder="사원"
+              placeholder={userInfo?.position}
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               readOnly
             />
@@ -63,10 +87,16 @@ export default function SettingMyinfo() {
             </label>
             <input
               type="text"
-              placeholder="홍길동"
+              placeholder={userInfo?.name}
+              value={name} // 상태와 연결
+              onChange={(e) => setName(e.target.value)} // 상태 업데이트
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button
+              type="button"
+              className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none"
+              onClick={() => updateName1(name)}
+            >
               수정
             </button>
           </div>
@@ -78,10 +108,14 @@ export default function SettingMyinfo() {
             </label>
             <input
               type="email"
-              placeholder="ghkdtnqls95@gmail.com"
+              placeholder={userInfo?.email}
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button
+              className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none"
+              type="button"
+              onClick={null}
+            >
               수정
             </button>
           </div>
@@ -91,10 +125,14 @@ export default function SettingMyinfo() {
             </label>
             <input
               type="text"
-              placeholder="010-7334-2080"
+              placeholder={userInfo?.phoneNumber}
               className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <button className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none">
+            <button
+              className=" ml-3 px-6 p-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none"
+              type="button"
+              onClick={null}
+            >
               수정
             </button>
           </div>
