@@ -7,7 +7,10 @@ import {
   getPageCollaborators,
   addPageCollaborators,
   removePageCollaborator,
+  getPageDetails,
 } from "../../../api/pageAPI";
+import { sendNotification } from "../../../api/notificationAPI";
+
 export default function PageCollaboratorModal({
   pageId,
   onCollaboratorsUpdate,
@@ -19,6 +22,8 @@ export default function PageCollaboratorModal({
   const [collaborators, setCollaborators] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [pageOwner, setPageOwner] = useState(null);
 
   const fetchCollaborators = async () => {
     try {
@@ -34,10 +39,24 @@ export default function PageCollaboratorModal({
     }
   };
 
+  const fetchPageDetails = async () => {
+    try {
+      const pageDetails = await getPageDetails(pageId);
+      setPageOwner(pageDetails.owner);
+      setSelectedUsers((prev) => [
+        ...prev,
+        { id: pageDetails.owner, name: "작성자", position: "작성자" },
+      ]);
+    } catch (error) {
+      console.error("Failed to fetch page details:", error);
+    }
+  };
+
   useEffect(() => {
     console.log("Modal state:", { isOpen, type, pageId });
     if (isOpen && type === "page-collaborator" && pageId) {
       fetchCollaborators();
+      fetchPageDetails();
     }
   }, [isOpen, type, pageId]);
 
@@ -119,7 +138,17 @@ export default function PageCollaboratorModal({
       setCollaborators(updatedCollaborators);
       onCollaboratorsUpdate?.(updatedCollaborators);
 
+      for (const user of selectedUsers) {
+        const payload = {
+          targetType: "사용자",
+          targetId: user.id,
+          message: notificationMessage,
+        };
+        await sendNotification(payload);
+      }
+
       setSelectedUsers([]);
+      setNotificationMessage("");
       closeModal();
       alert("협업자가 성공적으로 추가되었습니다!");
     } catch (error) {
@@ -158,17 +187,19 @@ export default function PageCollaboratorModal({
 
   const renderCollaborators = () => {
     if (isLoading) {
-      return <p className="text-gray-500 text-center">로딩 중...</p>;
+      return <p className="text-gray-500 text-center">��딩 중...</p>;
     }
 
     if (!Array.isArray(collaborators) || collaborators.length === 0) {
-      return <p className="text-gray-500 text-center">협업��가 없습니다.</p>;
+      return <p className="text-gray-500 text-center">협업가 없습니다.</p>;
     }
 
     return collaborators.map((collaborator) => {
       const matchedUser = departments
         .flatMap((dept) => dept.users)
         .find((u) => u.id === collaborator.user_id);
+
+      const isOwner = collaborator.user_id === pageOwner;
 
       return (
         <div
@@ -180,6 +211,7 @@ export default function PageCollaboratorModal({
               {matchedUser?.position || "직책 없음"}
             </span>
             <span>{matchedUser?.name || "사용자 정보 없음"}</span>
+            {isOwner && <span className="text-green-500">(작성자)</span>}
           </div>
           <button
             onClick={() => handleRemoveCollaborator(collaborator.user_id)}
@@ -193,31 +225,20 @@ export default function PageCollaboratorModal({
   };
 
   const isUserSelected = (userId) => {
-    console.log("Current User:", {
-      user,
-      userUid: user?.uid,
-      userId: user?.id,
-      userIdType: typeof userId,
-      userUidType: typeof user?.uid,
-      userIdNumType: typeof user?.id,
-    });
-
     const isCollaborator = collaborators.some(
       (collaborator) => collaborator.user_id === userId
     );
     const isSelected = selectedUsers.some((selected) => selected.id === userId);
     const isCurrentUser = parseInt(userId) === parseInt(user?.id);
-
-    console.log("Comparison Result:", {
-      userId,
-      currentUserId: user?.id,
-      isCurrentUser,
-    });
+    const isOwner = collaborators.some(
+      (collaborator) => collaborator.user_id === userId && collaborator.isOwner
+    );
 
     return {
       isCollaborator,
       isSelected,
       isCurrentUser,
+      isOwner,
     };
   };
 
@@ -351,6 +372,12 @@ export default function PageCollaboratorModal({
             확인
           </button>
         </div>
+        <textarea
+          className="w-full h-28 p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="알림 메시지를 입력하세요..."
+          value={notificationMessage}
+          onChange={(e) => setNotificationMessage(e.target.value)}
+        ></textarea>
       </div>
     </div>
   );

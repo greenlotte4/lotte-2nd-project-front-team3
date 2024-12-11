@@ -3,15 +3,32 @@ import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import ImageTool from "@editorjs/image";
-import { PAGE_IMAGE_UPLOAD_URI } from "@/api/_URI";
+import CodeTool from "@editorjs/code";
+import LinkTool from "@editorjs/link";
+import Quote from "@editorjs/quote";
+import Table from "@editorjs/table";
+import { PAGE_IMAGE_UPLOAD_URI, WS_URL } from "@/api/_URI";
 import axiosInstance from "@utils/axiosInstance";
+import { useWebSocketMessage } from "./useWebSocketMessage";
 
-export const useEditor = (throttledBroadcast) => {
+export const useEditor = (
+  throttledBroadcast,
+  editorRef,
+  componentId,
+  pageId,
+  setTitle
+) => {
+  const handleWebSocketMessage = useWebSocketMessage(
+    editorRef,
+    componentId,
+    pageId,
+    setTitle
+  );
+
   const createEditor = useCallback(
     async (initialData = null) => {
       console.log("createEditor - 에디터 생성 시작");
 
-      // 기존 에디터 요소가 있다면 초기화
       const editorElement = document.getElementById("editorjs");
       if (editorElement) {
         editorElement.innerHTML = "";
@@ -58,9 +75,32 @@ export const useEditor = (throttledBroadcast) => {
               },
             },
           },
+          code: {
+            class: CodeTool,
+            config: {
+              placeholder: "코드를 입력하세요...",
+            },
+          },
+          link: {
+            class: LinkTool,
+            config: {
+              endpoint: "http://localhost:8008/fetchUrl",
+            },
+          },
+          quote: {
+            class: Quote,
+            config: {
+              quotePlaceholder: "인용구를 입력하세요...",
+              captionPlaceholder: "인용구의 출처를 입력하세요...",
+            },
+          },
+          table: {
+            class: Table,
+            inlineToolbar: true,
+          },
         },
         data: initialData || {
-          blocks: [], // 빈 페이지일 경우 빈 블록 배열
+          blocks: [],
         },
         onReady: () => {
           const editorElement = document.getElementById("editorjs");
@@ -77,9 +117,15 @@ export const useEditor = (throttledBroadcast) => {
 
       await editor.isReady;
       console.log("🚀 Editor initialized successfully");
+
+      const webSocket = new WebSocket(WS_URL);
+      webSocket.onmessage = (event) => {
+        handleWebSocketMessage(event.data);
+      };
+
       return editor;
     },
-    [throttledBroadcast]
+    [throttledBroadcast, handleWebSocketMessage]
   );
 
   return createEditor;

@@ -6,7 +6,6 @@ import {
   PAGE_RESTORE_URI,
   PAGE_HARD_DELETE_URI,
   PAGE_LIST_UID_URI,
-  PAGE_LIST_MODIFIED_URI,
 } from "../../api/_URI";
 
 export const usePageActions = () => {

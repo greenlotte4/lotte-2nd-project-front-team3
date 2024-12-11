@@ -25,16 +25,12 @@ export default function PagingSection() {
   // 개인 페이지 목록 불러오기
   const { pages: personalPageList, setPages: setPersonalPageList }
         = usePageList(`${PAGE_LIST_UID_URI}/${uid}`);
-  // 최근 수정된 페이지 목록 불러오기 
-        const { pages: latestPages, setPages: setLatestPages }
-        = usePageList(`${PAGE_LIST_MODIFIED_URI}/${uid}`);
   // 삭제된 페이지 목록 불러오기
   const { pages: deletedPages, setPages: setDeletedPages } 
         = usePageList(`${PAGE_LIST_DELETED_URI}/${uid}`);
 
   // 페이지 메뉴 상태 관리
   const [personalActiveMenu, setPersonalActiveMenu] = useState(null);
-  const [latestActiveMenu, setLatestActiveMenu] = useState(null);
   const [deletedActiveMenu, setDeletedActiveMenu] = useState(null);
 
   // 페이지 삭제, 복구, 영구 삭제 기능 
@@ -50,7 +46,6 @@ export default function PagingSection() {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".menu-container")) {
         setPersonalActiveMenu(null);
-        setLatestActiveMenu(null);
         setDeletedActiveMenu(null);
       }
     };
@@ -85,18 +80,12 @@ export default function PagingSection() {
   }, [uid]);
 
   const [showAllPersonal, setShowAllPersonal] = useState(false);
-  const [showAllLatest, setShowAllLatest] = useState(false);
   const [showAllDeleted, setShowAllDeleted] = useState(false);
 
   // 개인 페이지 섹션 수정
   const displayedPersonalPages = showAllPersonal
     ? personalPageList
     : personalPageList.slice(0, 6);
-
-  // 최근 수정된 페이지 섹션 수정
-  const displayedLatestPages = showAllLatest
-    ? latestPages
-    : latestPages.slice(0, 3);
 
   // 삭제된 페이지 섹션 수정
   const displayedDeletedPages = showAllDeleted
@@ -115,6 +104,23 @@ export default function PagingSection() {
 
   // 표시할 공유 페이지 개수 제한
   const displayedSharedPages = showAllShared ? sharedPages : sharedPages.slice(0, 3);
+
+  const [recentPages, setRecentPages] = useState([]);
+
+  useEffect(() => {
+    const fetchRecentPages = () => {
+      // 개인 페이지와 공유 페이지를 합쳐서 정렬
+      const allPages = [...personalPageList, ...sharedPages];
+
+      // updatedAt 기준으로 정렬
+      const sortedPages = allPages.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      // 가장 최근 수정된 3개 페이지만 선택
+      setRecentPages(sortedPages.slice(0, 3));
+    };
+
+    fetchRecentPages();
+  }, [personalPageList, sharedPages]);
 
   return (
     <>
@@ -155,8 +161,6 @@ export default function PagingSection() {
                               handleDeletePage(page._id, {
                                 personalPageList,
                                 setPersonalPageList,
-                                latestPages,
-                                setLatestPages,
                                 deletedPages,
                                 setDeletedPages,
                               })
@@ -235,72 +239,6 @@ export default function PagingSection() {
               ))}
             </div>
           </article>
-          <article className="page-list !mt-5 !min-h-[200px]">
-            <div className="content-header">
-              <div className="!inline-flex">
-                <h1 className="!text-[19px]"> 최근 수정된 페이지</h1>
-                {latestPages.length > 3 && !showAllLatest && (
-                  <button
-                    onClick={() => setShowAllLatest(true)}
-                    className="!ml-3 text-gray-500"
-                  >
-                    더보기 ({latestPages.length - 3}개)
-                  </button>
-                )}
-              </div>
-              <p className="!text-[14px]">최근 수정된 페이지 입니다.</p>
-            </div>
-
-            <div className="page-grid">
-              {displayedLatestPages.map((page) => (
-                <PageCard
-                  key={page._id}
-                  page={page}
-                  menuActive={latestActiveMenu}
-                  setMenuActive={setLatestActiveMenu}
-                  menuOptions={
-                    <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                      <div className="py-1">
-                        <div className="border-t border-gray-300 border-b border-gray-300 p-3">
-                          {page.owner === uid && (
-                            <button
-                              onClick={() =>
-                                handleDeletePage(page._id, {
-                                  personalPageList,
-                                  setPersonalPageList,
-                                  latestPages,
-                                  setLatestPages,
-                                  deletedPages,
-                                  setDeletedPages,
-                                })
-                              }
-                              className="w-full px-4 py-3 text-[14px] text-red-600 hover:bg-gray-100 hover:rounded-[10px] text-left"
-                            >
-                              페이지 삭제
-                            </button>
-                          )}
-                          <button 
-                            onClick={() => handleCollaboratorModal(page._id)}
-                            className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"
-                          >
-                            공유 멤버 관리
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
-                            페이지 설정
-                            <p className="!text-[11px] !text-slate-400 mt-[2px]">
-                              &nbsp;설정페이지로 이동
-                            </p>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                />
-              ))}
-            </div>
-          </article>
 
           <article className="page-list !mt-5 !min-h-[200px]">
             <div className="content-header">
@@ -334,8 +272,6 @@ export default function PagingSection() {
                               handleRestorePage(page._id, uid,{
                                 setDeletedPages,
                                 setPersonalPageList,
-                                setLatestPages,
-                          
                               })
                             }
                             className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left"

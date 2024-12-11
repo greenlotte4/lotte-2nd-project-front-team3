@@ -51,12 +51,6 @@ export const useWebSocketMessage = (
 
             console.log("Updating content with:", newContent);
 
-            const editorElement = document.getElementById("editorjs");
-            if (!editorElement) {
-              console.error("Editor element not found");
-              return;
-            }
-
             const currentBlocks = await editorRef.current.save();
 
             if (shouldFullUpdate(currentBlocks.blocks, newContent.blocks)) {
@@ -77,6 +71,14 @@ export const useWebSocketMessage = (
               await editorRef.current.render(newContent);
             }
           }
+        }
+
+        if (data.codeBlock) {
+          await editorRef.current.insertBlock(data.codeBlock);
+        }
+
+        if (data.link) {
+          await editorRef.current.insertLink(data.link);
         }
       } catch (error) {
         console.error("Error in handleWebSocketMessage:", error);
@@ -123,8 +125,39 @@ const updateBlocks = async (
       case "image":
         updateImageBlock(blockElement, block);
         break;
+      case "code":
+        updateCodeBlock(blockElement, block);
+        break;
+      case "link":
+        updateLinkBlock(blockElement, block);
+        break;
     }
   }
+};
+
+const updateCodeBlock = (element, block) => {
+  const codeElement = element.querySelector(".ce-code__textarea.cdx-input");
+
+  if (!codeElement) {
+    console.log("Code block elements not found, forcing full update");
+    return false;
+  }
+
+  if (block.data.code !== codeElement.value) {
+    console.log("Updating code block content");
+
+    codeElement.value = block.data.code;
+
+    if (window.hljs) {
+      try {
+        window.hljs.highlightElement(codeElement);
+      } catch (error) {
+        console.error("Error applying syntax highlighting:", error);
+      }
+    }
+  }
+
+  return true;
 };
 
 const updateTextBlock = (element, block) => {
@@ -135,12 +168,6 @@ const updateTextBlock = (element, block) => {
 };
 
 const updateListBlock = (element, block) => {
-  console.log("Updating list block:", {
-    blockData: block.data,
-    style: block.data.style,
-    items: block.data.items,
-  });
-
   const listItems = element.querySelectorAll(
     ".ce-block__content .cdx-list__item"
   );
@@ -151,23 +178,7 @@ const updateListBlock = (element, block) => {
         '[contenteditable="true"]'
       );
       if (contentElement) {
-        let newText;
-        // 체크리스트인 경우
-        if (block.data.style === "checked") {
-          newText = typeof item === "object" ? item.text : item;
-          console.log(`Checklist item ${index}:`, { item, newText });
-        } else {
-          // 일반 목록인 경우
-          newText = item;
-          console.log(`List item ${index}:`, { item, newText });
-        }
-
-        if (contentElement.innerHTML !== newText) {
-          console.log(
-            `Updating item ${index} from "${contentElement.innerHTML}" to "${newText}"`
-          );
-          contentElement.innerHTML = newText;
-        }
+        contentElement.innerHTML = item;
       }
     }
   });
