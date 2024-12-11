@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BoardFileUpload from "./boardFileUpload";
 import { postBoard, uploadBoardFile } from "../../../api/boardAPI";
-import { BOARD_LIST_URI } from "../../../api/_URI";
+// import { BOARD_LIST_URI } from "../../../api/_URI";
 import useAuthStore from "../../../store/AuthStore";
 
 {
