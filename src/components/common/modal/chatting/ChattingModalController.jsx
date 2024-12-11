@@ -16,7 +16,7 @@ export default function ChattingModalController() {
       case "createChannel":
         return <CreateChannelModal closeModal={closeModal} />;
       case "createDm":
-        return <DmCreateModal closeModal={closeModal} />
+        return <DmCreateModal closeModal={closeModal} />;
       default:
         return <div>모달 내용이 없습니다.</div>;
     }

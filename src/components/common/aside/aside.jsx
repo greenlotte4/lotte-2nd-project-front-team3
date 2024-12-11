@@ -9,6 +9,7 @@ import ChattingAside from "./chattingAside";
 import CalendarAside from "./calendarAside";
 import AdminAside from "./adminAside";
 import SettinngAside from "./settingAside";
+import ApprovalAside from "./approvalAside";
 
 {
   /*
@@ -53,7 +54,9 @@ export default function Aside({ asideVisible, setListMonth, isDm }) {
       {mainPath === "project" && <ProjectAside asideVisible={asideVisible} />}
       {mainPath === "board" && <BoardAside asideVisible={asideVisible} />}
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
-      {mainPath === "chatting" && <ChattingAside asideVisible={asideVisible} isDm={isDm} />}
+      {mainPath === "chatting" && (
+        <ChattingAside asideVisible={asideVisible} isDm={isDm} />
+      )}
       {(mainPath === "calendar" || mainPath === "schedule") && (
         <CalendarAside
           asideVisible={asideVisible}
@@ -62,6 +65,7 @@ export default function Aside({ asideVisible, setListMonth, isDm }) {
       )}
       {mainPath === "admin" && <AdminAside asideVisible={asideVisible} />}
       {mainPath === "setting" && <SettinngAside asideVisible={asideVisible} />}
+      {mainPath === "approval" && <ApprovalAside asideVisible={asideVisible} />}
     </>
   );
 }

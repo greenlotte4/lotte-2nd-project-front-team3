@@ -72,6 +72,11 @@ export default function Navigator() {
             <img src="/images/ico/nav_admin_24_666666.svg" alt="admin" />
           </Link>
         </div>
+        <div className="nav-item">
+          <Link to="/antwork/approval">
+            <img src="/images/ico/nav_approval_24_666666.svg" alt="admin" />
+          </Link>
+        </div>
       </nav>
     </>
   );

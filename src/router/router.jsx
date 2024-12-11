@@ -51,7 +51,9 @@ import AdminNotificationPage from "./../pages/Main/Admin/adminNotificationPage";
 import AdminAttendancePage from "@/pages/Main/Admin/adminAttendancePage";
 import PaymentPage from "./../pages/Main/setting/paymentPage";
 import DmChattingPage from "@/pages/Main/chatting/DmPage";
+import ApprovalMainPage from "@/pages/Main/approval/approvalMainPage";
 
+// prettier-ignore
 const router = createBrowserRouter([
   // 랜딩 페이지
   { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
@@ -107,6 +109,7 @@ const router = createBrowserRouter([
   { path: "/antwork/board/boardDataView", element: <BoardDataViewPage /> }, // 2024/11/29(금) 김민희 - Board Data View 추가
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
   { path: "/antwork/project/view", element: <ProjectViewPage /> }, // 2024/11/27(월) 강은경 - Project view 추가
+  { path: "/antwork/approval", element: <ApprovalMainPage />,}, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
 ]);
 // 라우터 내보내기
 export default router;
