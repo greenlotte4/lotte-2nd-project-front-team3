@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DmMain from "../../../components/main/chatting/dmMain"; // 디엠 메시지를 보여줄 컴포넌트
+import DmMain from "../../../components/main/chatting/DmMain"; // 디엠 메시지를 보여줄 컴포넌트
 import AntWorkLayout from "../../../layouts/AntWorkLayout"; // 레이아웃
 import ChattingModal from "../../../components/common/modal/chattingModal"; // 모달 (필요한 경우)
 import ChattingModalController from "../../../components/common/modal/chatting/ChattingModalController"; // 모달 컨트롤러
