@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   getCalendar,
@@ -9,8 +9,10 @@ import {
 } from "../../../api/calendarAPI";
 import useAuthStore from "../../../store/AuthStore";
 import { useCalendarStore } from "../../../store/CalendarStore";
+import { Client } from "@stomp/stompjs";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
+  const calendarRef = useRef(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const uid = user?.uid;
   const id = user?.id;
@@ -113,6 +115,94 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
     fetchData();
   }, [uid]);
+
+  // WebSocket 설정
+  useEffect(() => {
+    if (!user?.id) {
+      console.error(
+        "❌ User ID is not available. WebSocket will not be initialized."
+      );
+      return;
+    }
+
+    const client = new Client({
+      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      reconnectDelay: 5000, // 재연결 딜레이
+      heartbeatIncoming: 4000, // Heartbeat 설정 (수신)
+      heartbeatOutgoing: 4000, // Heartbeat 설정 (송신)
+      debug: (msg) => console.log("🔌 WebSocket Debug:", msg), // 디버그 로그
+    });
+
+    client.onConnect = () => {
+      console.log("✅ WebSocket 연결 성공");
+      calendarRef.current = client;
+
+      // 구독 설정
+      const subscription = client.subscribe(
+        `/topic/schedules/${user.id}`, // 표준 WebSocket 경로
+        (message) => {
+          try {
+            const newSchedule = JSON.parse(message.body);
+            console.log("🔔 알림 메시지 수신:", [newSchedule]);
+
+            if (newSchedule.action == "update") {
+              const updatedData = [newSchedule].filter((item) => {
+                const startTime = new Date(item.start); // start 값을 Date 객체로 변환
+                const endTime = new Date(item.end); // end 값을 Date 객체로 변환
+                const today = new Date(); // 현재 날짜를 기준으로 검사
+                today.setHours(0, 0, 0, 0); // 오늘의 00:00:00
+                const tomorrow = new Date(today); // 내일의 00:00:00
+                tomorrow.setDate(today.getDate() + 1);
+
+                return startTime <= today && endTime >= tomorrow;
+              });
+              if (updatedData.length < 1) {
+                setSchedule((prevSchedule) =>
+                  prevSchedule.filter(
+                    (schedule) => schedule.id !== newSchedule.id
+                  )
+                );
+              }
+
+              setSchedule((prevSchedule) => [...prevSchedule, ...updatedData]);
+            }
+          } catch (error) {
+            console.error("❌ 메시지 처리 중 에러:", error);
+          }
+        }
+      );
+
+      console.log("📩 Subscribed to: /topic/schedules/" + user.id);
+
+      return () => subscription.unsubscribe();
+    };
+
+    client.onDisconnect = () => {
+      console.log("🔴 WebSocket 연결 해제");
+      calendarRef.current = null;
+    };
+
+    client.onStompError = (frame) => {
+      console.error("❌ STOMP Error:", frame.headers["message"], frame.body);
+    };
+
+    try {
+      client.activate();
+      console.log("🔌 WebSocket 활성화 중...");
+    } catch (error) {
+      console.error("❌ WebSocket 활성화 중 에러:", error);
+    }
+
+    return () => {
+      if (client.active) {
+        client.deactivate();
+      }
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    console.log("흠.........." + JSON.stringify(schedule)); // 상태가 변경된 후에 schedule을 출력
+  }, [schedule]); // schedule 상태가 변경될 때마다 실행
 
   const navigateToEditPage = (id) => {
     console.log();

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
-import { update } from "lodash";
 
 const useCalendarWebSocket = ({ userId, calendarRef }) => {
   const stompClientRef = useRef(null);

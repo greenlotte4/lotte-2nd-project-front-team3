@@ -16,6 +16,7 @@ import {
   USER_REGISTER_URI,
   USER_SELECT_URI,
   USER_SEND_EMAIL_URI,
+  USER_UPDATENAME_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
@@ -270,6 +271,20 @@ export const inviteUser = async (userData) => {
 export const getAllUser = async () => {
   try {
     const response = await axiosInstance.get(USER_GET_ALL_URI);
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 이름 수정하기
+export const updateName = async (name, uid) => {
+  console.log("name:::" + name + "::" + uid);
+  try {
+    const response = await axiosInstance.put(
+      `${USER_UPDATENAME_URI}/${name}/${uid}`
+    );
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);
