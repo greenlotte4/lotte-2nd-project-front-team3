@@ -2,7 +2,7 @@
 import InviteModal from "./InviteModal";
 import CreateChannelModal from "./CreateChannelModal";
 import useModalStore from "../../../../store/modalStore";
-import DmCreateModal from "./dmCreateModal";
+import DmCreateModal from "./DmCreateModal";
 
 export default function ChattingModalController() {
   const { isOpen, type, closeModal } = useModalStore();
