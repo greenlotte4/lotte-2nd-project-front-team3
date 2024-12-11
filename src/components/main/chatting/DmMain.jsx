@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import {
-  // getDm,
-  // getDmMessages,
-  // sendDmMessage,
-} from "../../../api/chattingAPI";
+import { getDmMessages, sendDmMessage } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
-
+import formatChatTime from "@/utils/chatTime";
+import { Client } from "@stomp/stompjs";
 export default function DmMain() {
   const { id: dmId } = useParams();
   const [dmData, setDmData] = useState(null);
@@ -15,7 +12,8 @@ export default function DmMain() {
   const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
-
+  const chatBoxRef = useRef(null); // 채팅창 Ref  
+  const stompClientRef = useRef(null)
   const [toggleStates, toggleState] = useToggle({
     isSearchOpen: false,
   });
@@ -52,13 +50,32 @@ export default function DmMain() {
       return;
     }
 
+    const newMessage = {
+      content: messageInput.trim(),
+      senderId: user?.id,
+      dmId,
+      createdAt: new Date()
+    };
+
     try {
-      // await sendDmMessage({
-      //   dmId,
-      //   content: messageInput,
-      //   senderId: user?.id,
-      // });
-      setMessageInput("");
+      const result = await sendDmMessage(newMessage);
+
+      const msg = {
+        id: result.data,
+        senderId: user?.id,
+        content: messageInput.trim(),
+        createdAt: new Date()
+      };
+      console.log(`소켓 보낸 메시지 : ${msg}`)
+      // TODO: 소켓 보내기
+      stompClientRef.current.publish({
+        destination: `/app/chatting/dm/${dmId}/send`,
+        body: JSON.stringify(msg),
+      });
+
+
+      setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
+      setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error(error);
     }
@@ -69,6 +86,60 @@ export default function DmMain() {
       handleSendMessage();
     }
   };
+
+  // WebSocket 연결 설정
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight; // 스크롤 하단 유지
+    }
+  }, [messages]); // 메시지가 변경될 때마다 스크롤 조정
+
+
+  useEffect(() => {
+    if (!user?.id || !dmId) {
+      console.error("❌ User ID 또는 Channel ID가 없어요.");
+      return;
+    }
+
+    const client = new Client({
+      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      reconnectDelay: 5000, // 재연결 딜레이
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      debug: (msg) => console.log("🔌 [ChannelMain.jsx] WebSocket Debug:", msg),
+
+    });
+
+    client.onConnect = () => {
+      console.log("✅ [channel] WebSocket 연결 성공");
+      stompClientRef.current = client;
+
+      client.subscribe(`/topic/chatting/dm/${dmId}/messages`, (message) => {
+        try {
+          const newMessage = JSON.parse(message.body);
+          if (newMessage.senderId === user?.id) {
+            return;
+          }
+          console.log("📩 새 메시지 수신:", newMessage); // 메시지 수신 확인
+          setMessages((prevMessages) => {
+            return [...prevMessages, newMessage];
+          });
+          // TODO: 맨아래 스크롤
+        } catch (error) {
+          console.error("❌ 메시지 처리 중 에러:", error);
+        }
+      });
+    };
+
+    client.activate();
+
+    return () => {
+      if (client.active) {
+        client.deactivate();
+      }
+    };
+  }, [user?.id, dmId]); // 의존성 배열
+
 
   return (
     <div className="w-full rounded-3xl shadow-md overflow-hidden">
@@ -96,7 +167,7 @@ export default function DmMain() {
         </div>
 
         {/* DM 본문 */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 bg-gray-50">
+        <div className="flex-1 overflow-y-auto px-6 py-4 bg-gray-50" ref={chatBoxRef}>
           {loading ? (
             <div>로딩 중...</div>
           ) : messages.length === 0 ? (
@@ -105,15 +176,25 @@ export default function DmMain() {
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.senderId === user?.id ? "justify-end" : ""}`}
+                className={`flex gap-2 mb-3 ${message.senderId === user?.id
+                  ? "flex-row-reverse"
+                  : "flex-row"
+                  }`}
               >
+                <img
+                  src="https://via.placeholder.com/50"
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full"
+                />
                 <div
-                  className={`p-4 max-w-xs rounded-lg shadow ${message.senderId === user?.id ? "bg-blue-100" : "bg-gray-100"
-                    }`}
+                  className={`p-4 ${message.senderId === user?.id
+                    ? "bg-blue-100"
+                    : "bg-gray-100"
+                    } rounded-lg`}
                 >
                   <p>{message.content}</p>
-                  <small className="text-gray-500">{message.createdAt}</small>
                 </div>
+                <span className="text-slate-400 self-end text-sm">{formatChatTime(message.createdAt)}</span>
               </div>
             ))
           )}
