@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -15,8 +15,20 @@ import {
   updateTaskPosition,
 } from "../../../api/projectAPI";
 import { AiOutlineEdit } from "react-icons/ai";
+import useProjectWebSocket from "@/hooks/project/useProjectWebSocket";
+import useAuthStore from "@/store/AuthStore";
 
 export default function ProjectViewSection() {
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  const projectRef = useRef(null);
+
+  // WebSocket 훅 사용
+  useProjectWebSocket({
+    userId: user?.id,
+    projectRef,
+  });
+
   const location = useLocation(); // 현재 URL을 감지
   console.log("location : " + location);
 
