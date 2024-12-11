@@ -180,7 +180,7 @@ export default function ProjectViewSection() {
   const handleEditItem = async (stateId, updatedTask) => {
     try {
       console.log("수정 요청 taskId:", updatedTask.id);
-      console.log("수정 요청 데이터:", updatedTask);
+      console.log("수정 요청 데이터!!!!!!!:", updatedTask);
 
       // 백엔드로 수정 요청
       const updatedTaskFromServer = await updateTask(
@@ -628,7 +628,7 @@ export default function ProjectViewSection() {
                                               ))
                                           ) : (
                                             <span className="text-gray-500 text-xs">
-                                              No Assignees
+                                              {" "}
                                             </span>
                                           )}
                                         </div>
