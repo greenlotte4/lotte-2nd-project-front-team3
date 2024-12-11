@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   getChannel,
   getChannelMessages,
@@ -10,12 +10,18 @@ import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
 import { useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
+import { Client } from "@stomp/stompjs";
+import { WS_URL } from "@/api/_URI";
 
 export default function ChannelMain() {
   const { id: channelId } = useParams();
   const [channelData, setChannelData] = useState(null);
   const [messages, setMessages] = useState([]); // 메시지 상태
   const user = useAuthStore((state) => state.user);
+  const chatBoxRef = useRef(null); // 채팅창 Ref  
+  const stompClientRef = useRef(null);
+  const { userId } = useAuthStore((state) => state);
+
 
   const [messageInput, setMessageInput] = useState("");
   useEffect(() => {
@@ -64,33 +70,57 @@ export default function ChannelMain() {
     isSearchOpen: false, // 검색창 토글
   });
 
-  const handleSendMessage = async () => {
-    if (user === null) return;
+  // const handleSendMessage = async () => {
+  //   if (user === null) return;
 
-    if (messageInput.trim() === "") {
-      alert("메시지를 입력해주세요.");
+  //   if (messageInput.trim() === "") {
+  //     alert("메시지를 입력해주세요.");
+  //     return;
+  //   }
+
+  //   try {
+  //     await sendChannelMessage({
+  //       channelId: channelId,
+  //       content: messageInput,
+  //       senderId: user?.id,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setMessageInput("");
+  //   }
+  // };
+
+  const handleSendMessage = async () => {
+    if (!messageInput.trim()) {
+      alert("메시지를 입력하세요.");
       return;
     }
-
+  
+    const newMessage = {
+      id: Date.now(),
+      content: messageInput.trim(),
+      senderId: user?.id,
+      userName: user?.name,
+      channelId,
+    };
+  
     try {
-      await sendChannelMessage({
-        channelId: channelId,
-        content: messageInput,
-        senderId: user?.id,
-      });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setMessageInput("");
+      await sendChannelMessage(newMessage); // 서버 전송
+      setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
+      setMessageInput(""); // 입력 초기화
+    } catch (error) {
+      console.error("메시지 전송 실패:", error);
     }
   };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
   };
-
+  
   const fetchMessages = async () => {
     try {
       setLoading(true);
@@ -123,6 +153,59 @@ export default function ChannelMain() {
   //   useEffect(() => {
   //     fetchMessages(); // dmId가 변경될 때마다 호출
   //   }, [dmId]);
+
+  // WebSocket 연결 설정
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight; // 스크롤 하단 유지
+    }
+  }, [messages]); // 메시지가 변경될 때마다 스크롤 조정
+
+  
+  useEffect(() => {
+    if (!user?.id || !channelId) {
+      console.error("❌ User ID 또는 Channel ID가 없어요.");
+      return;
+    }
+  
+    const client = new Client({
+      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      reconnectDelay: 5000, // 재연결 딜레이
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      debug: (msg) => console.log("🔌 [ChannelMain.jsx] WebSocket Debug:", msg),
+      
+    });
+  
+    client.onConnect = () => {
+      console.log("✅ WebSocket 연결 성공");
+      stompClientRef.current = client;
+  
+      client.subscribe(`/topic/chatting/channel/${channelId}/messages`, (message) => {
+        try {
+          const newMessage = JSON.parse(message.body);
+          console.log("📩 새 메시지 수신:", newMessage); // 메시지 수신 확인
+          setMessages((prevMessages) => {
+            if (prevMessages.some((msg) => msg.id === newMessage.id)) {
+              return prevMessages; // 중복 메시지 무시
+            }
+            return [...prevMessages, newMessage];
+          });
+        } catch (error) {
+          console.error("❌ 메시지 처리 중 에러:", error);
+        }
+      });
+    };
+  
+    client.activate();
+  
+    return () => {
+      if (client.active) {
+        client.deactivate();
+      }
+    };
+  }, [user?.id, channelId]); // 의존성 배열
+  
 
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
@@ -234,7 +317,7 @@ export default function ChannelMain() {
           </div>
 
           {/* 채팅 본문 */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50 bg-white">
+          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50 bg-white" ref={chatBoxRef}>
             {loading ? (
               <div>로딩 중...</div> // 로딩 중일 때 표시할 내용
             ) : messages.length === 0 ? (
