@@ -17,17 +17,12 @@ import {
 import { AiOutlineEdit } from "react-icons/ai";
 import useProjectWebSocket from "@/hooks/project/useProjectWebSocket";
 import useAuthStore from "@/store/AuthStore";
+import { Client } from "@stomp/stompjs";
 
 export default function ProjectViewSection() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const projectRef = useRef(null);
-
-  // WebSocket 훅 사용
-  useProjectWebSocket({
-    userId: user?.id,
-    projectRef,
-  });
 
   const location = useLocation(); // 현재 URL을 감지
   console.log("location : " + location);
@@ -49,9 +44,50 @@ export default function ProjectViewSection() {
 
   const [collaborators, setCollaborators] = useState([]);
 
-  const handleCollaboratorsUpdate = (data) => {
-    console.log("핸들러 실행? " + data);
-    setCollaborators(data); // 협업자 데이터를 상태에 저장
+  // WebSocket 훅 사용
+  useProjectWebSocket({
+    userId: user?.id,
+    projectRef,
+    setCollaborators,
+    collaborators,
+  });
+
+  // 협업자 추가 후 작업 상태를 다시 조회하는 부분
+  const handleCollaboratorsUpdate = async (updatedCollaborators) => {
+    console.log("협업자 목록이 갱신되었습니다:", updatedCollaborators);
+
+    // 협업자 상태 업데이트
+    setCollaborators(updatedCollaborators);
+
+    // 협업자 목록이 갱신된 후, 작업 상태 데이터를 다시 가져옴
+    const fetchTasksForStates = async () => {
+      try {
+        const updatedStates = await Promise.all(
+          // states 배열의 각 요소에 대해 작업을 처리
+          states.map(async (state) => {
+            if (!state.items || state.items.length === 0) {
+              // 작업이 없는 상태만 요청
+              const tasks = await getTasksByStateId(state.id);
+              console.log("작업 데이터:", JSON.stringify(tasks));
+              // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
+              return {
+                ...state,
+                items: tasks.map((task) => ({
+                  ...task,
+                  assignedUserIds: task.assignedUserIds || [], // 기본값을 빈 배열로 설정
+                })),
+              };
+            }
+            return state;
+          })
+        );
+        setStates(updatedStates); // 작업 상태 업데이트
+      } catch (error) {
+        console.error("작업 상태를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchTasksForStates(); // 작업 상태 데이터를 갱신
   };
 
   // 작업상태 드롭다운
