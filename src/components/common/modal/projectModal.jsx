@@ -28,7 +28,6 @@ export default function ProjectModal({
   currentState,
   onCollaboratorsUpdate,
   onUpdateAssignedUsers, // 부모에서 받은 함수
-  onCollaboratorsUpdate2,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용

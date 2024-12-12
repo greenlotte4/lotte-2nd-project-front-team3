@@ -444,10 +444,7 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
         onEditState={handleEditState}
         currentState={currentState}
-        // 부모컴포넌트는 onCollaboratorsUpdate를 통해 전달받은 setCollaborators를 사용해 상태 업데이트
-        onCollaboratorsUpdate={(updatedCollaborators) =>
-          setCollaborators(updatedCollaborators)
-        } // 콜백 전달
+        onCollaboratorsUpdate={handleCollaboratorsUpdate}
       />
       {project ? (
         <article className="page-list min-h-[850px]">
