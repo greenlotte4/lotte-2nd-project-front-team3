@@ -39,6 +39,9 @@ export default function RegisterPage() {
   // 현재 단계 관리 (1: 약관 동의, 2: 회원가입)
   const [currentStep, setCurrentStep] = useState(1);
 
+  useEffect(() => {
+    console.log("Current formData:", formData.joinDate);
+  });
   // 초대 토큰 검증
   useEffect(() => {
     if (token) {
@@ -142,6 +145,7 @@ export default function RegisterPage() {
       email: formData.email,
       role: formData.role,
       position: formData.position,
+      joinDate: formData.joinDate,
     };
     formDataToSend.append(
       "formData",
@@ -338,7 +342,6 @@ export default function RegisterPage() {
                 value={confirmPassword || ""}
                 onChange={(e) => handleConfirmPasswordChange(e.target.value)}
               />
-              qwer123
               {passwordError && (
                 <p className="text-red-500 text-sm mt-1">
                   비밀번호가 일치하지 않습니다.
@@ -373,6 +376,22 @@ export default function RegisterPage() {
                   className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
                   name="nick"
                   placeholder="Enter your nickname"
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* 입사일 */}
+              <div className="mb-6">
+                <label className="block text-gray-700 font-semibold mb-2">
+                  입사일
+                </label>
+                <input
+                  type="date"
+                  id="joinDate"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
+                  name="joinDate"
+                  placeholder="Select your joining date"
+                  value={formData.joinDate || ""}
                   onChange={handleChange}
                 />
               </div>

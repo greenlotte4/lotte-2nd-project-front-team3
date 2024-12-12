@@ -46,7 +46,7 @@ export default function Header({ onToggleAside }) {
     }
 
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      brokerURL: WS_URL, // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000, // Heartbeat 설정 (수신)
       heartbeatOutgoing: 4000, // Heartbeat 설정 (송신)

@@ -50,12 +50,16 @@ import ChannelPage from "../pages/Main/chatting/ChannelPage";
 
 import AdminNotificationPage from "./../pages/Main/Admin/adminNotificationPage";
 import AdminAttendancePage from "@/pages/Main/Admin/adminAttendancePage";
-import PaymentPage from "./../pages/Main/setting/paymentPage";
 import DmChattingPage from "@/pages/Main/chatting/DmPage";
 import ApprovalMainPage from "@/pages/Main/approval/approvalMainPage";
+
 import BoardCommentPage from "@/pages/Main/board/boardCommentPage";
 
 import TemplatePage from "@/pages/Main/Paging/TemplatePage";
+
+import ApprovalTripPage from "@/pages/Main/approval/approvaltripPage";
+import AdminApprovalPage from "@/pages/Main/Admin/adminApprovalPage";
+import ApprovalVacationPage from "@/pages/Main/approval/approvalVacationPage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -79,6 +83,7 @@ const router = createBrowserRouter([
   { path: "/antwork/admin/popup", element: <AdminPopPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
   { path: "/antwork/admin/notification", element: <AdminNotificationPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
   { path: "/antwork/admin/attendance", element: <AdminAttendancePage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
+  { path: "/antwork/admin/approval", element: <AdminApprovalPage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인
@@ -89,7 +94,6 @@ const router = createBrowserRouter([
 
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
-  { path: "/antwork/setting/electronic-approval", element: <PaymentPage /> }, // 전자결제
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
@@ -117,6 +121,9 @@ const router = createBrowserRouter([
   { path: "/antwork/project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
   { path: "/antwork/project/view", element: <ProjectViewPage /> }, // 2024/11/27(월) 강은경 - Project view 추가
   { path: "/antwork/approval", element: <ApprovalMainPage />,}, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
+  { path: "/antwork/approval/my", element: <ApprovalMainPage />,}, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
+  { path: "/antwork/approval/vaction", element: <ApprovalVacationPage />,}, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
+  { path: "/antwork/approval/business", element: <ApprovalTripPage />,}, // 2024/12/11(수) 최준혁 - ApprovalTripPage 추가
 ]);
 // 라우터 내보내기
 export default router;

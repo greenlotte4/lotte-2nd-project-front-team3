@@ -13,6 +13,7 @@ export const useFormState = () => {
     email: "",
     role: "",
     position: "",
+    joinDate: "",
   });
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(""); // 비밀번호 확인

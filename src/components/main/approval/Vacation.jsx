@@ -1,8 +1,16 @@
+import { fetchUsersByCompanyAndPosition } from "@/api/userAPI";
+import useAuthStore from "@/store/AuthStore";
+import { useEffect } from "react";
 import { useState } from "react";
 
 export default function Vacation() {
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [todayDate, setTodayDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const companyId = user?.company;
+  const [approver, setApprover] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -28,6 +36,37 @@ export default function Vacation() {
       setSelectedFile(file);
     }
   };
+
+  // 오늘 날짜 가져오기
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toISOString().split("T")[0];
+    setTodayDate(formattedDate);
+  }, []);
+
+  // 대표이사 조회
+  useEffect(() => {
+    const fetchApprover = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetchUsersByCompanyAndPosition(
+          companyId,
+          "대표이사"
+        );
+        if (response && response.length > 0) {
+          setApprover(response[0]);
+        } else {
+          setApprover(null);
+        }
+      } catch (error) {
+        console.error("Error fetching approver:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (companyId) fetchApprover();
+  }, [companyId]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -70,19 +109,21 @@ export default function Vacation() {
                     <td className="p-2 bg-gray-100 font-medium text-gray-700 align-middle">
                       기안자
                     </td>
-                    <td className="p-2 align-middle">최준혁</td>
+                    <td className="p-2 align-middle">{user?.name || "OOO"}</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-2 bg-gray-100 font-medium text-gray-700 align-middle">
                       기안부서
                     </td>
-                    <td className="p-2 align-middle">Antwork</td>
+                    <td className="p-2 align-middle">
+                      {user?.companyName || "OOO"}
+                    </td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-2 bg-gray-100 font-medium text-gray-700 align-middle">
                       기안일
                     </td>
-                    <td className="p-2 align-middle">2024-12-10</td>
+                    <td className="p-2 align-middle">{todayDate}</td>
                   </tr>
                   <tr>
                     <td className="p-2 bg-gray-100 font-medium text-gray-700 align-middle">
@@ -95,7 +136,7 @@ export default function Vacation() {
             </section>
 
             {/* 승인 영역 */}
-            <section className="w-32 border border-gray-300 ml-6 text-center">
+            <section className="w-48 border border-gray-300 ml-6 text-center">
               <div className="bg-gray-100 text-sm font-medium text-gray-700 py-2">
                 승인
               </div>
@@ -103,7 +144,14 @@ export default function Vacation() {
                 <p className="text-gray-700 font-medium">대표이사</p>
               </div>
               <div className="border-t border-gray-300 py-4">
-                <p className="text-gray-700">김상후</p>
+                {/* 대표이사 정보 표시 */}
+                {isLoading ? (
+                  <p className="text-gray-500">로딩 중...</p>
+                ) : approver ? (
+                  <p className="text-gray-700">{approver.name}</p>
+                ) : (
+                  <p className="text-gray-500">정보 없음</p>
+                )}
               </div>
               <div className="border-t border-gray-300 py-6"></div>
             </section>
@@ -272,62 +320,31 @@ export default function Vacation() {
             결재선
           </h3>
           <div className="space-y-4">
-            {/* 결재자 카드 */}
-            <div className="bg-white shadow-sm rounded-lg p-4 flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                <img
-                  src="https://via.placeholder.com/48"
-                  alt="결재자 사진"
-                  className="w-full h-full object-cover"
-                />
+            {approver ? (
+              <div className="bg-white shadow-sm rounded-lg p-4 flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
+                  <img
+                    src={
+                      approver.profileImageUrl ||
+                      "https://via.placeholder.com/48"
+                    }
+                    alt={`${approver.name} 사진`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">{approver.name}</p>
+                  <p className="text-sm text-gray-500">{approver.position}</p>
+                  <span className="inline-block mt-1 px-2 py-1 text-xs text-white bg-blue-500 rounded">
+                    승인 대기
+                  </span>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-gray-800">김상후 대표이사</p>
-                <p className="text-sm text-gray-500">다우그룹</p>
-                <span className="inline-block mt-1 px-2 py-1 text-xs text-white bg-blue-500 rounded">
-                  승인 대기
-                </span>
+            ) : (
+              <div className="bg-white shadow-sm rounded-lg p-4 flex items-center justify-center text-gray-500">
+                결재자 정보가 없습니다.
               </div>
-            </div>
-
-            {/* 추가 결재자 예시 */}
-            <div className="bg-white shadow-sm rounded-lg p-4 flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                <img
-                  src="https://via.placeholder.com/48"
-                  alt="결재자 사진"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">이철수 본부장</p>
-                <p className="text-sm text-gray-500">경영기획팀</p>
-                <span className="inline-block mt-1 px-2 py-1 text-xs text-white bg-green-500 rounded">
-                  승인 완료
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 추가 정보 */}
-          <div className="mt-6 text-sm text-gray-600">
-            <p className="font-semibold text-gray-800 mb-3">
-              📋 결재 진행 상태
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <span className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                  1
-                </span>
-                <p className="text-gray-700">승인 대기</p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                  2
-                </span>
-                <p className="text-gray-700">승인 완료</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
