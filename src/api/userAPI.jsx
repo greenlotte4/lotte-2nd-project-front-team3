@@ -29,7 +29,7 @@ export const registerUser = async (formData) => {
   try {
     const response = await axios.post(USER_REGISTER_URI, formData, {
       headers: {
-        "Content-Type": "multipart/form-data", // 자동 처리
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;

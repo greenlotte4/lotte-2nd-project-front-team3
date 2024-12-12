@@ -1,3 +1,4 @@
+import { createVacationRequest } from "@/api/approvalAPI";
 import { fetchUsersByCompanyAndPosition } from "@/api/userAPI";
 import useAuthStore from "@/store/AuthStore";
 import { useEffect } from "react";
@@ -6,11 +7,17 @@ import { useState } from "react";
 export default function Vacation() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보
   const [selectedFile, setSelectedFile] = useState(null);
+  const [title, setTitle] = useState("연차 신청서"); // 제목 기본값 설정
   const [dragActive, setDragActive] = useState(false);
   const [todayDate, setTodayDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [leaveType, setLeaveType] = useState("연차"); // 기본값 연차
+  const [requestedDays, setRequestedDays] = useState(0);
+  const [halfDay, setHalfDay] = useState(""); // 반차 선택값
+  const [approver, setApprover] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const companyId = user?.company;
-  const [approver, setApprover] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -68,13 +75,107 @@ export default function Vacation() {
     if (companyId) fetchApprover();
   }, [companyId]);
 
+  // 연차 신청일 계산
+  useEffect(() => {
+    if (leaveType === "반차") {
+      setRequestedDays(0.5);
+      setEndDate(startDate); // 반차는 시작일과 종료일이 동일
+    } else if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (start > end) {
+        alert("시작일은 종료일보다 이전이어야 합니다.");
+        setEndDate("");
+        return;
+      }
+
+      // 날짜 차이 계산
+      const diffDays = Math.ceil(
+        (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) + 1
+      );
+      setRequestedDays(diffDays);
+    }
+  }, [startDate, endDate, leaveType]);
+
+  // 드롭다운 변경 시 제목 업데이트
+  const handleLeaveTypeChange = (value) => {
+    setRequestedDays(0);
+    setEndDate(startDate);
+    setLeaveType(value);
+    setTitle(`${value} 신청서`);
+  };
+
+  // 휴가 신청
+  const handleSubmit = async () => {
+    if (!title) {
+      alert("제목을 입력하세요.");
+      return;
+    }
+    if (!startDate || !endDate) {
+      alert("시작일과 종료일을 입력하세요.");
+      return;
+    }
+
+    if (new Date(startDate) < new Date(todayDate)) {
+      alert("휴가는 오늘 이후 날짜부터 신청 가능합니다.");
+      return;
+    }
+
+    if (requestedDays <= 0) {
+      alert("신청 연차를 입력하세요.");
+      return;
+    }
+
+    if (requestedDays > (user?.annualLeaveTotal ?? 0)) {
+      alert("잔여 연차를 초과할 수 없습니다.");
+      return;
+    }
+
+    const requestData = {
+      userId: user.id,
+      userName: user.name,
+      department: user.department,
+      title,
+      companyName: user.companyName,
+      startDate,
+      endDate,
+      annualLeaveRequest: requestedDays,
+      type: leaveType,
+      approver: { id: approver?.id },
+      halfDay: leaveType === "반차" ? halfDay : null, // 반차 여부 저장
+    };
+
+    // FormData를 handleSubmit에서 생성
+    const formData = new FormData();
+    formData.append(
+      "formData",
+      new Blob([JSON.stringify(requestData)], { type: "application/json" })
+    );
+    if (selectedFile) {
+      formData.append("proofFile", selectedFile, selectedFile.name);
+    }
+
+    try {
+      // FormData를 그대로 전달
+      const response = await createVacationRequest(formData);
+      alert("휴가 신청이 완료되었습니다.");
+      console.log("Response:", response);
+    } catch (error) {
+      console.error("Error in vacation request:", error);
+      alert(error.message);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* 상단 헤더 */}
       <div className="bg-white shadow-md px-6 py-4 flex border-b items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">휴가신청서</h1>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center px-3 py-2 bg-blue-100 rounded-md text-blue-700 hover:bg-blue-200">
+          <button
+            className="flex items-center px-3 py-2 bg-blue-100 rounded-md text-blue-700 hover:bg-blue-200"
+            onClick={handleSubmit}
+          >
             📝 <span className="ml-2">결재요청</span>
           </button>
           <button className="flex items-center px-3 py-2 bg-gray-100 rounded-md text-gray-700 hover:bg-gray-200">
@@ -170,11 +271,13 @@ export default function Vacation() {
                 <select
                   id="leaveType"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  value={leaveType}
+                  onChange={(e) => handleLeaveTypeChange(e.target.value)}
                 >
-                  <option>연차</option>
-                  <option>반차</option>
-                  <option>병가</option>
-                  <option>기타</option>
+                  <option value="연차">연차</option>
+                  <option value="반차">반차</option>
+                  <option value="병가">병가</option>
+                  <option value="기타">기타</option>
                 </select>
               </div>
               <div>
@@ -188,27 +291,32 @@ export default function Vacation() {
                   type="date"
                   id="startDate"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="endDate"
-                  className="block text-gray-600 font-medium mb-2"
-                >
-                  종료일
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                />
-              </div>
+              {leaveType !== "반차" && (
+                <div>
+                  <label
+                    htmlFor="endDate"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    종료일
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
           </section>
 
-          {/* 반차 여부 */}
-          <section className="mb-6">
-            <div>
+          {leaveType === "반차" && (
+            <section className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 반차 여부
               </h3>
@@ -219,8 +327,10 @@ export default function Vacation() {
                     name="halfDay"
                     value="start"
                     className="mr-2 accent-blue-500"
+                    checked={halfDay === "start"}
+                    onChange={(e) => setHalfDay(e.target.value)}
                   />
-                  시작일
+                  오전
                 </label>
                 <label>
                   <input
@@ -228,12 +338,14 @@ export default function Vacation() {
                     name="halfDay"
                     value="end"
                     className="mr-2 accent-blue-500"
+                    checked={halfDay === "end"}
+                    onChange={(e) => setHalfDay(e.target.value)}
                   />
-                  종료일
+                  오후
                 </label>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* 연차 일수 */}
           <section className="mb-6">
@@ -248,7 +360,7 @@ export default function Vacation() {
                 <input
                   type="number"
                   id="remainingDays"
-                  value="-11"
+                  value={user?.annualLeaveTotal ?? 0}
                   readOnly
                   className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none"
                 />
@@ -263,14 +375,17 @@ export default function Vacation() {
                 <input
                   type="number"
                   id="requestedDays"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                  placeholder="신청 연차 입력"
+                  value={requestedDays}
+                  readOnly
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none"
                 />
               </div>
             </div>
-            <p className="mt-2 text-sm text-red-500">
-              ⚠️ 신청 가능한 일수를 초과하였습니다.
-            </p>
+            {user?.annualLeaveTotal !== undefined && (
+              <p className="mt-2 text-sm text-red-500">
+                ⚠️ 신청 가능한 일수를 초과하였습니다.
+              </p>
+            )}
           </section>
 
           <section className="mb-6">
@@ -302,15 +417,6 @@ export default function Vacation() {
                   : "이 곳에 파일을 드래그 하세요. 또는 파일선택"}
               </label>
             </div>
-          </section>
-          {/* 관련 문서 */}
-          <section>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              관련 문서
-            </h3>
-            <button className="px-4 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-200">
-              문서 검색
-            </button>
           </section>
         </div>
 
