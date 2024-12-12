@@ -73,7 +73,7 @@ export const PROJECT_COLLABORATOR_DELETE_URI = `${API_SERVER_HOST}/project/colla
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
 export const DRIVE_FILES_INSERT_URI = `${API_SERVER_HOST}/drive/files/insert`; // 드라이브 파일 넣기
-export const DRIVE_FOLDER_FILE_INSERT_URI = `${API_SERVER_HOST}/drive/folder/files/insert`; // 드라이브 파일 넣기(폴더없이)
+export const DRIVE_FOLDER_FILE_INSERT_URI = `${API_SERVER_HOST}/drive/folder/files/insert`; // 드라이브 파일 넣기(폴더이)
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_TRASH_URI = `${API_SERVER_HOST}/drive/folder/myTrashView`; // 휴지통 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
@@ -94,7 +94,7 @@ export const PAGE_CREATE_URI = `${API_SERVER_HOST}/page/create`; // 페이지 �
 // 추가할 페이지 관련 URI
 export const PAGE_LIST_UID_URI = `${API_SERVER_HOST}/page/list/uid`; // 개인 페이지 목록
 export const PAGE_LIST_MODIFIED_URI = `${API_SERVER_HOST}/page/list/modified`; // 최근 수정된 페이지 목록
-export const PAGE_LIST_TEMPLATE_URI = `${API_SERVER_HOST}/page/list/template`; // 템플릿 페이지 목록
+export const PAGE_LIST_TEMPLATE_URI = `${API_SERVER_HOST}/page/template/list`; // 템플릿 페이지 목록
 export const PAGE_LIST_DELETED_URI = `${API_SERVER_HOST}/page/list/deleted`; // 삭제된 페이지 목록
 export const PAGE_RESTORE_URI = `${API_SERVER_HOST}/page/:id/restore`; // 페이지 복구
 export const PAGE_SOFT_DELETE_URI = `${API_SERVER_HOST}/page/:id/soft`; // 소프트 삭제

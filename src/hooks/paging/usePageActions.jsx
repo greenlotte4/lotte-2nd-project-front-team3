@@ -82,11 +82,9 @@ export const usePageActions = () => {
         // 목록 다시 불러오기
         const [personalResponse, latestResponse] = await Promise.all([
           axiosInstance.get(`${PAGE_LIST_UID_URI}/${uid}`),
-          axiosInstance.get(`${PAGE_LIST_MODIFIED_URI}/${uid}`),
         ]);
 
         setPersonalPageList(personalResponse.data);
-        setLatestPages(latestResponse.data);
 
         alert("페이지가 복구되었습니다.");
       } catch (error) {
@@ -97,11 +95,8 @@ export const usePageActions = () => {
   };
 
   // 페이지 영구 삭제
-  const handleHardDeletePage = async (
-    pageId,
-    { setDeletedPages, setIsDeletedPagesOpen }
-  ) => {
-    if (!pageId) return;
+  const handleHardDeletePage = async (pageId, uid, { setDeletedPages }) => {
+    if (!pageId) return false;
 
     if (
       window.confirm(
@@ -111,10 +106,8 @@ export const usePageActions = () => {
       try {
         await axiosInstance.delete(PAGE_HARD_DELETE_URI.replace(":id", pageId));
 
-        // 삭제된 페이지 목록에서 제거
+        // 현재 목록에서 삭제된 페이지만 필터링
         setDeletedPages((prev) => prev.filter((page) => page._id !== pageId));
-        // 옵션: 토글 닫기
-        setIsDeletedPagesOpen(false);
 
         alert("페이지가 영구적으로 삭제되었습니다.");
         return true;

@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { getTemplates, createPageFromTemplate } from "../../../api/pageAPI";
+import { getTemplates } from "../../../api/pageAPI";
 import useAuthStore from "@/store/AuthStore";
+import { TemplateCard } from "./TemplateCard";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../../utils/axiosInstance";
+import { PAGE_CREATE_URI } from "../../../api/_URI";
 
 export default function PagingTemplate() {
   const user = useAuthStore((state) => state.user);
   const [templates, setTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
+  const navigate = useNavigate();
 
   const fetchTemplates = async () => {
     try {
       const response = await getTemplates();
       setTemplates(response);
     } catch (error) {
-      console.error("템플릿 목록을 가져오는 중 오류 발생:", error);
+      console.error("템플릿 목록을 가져오는 중 오류 발생:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -22,19 +28,33 @@ export default function PagingTemplate() {
     fetchTemplates();
   }, []);
 
-  const handleCopyTemplate = async (templateId) => {
+  const handleTemplateClick = async (template) => {
     try {
-      const newPage = await createPageFromTemplate(templateId, user.uid);
-      alert(`템플릿이 복사되었습니다: ${newPage.title}`);
+      // 새 페이지 생성 요청 (템플릿의 title과 content만 사용)
+      const response = await axiosInstance.post(PAGE_CREATE_URI, {
+        title: template.title,
+        content: template.content,
+        owner: user.uid,
+        ownerName: user.name,
+        ownerImage: user.image,
+      });
+
+      // 생성된 페이지의 ID로 페이지 작성 화면으로 이동
+      const newPageId = response.data;
+      console.log(newPageId);
+      navigate(`/antwork/page/write?id=${newPageId}`);
     } catch (error) {
-      console.error("템플릿 복사 중 오류 발생:", error);
-      alert("템플릿 복사에 실패했습니다.");
+      alert("페이지 생성에 실패했습니다.");
     }
   };
 
   if (isLoading) {
     return <p>로딩 중...</p>;
   }
+
+  const displayedTemplates = showAllTemplates
+    ? templates
+    : templates.slice(0, 6);
 
   return (
     <article className="page-list">
@@ -46,17 +66,24 @@ export default function PagingTemplate() {
         <div className="content-header">
           <div className="!inline-flex">
             <h1 className="!text-[19px]">무료 페이지</h1>
+            {templates.length > 6 && !showAllTemplates && (
+              <button
+                onClick={() => setShowAllTemplates(true)}
+                className="!ml-3 text-gray-500"
+              >
+                더보기 ({templates.length - 6}개)
+              </button>
+            )}
           </div>
         </div>
-        <div className="template-list">
-          {templates.map((template) => (
-            <div key={template._id} className="template-card">
-              <h2>{template.title}</h2>
-              <p>{template.content}</p>
-              <button onClick={() => handleCopyTemplate(template._id)}>
-                복사하기
-              </button>
-            </div>
+        <div className="page-grid">
+          {displayedTemplates.map((template) => (
+            <TemplateCard
+              key={template._id}
+              page={template}
+              onClick={() => handleTemplateClick(template)}
+              hideAuthor={true}
+            />
           ))}
         </div>
       </article>

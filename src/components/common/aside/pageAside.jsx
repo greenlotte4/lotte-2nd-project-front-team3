@@ -16,6 +16,8 @@ export default function PageAside({ asideVisible }) {
   const [sharedPageList, setSharedPageList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pageTitles, setPageTitles] = useState({});
+  const [stompClient, setStompClient] = useState(null);
+  const [componentId, setComponentId] = useState(null);
 
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
@@ -56,6 +58,59 @@ export default function PageAside({ asideVisible }) {
       fetchSharedPages();
     }
   }, [uid]);
+
+  const handleWebSocketMessage = (message) => {
+    try {
+      const data = JSON.parse(message.body);
+
+      if (data.title) {
+        setPageTitles((prev) => ({
+          ...prev,
+          [data._id]: data.title,
+        }));
+
+        setPersonalPageList((prev) =>
+          prev.map((page) =>
+            page._id === data._id ? { ...page, title: data.title } : page
+          )
+        );
+
+        setSharedPageList((prev) =>
+          prev.map((page) =>
+            page._id === data._id ? { ...page, title: data.title } : page
+          )
+        );
+      }
+    } catch (error) {
+      console.error("WebSocket 메시지 처리 중 오류:", error);
+    }
+  };
+
+  const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!componentId) {
+      setComponentId(generateUUID());
+    }
+  }, []);
+
+  useWebSocket({
+    uid,
+    id: null,
+    componentId,
+    handleWebSocketMessage,
+    setStompClient,
+    stompClientRef: { current: stompClient },
+  });
 
   return (
     <>
@@ -154,6 +209,45 @@ export default function PageAside({ asideVisible }) {
                 )}
               </ol>
             )}
+          </li>
+          <li className="lnb-item">
+            <div className="lnb-header !mb-[10px]">
+              <img
+                src="/images/ico/page_template_22_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px]"
+              />
+              <Link
+                to="/antwork/page/template"
+                className="main-cate !text-[16px] text-[#757575]"
+              >
+                템플릿
+              </Link>
+            </div>
+
+            <div className="lnb-header !mb-[10px]">
+              <img
+                src="/images/ico/page_delete24_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px]"
+              />
+              <Link
+                to="/antwork/page"
+                className="main-cate !text-[16px] text-[#757575]"
+              >
+                휴지통
+              </Link>
+            </div>
+            <div className="lnb-header !mb-[10px]">
+              <img
+                src="/images/ico/page_setting_22_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px]"
+              />
+              <Link
+                to="/antwork/page"
+                className="main-cate !text-[16px] text-[#757575]"
+              >
+                설정
+              </Link>
+            </div>
           </li>
         </ul>
       </aside>
