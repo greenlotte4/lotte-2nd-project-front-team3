@@ -164,13 +164,13 @@ export const MyTrashSelectView = async (driveFolderId) => {
 };
 
 //휴지통복원하기
-export const ToMyDrive = async (updatedSelectedIds) => {
+export const ToMyDrive = async (driveFolderId, selectedDriveFileIds) => {
   try {
-    console.log("오에에에엥? : " + updatedSelectedIds);
-    const response = await axios.post(
-      `${TRASH_FOLDER_DRIVE}`,
-      updatedSelectedIds
-    );
+    console.log("오에에에엥? : " + driveFolderId, selectedDriveFileIds);
+    const response = await axios.post(`${TRASH_FOLDER_DRIVE}`, {
+      driveFolderId: driveFolderId || [],
+      selectedDriveFileIds: selectedDriveFileIds || [],
+    });
     console.log(response.data);
     return response.data;
   } catch (err) {

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import {
@@ -49,7 +51,7 @@ export default function DriveSection() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  //파일업로드
+  //파일업로드(클릭)
   const handleFileUpload = async () => {
     const driveFiles = driveFilesRef.current.files;
     if (driveFiles.length > 0) {
@@ -75,7 +77,7 @@ export default function DriveSection() {
     }
   };
 
-  //폴더 업로드/////
+  //폴더 업로드(클릭)
   const handleFolderUpload = async (e) => {
     const files = e.target.files;
     const fileList = Array.from(files);
