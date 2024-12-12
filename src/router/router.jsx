@@ -57,7 +57,7 @@ import BoardCommentPage from "@/pages/Main/board/boardCommentPage";
 
 import TemplatePage from "@/pages/Main/Paging/TemplatePage";
 
-import ApprovalTripPage from "@/pages/Main/approval/approvaltripPage";
+import ApprovalTripPage from "@/pages/Main/approval/approvalTripPage";
 import AdminApprovalPage from "@/pages/Main/Admin/adminApprovalPage";
 import ApprovalVacationPage from "@/pages/Main/approval/approvalVacationPage";
 
