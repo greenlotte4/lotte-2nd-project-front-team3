@@ -44,14 +44,6 @@ export default function ProjectViewSection() {
 
   const [collaborators, setCollaborators] = useState([]);
 
-  // WebSocket 훅 사용
-  useProjectWebSocket({
-    userId: user?.id,
-    projectRef,
-    setCollaborators,
-    collaborators,
-  });
-
   // 협업자 추가 후 작업 상태를 다시 조회하는 부분
   const handleCollaboratorsUpdate = async (updatedCollaborators) => {
     console.log("협업자 목록이 갱신되었습니다:", updatedCollaborators);
@@ -152,10 +144,19 @@ export default function ProjectViewSection() {
 
   // 작업 상태 추가 핸들러
   const handleAddState = (newState) => {
-    setStates((prevStates) => [
-      ...prevStates,
-      { id: Date.now().toString(), ...newState, items: [] },
-    ]);
+    setStates((prevStates) => {
+      // 새로운 상태의 ID가 이미 prevStates에 존재하는지 확인
+      if (prevStates.some((state) => state.id === newState.id)) {
+        console.log("이 상태는 이미 존재합니다:", newState);
+        return prevStates; // 이미 존재하면 상태를 추가하지 않고 기존 상태 반환
+      }
+
+      // 새로운 상태가 없으면 추가
+      return [
+        ...prevStates,
+        { id: Date.now().toString(), ...newState, items: [] },
+      ];
+    });
   };
 
   // 작업 상태 수정 핸들러
@@ -308,8 +309,11 @@ export default function ProjectViewSection() {
   const handleDragEnd = async (result) => {
     const { source, destination } = result;
 
-    if (!destination) return;
-
+    // 드래그를 놓을 위치가 없는 경우
+    if (!destination) {
+      console.log("드래그가 취소되었습니다. 드롭 위치가 없습니다.");
+      return;
+    }
     // 같은 위치로 드래그한 경우 아무 작업도 하지 않음
     if (
       source.droppableId === destination.droppableId &&
@@ -321,8 +325,10 @@ export default function ProjectViewSection() {
     console.log("Source Index:", source.index);
     console.log("Destination Index:", destination.index);
 
+    // 상태 업데이트
     const newStates = [...states];
 
+    // 소스 상태와 목적지 상태를 찾아서 작업 위치 변경
     const sourceStateIndex = newStates.findIndex(
       (state) => String(state.id) === String(source.droppableId)
     );
@@ -338,10 +344,25 @@ export default function ProjectViewSection() {
     const sourceItems = Array.from(newStates[sourceStateIndex].items);
     const destinationItems = Array.from(newStates[destinationStateIndex].items);
 
+    // 이동할 아이템을 찾아서 제거
     const [movedItem] = sourceItems.splice(source.index, 1);
 
+    // 같은 키가 이미 존재하는지 확인
+    const itemExistsInDestination = destinationItems.some(
+      (item) => item.id === movedItem.id // 동일한 ID를 가진 아이템이 있는지 체크
+    );
+
+    // 같은 키가 존재하면
+    if (itemExistsInDestination) {
+      // 아이템을 원래 상태로 복원
+      sourceItems.splice(source.index, 0, movedItem);
+      return;
+    }
+
+    // 목적지 인덱스에 항목을 넣어줌
     destinationItems.splice(destination.index, 0, movedItem);
 
+    // 소스와 목적지가 동일한 상태일 경우, 기존 항목을 이동만 하므로 복제하지 않음
     if (source.droppableId === destination.droppableId) {
       newStates[sourceStateIndex].items = destinationItems;
     } else {
@@ -349,6 +370,7 @@ export default function ProjectViewSection() {
       newStates[destinationStateIndex].items = destinationItems;
     }
 
+    // 상태 업데이트
     setStates(newStates);
     console.log("Updated States:", newStates);
 
@@ -422,6 +444,16 @@ export default function ProjectViewSection() {
     setNewProjectName(project.projectName); // 원래 이름으로 초기화
   };
 
+  // WebSocket 훅 사용
+  useProjectWebSocket({
+    userId: user?.id,
+    setCollaborators,
+    handleAddState,
+    handleEditState,
+    setStates,
+    handleAddItem,
+  });
+
   if (loadingStates) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -444,7 +476,10 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
         onEditState={handleEditState}
         currentState={currentState}
-        onCollaboratorsUpdate={handleCollaboratorsUpdate}
+        // 부모컴포넌트는 onCollaboratorsUpdate를 통해 전달받은 setCollaborators를 사용해 상태 업데이트
+        onCollaboratorsUpdate={(updatedCollaborators) =>
+          setCollaborators(updatedCollaborators)
+        } // 콜백 전달
       />
       {project ? (
         <article className="page-list min-h-[850px]">
