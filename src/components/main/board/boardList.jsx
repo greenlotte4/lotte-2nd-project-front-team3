@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import BoardPagination from "./boardPagination";
 import useAuthStore from "../../../store/AuthStore";
 import axiosInstance from "../../../utils/axiosInstance";
+import { BOARD_LIST_URI } from "../../../api/_URI";
 
 {
   /*
@@ -21,33 +22,90 @@ export default function BoardList() {
   console.log("사용자 정보:", user);
 
   const [boards, setBoards] = useState([]);
+  console.log("게시글 정보:", boards);
 
+  
+
+  // useEffect(() => {
+  //   // 게시글 목록을 가져오는 함수
+  //   const fetchBoards = async () => {
+  //     try {
+  //       console.log("게시글 데이터를 가져오는 중...");
+  //       const response = await axiosInstance.get(`${BOARD_LIST_URI}`);
+  //       console.log("응답 데이터 : ", response.data);
+
+
+  //       if (response.data && Array.isArray(response.data.content)) {
+  //         // 응답에서 받은 게시글 목록을 setBoards에 저장
+  //         setBoards(response.data.content.map(board => ({
+  //           id: board.id,
+  //           title: board.title,
+  //           writerName: board.writerName, // 작성자 이름
+  //           regDate: board.regDate,
+  //           hit: board.hit,
+  //           likes: board.likes,
+  //         })));
+  //       console.log("응답에서 받은 게시글 목록 : ", setBoards);
+
+  //       } else {
+  //         throw new Error("예상치 못한 응답 형식");
+  //       }
+
+  //     } catch (error) {
+  //       // console.error("게시글 목록을 가져오는데 실패했습니다:", error);
+  //       console.error("에러 상세 : ", {
+  //         message: error.message,
+  //         response: error.response?.data,  // 서버에서 보낸 에러 메시지
+  //         status: error.response?.status
+  //       });
+  //       setBoards([]); // 에러 시 빈 배열로 초기화
+  //     }
+  //   };
+
+  //   fetchBoards();
+  // }, []);
 
   useEffect(() => {
-    //console.log("useEffect에서 가져온 id:", id);
-    // 게시글 목록을 가져오는 함수
     const fetchBoards = async () => {
       try {
-
-        const response = await axiosInstance.get("/board/list");
-        console.log("응답 데이터 : ", response.data);
-
-
+        console.log("게시글 데이터를 가져오는 중...");
+        // API 호출 직전에 URL 로깅
+        console.log("요청 URL:", `${BOARD_LIST_URI}`);
+        
+        const response = await axiosInstance.get(BOARD_LIST_URI, {
+          // 요청 타임아웃 설정
+          timeout: 5000,
+          // 다른 API 호출과 구분하기 위한 헤더 추가
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Request-For': 'board-list'
+          }
+        });
+  
+        console.log("응답 데이터:", response.data);
+  
         if (response.data && Array.isArray(response.data.content)) {
-          setBoards(response.data.content); // PageImpl의 content 사용
-        } else {
-          throw new Error("예상치 못한 응답 형식");
+          setBoards(response.data.content.map(board => ({
+            id: board.id,
+            title: board.title,
+            writerName: board.writerName,
+            regDate: board.regDate,
+            hit: board.hit,
+            likes: board.likes,
+          })));
         }
       } catch (error) {
-        // console.error("게시글 목록을 가져오는데 실패했습니다:", error);
-        console.error("에러 상세 : ", {
+        console.error("게시글 목록 조회 실패:", error);
+        console.error("에러 상세:", {
           message: error.message,
-          response: error.response?.data,  // 서버에서 보낸 에러 메시지
-          status: error.response?.status
+          config: error.config,  // 요청 설정 정보
+          status: error.response?.status,
+          data: error.response?.data
         });
-        setBoards([]); // 에러 시 빈 배열로 초기화
+        setBoards([]);
       }
     };
+  
     fetchBoards();
   }, []);
 
@@ -132,6 +190,8 @@ export default function BoardList() {
                 <span className="text-gray-600">개</span>
               </div>
             </div>
+
+            {/* 게시글 글목록 시작 */}
             <table className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
               <thead className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal rounded-[10px] text-center">
                 <tr>
@@ -159,44 +219,52 @@ export default function BoardList() {
 
           
               <tbody className="text-gray-600 text-sm font-light">
-            {Array.isArray(boards) && boards.length > 0 ? (
-              boards.map((board, index) => (
-                <tr key={board.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="py-3 px-6 text-center">{index + 1}</td>
-                  <td className="py-3 px-6 text-left">
-                  <Link to={`/antwork/board/view/${board.id}`} className="hover:text-blue-500">
-                    {board.title && board.title.length > 30
-                      ? `${board.title.slice(0, 30)}...`
-                      : board.title}
-                    <span className="text-blue-500 ml-2">
-                      ({board.comment || 0})
-                    </span>
-                  </Link>
-                  </td>
-                  <td className="py-3 px-6 text-center">
-                    {board.writerName 
-                      ? `${board.writerName.charAt(0)}${'*'.repeat(board.writerName.length-2)}${board.writerName.slice(-1)}`
-                      : '익명'
-                    }
-                  </td>
-                  <td className="py-3 px-6 text-center">{formatDate(board.regDate)}</td>
-                  <td className="py-3 px-6 text-center">{board.hit || 0}</td>
-                  <td className="py-3 px-6 text-center">
-                    ❤️ {board.like || 0}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="py-3 px-6 text-center">
-                  게시글이 없습니다.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                {Array.isArray(boards) && boards.length > 0 ? (
+                  boards.map((board, index) => (
+                    <tr key={board.id} className="border-b border-gray-200 hover:bg-gray-100">
+                      {/* 번호 */}
+                      <td className="py-3 px-6 text-center">{index + 1}</td>
 
-        <BoardPagination onPageChange={handlePageData}/>
+                      {/* 제목 */}
+                      <td className="py-3 px-6 text-left">
+                      <Link to={`/antwork/board/view/${board.id}`} className="hover:text-blue-500">
+                        {board.title && board.title.length > 30
+                          ? `${board.title.slice(0, 30)}...`
+                          : board.title}
+                        <span className="text-blue-500 ml-2">
+                          ({board.comment || 0})
+                        </span>
+                      </Link>
+                      </td>
+
+                      {/* 작성자 */}
+                      <td className="py-3 px-6 text-center">
+                        {board.writerName 
+                          ? board.writerName.length > 2
+                            ? `${board.writerName.charAt(0)}${'*'.repeat(board.writerName.length-2)}${board.writerName.slice(-1)}`
+                            : `${board.writerName.charAt(0)}*`
+                          : '익명'
+                        }
+                      </td>
+
+                      <td className="py-3 px-6 text-center">{formatDate(board.regDate)}</td>
+                      <td className="py-3 px-6 text-center">{board.hit || 0}</td>
+                      <td className="py-3 px-6 text-center">
+                        ❤️ {board.like || 0}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="py-3 px-6 text-center">
+                      게시글이 없습니다.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+          <BoardPagination onPageChange={handlePageData}/>
 
           </section>
         </article>

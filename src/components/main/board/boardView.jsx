@@ -41,7 +41,7 @@ export default function BoardView() {
   // 게시글 기본 데이터 상태 관리
   const [board, setBoard] = useState({
     title: "",
-    writer: null,
+    writer: "",
     regDate: "",
     hit: 0,
     content: "",
@@ -121,14 +121,30 @@ export default function BoardView() {
           setFileList(fileResponse.data);
           console.log("파일 데이터:", fileResponse.data);
         }
-  
+        
+        
       } catch (error) {
         console.error("게시글 데이터 로딩 실패:", error);
         toast.error("게시글을 불러오는데 실패했습니다.");
       }
+
+
+      
+
+
     };
   
     fetchBoardData();
+
+
+//user.id === board.writer?.id
+console.log("사용자 아이디 :::", user.id);
+console.log("게시글 아이디 :::",board.writer);
+    
+
+
+
+
   }, [id]);
 
 
@@ -400,7 +416,7 @@ export default function BoardView() {
           >
             목록으로
           </Link>
-          {user && user.id === board.writer?.id && (
+          {user && user.id == board.writer && (
             <div className="space-x-2">
               {isUpdate ? (
                 <>
