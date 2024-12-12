@@ -61,7 +61,7 @@ const ApprovalModal = () => {
                         승인일자
                       </td>
                       <td className="p-2 align-middle">
-                        {details?.submissionDate || "미승인"}
+                        {submissionDate || "미승인"}
                       </td>
                     </tr>
                   </tbody>
@@ -81,7 +81,24 @@ const ApprovalModal = () => {
                     {details.approverName || "미지정"}
                   </p>
                 </div>
-                <div className="border-t border-gray-300 py-6"></div>
+                {status === "승인" && (
+                  <div className="border-t border-gray-300 py-1">
+                    <img
+                      src="/public/images/Antwork/admin/승인 이미지.png"
+                      alt="Approved"
+                      className="w-[80px] h-[50px] mx-auto mt-2"
+                    />
+                  </div>
+                )}
+                {status === "반려" && (
+                  <div className="border-t border-gray-300 py-1">
+                    <img
+                      src="/public/images/Antwork/admin/반려이미지.jpg"
+                      alt="Approved"
+                      className="w-[80px] h-[50px] mx-auto mt-2"
+                    />
+                  </div>
+                )}
               </section>
             </div>
 
