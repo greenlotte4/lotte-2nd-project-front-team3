@@ -129,6 +129,7 @@ export const createTask = async (taskData) => {
 // 프로젝트 작업 조회
 export async function getTasksByStateId(stateId) {
   console.log("작업 조회 들어옴?");
+  console.log("stateId : " + stateId);
   const response = await fetch(`${PROJECT_TASK_SELECT_URI}/${stateId}`);
   console.log("22222반환되는 값 : " + response);
   if (!response.ok) {
