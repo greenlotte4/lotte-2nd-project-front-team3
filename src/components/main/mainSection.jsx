@@ -36,8 +36,8 @@ export default function MainSection() {
     <>
       <main className="gap-[20px] min-w-[1820px] max-w-[2150px] h-auto mb-5 p-[20px] rounded-lg  bg-[#eaf0f9] flex mx-auto">
         <div className="w-[258px] min-h-[1150px] ">
-         {/* 팝업 컴포넌트 */}
-         <PopupDisplay />
+          {/* 팝업 컴포넌트 */}
+          <PopupDisplay />
 
           <article className="w-[258px] h-[300px] bg-white rounded-lg shadow-lg p-5">
             <div className="relative flex flex-col items-center">

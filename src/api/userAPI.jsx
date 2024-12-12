@@ -17,7 +17,9 @@ import {
   USER_REGISTER_URI,
   USER_SELECT_URI,
   USER_SEND_EMAIL_URI,
-  USER_UPDATENAME_URI,
+  USER_UPDATEIMG_URI,
+  USER_UPDATEINFO_URI,
+  USER_UPDATEPASS_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
@@ -279,12 +281,48 @@ export const getAllUser = async () => {
   }
 };
 
-// 유저 이름 수정하기
-export const updateName = async (name, uid) => {
-  console.log("name:::" + name + "::" + uid);
+// 유저 정보 수정하기
+export const updateInfo = async (info, uid, type) => {
   try {
     const response = await axiosInstance.put(
-      `${USER_UPDATENAME_URI}/${name}/${uid}`
+      `${USER_UPDATEINFO_URI}/${info}/${uid}/${type}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 정보 수정하기
+export const updateImg = async (info, uid) => {
+  try {
+    const response = await axiosInstance.put(
+      `${USER_UPDATEIMG_URI}/${uid}`,
+      info,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 정보 수정하기
+export const updatePassword = async (pass, uid, type) => {
+  console.log("hmmmmmmmmmmmm" + pass + "hmmmmmmmmmmmm" + uid);
+  try {
+    const response = await axiosInstance.post(
+      `${USER_UPDATEPASS_URI}/${type}`,
+      {
+        password: pass,
+        uid: uid,
+      }
     );
     return response.data;
   } catch (error) {

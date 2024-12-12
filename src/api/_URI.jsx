@@ -22,7 +22,9 @@ export const USER_DETAILS_URI = `${API_SERVER_HOST}/user`; // 로그인 유저 �
 export const USER_CEO_URI = `${API_SERVER_HOST}/user/ceo`; // 로그인 유저 전체 객체 정보
 export const USER_GET_ALL_URI = `${API_SERVER_HOST}/user/all`; // 유저 리스트 전부 불러오기
 export const USER_SELECT_URI = `${API_SERVER_HOST}/user/select`; // 유저 리스트 부서별 조회
-export const USER_UPDATENAME_URI = `${API_SERVER_HOST}/user/name`; // 유저 리스트 부서별 조회
+export const USER_UPDATEINFO_URI = `${API_SERVER_HOST}/user/info`; // 유저 정보 수정하기
+export const USER_UPDATEPASS_URI = `${API_SERVER_HOST}/user/password`; // 유저 비밀번호 수정하기
+export const USER_UPDATEIMG_URI = `${API_SERVER_HOST}/user/img`; // 유저 프로필이미지 수정하기
 
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송
