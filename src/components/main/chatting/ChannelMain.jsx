@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   getChannel,
   getChannelMessages,
@@ -172,20 +172,14 @@ export default function ChannelMain() {
 
   // WebSocket 연결 설정
   useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight; // 스크롤 하단 유지
-    }
-  }, [messages]); // 메시지가 변경될 때마다 스크롤 조정
-
-
-  useEffect(() => {
     if (!user?.id || !channelId) {
       console.error("❌ User ID 또는 Channel ID가 없어요.");
       return;
     }
 
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      // brokerURL: "ws://localhost:8080/ws", // 로컬
+      brokerURL: WS_URL, // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -223,7 +217,12 @@ export default function ChannelMain() {
     };
   }, [user?.id, channelId]); // 의존성 배열
 
-
+  useLayoutEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
+  
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
       <div className="flex h-full">
@@ -348,11 +347,17 @@ export default function ChannelMain() {
                     : "flex-row"
                     }`}
                 >
+                
                   <img
-                    src="https://via.placeholder.com/50"
+                    src={message.userProfile || "https://via.placeholder.com/50"}
                     alt="Profile"
                     className="w-10 h-10 rounded-full"
                   />
+   {/* 보낸 사람 이름 */}
+   <div className="text-sm text-gray-500 mb-1">
+          {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
+        </div>
+
                   <div
                     className={`p-4 ${message.senderId === user?.id
                       ? "bg-blue-100"
@@ -410,8 +415,8 @@ export default function ChannelMain() {
             </button>
 
             {/* 채팅방 이름 */}
-            <h3 className="text-lg font-semibold text-gray-900">채팅방 이름</h3>
-
+            <h3 className="text-lg font-semibold text-gray-900">                  {channelData?.name}
+            </h3>
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
               {/* 알림 아이콘 */}
