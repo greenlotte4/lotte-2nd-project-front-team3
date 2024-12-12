@@ -47,7 +47,7 @@ export default function ApprovalAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/setting/electronic-approval"
+                    to="/antwork/approval/vaction"
                     className="block text-gray-700 hover:text-blue-500"
                   >
                     🏝️&nbsp;&nbsp;휴가 신청
@@ -55,7 +55,7 @@ export default function ApprovalAside({ asideVisible }) {
                 </li>
                 <li>
                   <Link
-                    to="/antwork/setting/electronic-approval"
+                    to="/antwork/approval/business"
                     className="block text-gray-700 hover:text-blue-500"
                   >
                     💼&nbsp;&nbsp;출장 신청
@@ -91,7 +91,7 @@ export default function ApprovalAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/setting/electronic-approval"
+                    to="/antwork/approval/my"
                     className="block text-gray-700 hover:text-blue-500"
                   >
                     🗄️&nbsp;&nbsp;나의 결재내역

@@ -19,6 +19,7 @@ export const USER_INVITE_URI = `${API_SERVER_HOST}/user/invite`; // 회원 초�
 export const USER_INVITE_VERIFY_URI = `${API_SERVER_HOST}/user/verify`; // 회원 초대 토큰 검증
 export const USER_CHECK_DUPLICATE_ID_URI = `${API_SERVER_HOST}/user/checkduplicateId`; // 아이디 중복확인
 export const USER_DETAILS_URI = `${API_SERVER_HOST}/user`; // 로그인 유저 전체 객체 정보
+export const USER_CEO_URI = `${API_SERVER_HOST}/user/ceo`; // 로그인 유저 전체 객체 정보
 export const USER_GET_ALL_URI = `${API_SERVER_HOST}/user/all`; // 유저 리스트 전부 불러오기
 export const USER_SELECT_URI = `${API_SERVER_HOST}/user/select`; // 유저 리스트 부서별 조회
 export const USER_UPDATENAME_URI = `${API_SERVER_HOST}/user/name`; // 유저 리스트 부서별 조회
@@ -45,6 +46,11 @@ export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 
 
 // company
 export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
+
+// approval
+export const APPROVAL_TRIP_CREATE = `${API_SERVER_HOST}/businesstrips`; // 출장 신청
+export const APPROVAL_MY_SELECT = `${API_SERVER_HOST}/approval-requests`; // 출장 신청
+export const APPROVAL_DETAIL_SELECT = `${API_SERVER_HOST}/approval-requests/detail`; // 출장 신청
 
 // project
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가

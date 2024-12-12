@@ -3,6 +3,7 @@ import useAuthStore from "../store/AuthStore";
 import axiosInstance from "./../utils/axiosInstance";
 import {
   USER_ADMIN_CREATE_URI,
+  USER_CEO_URI,
   USER_CHECK_DUPLICATE_ID_URI,
   USER_DETAILS_URI,
   USER_GET_ALL_URI,
@@ -288,6 +289,23 @@ export const updateName = async (name, uid) => {
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);
+  }
+};
+
+// 회사의 대표이사 조회
+export const fetchUsersByCompanyAndPosition = async (companyId, position) => {
+  try {
+    console.log("들어옴?");
+    const response = await axios.get(`${USER_CEO_URI}`, {
+      params: {
+        companyId: companyId,
+        position: position,
+      },
+    });
+    return response.data; // 필터링된 사용자 목록 반환
+  } catch (error) {
+    console.error("Error fetching users by company and position:", error);
+
     throw error;
   }
 };

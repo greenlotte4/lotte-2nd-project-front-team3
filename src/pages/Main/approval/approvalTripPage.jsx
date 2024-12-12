@@ -1,11 +1,11 @@
-import MyApproval from "@/components/main/approval/MyApproval";
 import AntWorkLayout from "../../../layouts/AntWorkLayout";
+import BusinessTrip from "@/components/main/approval/BusinessTrip";
 
-export default function ApprovalMainPage() {
+export default function ApprovalTripPage() {
   return (
     <>
       <AntWorkLayout>
-        <MyApproval />
+        <BusinessTrip />
       </AntWorkLayout>
     </>
   );

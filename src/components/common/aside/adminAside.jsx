@@ -10,6 +10,12 @@ export default function AdminAside({ asideVisible }) {
     menuManagement: true,
   });
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSubMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <>
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell`}>
@@ -66,6 +72,54 @@ export default function AdminAside({ asideVisible }) {
                   <Link to="/antwork/admin/notification">
                     📩&nbsp;&nbsp;알림관리
                   </Link>
+                </li>
+                <li className="">
+                  <div onClick={toggleSubMenu} className="">
+                    <Link
+                      to="/antwork/admin/approval"
+                      style={{
+                        textDecoration: "none",
+                        fontSize: "15px",
+                        color: "#555",
+                        transition: "color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => (e.target.style.color = "#007BFF")}
+                      onMouseLeave={(e) => (e.target.style.color = "#555")}
+                    >
+                      💻&nbsp;&nbsp;전자결제
+                    </Link>
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        color: "#888",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      {isOpen ? "▲" : "▼"}
+                    </span>
+                  </div>
+
+                  {/* 하위 메뉴 */}
+                  {isOpen && (
+                    <ul className="mt-2 ml-4 space-y-2">
+                      <li>
+                        <Link
+                          to="/antwork/admin/approval/pending"
+                          className="text-gray-700 hover:text-blue-600 hover:underline"
+                        >
+                          📂 결제대기
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/antwork/admin/approval/approved"
+                          className="text-gray-700 hover:text-blue-600 hover:underline"
+                        >
+                          ✅ 결제완료
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
                 </li>
               </ol>
             )}
