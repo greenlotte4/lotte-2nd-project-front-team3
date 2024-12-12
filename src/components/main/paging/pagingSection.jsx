@@ -29,7 +29,7 @@ export default function PagingSection() {
   const { pages: deletedPages, setPages: setDeletedPages } 
         = usePageList(`${PAGE_LIST_DELETED_URI}/${uid}`);
 
-  // 페이지 메뉴 상태 관리
+  // 지 메뉴 상태 관리
   const [personalActiveMenu, setPersonalActiveMenu] = useState(null);
   const [deletedActiveMenu, setDeletedActiveMenu] = useState(null);
 
@@ -109,7 +109,7 @@ export default function PagingSection() {
 
   useEffect(() => {
     const fetchRecentPages = () => {
-      // 개인 페이지와 공유 페이지를 합쳐서 정렬
+      // 개인 페이지와 공유 페이지를 합��서 정렬
       const allPages = [...personalPageList, ...sharedPages];
 
       // updatedAt 기준으로 정렬
@@ -268,18 +268,28 @@ export default function PagingSection() {
                       <div className="py-1">
                         <div className="border-t border-gray-300 border-b border-gray-300 p-3 !mb-3">
                           <button
-                            onClick={() =>
-                              handleRestorePage(page._id, uid,{
+                            onClick={async () => {
+                              const success = await handleRestorePage(page._id, uid, {
                                 setDeletedPages,
                                 setPersonalPageList,
-                              })
-                            }
+                              });
+                              if (success) {
+                                setDeletedActiveMenu(null);
+                              }
+                            }}
                             className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left"
                           >
                             페이지 복구
                           </button>
                           <button
-                            onClick={() => handleHardDeletePage(page._id)}
+                            onClick={async () => {
+                              const success = await handleHardDeletePage(page._id, uid, {
+                                setDeletedPages
+                              });
+                              if (success) {
+                                setDeletedActiveMenu(null);
+                              }
+                            }}
                             className="w-full px-4 py-3 text-[14px] text-red-600 hover:bg-gray-100 hover:rounded-[10px] text-left"
                           >
                             영구 삭제

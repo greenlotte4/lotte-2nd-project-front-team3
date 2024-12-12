@@ -1,5 +1,9 @@
 import axiosInstance from "../utils/axiosInstance";
-import { PAGE_FETCH_URI } from "./_URI";
+import {
+  PAGE_FETCH_URI,
+  PAGE_LIST_TEMPLATE_URI,
+  PAGE_CREATE_URI,
+} from "./_URI";
 
 // 페이지 협업자 목록 조회
 export const getPageCollaborators = async (pageId) => {
@@ -67,7 +71,7 @@ export const getSharedPages = async (userId) => {
 
 export const getPageDetails = async (pageId) => {
   try {
-    const response = await axiosInstance.get(`/api/pages/${pageId}`);
+    const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${pageId}`);
     return response.data; // 페이지 세부정보 반환
   } catch (error) {
     console.error("페이지 세부정보 가져오기 실패:", error);
@@ -78,27 +82,20 @@ export const getPageDetails = async (pageId) => {
 // 템플릿 목록 가져오기
 export const getTemplates = async () => {
   try {
+    console.log("템플릿 요청 URL:", PAGE_LIST_TEMPLATE_URI); // URL 확인용
     const response = await axiosInstance.get(PAGE_LIST_TEMPLATE_URI);
-    return response.data; // 템플릿 목록 반환
+    console.log("템플릿 응답:", response); // 응답 확인용
+    return response.data;
   } catch (error) {
-    console.error("템플릿 목록을 가져오는 중 오류 발생:", error);
-    throw error;
-  }
-};
-
-// 템플릿으로부터 페이지 생성
-export const createPageFromTemplate = async (templateId, userId) => {
-  try {
-    const response = await axiosInstance.post(
-      "/api/pages/create-from-template",
-      {
-        templateId,
-        userId,
-      }
+    console.error(
+      "템플릿 목록을 가져오는 중 오류 발생:",
+      error.response || error
     );
-    return response.data; // 생성된 페이지 반환
-  } catch (error) {
-    console.error("템플릿으로부터 페이지 생성 중 오류 발생:", error);
+    if (error.response?.status === 405) {
+      console.error(
+        "서버에서 GET 메소드를 허용하지 않습니다. API 엔드포인트를 확인해주세요."
+      );
+    }
     throw error;
   }
 };
