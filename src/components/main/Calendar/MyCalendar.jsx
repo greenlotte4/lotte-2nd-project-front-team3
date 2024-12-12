@@ -274,10 +274,6 @@ function MyCalendar({ listMonth, setListMonth }) {
     return (
       <div>
         <b>{eventInfo.event.title}</b>
-        <p>
-          {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}{" "}
-          장소: {location}
-        </p>
       </div>
     );
   };
@@ -305,11 +301,11 @@ function MyCalendar({ listMonth, setListMonth }) {
     );
   };
 
-  const [dayMaxEvents, setDayMaxEvents] = useState(2); // dayMaxEvents 기본값 설정
+  const [dayMaxEvents, setDayMaxEvents] = useState(4); // dayMaxEvents 기본값 설정
 
   const handleDatesSet = (info) => {
     if (info.view.type === "dayGridMonth") {
-      setDayMaxEvents(2); // dayGridMonth에서만 2개로 제한
+      setDayMaxEvents(4); // dayGridMonth에서만 2개로 제한
     } else {
       setDayMaxEvents(false); // 다른 뷰에서는 제한 없음
     }

@@ -59,8 +59,16 @@
   box-shadow: none;
 }
 
-.fc .fc-today-button {
-  border-radius: 0;
+.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
+  border-radius: 30px;
+}
+
+.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
+  border-radius: 30px;
+}
+
+.fc-today-button.fc-button.fc-button-primary:hover {
+  background-color: #b2d1ff;
 }
 
 /**/

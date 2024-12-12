@@ -94,19 +94,48 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <div>
+              {error && (
+                <div
+                  className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg animate-pulseflex items-center space-x-3
+  "
+                >
+                  <p className="text-sm font-medium">{error}</p>
+                </div>
+              )}
+
+              <div className="flex items-center align-middle gap-[10px]">
                 <input
                   type="checkbox"
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-offset-2 border-gray-300 cursor-pointer transition duration-200 ease-in-out custom-checkbox
+                "
                 />
-                <label htmlFor="rememberMe">자동 로그인</label>
+                <label
+                  htmlFor="rememberMe"
+                  className="text-sm font-medium text-gray-700 select-none cursor-pointer hover:text-blue-600 transition duration-200
+    "
+                >
+                  자동 로그인
+                </label>
+                <button
+                  type="button"
+                  className="w-[80px] bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95
+  "
+                >
+                  아이디 찾기
+                </button>
+                <button
+                  type="button"
+                  className=" w-[90px] bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95
+  "
+                >
+                  비밀번호 찾기
+                </button>
               </div>
 
-              {error && <p className="error-message">{error}</p>}
-
-              <button type="submit" className="btn">
+              <button type="submit" className="mt-[20px] btn">
                 로그인
               </button>
             </form>
