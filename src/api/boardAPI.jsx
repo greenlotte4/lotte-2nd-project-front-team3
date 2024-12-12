@@ -4,6 +4,7 @@ import {
     BOARD_WRITE_URI, // 게시판 글쓰기
     BOARD_LIST_URI, // 게시판 리스트 (글목록)
     BOARD_VIEW_URI, // 게시판 뷰 (글보기)
+    BOARD_UPDATE_URI
     //BOARD_MAIN_URI, // 게시판 메인
 
 } from "./_URI";
@@ -71,10 +72,20 @@ export const getBoardList = async () => {
                 'Content-Type': 'application/json',
             }
         });
-        return response.data;
+        console.log("API 응답 데이터: ", response.data); 
+        return response.data; // 전체 응답 반환
     } catch (error) {
-        console.error('게시글 목록 조회 에러:', error);
-        throw error;
+        console.error("게시글 목록 조회 에러:", {
+            message: error.message, // "Request failed with status code 404"
+            stack: error.stack, // 디버깅을 위한 에러 스택
+            config: error.config, // Axios 요청 설정 정보 
+            response: {
+              data: error.response?.data, // 서버에서 반환된 데이터 {message: "Not Found"}
+              status: error.response?.status, // 상태 코드 (404, 500)
+              headers: error.response?.headers, // 서버 응답 헤더
+            },
+        }); 
+        throw error; // 에러를 호출하는 쪽에서 처리하도록 전달
     }
 };
 
@@ -96,6 +107,7 @@ export const getBoardList = async () => {
 //     }
 // };
 
+// 게시글 상세 조회 
 export const getBoardById = async (id) => {
     try {
         const { data } = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);

@@ -28,7 +28,7 @@ export default function BoardWrite() {
   const [board, setBoard] = useState({
     cate1: "",
     cate2: "",
-    writer: "user1",
+    writerId: "",
     title: "",
     file: null,
     content: "",
@@ -127,7 +127,7 @@ export default function BoardWrite() {
         boardId: 0, // 새글이므로 null
         cate1: String(board.cate1),
         cate2: String(board.cate2),
-        writer: user?.id || "guest", // user 객체에 id가 없으면 'guest'로 처리
+        writerId: user?.id || "guest", // user 객체에 id가 없으면 'guest'로 처리
         title: board.title.trim(),
         content: board.content.trim(),
       };
@@ -144,7 +144,7 @@ export default function BoardWrite() {
       // 파일이 있으면 추가
       if (board.file) {
         formData.append("boardId", savedBoardId);
-        formData.append("writer", boardInfo.writer);
+        formData.append("writerId", boardInfo.writerId);
         formData.append("boardFile", board.file);
         await uploadBoardFile(formData); // 파일 업로드 함수 호출
       }
