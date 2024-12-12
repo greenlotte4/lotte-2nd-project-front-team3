@@ -77,7 +77,9 @@ const ApprovalModal = () => {
                   <p className="text-gray-700 font-medium">대표이사</p>
                 </div>
                 <div className="border-t border-gray-300 py-4">
-                  <p className="text-gray-700">{approver || "미지정"}</p>
+                  <p className="text-gray-700">
+                    {details.approverName || "미지정"}
+                  </p>
                 </div>
                 <div className="border-t border-gray-300 py-6"></div>
               </section>
@@ -187,7 +189,7 @@ const ApprovalModal = () => {
                       <td className="w-1/5 bg-gray-100 font-medium text-gray-700 p-3">
                         휴가 종류
                       </td>
-                      <td className="p-3">{details.leaveType || "N/A"}</td>
+                      <td className="p-3">{details.vacationType || "N/A"}</td>
                     </tr>
                     <tr className="border-b">
                       <td className="w-1/5 bg-gray-100 font-medium text-gray-700 p-3">
@@ -201,7 +203,7 @@ const ApprovalModal = () => {
                       <td className="w-1/5 bg-gray-100 font-medium text-gray-700 p-3">
                         잔여 연차
                       </td>
-                      <td className="p-3">{details.remainingDays || 0}</td>
+                      <td className="p-3">{details.annualLeaveRequest || 0}</td>
                     </tr>
                   </tbody>
                 </table>

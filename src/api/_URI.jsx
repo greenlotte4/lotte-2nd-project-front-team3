@@ -51,8 +51,11 @@ export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사
 
 // approval
 export const APPROVAL_TRIP_CREATE = `${API_SERVER_HOST}/businesstrips`; // 출장 신청
-export const APPROVAL_MY_SELECT = `${API_SERVER_HOST}/approval-requests`; // 출장 신청
-export const APPROVAL_DETAIL_SELECT = `${API_SERVER_HOST}/approval-requests/detail`; // 출장 신청
+export const APPROVAL_VACATION_CREATE = `${API_SERVER_HOST}/vacation/request`; // 휴가 신청
+export const APPROVAL_ADMIN_SELECT = `${API_SERVER_HOST}/approval-requests/approver`; // 관리자 결제서류 조회
+export const APPROVAL_ADMIN_UPDATE = `${API_SERVER_HOST}/approval-requests`; // 관리자 승인 및 반려처리
+export const APPROVAL_MY_SELECT = `${API_SERVER_HOST}/approval-requests`; // 내 결제서류 조회
+export const APPROVAL_DETAIL_SELECT = `${API_SERVER_HOST}/approval-requests/detail`; // 결제서류 상세조회
 
 // project
 export const PROJECT_ADD_URI = `${API_SERVER_HOST}/project/add`; // 프로젝트 추가

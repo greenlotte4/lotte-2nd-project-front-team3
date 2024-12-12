@@ -34,6 +34,7 @@ export default function MyApproval() {
 
   const handleOpenModal = async (id) => {
     try {
+      console.log("아이디" + id);
       const approvalDetails = await fetchApprovalDetails(id);
       console.log("dd" + approvalDetails);
       openModal("approval", { selectedApproval: approvalDetails });
@@ -128,7 +129,7 @@ export default function MyApproval() {
                       {approval.userName}
                     </td>
                     <td className="border border-gray-300 p-2 text-center">
-                      {approval.submissionDate}
+                      {approval.approvalDate}
                     </td>
                     <td className="border border-gray-300 p-2 text-center">
                       {approval.approver || "미지정"}

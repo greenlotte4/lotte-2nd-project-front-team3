@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 
@@ -10,13 +9,6 @@ export default function SettinngAside({ asideVisible }) {
     menuManagement: true,
   });
 
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const linkStyle = {
-    textDecoration: "none",
-    fontSize: "15px",
-    color: "#555",
-    transition: "color 0.2s ease",
-  };
   return (
     <>
       <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell`}>
@@ -55,47 +47,6 @@ export default function SettinngAside({ asideVisible }) {
                   <Link to="/antwork/setting/myinfo">
                     📃&nbsp;&nbsp;나의 활동내역
                   </Link>
-                </li>
-                <li>
-                  <div
-                    className="flex items-center cursor-pointer"
-                    style={linkStyle}
-                    onClick={() => setIsSubmenuOpen(!isSubmenuOpen)}
-                  >
-                    📝&nbsp;&nbsp;전자결제
-                    <span className="ml-auto text-gray-500">
-                      {isSubmenuOpen ? "▲" : "▼"}
-                    </span>
-                  </div>
-                  {/* 하위 메뉴 */}
-                  {isSubmenuOpen && (
-                    <ul className="ml-6 mt-2 space-y-2">
-                      <li>
-                        <Link
-                          to="/antwork/setting/electronic-approval"
-                          className="block text-gray-700 hover:text-blue-500"
-                        >
-                          휴가신청
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/antwork/setting/electronic-approval"
-                          className="block text-gray-700 hover:text-blue-500"
-                        >
-                          출장신청
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/antwork/setting/electronic-approval"
-                          className="block text-gray-700 hover:text-blue-500"
-                        >
-                          경비신청
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
                 </li>
               </ol>
             )}
