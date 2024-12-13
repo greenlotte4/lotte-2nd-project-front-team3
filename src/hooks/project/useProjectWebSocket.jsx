@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import { update } from "lodash";
+import { WS_URL } from "@/api/_URI";
 
 const useProjectWebSocket = ({
   userId,
+  projectId,
   setCollaborators,
   handleAddState,
   handleEditState,
@@ -20,8 +22,13 @@ const useProjectWebSocket = ({
       return;
     }
 
+    if (!projectId) {
+      console.error("❌ Project ID is not available");
+      return;
+    }
+
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      brokerURL: WS_URL, // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000, // Heartbeat 설정 (수신)
       heartbeatOutgoing: 4000, // Heartbeat 설정 (송신)
@@ -39,6 +46,17 @@ const useProjectWebSocket = ({
           try {
             const data = JSON.parse(message.body); // 메시지 파싱
             console.log("🔔 알림 메시지 수신:", JSON.stringify(data));
+
+            // 현재 보고 있는 프로젝트의 변경사항만 처리
+            if (String(data.projectId) !== String(projectId)) {
+              console.log(
+                "다른 프로젝트의 변경사항이므로 무시 - 현재:",
+                String(projectId),
+                "수신된:",
+                String(data.projectId)
+              );
+              return;
+            }
 
             // 메시지의 action에 따라 처리
             switch (data.action) {
@@ -67,11 +85,11 @@ const useProjectWebSocket = ({
               // 작업상태 삭제
               case "stateDelete":
                 setStates((prevStates) => {
-                  console.log("prevStates : " + prevStates);
+                  console.log("prevStates:", prevStates);
                   const updatedStates = prevStates.filter(
-                    (state) => state.id !== data.id
+                    (state) => String(state.id) !== String(data.id)
                   );
-                  console.log("updatedStates : " + updatedStates);
+                  console.log("updatedStates:", updatedStates);
                   return updatedStates;
                 });
                 break;
@@ -79,7 +97,7 @@ const useProjectWebSocket = ({
               case "taskInsert":
                 setStates((prevStates) =>
                   prevStates.map((state) =>
-                    state.id === data.id
+                    String(state.id) === String(data.id)
                       ? {
                           ...state,
                           items: [...(state.items || []), ...data],
@@ -124,7 +142,7 @@ const useProjectWebSocket = ({
         client.deactivate();
       }
     };
-  }, [userId]);
+  }, [userId, projectId]);
 
   return stompClientRef;
 };
