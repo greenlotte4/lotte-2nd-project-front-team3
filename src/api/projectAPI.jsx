@@ -58,7 +58,7 @@ export const getProjects = async (uid) => {
 
 // 프로젝트id로 상세 조회
 export const getProjectById = async (id) => {
-  console.log("들어옴?");
+  console.log("Project Id로 프로젝트 조회 API");
   try {
     const response = await axios.get(`${PROJECT_DETAIL_URI}/${id}`, {
       headers: {
@@ -75,7 +75,7 @@ export const getProjectById = async (id) => {
 
 // 프로젝트 상태 등록
 export const postProjectState = async (stateData) => {
-  console.log("들어옴");
+  console.log("프로젝트 상태 등록 API 들어옴");
   console.log("API 요청 데이터:", stateData); // 디버깅용
   try {
     const response = await axios.post(
@@ -96,7 +96,7 @@ export const postProjectState = async (stateData) => {
 
 // 프로젝트 상태 조회
 export const getProjectStates = async (id) => {
-  console.log("프로젝트상태조회 들어옴?");
+  console.log("projectState 조회 API");
   try {
     const response = await axios.get(`${PROJECT_STATE_SELECT_URI}/${id}`);
     return response.data; // 서버에서 반환된 전체 상태
@@ -128,10 +128,10 @@ export const createTask = async (taskData) => {
 
 // 프로젝트 작업 조회
 export async function getTasksByStateId(stateId) {
-  console.log("작업 조회 들어옴?");
+  console.log("프로젝트 작업조회 API 들어옴");
   console.log("stateId : " + stateId);
   const response = await fetch(`${PROJECT_TASK_SELECT_URI}/${stateId}`);
-  console.log("22222반환되는 값 : " + response);
+  console.log("프로젝트 작업조회 API 반환되는 값 : " + response);
   if (!response.ok) {
     throw new Error("Failed to fetch tasks");
   }
