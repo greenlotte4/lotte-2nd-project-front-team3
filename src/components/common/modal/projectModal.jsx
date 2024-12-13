@@ -26,8 +26,8 @@ export default function ProjectModal({
   setCurrentTask,
   onEditState,
   currentState,
-  onCollaboratorsUpdate,
   onUpdateAssignedUsers, // 부모에서 받은 함수
+  setReloadState,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -43,9 +43,6 @@ export default function ProjectModal({
     setIsCollaboratorsDropdownOpen(!isCollaboratorsDropdownOpen);
   };
 
-  const [availableCollaborators, setAvailableCollaborators] = useState([]);
-  console.log("availableCollaborators : " + availableCollaborators);
-
   // 선택된 작업담당자 관리하기 위한 상태
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
   console.log(
@@ -60,8 +57,6 @@ export default function ProjectModal({
           const data = await getProjectCollaborators(projectId);
           console.log("협업자 목록data : " + JSON.stringify(data));
           setCollaborators(data);
-          onCollaboratorsUpdate(data);
-          setAvailableCollaborators(data);
         }
       } catch (error) {
         console.error("협업자 목록을 불러오는 중 오류 발생:", error);
@@ -149,14 +144,6 @@ export default function ProjectModal({
       // 선택된 사용자 초기화
       setSelectedUsers([]);
 
-      // 상태 업데이트를 위한 콜백 호출
-      // 협업자를 추가한 후 api로 최신목록 받아오면 이를 부모로 전달
-      // onCollaboratorsUpdate가 부모 컴포넌트에서 전달된 콜백 함수인지 확인
-      // 최신 협업자 목록 updatedCollaborators를 부모에게 전달
-      if (onCollaboratorsUpdate) {
-        onCollaboratorsUpdate(updatedCollaborators); // 부모 상태 업데이트
-      }
-
       closeModal();
     } catch (error) {
       console.error("협업자 추가 실패:", error);
@@ -173,12 +160,8 @@ export default function ProjectModal({
       const updatedCollaborators = await getProjectCollaborators(projectId);
       setCollaborators(updatedCollaborators);
 
-      // 상태 업데이트를 위한 콜백 호출
-      if (onCollaboratorsUpdate) {
-        onCollaboratorsUpdate(updatedCollaborators); // 부모 상태 업데이트
-      }
-
       alert("협업자가 삭제되었습니다.");
+      closeModal();
     } catch (error) {
       console.error("협업자 삭제 실패:", error);
       alert("협업자 삭제에 실패했습니다.");
@@ -552,8 +535,8 @@ export default function ProjectModal({
                   {isCollaboratorsDropdownOpen && (
                     <div className="mt-2 border-2 border-gray-200 rounded-lg">
                       <ul className="max-h-48 overflow-y-auto">
-                        {availableCollaborators.length > 0 ? (
-                          availableCollaborators.map((collaborator) => (
+                        {collaborators.length > 0 ? (
+                          collaborators.map((collaborator) => (
                             <li key={collaborator.id}>
                               <button
                                 type="button"
