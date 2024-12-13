@@ -5,6 +5,8 @@ import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
 import formatChatTime from "@/utils/chatTime";
 import { Client } from "@stomp/stompjs";
+import { WS_URL } from "@/api/_URI";
+
 export default function DmMain() {
   const { id: dmId } = useParams();
   const [dmData, setDmData] = useState(null);
@@ -64,6 +66,7 @@ export default function DmMain() {
     const newMessage = {
       content: messageInput.trim(),
       senderId: user?.id,
+      dmName: name,
       dmId,
       createdAt: new Date()
     };
@@ -113,7 +116,8 @@ export default function DmMain() {
     }
 
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      // brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      brokerURL: WS_URL,
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -155,8 +159,15 @@ export default function DmMain() {
   return (
     <div className="w-full rounded-3xl shadow-md overflow-hidden">
       <div className="flex flex-col h-full">
+    
+      <div
+          className={`flex flex-col h-full transition-all duration-300 ${toggleStates.isSidebarOpen
+            ? "w-[78%] min-w-[300px]"
+            : "w-full min-w-[300px]"
+            }`}
+        >
         {/* DM 헤더 */}
-        <div className="flex-none px-6 py-4 bg-white border-b border-gray-200 shadow flex items-center justify-between">
+        <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
         <div className="flex items-center">
               <img
                 src="https://via.placeholder.com/40"
@@ -324,7 +335,7 @@ export default function DmMain() {
             </button>
 
             {/* 채팅방 이름 */}
-            <h3 className="text-lg font-semibold text-gray-900">채팅방 이름</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{dmData?.name}</h3>
 
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
@@ -499,5 +510,7 @@ export default function DmMain() {
           </div>
         </div>
       </div>
+      </div>
+
   );
 }

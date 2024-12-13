@@ -72,27 +72,6 @@ export default function ChannelMain() {
     isSearchOpen: false, // 검색창 토글
   });
 
-  // const handleSendMessage = async () => {
-  //   if (user === null) return;
-
-  //   if (messageInput.trim() === "") {
-  //     alert("메시지를 입력해주세요.");
-  //     return;
-  //   }
-
-  //   try {
-  //     await sendChannelMessage({
-  //       channelId: channelId,
-  //       content: messageInput,
-  //       senderId: user?.id,
-  //     });
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setMessageInput("");
-  //   }
-  // };
-
   const handleSendMessage = async () => {
     if (!messageInput.trim()) {
       alert("메시지를 입력하세요.");
@@ -102,6 +81,7 @@ export default function ChannelMain() {
     const newMessage = {
       content: messageInput.trim(),
       senderId: user?.id,
+      userName: user?.name,
       channelId,
       createdAt: new Date()
     };
@@ -112,11 +92,11 @@ export default function ChannelMain() {
       const msg = {
         id: result.data,
         senderId: user?.id,
+        userName: user?.name,
         content: messageInput.trim(),
         createdAt: new Date()
       };
       console.log(`소켓 보낸 메시지 : ${msg}`)
-      // TODO: 소켓 보내기
       stompClientRef.current.publish({
         destination: `/app/chatting/channel/${channelId}/send`,
         body: JSON.stringify(msg),
@@ -165,10 +145,6 @@ export default function ChannelMain() {
     }
   };
 
-  // 컴포넌트 마운트 시 메시지 조회
-  //   useEffect(() => {
-  //     fetchMessages(); // dmId가 변경될 때마다 호출
-  //   }, [dmId]);
 
   // WebSocket 연결 설정
   useEffect(() => {
@@ -415,7 +391,7 @@ export default function ChannelMain() {
             </button>
 
             {/* 채팅방 이름 */}
-            <h3 className="text-lg font-semibold text-gray-900">                  {channelData?.name}
+            <h3 className="text-lg font-semibold text-gray-900">{channelData?.name}
             </h3>
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
