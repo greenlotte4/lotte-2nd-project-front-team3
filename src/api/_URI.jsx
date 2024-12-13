@@ -29,6 +29,7 @@ export const USER_UPDATEIMG_URI = `${API_SERVER_HOST}/user/img`; // 유저 프�
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송
 export const NOTIFICATION_MY_SELECT_URI = `${API_SERVER_HOST}/notification`; // 본인 알림 조회
+export const NOTIFICATION_READ_URI = `${API_SERVER_HOST}/notification`; // 알림 읽음 처리
 
 // popup
 export const POPUP_URI = `${API_SERVER_HOST}/popups`;
