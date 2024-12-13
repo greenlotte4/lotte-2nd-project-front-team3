@@ -540,9 +540,10 @@ export default function ProjectViewSection() {
                           +{collaborators.length - 3}
                         </div>
                         <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-sm px-2 py-1 rounded-lg whitespace-nowrap z-10">
-                          {collaborators.slice(3).map((user) => (
-                            <div key={user.id}>{user.name}</div>
-                          ))}
+                          {collaborators
+                            .slice(3)
+                            .map((user) => user.name)
+                            .join(", ")}
                         </div>
                       </div>
                     )}
