@@ -121,8 +121,8 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       });
       console.log("흐흐흐흐흠흠흠흠누누누" + JSON.stringify(data));
 
-      const filteredData = data.filter((item) => item.user_id === uid);
-      const filteredData2 = data.filter((item) => item.user_id !== uid);
+      const filteredData = data.filter((item) => item.share === false);
+      const filteredData2 = data.filter((item) => item.share === true);
       setData(filteredData);
       setShares(filteredData2);
       setSchedule(updatedData);
