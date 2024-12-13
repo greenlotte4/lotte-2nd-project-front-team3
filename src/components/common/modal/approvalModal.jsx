@@ -218,7 +218,7 @@ const ApprovalModal = () => {
                     </tr>
                     <tr>
                       <td className="w-1/5 bg-gray-100 font-medium text-gray-700 p-3">
-                        잔여 연차
+                        사용 연차
                       </td>
                       <td className="p-3">{details.annualLeaveRequest || 0}</td>
                     </tr>

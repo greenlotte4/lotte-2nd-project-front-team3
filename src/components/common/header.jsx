@@ -188,6 +188,16 @@ export default function Header({ onToggleAside }) {
                 {notifications.map((notification, index) => (
                   <li
                     key={index}
+                    onClick={() => {
+                      if (notification.metadata?.url) {
+                        // URL이 있으면 해당 URL로 이동
+                        navigate(notification.metadata.url);
+                      } else {
+                        // URL이 없으면 기본 동작 수행 (여기서는 알림 메시지만 표시)
+                        console.log("URL이 없는 알림:", notification);
+                        alert(notification.message); // 메시지 표시 (원하는 동작으로 변경 가능)
+                      }
+                    }}
                     className={`p-3 cursor-pointer ${
                       notification.isRead ? "text-gray-500" : "font-bold"
                     } hover:bg-gray-100`}
@@ -213,7 +223,7 @@ export default function Header({ onToggleAside }) {
           />
           <div className="user-details">
             <h3>{user?.name || "사용자 이름"}</h3>
-            <p>{user?.team || "소속 팀"}</p>
+            <p>{user?.companyName || "소속 팀"}</p>
           </div>
           <a href="#" onClick={toggleDropdown}>
             <img

@@ -22,6 +22,10 @@ export default function AdminAttendance() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const itemsPerPage = 10;
 
   // 시간 데이터를 'HH:mm' 형식으로 변환하는 함수
   const formatToHHmm = (time) => {
@@ -94,8 +98,8 @@ export default function AdminAttendance() {
         startDate,
         endDate,
         filter,
-        0,
-        10
+        currentPage - 1, // 백엔드는 0-based pagination
+        itemsPerPage
       );
 
       const processedData = response.content.map((record) => ({
@@ -109,6 +113,7 @@ export default function AdminAttendance() {
       }));
 
       setAttendanceData(processedData || []);
+      setTotalPages(response.totalPages || 0);
     } catch (error) {
       console.error("데이터 가져오기 중 오류:", error);
     } finally {
@@ -122,7 +127,15 @@ export default function AdminAttendance() {
 
   useEffect(() => {
     fetchAttendanceData();
-  }, [currentDate, filter]);
+  }, [currentDate, filter, currentPage]);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   const filteredData = attendanceData.filter(
     (record) =>
@@ -376,6 +389,26 @@ export default function AdminAttendance() {
             </tbody>
           </table>
         )}
+        {/* Pagination */}
+        <div className="flex justify-between items-center px-6 py-3 border-t">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            이전
+          </button>
+          <div className="text-sm text-gray-600">
+            {currentPage} / {totalPages}
+          </div>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            다음
+          </button>
+        </div>
       </div>
     </div>
   );
