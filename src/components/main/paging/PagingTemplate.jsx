@@ -36,7 +36,7 @@ export default function PagingTemplate() {
         content: template.content,
         owner: user.uid,
         ownerName: user.name,
-        ownerImage: user.image,
+        ownerImage: user.profile,
       });
 
       // 생성된 페이지의 ID로 페이지 작성 화면으로 이동
