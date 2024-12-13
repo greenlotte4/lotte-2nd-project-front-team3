@@ -10,6 +10,7 @@ import {
 import useAuthStore from "../../../store/AuthStore";
 import { useCalendarStore } from "../../../store/CalendarStore";
 import { Client } from "@stomp/stompjs";
+import { WS_URL } from "@/api/_URI";
 
 export default function CalendarAside({ asideVisible, setListMonth }) {
   const calendarRef = useRef(null);
@@ -18,6 +19,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
   const id = user?.id;
   const navigate = useNavigate();
   const [isMyOpen, setIsMyOpen] = useState(false);
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const handleButtonClick = () => {
     console.log("버튼 클릭!");
@@ -28,6 +30,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     setListMonth("listMonth"); // listMonth 값 업데이트
   };
   const [calendars, setCalendars] = useState([]);
+  const [shares, setShares] = useState([]);
   const [editingId, setEditingId] = useState(null); // 수정 중인 캘린더 ID
   const [newName, setNewName] = useState(""); // 수정 중인 이름
   const [color, setColor] = useState("");
@@ -54,6 +57,10 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     setNewName(currentName); // 기존 이름 설정
   };
 
+  const removeItem = (id) => {
+    setData((prevData) => prevData.filter((item) => item.calendarId !== id));
+  };
+
   // 이름 저장
   const saveName = (no) => {
     const fetchData = async () => {
@@ -62,9 +69,13 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       console.log("ccoollllll::" + finalColor);
       setColor(finalColor);
 
-      await updateCalendar(no, newName, finalColor);
+      const response = await updateCalendar(no, newName, finalColor);
+      console.log("돌아오는건 바로바로~" + JSON.stringify(data));
+      console.log("돌아오는건 바로바로~" + JSON.stringify(response));
+      removeItem(response.calendarId);
+      setData((prevData) => [...prevData, response]);
     };
-
+    console.log("흠흠흠..." + calendars);
     fetchData();
     setEditingId(null); // 수정 모드 종료
     setNewName(""); // 입력 초기화
@@ -108,8 +119,12 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
         // 조건: start <= today < end
         return startTime <= today && endTime >= tomorrow;
       });
+      console.log("흐흐흐흐흠흠흠흠누누누" + JSON.stringify(data));
 
-      setData(data);
+      const filteredData = data.filter((item) => item.user_id === uid);
+      const filteredData2 = data.filter((item) => item.user_id !== uid);
+      setData(filteredData);
+      setShares(filteredData2);
       setSchedule(updatedData);
     };
 
@@ -126,7 +141,7 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
     }
 
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws", // WebSocket 서버 URL
+      brokerURL: WS_URL, // WebSocket 서버 URL
       reconnectDelay: 5000, // 재연결 딜레이
       heartbeatIncoming: 4000, // Heartbeat 설정 (수신)
       heartbeatOutgoing: 4000, // Heartbeat 설정 (송신)
@@ -396,12 +411,133 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                   />
                 </span>
 
-                <span className="main-cate">⏰ 오늘의 일정</span>
+                <span className="main-cate">👨‍👧‍👧 공유 캘린더</span>
               </button>
             </div>
             <div
               className={`Mydrive_List transition-all duration-300 overflow-hidden ${
                 isShareOpen ? "max-h-screen" : "max-h-0"
+              }`}
+            >
+              <ul>
+                {shares.map((item) => (
+                  <li key={item.calendarId}>
+                    <div className="flex items-center mb-2">
+                      {/* 세련된 체크박스 */}
+                      <input
+                        type="checkbox"
+                        id={`checkbox-${item.calendarId}`}
+                        className="form-checkbox h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring focus:ring-blue-200"
+                        checked={selectedIds.includes(item.calendarId)}
+                        onChange={() => toggleCheckbox(item.calendarId)}
+                      />
+
+                      {/* 이름 표시 또는 이름 변경 필드 */}
+                      {editingId === item.calendarId ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="border rounded-md w-[101px] px-2 py-1 ml-[10px]"
+                          />
+                          <br />
+                          <button
+                            onClick={() => saveName(item.calendarId)}
+                            className="ml-2 text-green-500"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={cancelEditing}
+                            className="ml-2 text-red-500"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="ml-2">📅 {item.name}</span>
+                      )}
+
+                      {/* 이름 수정 버튼 */}
+                      {editingId !== item.calendarId && (
+                        <button
+                          onClick={() =>
+                            startEditing(item.calendarId, item.name)
+                          }
+                          className="ml-2 text-blue-500"
+                        >
+                          수정
+                        </button>
+                      )}
+
+                      {/* 캘린더 삭제 버튼 */}
+                      {editingId !== item.calendarId && (
+                        <button
+                          onClick={() => deleteCal(item.calendarId)}
+                          className="ml-2 text-red-500"
+                        >
+                          삭제
+                        </button>
+                      )}
+                      {editingId === item.calendarId ? (
+                        <input
+                          type="color"
+                          value={item.color}
+                          onChange={(e) => handleColorChange(e.target.value)} // 색상 변경 시 처리
+                          id="colorCalendar"
+                          className="w-[20px] h-[20px] rounded-full appearance-none bg-transparent border-none"
+                        />
+                      ) : (
+                        <input
+                          type="color"
+                          value={item.color}
+                          disabled
+                          id="colorCalendar"
+                          className="w-[20px] h-[20px] rounded-full appearance-none bg-transparent border-none"
+                        />
+                      )}
+                    </div>
+                  </li>
+                ))}
+
+                {/* 새 캘린더 추가 버튼 */}
+                <li>
+                  <button
+                    onClick={addCalendar}
+                    className="ml-[20px] text-blue-500"
+                  >
+                    + 캘린더 추가
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li className="">
+            <div>
+              <button
+                type="button"
+                className="w-[195px] h-[40px] flex items-center border-b border-[#d9d9d9] mb-[15px]"
+                onClick={() => setIsScheduleOpen(!isScheduleOpen)}
+              >
+                <span className="m-[3px] cursor-pointer">
+                  <img
+                    src={
+                      isScheduleOpen
+                        ? "/images/Antwork/main/drive/위화살표.png"
+                        : "/images/Antwork/main/drive/아래화살표.png"
+                    }
+                    alt="화살표 아이콘"
+                    className="w-4 h-4"
+                  />
+                </span>
+
+                <span className="main-cate">⏰ 오늘의 일정</span>
+              </button>
+            </div>
+            <div
+              className={`Mydrive_List transition-all duration-300 overflow-hidden ${
+                isScheduleOpen ? "max-h-screen" : "max-h-0"
               } pl-8`}
             >
               <ul>
