@@ -133,7 +133,52 @@ const PagingWrite = () => {
     }
   };
 
-  // 페이지 초기화 useEffect
+  // 페이지 접근 권한 확인
+  const checkPageAccess = useCallback(
+    async (pageId) => {
+      try {
+        if (!pageId || !uid) return false;
+
+        // 페이지 정보 가져오기
+        const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${pageId}`);
+        const pageData = response.data;
+
+        // owner인 경우 접근 허용
+        if (pageData.owner === uid) {
+          console.log("사용자가 소유자입니다.");
+          return true;
+        }
+
+        // collaborators 정보 가져오기
+        const collaboratorsData = await getPageCollaborators(pageId);
+        console.log("Collaborators:", collaboratorsData);
+
+        // collaborators 배열에서 현재 사용자가 있는지 확인
+        const hasAccess = collaboratorsData?.some(
+          (collaborator) => collaborator.user_id === user.id
+        );
+
+        console.log("접근 권한:", hasAccess);
+
+        if (!hasAccess) {
+          alert("해당 페이지에 접근 권한이 없습니다.");
+          navigate("/antwork/page");
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error("페이지 접근 권한 확인 중 오류:", error);
+        console.error("상세 에러:", error.response?.data);
+        alert("해당 페이지에 접근 권한이 없습니다.");
+        navigate("/antwork/page");
+        return false;
+      }
+    },
+    [uid, navigate]
+  );
+
+  // 페이지 초기화 useEffect 수정
   useEffect(() => {
     if (!uid) return;
 
@@ -156,7 +201,7 @@ const PagingWrite = () => {
                 uid: uid,
                 type: "OWNER",
                 isOwner: true,
-                // user 정보는 서버에서 uid로 찾아서 설정됨
+                // user 정보는 서버에서 uid로 찾서 설정됨
               },
             ],
           };
@@ -172,14 +217,17 @@ const PagingWrite = () => {
           console.error("Error creating new page:", error);
         }
       } else {
-        // 기존 페이지 데이터 가져오기
-        setId(pageId);
-        await fetchPageData(pageId);
+        // 기존 페이지 접근 시 권한 체크
+        const hasAccess = await checkPageAccess(pageId);
+        if (hasAccess) {
+          setId(pageId);
+          await fetchPageData(pageId);
+        }
       }
     };
 
     initializePage();
-  }, [uid, location.search]);
+  }, [uid, location.search, checkPageAccess]);
 
   // WebSocket 훅 사용
   useWebSocket({
@@ -365,7 +413,7 @@ const PagingWrite = () => {
         setDeletedPages,
       });
 
-      // 페이지 이동 전에 약간의 딜레이를 주어 상태 업데이트가 완료되도록 함
+      // 페이지 이동 전에 약간의 딜레이를 주어 상태 업데이트가 완되도록 함
       setTimeout(() => {
         navigate("/antwork/page");
         window.location.reload(); // 페이지 새로고침
@@ -503,7 +551,7 @@ const PagingWrite = () => {
                       <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
                         페이지 설정
                         <p className="!text-[11px] !text-slate-400 mt-[2px]">
-                          &nbsp;설정페이지로 이동
+                          &nbsp;정페이지로 이동
                         </p>
                       </button>
                     </div>
