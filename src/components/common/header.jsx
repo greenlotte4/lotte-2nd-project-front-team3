@@ -120,7 +120,14 @@ export default function Header({ onToggleAside }) {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      navigate("/login"); // 로그아웃 처리
+      // Zustand 스토어에서 Access Token 및 사용자 정보 초기화
+      useAuthStore.getState().clearAccessToken();
+
+      // axiosInstance의 인증 헤더 제거
+      delete axiosInstance.defaults.headers.common["Authorization"];
+
+      // 로그인 페이지로 리다이렉트
+      navigate("/login");
     } catch (error) {
       console.error("로그아웃 처리 중 오류:", error.message);
       alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
