@@ -8,6 +8,7 @@ import {
   deleteProjectState,
   deleteTask,
   getProjectById,
+  getProjectCollaborators,
   getProjectStates,
   getTasksByStateId,
   updateProject,
@@ -43,44 +44,7 @@ export default function ProjectViewSection() {
   const [newProjectName, setNewProjectName] = useState(""); // 새로운 프로젝트 이름
 
   const [collaborators, setCollaborators] = useState([]);
-
-  // 협업자 추가 후 작업 상태를 다시 조회하는 부분
-  const handleCollaboratorsUpdate = async (updatedCollaborators) => {
-    console.log("협업자 목록이 갱신되었습니다:", updatedCollaborators);
-
-    // 협업자 상태 업데이트
-    setCollaborators(updatedCollaborators);
-
-    // 협업자 목록이 갱신된 후, 작업 상태 데이터를 다시 가져옴
-    const fetchTasksForStates = async () => {
-      try {
-        const updatedStates = await Promise.all(
-          // states 배열의 각 요소에 대해 작업을 처리
-          states.map(async (state) => {
-            if (!state.items || state.items.length === 0) {
-              // 작업이 없는 상태만 요청
-              const tasks = await getTasksByStateId(state.id);
-              console.log("작업 데이터:", JSON.stringify(tasks));
-              // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
-              return {
-                ...state,
-                items: tasks.map((task) => ({
-                  ...task,
-                  assignedUserIds: task.assignedUserIds || [], // 기본값을 빈 배열로 설정
-                })),
-              };
-            }
-            return state;
-          })
-        );
-        setStates(updatedStates); // 작업 상태 업데이트
-      } catch (error) {
-        console.error("작업 상태를 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchTasksForStates(); // 작업 상태 데이터를 갱신
-  };
+  const [reloadState, setReloadState] = useState(null);
 
   // 작업상태 드롭다운
   const toggleDropdown = (stateId) => {
@@ -88,6 +52,19 @@ export default function ProjectViewSection() {
   };
   const closeDropdown = () => {
     setDropdownOpenStateId(null);
+  };
+
+  // 협업자 목록 불러오기
+  const fetchCollaborators = async () => {
+    try {
+      if (id) {
+        const data = await getProjectCollaborators(id);
+        console.log("협업자 목록data : " + JSON.stringify(data));
+        setCollaborators(data);
+      }
+    } catch (error) {
+      console.error("협업자 목록을 불러오는 중 오류 발생:", error);
+    }
   };
 
   useEffect(() => {
@@ -131,7 +108,7 @@ export default function ProjectViewSection() {
     };
 
     fetchStates();
-  }, [id, collaborators]);
+  }, [id]);
 
   // 현재 작업이 속한 작업상태의 id 상태관리
   const [currentStateId, setCurrentStateId] = useState(null);
@@ -191,6 +168,7 @@ export default function ProjectViewSection() {
 
   // 전체 작업 데이터 가져오기
   useEffect(() => {
+    console.log("reloadStates : " + reloadState);
     const fetchTasksForStates = async () => {
       try {
         // 여러 비동기 작업(getTasksByStateId)을 동시에 실행하고, 모든 작업이 완료될 때까지 기다림
@@ -206,7 +184,7 @@ export default function ProjectViewSection() {
                 ...state,
                 items: tasks.map((task) => ({
                   ...task,
-                  assignedUserIds: task.assignedUserIds || [], // 기본값을 빈 배열로 설정
+                  assignedUserIds: task.assignedUserIds, // 기본값을 빈 배열로 설정
                 })),
               };
             }
@@ -223,7 +201,8 @@ export default function ProjectViewSection() {
       // 상태가 존재할 때만 호출
       fetchTasksForStates();
     }
-  }, [states.length]); // 상태 수가 변경될 때만 트리거
+    fetchCollaborators();
+  }, [states.length, collaborators]); // 상태 수가 변경될 때만 트리거
 
   // 작업 수정
   const handleEditItem = async (stateId, updatedTask) => {
@@ -476,10 +455,7 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
         onEditState={handleEditState}
         currentState={currentState}
-        // 부모컴포넌트는 onCollaboratorsUpdate를 통해 전달받은 setCollaborators를 사용해 상태 업데이트
-        onCollaboratorsUpdate={(updatedCollaborators) =>
-          setCollaborators(updatedCollaborators)
-        } // 콜백 전달
+        setReloadState={setReloadState}
       />
       {project ? (
         <article className="page-list min-h-[850px]">
