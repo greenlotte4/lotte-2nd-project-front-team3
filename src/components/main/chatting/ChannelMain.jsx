@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
 import {
   getChannel,
   getChannelMessages,
   getDmMessages,
   leaveChannel,
   sendChannelMessage,
+  getChannelMembers,
+  addChannelMember
 } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
@@ -21,14 +23,14 @@ export default function ChannelMain() {
   const user = useAuthStore((state) => state.user);
   const chatBoxRef = useRef(null); // 채팅창 Ref  
   const stompClientRef = useRef(null);
-  const { userId } = useAuthStore((state) => state);
+  const [members, setMembers] = useState([])
+  const [isMyChannel, setIsMyChannel] = useState(false)
 
 
   const [messageInput, setMessageInput] = useState("");
   useEffect(() => {
-    console.log(user);
-    console.log("messages :", messages)
-  }, [user, messages]);
+    setMessageInput('')
+  }, [channelId]);
 
   useEffect(() => {
     const fetchChannel = async () => {
@@ -53,6 +55,17 @@ export default function ChannelMain() {
       }
     };
 
+    const fetchChannelMembers = async () => {
+      try {
+        const members = await getChannelMembers(channelId);
+        console.log(`members : `, members)
+        setMembers(members);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchChannelMembers();
     fetchChannel();
     fetchMessages();
   }, [channelId]);
@@ -61,6 +74,9 @@ export default function ChannelMain() {
   const { openModal } = useModalStore(); // 모달 열기 함수 가져오기
 
   const [loading, setLoading] = useState(true); // 로딩 상태
+
+
+
 
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
@@ -110,6 +126,24 @@ export default function ChannelMain() {
     }
   };
 
+  const handleJoin = async () => {
+    if (confirm("해당 방에 참여하시겠습니까") == false) {
+      return;
+    }
+
+    try {
+      const addMembers = await addChannelMember(channelId, [user])
+      console.log("채널 참여 성공 : ", addMembers)
+      setMembers(prev => [...prev, ...addMembers])
+    } catch (error) {
+      console.error("채널 참여 실패")
+    }
+  }
+
+  useEffect(() => {
+    setIsMyChannel(members.some((member) => member.userId === user.id))
+
+  }, [members, user.id])
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -198,7 +232,7 @@ export default function ChannelMain() {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages]);
-  
+
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
       <div className="flex h-full">
@@ -230,7 +264,7 @@ export default function ChannelMain() {
               {/* 고정핀 아이콘 */}
               <button
                 className="p-2 rounded-full hover:bg-gray-300 focus:outline-none "
-                onClick={() => console.log("고정핀 기능 실행")}
+                onClick={() => { console.log("고정핀 기능 실행") }}
               >
                 <img
                   src="/images/ico/고정핀.svg"
@@ -323,16 +357,16 @@ export default function ChannelMain() {
                     : "flex-row"
                     }`}
                 >
-                
+
                   <img
                     src={message.userProfile || "https://via.placeholder.com/50"}
                     alt="Profile"
                     className="w-10 h-10 rounded-full"
                   />
-   {/* 보낸 사람 이름 */}
-   <div className="text-sm text-gray-500 mb-1">
-          {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
-        </div>
+                  {/* 보낸 사람 이름 */}
+                  <div className="text-sm text-gray-500 mb-1">
+                    {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
+                  </div>
 
                   <div
                     className={`p-4 ${message.senderId === user?.id
@@ -353,6 +387,7 @@ export default function ChannelMain() {
             <div className="flex items-center space-x-4">
               <input
                 type="text"
+                disabled={!isMyChannel}
                 placeholder="메시지를 입력하세요."
                 className="flex-1 border border-gray-300 rounded-full px-6 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
                 value={messageInput}
@@ -364,13 +399,21 @@ export default function ChannelMain() {
                 <img src="/images/ico/file.svg" alt="Attach" />
               </button>
               {/* 전송 버튼 */}
-              <button
+              {isMyChannel ? <button
                 className="ml-4 px-6 py-3 text-lg font-semibold rounded-full shadow-md"
                 style={{ backgroundColor: "#eff6ff", color: "gray-800" }}
                 onClick={handleSendMessage}
               >
                 전송
-              </button>
+              </button> :
+                <button
+                  className="ml-4 px-6 py-3 text-lg font-semibold rounded-full shadow-md"
+                  style={{ backgroundColor: "#eff6ff", color: "gray-800" }}
+                  onClick={handleJoin}
+                >
+                  참여
+                </button>}
+
             </div>
           </div>
         </div>
