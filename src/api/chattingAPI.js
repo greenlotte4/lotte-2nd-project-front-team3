@@ -10,6 +10,7 @@ import {
   DM_LIST_URI,
   DM_CREATE_URI,
   DM_SEND_MESSAGE_URI,
+  CHANNEL_GET_MEMBER_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -89,7 +90,7 @@ export const addChannelMember = async (channelId, users) => {
     const userIds = users.map((user) => user.id);
 
     const response = await axios.post(CHANNEL_ADD_MEMBER_URI(channelId), {
-      userIds, // 서버로 ID만 전송
+      memberIds: userIds, // 서버로 ID만 전송
     });
 
     console.log(`[JS] 멤버 추가 성공:`, response.data);
@@ -99,6 +100,21 @@ export const addChannelMember = async (channelId, users) => {
     throw error; // 에러를 호출한 곳으로 전달
   }
 };
+
+export const getChannelMembers = async (channelId) => {
+  try {
+    console.log(`[JS] 채널 멤버 조회 요청: 채널 ID ${channelId}`);
+
+
+    const response = await axios.get(CHANNEL_GET_MEMBER_URI(channelId));
+
+    console.log(`[JS] 멤버 조회 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 채널 멤버 조회 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+}
 
 export const getDmMessages = async (dmId) => {
   try {

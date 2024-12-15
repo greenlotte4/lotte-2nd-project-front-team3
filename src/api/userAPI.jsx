@@ -287,6 +287,8 @@ export const updateInfo = async (info, uid, type) => {
     const response = await axiosInstance.put(
       `${USER_UPDATEINFO_URI}/${info}/${uid}/${type}`
     );
+    const newAccessToken = await refreshAccessToken(); // 토큰 갱신
+    useAuthStore.getState().setAccessToken(newAccessToken); // Zustand 업데이트
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);
@@ -306,6 +308,9 @@ export const updateImg = async (info, uid) => {
         },
       }
     );
+
+    const newAccessToken = await refreshAccessToken(); // 토큰 갱신
+    useAuthStore.getState().setAccessToken(newAccessToken); // Zustand 업데이트
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);

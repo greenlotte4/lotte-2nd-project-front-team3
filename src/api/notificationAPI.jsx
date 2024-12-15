@@ -1,4 +1,8 @@
-import { NOTIFICATION_MY_SELECT_URI, NOTIFICATION_SEND_URI } from "./_URI";
+import {
+  NOTIFICATION_MY_SELECT_URI,
+  NOTIFICATION_READ_URI,
+  NOTIFICATION_SEND_URI,
+} from "./_URI";
 import axiosInstance from "./../utils/axiosInstance";
 
 export const sendNotification = async (payload) => {
@@ -29,5 +33,25 @@ export const fetchNotifications = async (targetId) => {
     throw new Error(
       "Failed to fetch notifications. Please check the server status."
     );
+  }
+};
+
+// 알림 읽음 처리
+export const markNotificationAsRead = async (notificationId) => {
+  if (!notificationId) {
+    throw new Error("Notification ID is required for marking as read.");
+  }
+  try {
+    console.log("아이디" + notificationId);
+    await axiosInstance.patch(
+      `${NOTIFICATION_READ_URI}/${notificationId}/read`
+    );
+    return true; // 성공 시 true 반환
+  } catch (error) {
+    console.error(
+      "❌ Failed to mark notification as read:",
+      error.response || error
+    );
+    throw new Error("Failed to mark notification as read. Please try again.");
   }
 };

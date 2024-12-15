@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import ProjectModal from "../../common/modal/projectModal";
 import useModalStore from "../../../store/modalStore";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import {
   createTask,
   deleteProjectState,
   deleteTask,
   getProjectById,
+  getProjectCollaborators,
   getProjectStates,
   getTasksByStateId,
   updateProject,
@@ -19,17 +20,32 @@ import useProjectWebSocket from "@/hooks/project/useProjectWebSocket";
 import useAuthStore from "@/store/AuthStore";
 import { Client } from "@stomp/stompjs";
 
+const fetchCollaborators = async () => {
+  try {
+    if (projectId) {
+      const data = await getProjectCollaborators(projectId);
+      console.log("협업자 목록data : " + JSON.stringify(data));
+      setCollaborators(data);
+    }
+  } catch (error) {
+    console.error("협업자 목록을 불러오는 중 오류 발생:", error);
+  }
+};
+
 export default function ProjectViewSection() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const projectRef = useRef(null);
 
-  const location = useLocation(); // 현재 URL을 감지
-  console.log("location : " + location);
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [id, setId] = useState(searchParams.get("id"));
 
-  const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get("id");
-  console.log("id : " + id);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const newId = params.get("id");
+    setId(newId);
+  }, [location.search]);
 
   // 상태관리
   const [loadingStates, setLoadingStates] = useState(true); // 상태 로딩 플래그
@@ -43,6 +59,18 @@ export default function ProjectViewSection() {
   const [newProjectName, setNewProjectName] = useState(""); // 새로운 프로젝트 이름
 
   const [collaborators, setCollaborators] = useState([]);
+
+  const fetchCollaborators = async () => {
+    try {
+      if (id) {
+        const data = await getProjectCollaborators(id);
+        console.log("협업자 목록data : " + JSON.stringify(data));
+        setCollaborators(data);
+      }
+    } catch (error) {
+      console.error("협업자 목록을 불러오는 중 오류 발생:", error);
+    }
+  };
 
   // 협업자 추가 후 작업 상태를 다시 조회하는 부분
   const handleCollaboratorsUpdate = async (updatedCollaborators) => {
@@ -91,7 +119,7 @@ export default function ProjectViewSection() {
   };
 
   useEffect(() => {
-    console.log("22id : " + id);
+    console.log("주소값의 id 바뀔 때마다 useEffect 호출 id:" + id);
     // 컴포넌트가 렌더링되거나 id가 변경될 때 호출됨
     const fetchProjectDetails = async () => {
       try {
@@ -104,43 +132,53 @@ export default function ProjectViewSection() {
         alert("프로젝트 데이터를 가져오는 중 오류가 발생했습니다.");
       }
     };
-
+    fetchCollaborators();
     setLoadingStates(true); // 새 요청 전 로딩 상태로 설정
     fetchProjectDetails(); // 컴포넌트 마운트 시 데이터 로드
-  }, [id, location]); // location을 의존성 배열에 추가
+  }, [id]); // location을 의존성 배열에 추가
 
-  // 전체 상태 데이터 가져오기
+  // states 관련 useEffect 수정
   useEffect(() => {
-    const fetchStates = async () => {
+    const fetchStatesAndTasks = async () => {
       try {
-        const statesData = await getProjectStates(id); // API 호출
-        console.log("상태 데이터:", statesData);
+        const statesData = await getProjectStates(id);
+        console.log("상태 데이터 가져옴:", statesData);
 
-        // items 속성이 없는 경우 빈 배열로 초기화
-        const initializedStates = statesData.map((state) => ({
-          ...state,
-          items: state.items || [],
-        }));
+        // 각 상태의 작업들을 한 번에 가져오기
+        const statesWithTasks = await Promise.all(
+          statesData.map(async (state) => {
+            const tasks = await getTasksByStateId(state.id);
+            return {
+              ...state,
+              items: tasks.map((task) => ({
+                ...task,
+                assignedUserIds: task.assignedUserIds || [],
+              })),
+            };
+          })
+        );
 
-        setStates(initializedStates);
+        setStates(statesWithTasks);
       } catch (error) {
-        console.error("Error fetching states:", error.message || error);
+        console.error(
+          "상태와 작업을 가져오는 중 오류 발생:",
+          error.message || error
+        );
       } finally {
-        setLoadingStates(false); // 로딩 완료
+        setLoadingStates(false);
       }
     };
 
-    fetchStates();
-  }, [id, collaborators]);
+    if (id) {
+      setLoadingStates(true);
+      fetchStatesAndTasks();
+    }
+  }, [id]);
 
   // 현재 작업이 속한 작업상태의 id 상태관리
   const [currentStateId, setCurrentStateId] = useState(null);
   //수정 중인 작업 데이터 상태관리(작업 수정할 때 기존 데이터를 불러옴)
   const [currentTask, setCurrentTask] = useState(null);
-
-  useEffect(() => {
-    console.log("States after update:", states);
-  }, [states]);
 
   // 작업 상태 추가 핸들러
   const handleAddState = (newState) => {
@@ -189,7 +227,7 @@ export default function ProjectViewSection() {
     }
   };
 
-  // 전체 작업 데이터 가져오기
+  // 전체 Task 데이터 가져오기
   useEffect(() => {
     const fetchTasksForStates = async () => {
       try {
@@ -200,7 +238,10 @@ export default function ProjectViewSection() {
             if (!state.items || state.items.length === 0) {
               // 작업이 없는 상태만 요청
               const tasks = await getTasksByStateId(state.id);
-              console.log("1111tasks:", JSON.stringify(tasks));
+              console.log(
+                "useEffect (Task데이터 가져옴 by StateId) 마운트 - states.length TaskData : ",
+                JSON.stringify(tasks)
+              );
               // 기존 속성(...state)을 그대로 유지하고 items 속성을 업데이트
               return {
                 ...state,
@@ -223,7 +264,7 @@ export default function ProjectViewSection() {
       // 상태가 존재할 때만 호출
       fetchTasksForStates();
     }
-  }, [states.length]); // 상태 수가 변경될 때만 트리거
+  }, [states.length, id]); // 상태 수가 변경될 때만 트리거
 
   // 작업 수정
   const handleEditItem = async (stateId, updatedTask) => {
@@ -287,7 +328,7 @@ export default function ProjectViewSection() {
     }
   };
 
-  // 작업 등록 모달
+  // 작업 등록 핸들러
   const openTaskCreateModal = (stateId) => {
     console.log("등록모달 열때 stateId : " + stateId);
     setCurrentStateId(stateId);
@@ -397,7 +438,7 @@ export default function ProjectViewSection() {
     console.log("stateId : " + stateId);
     if (
       !window.confirm(
-        "정말로 이 상태를 삭제하시겠습니까? 모든 작업도 함께 삭제됩니다."
+        "정말로 이 상태를 삭제하시겠습니까? 모든 작업��� 함께 삭제됩니다."
       )
     )
       return;
@@ -447,12 +488,22 @@ export default function ProjectViewSection() {
   // WebSocket 훅 사용
   useProjectWebSocket({
     userId: user?.id,
+    projectId: id,
     setCollaborators,
     handleAddState,
     handleEditState,
     setStates,
     handleAddItem,
   });
+
+  const { isOpen } = useModalStore(); // Zustand store에서 모달 상태 가져오기
+
+  // 모달이 닫힐 때마다 협업자 목록을 새로 불러옴
+  useEffect(() => {
+    if (!isOpen) {
+      fetchCollaborators();
+    }
+  }, [isOpen]); // isOpen 상태가 변경될 때마다 실행
 
   if (loadingStates) {
     return (
@@ -476,10 +527,7 @@ export default function ProjectViewSection() {
         setCurrentTask={setCurrentTask} // 작업 상태 업데이트 함수
         onEditState={handleEditState}
         currentState={currentState}
-        // 부모컴포넌트는 onCollaboratorsUpdate를 통해 전달받은 setCollaborators를 사용해 상태 업데이트
-        onCollaboratorsUpdate={(updatedCollaborators) =>
-          setCollaborators(updatedCollaborators)
-        } // 콜백 전달
+        fetchCollaborators={fetchCollaborators}
       />
       {project ? (
         <article className="page-list min-h-[850px]">
@@ -540,9 +588,10 @@ export default function ProjectViewSection() {
                           +{collaborators.length - 3}
                         </div>
                         <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-sm px-2 py-1 rounded-lg whitespace-nowrap z-10">
-                          {collaborators.slice(3).map((user) => (
-                            <div key={user.id}>{user.name}</div>
-                          ))}
+                          {collaborators
+                            .slice(3)
+                            .map((user) => user.name)
+                            .join(", ")}
                         </div>
                       </div>
                     )}

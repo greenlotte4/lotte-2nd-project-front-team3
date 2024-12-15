@@ -29,6 +29,7 @@ export const USER_UPDATEIMG_URI = `${API_SERVER_HOST}/user/img`; // 유저 프�
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송
 export const NOTIFICATION_MY_SELECT_URI = `${API_SERVER_HOST}/notification`; // 본인 알림 조회
+export const NOTIFICATION_READ_URI = `${API_SERVER_HOST}/notification`; // 알림 읽음 처리
 
 // popup
 export const POPUP_URI = `${API_SERVER_HOST}/popups`;
@@ -124,6 +125,9 @@ export const CHANNEL_LEAVE_URI = (channelId, userId) =>
 
 export const CHANNEL_ADD_MEMBER_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/member`; // 채널 멤버 추가
+
+export const CHANNEL_GET_MEMBER_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/members`; // 채널 멤버 조회
 
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
