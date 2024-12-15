@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useDropzone } from "react-dropzone";
-import { useNavigate } from "react-router-dom";
-
-
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import {
