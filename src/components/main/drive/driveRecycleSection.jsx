@@ -74,6 +74,7 @@ export default function DriveSection() {
           driveFolderMaker: folder.driveFolderMaker,
           driveFolderId: folder.driveFolderId,
           driveParentFolderId: folder.driveParentFolderId,
+          driveParentFolderName : folder.parentFolderName,
         }))
       );
 
@@ -92,6 +93,7 @@ export default function DriveSection() {
           driveFileSize: file.driveFileSize,
           driveFileCreatedAt: file.driveFileCreatedAt,
           driveFileId: file.driveFileId,
+          driveParentFolderName : file.parentFolderName,
         }))
       );
     } catch (err) {
@@ -401,6 +403,7 @@ export default function DriveSection() {
                     <th className="w-[20%]">이름</th>
                     <th className="w-[10%]">크기</th>
                     <th className="w-[10%]">소유자</th>
+                    <th className="w-[10%]">원래위치</th>
                     <th className="w-[10%]">날짜</th>
                   </tr>
                 </thead>
@@ -461,6 +464,7 @@ export default function DriveSection() {
                             </td>
                             <td>{folder.driveFolderSize}</td>
                             <td>{folder.driveFolderMaker}</td>
+                            <td>{folder.driveParentFolderName}</td>
                             <td>{folder.driveFolderCreatedAt}</td>
                           </tr>
                         );
@@ -525,6 +529,7 @@ export default function DriveSection() {
                             <td>{file.driveFileSName}</td>
                             <td>{file.driveFileSize}</td>
                             <td>{file.driveFileMaker}</td>
+                            <td>{file.driveParentFolderName}</td>
                             <td>{file.driveFileCreatedAt}</td>
                           </tr>
                         );
