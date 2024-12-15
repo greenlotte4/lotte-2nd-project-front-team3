@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
@@ -23,6 +24,12 @@ export default function DriveSection() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const driveFileMaker = user?.uid;
   const driveFolderMaker = user?.uid;
+
+  const navigate = useNavigate();
+
+  const [breadcrumbs, setBreadcrumbs] = useState([
+    { id: null, name: "MY DRIVE" },
+  ]); // 초기 경로
 
   const [menuVisible, setMenuVisible] = useState(false); // 컨텍스트 메뉴 표시 상태
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
@@ -186,6 +193,10 @@ export default function DriveSection() {
       const files = Array.isArray(response.data.files)
         ? response.data.files
         : [];
+
+      const breadcrumbs = response.data.breadcrumbs || []; // 배열로 설정
+      setBreadcrumbs(breadcrumbs);
+
       console.log("폴더 데이터 매핑:", folders);
       setFolderStates(
         folders.map((folder) => ({
@@ -197,6 +208,7 @@ export default function DriveSection() {
           driveFolderMaker: folder.driveFolderMaker,
           driveFolderId: folder.driveFolderId,
           driveParentFolderId: folder.driveParentFolderId,
+          driveParentFolderName: folder.parentFolderName,
         }))
       );
 
@@ -225,9 +237,21 @@ export default function DriveSection() {
     }
   };
 
+  const handleBreadcrumbClick = (breadcrumbId) => {
+    if (breadcrumbId) {
+      navigate(`/antwork/drive/folder/${breadcrumbId}`); // 클릭한 폴더로 이동
+    } else {
+      navigate("/antwork/drive"); // 최상위 폴더로 이동
+    }
+  };
+
   useEffect(() => {
     fetchFolderData(driveFolderId); // driveFolderId가 있을 때는 상세 정보, 없으면 목록 데이터 불러오기
   }, [driveFolderId]); //  const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
+
+  useEffect(() => {
+    console.log("Updated Breadcrumbs:", breadcrumbs);
+  }, [breadcrumbs]);
 
   // useEffect(() => {
   //   if (menuVisible) {
@@ -452,6 +476,19 @@ export default function DriveSection() {
           <div className="flex justify-between">
             <div className="h-[30px] leading-[30px] text-center">
               <h3>MY DRIVE</h3>
+              <div className="breadcrumbs text-gray-500 text-sm">
+                {breadcrumbs.map((breadcrumb, index) => (
+                  <span key={breadcrumb.id || index}>
+                    {index > 0 && " → "}
+                    <button
+                      onClick={() => handleBreadcrumbClick(breadcrumb.id)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {breadcrumb.name}
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
             <div className="border w-[250px] h-[30px] rounded-[4px] flex items-center">
               <input
