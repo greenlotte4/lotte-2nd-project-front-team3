@@ -14,7 +14,7 @@ import {
   MyDriveView,
   ToMyTrash,
 } from "../../../api/driveAPI";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 
 export default function DriveSection() {
