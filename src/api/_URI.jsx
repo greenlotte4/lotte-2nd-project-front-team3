@@ -25,6 +25,8 @@ export const USER_SELECT_URI = `${API_SERVER_HOST}/user/select`; // 유저 리�
 export const USER_UPDATEINFO_URI = `${API_SERVER_HOST}/user/info`; // 유저 정보 수정하기
 export const USER_UPDATEPASS_URI = `${API_SERVER_HOST}/user/password`; // 유저 비밀번호 수정하기
 export const USER_UPDATEIMG_URI = `${API_SERVER_HOST}/user/img`; // 유저 프로필이미지 수정하기
+export const USER_FINDBYEMAIL_URI = `${API_SERVER_HOST}/user/findId`; // 유저 아이디 찾기
+export const USER_SEARCHUSER_URI = `${API_SERVER_HOST}/user/search`; // 유저 검색해서 찾기
 
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송

@@ -3,7 +3,7 @@ import useModalStore from "../../../store/modalStore";
 import AdminModal from "../../common/modal/adminModal";
 import useAuthStore from "./../../../store/AuthStore";
 import { useEffect, useState } from "react";
-import { selectMembers } from "./../../../api/userAPI";
+import { searchUser, selectMembers } from "./../../../api/userAPI";
 
 export default function AdminMember() {
   const openModal = useModalStore((state) => state.openModal);
@@ -33,6 +33,17 @@ export default function AdminMember() {
 
   const handlePageChange = (newPage) => setCurrentPage(newPage);
   const handlePageSizeChange = (e) => setPageSize(parseInt(e.target.value, 10));
+
+  // 검색 기능
+  const searchKeyword = async (event) => {
+    event.preventDefault();
+    console.log("Hi!!!");
+
+    const formData = new FormData(event.target);
+    console.log(formData.get("type"));
+
+    const response = await searchUser(formData, user.company);
+  };
   return (
     <>
       <AdminModal />
@@ -69,14 +80,23 @@ export default function AdminMember() {
         <section className="h-[800px] overflow-auto mx-4">
           <div className="flex justify-between mb-4 mx-4">
             <div className="flex items-center">
-              <input
-                type="text"
-                placeholder="이름 + 이메일 검색"
-                className="border border-gray-300 rounded py-2 px-4 mr-2"
-              />
-              <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400">
-                검색
-              </button>
+              <form onSubmit={searchKeyword}>
+                <select name="type" className="outline-none mr-[10px]">
+                  <option value="이름">이름</option>
+                  <option value="부서">부서</option>
+                  <option value="직급">직급</option>
+                  <option value="이메일">이메일</option>
+                </select>
+                <input
+                  type="text"
+                  name="keyword"
+                  placeholder="검색어 입력"
+                  className="border border-gray-300 rounded py-2 px-4 mr-2"
+                />
+                <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400">
+                  검색
+                </button>
+              </form>
             </div>
             <div className="flex items-center">
               <span className="text-gray-600">페이지당</span>
@@ -85,7 +105,7 @@ export default function AdminMember() {
                 value={pageSize}
                 onChange={handlePageSizeChange}
               >
-                <option value="20">20</option>
+                <option value="20">10</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
               </select>
