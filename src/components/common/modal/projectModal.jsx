@@ -833,22 +833,37 @@ export default function ProjectModal({
                   <h3 className="font-semibold text-lg mb-2">기존 협업자</h3>
                   {collaborators.length > 0 ? (
                     <ul>
-                      {collaborators.map((user) => (
-                        <li
-                          key={user.id}
-                          className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
-                        >
-                          <span className="text-gray-800 font-medium">
-                            {user.name} ({user.position})
-                          </span>
-                          <button
-                            onClick={() => handleRemoveCollaborator(user.id)}
-                            className="text-red-500 hover:underline"
+                      {collaborators.map((user) => {
+                        console.log("User Data:", user);
+                        console.log(
+                          `User ID: ${user.id}, isOwner: ${user.isOwner}`
+                        );
+                        const isOwner = user.owner === true;
+                        return (
+                          <li
+                            key={user.id}
+                            className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
                           >
-                            삭제
-                          </button>
-                        </li>
-                      ))}
+                            <span className="text-gray-800 font-medium">
+                              {user.name} ({user.position})
+                            </span>
+                            {isOwner ? (
+                              <span className="text-green-500 text-sm font-medium">
+                                생성자
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  handleRemoveCollaborator(user.id)
+                                }
+                                className="text-red-500 hover:underline"
+                              >
+                                삭제
+                              </button>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   ) : (
                     <p className="text-gray-500">협업자가 없습니다.</p>
