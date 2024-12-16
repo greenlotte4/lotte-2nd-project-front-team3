@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import { WS_URL } from "@/api/_URI";
 
@@ -10,6 +10,8 @@ export const useWebSocket = ({
   setStompClient,
   stompClientRef,
 }) => {
+  const clientRef = useRef(null);
+
   useEffect(() => {
     if (!uid || !id || !componentId) {
       console.log("❌ Missing required data:", {
@@ -17,6 +19,12 @@ export const useWebSocket = ({
         pageId: id,
         componentId,
       });
+      return;
+    }
+
+    // 이미 연결이 있다면 재사용
+    if (clientRef.current?.active) {
+      console.log("Reusing existing WebSocket connection");
       return;
     }
 
@@ -71,22 +79,17 @@ export const useWebSocket = ({
     try {
       console.log("🔌 Activating WebSocket client");
       client.activate();
+      clientRef.current = client;
     } catch (error) {
       console.error("❌ Error activating WebSocket:", error);
     }
 
     return () => {
-      if (client.active) {
+      if (clientRef.current?.active) {
         console.log("🔌 Cleaning up WebSocket connection");
-        client.deactivate();
+        clientRef.current.deactivate();
+        clientRef.current = null;
       }
     };
-  }, [
-    id,
-    componentId,
-    uid,
-    handleWebSocketMessage,
-    setStompClient,
-    stompClientRef,
-  ]);
+  }, [uid, id, componentId]); // 핵심 의존성만 포함
 };

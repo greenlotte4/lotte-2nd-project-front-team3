@@ -142,6 +142,9 @@ export default function PageCollaboratorModal({
           targetType: "사용자",
           targetId: invitedUser.id,
           message: notificationMessage || defaultMessage,
+          metadata: {
+            url: `/antwork/page/write?id=${pageId}`,
+          },
         };
         await sendNotification(payload);
       }

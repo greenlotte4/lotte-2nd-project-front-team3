@@ -59,8 +59,22 @@ export default function PagingTemplate() {
   return (
     <article className="page-list">
       <div className="content-header">
-        <h1>Template</h1>
-        <p>페이지에서 사용할 수 있는 템플릿입니다.</p>
+        <div className="max-w-9xl mx-auto p-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-[30px] font-semibold">Template</h2>
+              <p className="text-gray-600 mt-2">
+                페이지에서 사용할 수 있는 템플릿입니다.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/antwork/page/template/create")}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+            >
+              템플릿 생성
+            </button>
+          </div>
+        </div>
       </div>
       <article className="page-list !mt-5 !min-h-[200px]">
         <div className="content-header">

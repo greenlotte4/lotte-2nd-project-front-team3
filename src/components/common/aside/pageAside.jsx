@@ -1,11 +1,11 @@
 import { PAGE_LIST_UID_URI } from "../../../api/_URI";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 import axios from "axios";
 import useAuthStore from "../../../store/AuthStore";
 import { getSharedPages } from "../../../api/pageAPI";
-import { useWebSocket } from "../../../hooks/paging/useWebSocket";
+import { useAsideWebSocket } from "../../../hooks/paging/useAsideWebSocket";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -18,9 +18,14 @@ export default function PageAside({ asideVisible }) {
   const [pageTitles, setPageTitles] = useState({});
   const [stompClient, setStompClient] = useState(null);
   const [componentId, setComponentId] = useState(null);
+  const [allPageIds, setAllPageIds] = useState([]);
 
   const user = useAuthStore((state) => state.user);
   const uid = user?.uid;
+
+  const processedPagesRef = useRef(new Set());
+  const personalPagesRef = useRef([]);
+  const sharedPagesRef = useRef([]);
 
   useEffect(() => {
     if (uid) {
@@ -59,32 +64,88 @@ export default function PageAside({ asideVisible }) {
     }
   }, [uid]);
 
-  const handleWebSocketMessage = (message) => {
+  useEffect(() => {
+    personalPagesRef.current = personalPageList;
+  }, [personalPageList]);
+
+  useEffect(() => {
+    sharedPagesRef.current = sharedPageList;
+  }, [sharedPageList]);
+
+  const handleWebSocketMessage = useCallback((message) => {
     try {
       const data = JSON.parse(message.body);
 
       if (data.title) {
+        console.log("Received title update in aside:", data);
+
+        const existsInPersonal = personalPagesRef.current.some(
+          (page) => page._id === data._id
+        );
+        const existsInShared = sharedPagesRef.current.some(
+          (page) => page._id === data._id
+        );
+
+        if (existsInShared) {
+          setSharedPageList((prev) =>
+            prev.map((page) =>
+              page._id === data._id ? { ...page, title: data.title } : page
+            )
+          );
+        } else if (existsInPersonal) {
+          setPersonalPageList((prev) =>
+            prev.map((page) =>
+              page._id === data._id ? { ...page, title: data.title } : page
+            )
+          );
+        } else {
+          const isProcessed = processedPagesRef.current.has(data._id);
+          if (!isProcessed) {
+            console.log("New page detected, adding to personal list:", data);
+            setPersonalPageList((prev) => [...prev, data]);
+            processedPagesRef.current.add(data._id);
+          }
+        }
+
         setPageTitles((prev) => ({
           ...prev,
           [data._id]: data.title,
         }));
+      } else if (data.deleted) {
+        console.log("🗑️ Received delete notification in aside:", data);
+        console.log("Current personal pages:", personalPageList);
+        console.log("Current shared pages:", sharedPageList);
 
-        setPersonalPageList((prev) =>
-          prev.map((page) =>
-            page._id === data._id ? { ...page, title: data.title } : page
-          )
-        );
+        setPersonalPageList((prev) => {
+          const filtered = prev.filter((page) => page._id !== data._id);
+          console.log("Updated personal pages after delete:", filtered);
+          return filtered;
+        });
 
-        setSharedPageList((prev) =>
-          prev.map((page) =>
-            page._id === data._id ? { ...page, title: data.title } : page
-          )
-        );
+        setSharedPageList((prev) => {
+          const filtered = prev.filter((page) => page._id !== data._id);
+          console.log("Updated shared pages after delete:", filtered);
+          return filtered;
+        });
+
+        setPageTitles((prev) => {
+          const newTitles = { ...prev };
+          delete newTitles[data._id];
+          console.log("Updated page titles after delete:", newTitles);
+          return newTitles;
+        });
+
+        processedPagesRef.current.delete(data._id);
+        console.log("✅ Page successfully removed from all lists");
       }
     } catch (error) {
       console.error("WebSocket 메시지 처리 중 오류:", error);
     }
-  };
+  }, []);
+
+  const setStompClientCallback = useCallback((client) => {
+    setStompClient(client);
+  }, []);
 
   const generateUUID = () => {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
@@ -103,12 +164,17 @@ export default function PageAside({ asideVisible }) {
     }
   }, []);
 
-  useWebSocket({
+  useEffect(() => {
+    const ids = [...personalPageList, ...sharedPageList].map(
+      (page) => page._id
+    );
+    setAllPageIds(ids);
+  }, [personalPageList, sharedPageList]);
+
+  useAsideWebSocket({
     uid,
-    id: null,
-    componentId,
     handleWebSocketMessage,
-    setStompClient,
+    setStompClient: setStompClientCallback,
     stompClientRef: { current: stompClient },
   });
 
@@ -165,7 +231,7 @@ export default function PageAside({ asideVisible }) {
             {toggles.personalPages && (
               <ol>
                 {personalPageList.map((page) => (
-                  <li key={page.id}>
+                  <li key={page._id}>
                     <Link to={`/antwork/page/write?id=${page._id}`}>
                       {pageTitles[page._id] || page.title}
                     </Link>
@@ -193,7 +259,7 @@ export default function PageAside({ asideVisible }) {
             {toggles.sharedPages && (
               <ol>
                 {isLoading ? (
-                  <li className="text-gray-500 text-center">로딩 중...</li>
+                  <li className="text-gray-500 text-center">��딩 중...</li>
                 ) : sharedPageList && sharedPageList.length > 0 ? (
                   sharedPageList.map((page) => (
                     <li key={page._id}>

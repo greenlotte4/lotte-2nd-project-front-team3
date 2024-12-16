@@ -60,6 +60,7 @@ import TemplatePage from "@/pages/Main/Paging/TemplatePage";
 import AdminApprovalPage from "@/pages/Main/Admin/adminApprovalPage";
 import ApprovalVacationPage from "@/pages/Main/approval/approvalVacationPage";
 import ApprovalTripPage from "@/pages/Main/approval/approvalTripPage";
+import TemplateCreatePage from "@/pages/Main/Paging/TemplateCreatePage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -101,9 +102,11 @@ const router = createBrowserRouter([
 
   // 메인 페이지 (antwork)
   { path: "/antwork", element: <MainPage /> }, // antwork 메인
+  { path: "/antwork/page/template/create", element: <TemplateCreatePage /> }, // 2024/12/11(수) 황수빈 - TemplateCreatePage 추가P
   { path: "/antwork/page", element: <PagingPage /> }, // antwork 페이지
   { path: "/antwork/page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
   { path: "/antwork/page/template", element: <TemplatePage /> }, // 2024/12/11(수) 황수빈 - TemplatePage 추가
+
   { path: "/antwork/chatting", element: <ChattingPage /> }, // antwork 페이지
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지
   { path: "/antwork/drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage
