@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
+import { useState, useEffect, useRef, useLayoutEffect, useMemo, useCallback } from "react";
 import {
   getChannel,
   getChannelMessages,
@@ -26,11 +26,65 @@ export default function ChannelMain() {
   const [members, setMembers] = useState([])
   const [isMyChannel, setIsMyChannel] = useState(false)
 
-
   const [messageInput, setMessageInput] = useState("");
+
+  const [searchText, setSearchText] = useState("");
+  const [highlightedId, setHighlightedId] = useState(null);
+  const chatRefs = useRef([]);
+
+  // useToggle 훅 사용
+  const [toggleStates, toggleState] = useToggle({
+    isSidebarOpen: false, // 오른쪽 사이드바 토글
+    isAlarmOn: true, // 알림 상태 토글
+    isContactOpen: true, // 대화 상대 토글
+    isPhotoOpen: false, // 사진 파일 토글
+    isFileOpen: false, // 첨부 파일 토글
+    isSearchOpen: false, // 검색창 토글
+  });
+
+
+  useEffect(() => {
+    if (highlightedId !== null) {
+      const targetElement = chatRefs.current[highlightedId];
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [highlightedId]);
+
+  useEffect(() => {
+    if (toggleStates.isSearchOpen === false) {
+      setHighlightedId(null);
+    }
+  }, [toggleStates.isSearchOpen])
+
+  const handleSearch = () => {
+    const foundChat = messages.find((chat) =>
+      chat.content.toLowerCase().includes(searchText.toLowerCase())
+    );
+    if (foundChat) {
+      setHighlightedId(foundChat.id);
+    } else {
+      setHighlightedId(null);
+      alert("검색 결과가 없습니다.");
+    }
+  };
+
+  const scrollToBottom = useCallback(() => {
+    if (chatBoxRef.current !== null) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [chatBoxRef])
+
+
+
   useEffect(() => {
     setMessageInput('')
   }, [channelId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages])
 
   useEffect(() => {
     const fetchChannel = async () => {
@@ -70,7 +124,6 @@ export default function ChannelMain() {
     fetchMessages();
   }, [channelId]);
 
-  const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
   const { openModal } = useModalStore(); // 모달 열기 함수 가져오기
 
   const [loading, setLoading] = useState(true); // 로딩 상태
@@ -78,15 +131,6 @@ export default function ChannelMain() {
 
 
 
-  // useToggle 훅 사용
-  const [toggleStates, toggleState] = useToggle({
-    isSidebarOpen: false, // 오른쪽 사이드바 토글
-    isAlarmOn: true, // 알림 상태 토글
-    isContactOpen: true, // 대화 상대 토글
-    isPhotoOpen: false, // 사진 파일 토글
-    isFileOpen: false, // 첨부 파일 토글
-    isSearchOpen: false, // 검색창 토글
-  });
 
   const handleSendMessage = async () => {
     if (!messageInput.trim()) {
@@ -118,8 +162,8 @@ export default function ChannelMain() {
         body: JSON.stringify(msg),
       });
 
-
       setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
+
       setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error("메시지 전송 실패:", error);
@@ -211,7 +255,6 @@ export default function ChannelMain() {
           setMessages((prevMessages) => {
             return [...prevMessages, newMessage];
           });
-          // TODO: 맨아래 스크롤
         } catch (error) {
           console.error("❌ 메시지 처리 중 에러:", error);
         }
@@ -227,22 +270,20 @@ export default function ChannelMain() {
     };
   }, [user?.id, channelId]); // 의존성 배열
 
-  useLayoutEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  }, [messages]); 
-  
+  // useLayoutEffect(() => {
+  //   if (chatBoxRef.current) {
+  //     chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+  //   }
+  // }, [messages]);
+
 
   return (
-    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
+    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-7xl">
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
         <div
-          className={`flex flex-col h-full transition-all duration-300 ${toggleStates.isSidebarOpen
-            ? "w-[78%] min-w-[300px]"
-            : "w-full min-w-[300px]"
-            }`}
+          // TODO: 스크롤 height 길이
+          className={`flex flex-col h-full transition-all duration-300 w-full min-w-[300px] max-h-[670px]`}
         >
           {/* 채팅 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
@@ -281,17 +322,22 @@ export default function ChannelMain() {
                   <div className="relative flex items-center ml-2">
                     <input
                       type="text"
-                      value={searchQuery}
+                      value={searchText}
                       placeholder="검색어를 입력하세요."
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => setSearchText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSearch();
+                        }
+                      }}
                       className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-md transition-all duration-300"
                       style={{ width: "200px" }}
                     />
                     {/* 입력 지우기 버튼 */}
-                    {searchQuery && (
+                    {searchText && (
                       <button
                         className="absolute right-2 text-gray-500 hover:text-gray-800 focus:outline-none"
-                        onClick={() => setSearchQuery("")}
+                        onClick={() => setSearchText("")}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -365,7 +411,7 @@ export default function ChannelMain() {
                     className="w-10 h-10 rounded-full"
                   />
                   {/* 보낸 사람 이름 */}
-                  {/* <div className="text-sm text-gray-500 mb-1">
+          {/* <div className="text-sm text-gray-500 mb-1">
                     {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
                   </div>
 
@@ -382,98 +428,100 @@ export default function ChannelMain() {
               ))
             )}
           </div> */}
-<div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50" ref={chatBoxRef}>
-  {loading ? (
-    <div>로딩 중...</div>
-  ) : messages.length === 0 ? (
-    <div>채팅 본문이 없습니다.</div>
-  ) : (
-    messages.map((message, index) => {
-      const isMyMessage = message.senderId === user?.id;
-      const isFirstMessageFromUser =
-        index === 0 || messages[index - 1]?.senderId !== message.senderId;
-      const isLastMessageFromSameUser =
-        index === messages.length - 1 || messages[index + 1]?.senderId !== message.senderId;
+          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50" ref={chatBoxRef}>
+            {loading ? (
+              <div>로딩 중...</div>
+            ) : messages.length === 0 ? (
+              <div>채팅 본문이 없습니다.</div>
+            ) : (
+              messages.map((message, index) => {
+                const isMyMessage = message.senderId === user?.id;
+                const isFirstMessageFromUser =
+                  index === 0 || messages[index - 1]?.senderId !== message.senderId;
+                const isLastMessageFromSameUser =
+                  index === messages.length - 1 || messages[index + 1]?.senderId !== message.senderId;
 
-      const currentDate = new Date(message.createdAt).toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        weekday: "long",
-      });
+                const currentDate = new Date(message.createdAt).toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  weekday: "long",
+                });
 
-      const previousDate =
-        index > 0
-          ? new Date(messages[index - 1]?.createdAt).toLocaleDateString("ko-KR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              weekday: "long",
-            })
-          : null;
+                const previousDate =
+                  index > 0
+                    ? new Date(messages[index - 1]?.createdAt).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      weekday: "long",
+                    })
+                    : null;
 
-      return (
-        <div key={message.id} className="flex flex-col mb-2">
-          {/* 날짜 표시 */}
-          {currentDate !== previousDate && (
-            <div className="flex justify-center items-center my-4">
-              <div className="bg-gray-200 text-gray-600 text-m py-1 px-4 rounded-full">
-                {currentDate}
-              </div>
-            </div>
-          )}
+                return (
+                  <div key={message.id}
+                    style={{
+                      backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
+                    }}
+                    className="flex flex-col mb-2" ref={(el) => (chatRefs.current[message.id] = el)}>
+                    {/* 날짜 표시 */}
+                    {currentDate !== previousDate && (
+                      <div className="flex justify-center items-center my-4">
+                        <div className="bg-gray-200 text-gray-600 text-m py-1 px-4 rounded-full">
+                          {currentDate}
+                        </div>
+                      </div>
+                    )}
 
-          {/* 메시지 내용 */}
-          <div
-            className={`flex items-end ${isMyMessage ? "justify-end" : "justify-start"} mb-1`}
-          >
-            {/* 상대방 메시지 프로필 & 이름 */}
-            {!isMyMessage && isFirstMessageFromUser && (
-              <div className="w-10 h-10 mr-2">
-                <img
-                  src={message.userProfile || "https://via.placeholder.com/50"}
-                  alt="Profile"
-                  className="w-full h-full rounded-full"
-                />
-              </div>
+                    {/* 메시지 내용 */}
+                    <div
+                      className={`flex items-end ${isMyMessage ? "justify-end" : "justify-start"} mb-1`}
+                    >
+                      {/* 상대방 메시지 프로필 & 이름 */}
+                      {!isMyMessage && isFirstMessageFromUser && (
+                        <div className="w-10 h-10 mr-2">
+                          <img
+                            src={message.userProfile || "https://via.placeholder.com/50"}
+                            alt="Profile"
+                            className="w-full h-full rounded-full"
+                          />
+                        </div>
+                      )}
+
+                      {/* 말풍선과 시간 */}
+                      <div className={`flex flex-col ${isMyMessage ? "items-end" : "items-start"}`}>
+                        {/* 상대방 이름 */}
+                        {!isMyMessage && isFirstMessageFromUser && (
+                          <div className="text-m text-gray-600 mb-1">{message.userName}</div>
+                        )}
+
+                        {/* 말풍선 */}
+                        <div className="relative">
+                          <div
+                            className={`p-3 rounded-lg shadow-md text-lg ${isMyMessage ? "bg-blue-100" : "bg-gray-100"
+                              } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
+                          >
+                            <p className="text-base lg:text-lg text-gray-800">{message.content}</p>
+                          </div>
+
+
+                          {/* 시간 표시 */}
+                          {isLastMessageFromSameUser && (
+                            <span
+                              className={`absolute text-m text-gray-400 ${isMyMessage ? "-left-16 bottom-0" : "right-[-70px] bottom-0" // 여백 조정
+                                }`}
+                            >
+                              {formatChatTime(message.createdAt)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
             )}
-
-            {/* 말풍선과 시간 */}
-            <div className={`flex flex-col ${isMyMessage ? "items-end" : "items-start"}`}>
-              {/* 상대방 이름 */}
-              {!isMyMessage && isFirstMessageFromUser && (
-                <div className="text-m text-gray-600 mb-1">{message.userName}</div>
-              )}
-
-              {/* 말풍선 */}
-              <div className="relative">
-                <div
-                  className={`p-3 rounded-lg shadow-md text-lg ${
-                    isMyMessage ? "bg-blue-100" : "bg-gray-100"
-                  } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
-                >
-                  <p className="text-base lg:text-lg text-gray-800">{message.content}</p>
-                </div>
-
-
-  {/* 시간 표시 */}
-  {isLastMessageFromSameUser && (
-    <span
-      className={`absolute text-m text-gray-400 ${
-        isMyMessage ? "-left-16 bottom-0" : "right-[-70px] bottom-0" // 여백 조정
-      }`}
-    >
-      {formatChatTime(message.createdAt)}
-    </span>
-  )}
-</div>
-            </div>
           </div>
-        </div>
-      );
-    })
-  )}
-</div>
 
 
 
