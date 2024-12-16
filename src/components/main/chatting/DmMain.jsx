@@ -265,38 +265,87 @@ export default function DmMain() {
 
 
         {/* DM 본문 */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 bg-gray-50" ref={chatBoxRef}>
-          {loading ? (
-            <div>로딩 중...</div>
-          ) : messages.length === 0 ? (
-            <div>메시지가 없습니다.</div>
-          ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-2 mb-3 ${message.senderId === user?.id
-                  ? "flex-row-reverse"
-                  : "flex-row"
-                  }`}
-              >
+        <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50" ref={chatBoxRef}>
+  {loading ? (
+    <div>로딩 중...</div>
+  ) : messages.length === 0 ? (
+    <div>채팅 본문이 없습니다.</div>
+  ) : (
+    messages.map((message, index) => {
+      const isMyMessage = message.senderId === user?.id;
+
+      // 이전 메시지와 비교
+      const previousMessage = index > 0 ? messages[index - 1] : null;
+      const isFirstMessageFromUser =
+        !previousMessage || previousMessage.senderId !== message.senderId;
+
+      // 시간 표시 조건
+      const showTime =
+        !previousMessage ||
+        new Date(previousMessage.createdAt).getMinutes() !==
+          new Date(message.createdAt).getMinutes();
+
+      return (
+        <div key={message.id} className="flex flex-col mb-2">
+          {/* 메시지 내용 */}
+          <div
+            className={`flex items-end ${
+              isMyMessage ? "justify-end" : "justify-start"
+            } mb-1`}
+          >
+            {/* 상대방 메시지 프로필 */}
+            {!isMyMessage && isFirstMessageFromUser && (
+              <div className="w-10 h-10 mr-2">
                 <img
-                    src={message.userProfile || "https://via.placeholder.com/50"}
-                    alt="Profile"
-                  className="w-10 h-10 rounded-full"
+                  src={message.userProfile || "https://via.placeholder.com/50"}
+                  alt="Profile"
+                  className="w-full h-full rounded-full"
                 />
-                <div
-                  className={`p-4 ${message.senderId === user?.id
-                    ? "bg-blue-100"
-                    : "bg-gray-100"
-                    } rounded-lg`}
-                >
-                  <p>{message.content}</p>
-                </div>
-                <span className="text-slate-400 self-end text-sm">{formatChatTime(message.createdAt)}</span>
               </div>
-            ))
-          )}
+            )}
+
+            {/* 말풍선과 시간 */}
+            <div className={`flex flex-col ${isMyMessage ? "items-end" : "items-start"}`}>
+              {/* 상대방 이름 */}
+              {!isMyMessage && isFirstMessageFromUser && (
+                <div className="text-xs text-gray-500 mb-1 ml-1">
+                  {message.userName || "알 수 없는 사용자"}
+                </div>
+              )}
+
+              {/* 말풍선 */}
+              <div className="relative flex items-center">
+                <div
+                  className={`p-3 rounded-lg shadow-md text-base ${
+                    isMyMessage ? "bg-blue-100" : "bg-gray-100"
+                  }`}
+                >
+                  <p className="text-sm lg:text-base text-gray-800">
+                    {message.content}
+                  </p>
+                </div>
+
+                {/* 시간 표시 */}
+                {showTime && (
+                  <span
+                    className={`text-xs text-gray-400 ${
+                      isMyMessage ? "ml-2 order-first" : "ml-2"
+                    }`}
+                  >
+                    {new Date(message.createdAt).toLocaleTimeString("ko-KR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
+      );
+    })
+  )}
+</div>
 
         {/* 입력창 */}
         <div className="flex-none px-6 py-4 bg-white border-t border-gray-200">
