@@ -307,6 +307,8 @@ export const removeProjectCollaborator = async (projectId, userId) => {
     const response = await axiosInstance.delete(
       `${PROJECT_COLLABORATOR_DELETE_URI}/${projectId}/${userId}`
     );
+
+    console.log("백엔드에서 나온 삭제 response.data : " + response.data);
     return response.data;
   } catch (error) {
     console.error("Error removing collaborator:", error);
