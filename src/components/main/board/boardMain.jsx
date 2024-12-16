@@ -10,7 +10,8 @@ import useModalStore from "../../../store/modalStore";
     내용 : BoardMain.jsx - 게시판 메인 홈 페이지 화면구현 (인기급상승 게시물, 자료실 레이아웃)
 
     수정 내역 : 
-    2024/11/28(목) - 김민희 : 
+    2024/12/13(금) - 김민희 : 게시판 화면 간격 안 맞는 거 수정
+
   */
 }
 
@@ -138,20 +139,14 @@ export default function BoardMain() {
                       <div className="user-details w-80">
                         <Link to="/antwork/board/view">
                           <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
-                            인기급상승 게시물 제목입니다. 회사 신입사원 식탐
-                            문제 지적해야할까요?
+                            어제 GPT 서비스 중단 이슈 &#40; 서버 부하 &#41
                           </h3>
                         </Link>
                         <p className="!mt-3 !text-[12px] line-clamp-2">
-                          인기급상승 게시물 내용입니다. 팀에 신입이 들어왔는데
-                          탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에
-                          가져와서 먹습니다 과자면 이해하는데 진짜 그거는 아닌
-                          것 같아서 작은거 아니고 큰 거입니다 근데 지적하면
-                          사람이 너무 치사해보일것같아서 고민하고 있었습니다
-                          어제 옆팀 사람이 조심스럽게 팀원이 그렇게 먹는거
-                          아냐고 물어보는데 할 말이 없었습니다 이거 제가
-                          말해야하는게 맞을까요? 물론 이거 하나가지고 식탐이라고
-                          할 수 없다면 할 말 없지만 단체 생활의 예의아닐까요?
+                        어제와 같은 GPT 서비스 중단 이슈는 중요한 문제입니다. 
+                        이를 해결하고 예방하기 위해 서버 부하 관리, 
+                        장애 복구 계획 Disaster Recovery Plan, 
+                        사용자 커뮤니케이션 방안을 체계적으로 마련해야 합니다.
                         </p>
                         <ul className="mt-4 flex gap-2">
                           <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
