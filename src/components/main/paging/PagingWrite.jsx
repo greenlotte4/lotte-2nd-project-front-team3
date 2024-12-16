@@ -190,18 +190,16 @@ const PagingWrite = () => {
         try {
           // 페이지 생성 요청
           const pageData = {
-            title: "",
+            title: "제목 없는 페이지", // 기본 제목 설정
             content: "",
             owner: uid,
             ownerName: name,
             ownerImage: profile,
             collaborators: [
               {
-                // 배열로 변경
                 uid: uid,
                 type: "OWNER",
                 isOwner: true,
-                // user 정보는 서버에서 uid로 찾서 설정됨
               },
             ],
           };
@@ -212,6 +210,7 @@ const PagingWrite = () => {
           const newId = response.data;
           setId(newId);
           setSearchParams({ id: newId });
+          setTitle("제목 없는 페이지"); // 초기 제목 설정
           await initializeEditor();
         } catch (error) {
           console.error("Error creating new page:", error);
@@ -260,10 +259,10 @@ const PagingWrite = () => {
     }
   }, []);
 
-  // 제목 변경 핸들러
+  // 제목 변경 핸들러 수정
   const handleTitleChange = async (e) => {
     console.log("handleTitleChange - 제목 변경 처리 시작");
-    const newTitle = e.target.value;
+    const newTitle = e.target.value; // 사용자 입력 그대로 사용
     setTitle(newTitle);
 
     try {
@@ -327,24 +326,9 @@ const PagingWrite = () => {
     // 새로운 이모지 추가
     const newTitle = `${emojiObject.emoji} ${titleWithoutEmoji}`;
 
-    setTitle(newTitle);
+    // handleTitleChange를 호출하여 제목 변경 및 브로드캐스트 처리
+    handleTitleChange({ target: { value: newTitle } });
     setShowEmojiPicker(false);
-
-    // WebSocket을 통해 제목 변경사항 브로드캐스트
-    if (stompClientRef.current?.active) {
-      const changes = {
-        _id: id,
-        title: newTitle,
-        timestamp: Date.now(),
-        componentId: componentId,
-        uid: uid,
-      };
-
-      stompClientRef.current.publish({
-        destination: `/app/page/${id}`,
-        body: JSON.stringify(changes),
-      });
-    }
   };
 
   // 협업자 목록 가져오기
