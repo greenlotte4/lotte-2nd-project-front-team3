@@ -22,7 +22,7 @@ export default function LandingFooter() {
               alt="Antwork footer logo"
             />
             <span>App Version:</span> <br />
-            <span>3조-0.1.1-SNAPSHOT</span>
+            <span>3조-0.1.2-SNAPSHOT</span>
           </Link>
         </div>
 

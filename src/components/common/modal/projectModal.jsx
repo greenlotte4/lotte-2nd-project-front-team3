@@ -63,6 +63,25 @@ export default function ProjectModal({
     fetchCollaborators();
   }, [isOpen]);
 
+  // 사용자 상태 확인
+  const isUserSelected = (userId) => {
+    const isCollaborator = collaborators.some(
+      (collaborator) => collaborator.id === userId
+    );
+
+    const isSelected = selectedUsers.some((selected) => selected.id === userId);
+
+    const isOwner = collaborators.some(
+      (collaborator) => collaborator.id === userId && collaborator.owner
+    );
+
+    return {
+      isOwner,
+      isCollaborator,
+      isSelected,
+    };
+  };
+
   // 작업담당자 선택 핸들러
   const handleSelectCollaborator = (collaborator) => {
     if (!selectedCollaborators.some((c) => c.id === collaborator.id)) {
@@ -785,32 +804,52 @@ export default function ProjectModal({
                             <ul className="ml-6 mt-2 border-l-2 border-gray-300 pl-2">
                               {department.users &&
                               department.users.length > 0 ? (
-                                department.users.map((user) => (
-                                  <li
-                                    key={user.id}
-                                    className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
-                                  >
-                                    <div className="flex items-center space-x-4">
-                                      <span className="text-gray-800 font-medium">
-                                        {user.position}
-                                      </span>
-                                      <span className="text-gray-800">
-                                        {user.name}
-                                      </span>
-                                    </div>
+                                department.users.map((user) => {
+                                  const {
+                                    isOwner,
+                                    isCollaborator,
+                                    isSelected,
+                                  } = isUserSelected(user.id);
 
-                                    {!selectedUsers.some(
-                                      (selected) => selected.id === user.id
-                                    ) && (
-                                      <button
-                                        onClick={() => handleInvite(user)}
-                                        className="text-blue-500 hover:underline"
-                                      >
-                                        추가
-                                      </button>
-                                    )}
-                                  </li>
-                                ))
+                                  return (
+                                    <li
+                                      key={user.id}
+                                      className="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
+                                    >
+                                      <div className="flex items-center space-x-4">
+                                        <span className="text-gray-800 font-medium">
+                                          {user.position}
+                                        </span>
+                                        <span className="text-gray-800">
+                                          {user.name}
+                                        </span>
+                                      </div>
+
+                                      <span>
+                                        {isOwner ? (
+                                          <span className="text-green-500 text-sm font-medium">
+                                            생성자
+                                          </span>
+                                        ) : isCollaborator ? (
+                                          <span className="text-gray-400 text-sm">
+                                            협업자
+                                          </span>
+                                        ) : isSelected ? (
+                                          <span className="text-blue-400 text-sm">
+                                            선택됨
+                                          </span>
+                                        ) : (
+                                          <button
+                                            onClick={() => handleInvite(user)}
+                                            className="text-blue-500 hover:text-blue-700"
+                                          >
+                                            추가
+                                          </button>
+                                        )}
+                                      </span>
+                                    </li>
+                                  );
+                                })
                               ) : (
                                 <li className="text-gray-500 ml-4">
                                   이 부서에 사용자가 없습니다.
@@ -836,7 +875,7 @@ export default function ProjectModal({
                       {collaborators.map((user) => {
                         console.log("User Data:", user);
                         console.log(
-                          `User ID: ${user.id}, isOwner: ${user.isOwner}`
+                          `User ID: ${user.id}, isOwner: ${user.owner}`
                         );
                         const isOwner = user.owner === true;
                         return (
