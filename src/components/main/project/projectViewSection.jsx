@@ -438,7 +438,31 @@ export default function ProjectViewSection() {
     console.log("stateId : " + stateId);
     if (
       !window.confirm(
-        "정말로 이 상태를 삭제하시겠습니까? 모든 작업��� 함께 삭제됩니다."
+        "정말로 이 상태를 삭제하시겠습니까? 모든 작업들이 함께 삭제됩니다."
+      )
+    )
+      return;
+
+    try {
+      await deleteProjectState(stateId);
+
+      // 삭제된 상태를 상태 목록에서 제거
+      setStates((prevStates) =>
+        prevStates.filter((state) => state.id !== stateId)
+      );
+
+      alert("상태가 성공적으로 삭제되었습니다!");
+    } catch (error) {
+      alert("상태 삭제 중 문제가 발생했습니다.");
+    }
+  };
+
+  // 프로젝트 삭제 핸들러
+  const handleDeleteState = async (stateId) => {
+    console.log("stateId : " + stateId);
+    if (
+      !window.confirm(
+        "정말로 이 상태를 삭제하시겠습니까? 모든 작업들이 함께 삭제됩니다."
       )
     )
       return;

@@ -130,7 +130,7 @@ export default function ProjectModal({
     console.log("projectId:", projectId);
 
     try {
-      await addProjectCollaborators(projectId, userIds);
+      await addProjectCollaborators(projectId, userIds, user.id);
       alert("협업자가 성공적으로 초대되었습니다!");
 
       // 협업자 목록 다시 불러오기
