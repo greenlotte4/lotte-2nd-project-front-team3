@@ -137,8 +137,8 @@ const renderComment = (comment, isNested = false) => (
 );
 
 return (
-    <div className="mt-8 p-4 bg-white border-t border-slate-200">
-    <h3 className="text-xl font-semibold mb-4">
+    <div className="mt-8 pt-4 pb-4 bg-white border-t border-slate-200">
+    <h3 className="text-lg font-semibold mb-[-4]">
         댓글 {comments.length > 0 && `(${comments.length})`}
     </h3>
     

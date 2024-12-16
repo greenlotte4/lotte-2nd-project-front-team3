@@ -89,26 +89,9 @@ export const getBoardList = async () => {
     }
 };
 
-
-
-// 게시글 상세 조회 
-// export const getBoardById = async (id) => {
-//     try {
-//         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`, {
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             }
-//         });
-//         console.log('게시글 데이터:', response.data);
-//         return response.data;
-//     } catch (error) {
-//         console.error('게시글 조회 에러:', error);
-//         throw error;
-//     }
-// };
-
 // 게시글 상세 조회 
 export const getBoardById = async (id) => {
+    
     try {
         const { data } = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
         console.log('게시글 데이터:', data);
@@ -134,30 +117,72 @@ export const getBoardById = async (id) => {
 
 
 
-// 게시글 글 수정
-    export const updateBoard = async (uid, data) => {
+//게시글 글 수정
+// 게시글 수정 API
+export const updateBoardApi = async (uid, data) => {
+    console.log("게시글 수정 API 영역 시작");
     try {
         console.log('요청 URL : ', `${BOARD_UPDATE_URI}/${uid}`);
         console.log('요청 데이터 : ', data);
 
         const response = await axiosInstance.put(`${BOARD_UPDATE_URI}/${uid}`, data, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
 
-        if (response.status !== 200 && response.status !== 201) {
-        throw new Error('게시글 수정에 실패했습니다. 다시 시도해주세요.');
+        if (![200, 201].includes(response.status)) {
+            throw new Error('게시글 수정에 실패했습니다. 다시 시도해주세요.');
         }
 
-        console.log('응답 데이터 : ', response);
+        console.log('응답 데이터 : ', response.data);
         return response.data;
     } catch (error) {
         console.error('게시글 수정 에러 상세 : ', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data
         });
         throw error;
     }
-    };
+};
+
+
+// // 게시글 수정 API 호출
+// export const updateBoard = async (uid, data) => {
+//     console.log("게시글 수정 API 호출 시작");
+
+//     try {
+//         // 요청 URL 및 데이터 확인
+//         console.log("요청 URL:", `${BOARD_UPDATE_URI}/${uid}`);
+//         console.log("전송 데이터 (JSON):", JSON.stringify(data, null, 2));
+
+//         // Axios 요청
+//         const response = await axiosInstance.put(
+//             `${BOARD_UPDATE_URI}/${uid}`,
+//             data, // JSON 형식으로 전송
+//             {
+//                 headers: {
+//                     "Content-Type": "application/json", // JSON 데이터 전송
+//                 },
+//             }
+//         );
+
+//         // 상태 코드 확인 및 응답 처리
+//         if (response.status !== 200 && response.status !== 201) {
+//             console.error("서버 응답 에러: ", response);
+//             throw new Error("게시글 수정에 실패했습니다. 다시 시도해주세요.");
+//         }
+
+//         console.log("게시글 수정 API 응답:", response.data);
+//         return response.data;
+//     } catch (error) {
+//         // 에러 발생 시 상세 로그 출력
+//         console.error("게시글 수정 중 오류 발생:", {
+//             status: error.response?.status || "알 수 없음",
+//             statusText: error.response?.statusText || "알 수 없음",
+//             data: error.response?.data || "응답 없음",
+//         });
+//         throw error; // 상위 호출 코드로 에러 전달
+//     }
+// };
