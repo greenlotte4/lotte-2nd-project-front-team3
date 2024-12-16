@@ -14,10 +14,15 @@ const axiosInstance = axios.create({
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().accessToken; // Zustand에서 토큰 가져오기
+    const token = useAuthStore.getState().accessToken;
+    const userId = useAuthStore.getState().userId; // Zustand에서 userId 가져오기
     if (token) {
       console.log("Access Token 포함:", token);
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (userId) {
+      console.log("User ID 포함:", userId);
+      config.headers.userId = userId; // userId를 추가
     }
     return config;
   },
