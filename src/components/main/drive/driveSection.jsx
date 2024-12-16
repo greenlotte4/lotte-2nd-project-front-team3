@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
+import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
+
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import {
@@ -454,29 +458,18 @@ export default function DriveSection() {
     </div>
   );
 
-  const handleDragStart = (event, item) => {
-    event.dataTransfer.setData("draggedItem", JSON.stringify(item));
-  };
+  //   /////// 폴더이름 조회
+  // const FolderName = async (driveFolderNameId) => {
+  //   try {
+  //     const response = await driveFolderFind(driveFolderNameId);
+  //     console.log("response: ", response);
 
-  const handleDrop = async (event, targetFolder) => {
-    event.preventDefault();
-
-    const draggedItem = JSON.parse(event.dataTransfer.getData("draggedItem"));
-    console.log("Dragged Item:", draggedItem);
-    console.log("Dropped On:", targetFolder);
-
-    if (draggedItem.driveFolderId) {
-      // 드래그된 항목이 폴더인 경우
-      await moveFolder(draggedItem.driveFolderId, targetFolder.driveFolderId);
-    } else if (draggedItem.driveFileId) {
-      // 드래그된 항목이 파일인 경우
-      await moveFile(draggedItem.driveFileId, targetFolder.driveFolderId);
-    }
-
-    // 이동 후 데이터 다시 로드
-    fetchFolderData(targetFolder.driveFolderId || null);
-  };
-
+  //     // 폴더 이름과 ID를 함께 모달로 전달
+  //     openModal("name", { id: driveFolderNameId, name: response.data });
+  //   } catch (err) {
+  //     console.error("에러 발생: ", err);
+  //   }
+  // };
   return (
     <>
       {isLoading ? <LoadingAnimation /> : null}
@@ -691,14 +684,7 @@ export default function DriveSection() {
                             <td>
                               <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
                             </td>
-                            <td
-                              key={folder.driveFolderId}
-                              draggable
-                              onDragStart={(e) => handleDragStart(e, folder)}
-                              onDragOver={(e) => e.preventDefault()}
-                              onDrop={(e) => handleDrop(e, folder)}
-                              className=""
-                            >
+                            <td>
                               <Link
                                 to={`/antwork/drive/folder/${folder.driveFolderId}`}
                               >
