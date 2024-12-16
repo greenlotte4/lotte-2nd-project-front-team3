@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getProjects } from "../../../api/projectAPI";
+import { deleteProject, getProjects } from "../../../api/projectAPI";
 import useAuthStore from "../../../store/AuthStore";
 
 export default function ProjectMainSection() {
@@ -22,6 +22,30 @@ export default function ProjectMainSection() {
 
     fetchProjects(); // 컴포넌트 마운트 시 데이터 가져오기
   }, [user]); // UID 변경 시 데이터 다시 가져오기
+
+  // 프로젝트 삭제 핸들러
+  const handleDeleteProject = async (projectId) => {
+    console.log("projectId : " + projectId);
+    if (
+      !window.confirm(
+        "정말로 이 프로젝트를 삭제하시겠습니까? 이 프로젝트 관련한 모든 정보들이 함께 삭제됩니다."
+      )
+    )
+      return;
+
+    try {
+      await deleteProject(projectId);
+
+      // 삭제된 프로젝트를 프로젝트 목록에서 제거
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project.id !== projectId)
+      );
+
+      alert("프로젝트가 성공적으로 삭제되었습니다!");
+    } catch (error) {
+      alert("프로젝트 삭제 중 문제가 발생했습니다.");
+    }
+  };
 
   return (
     <>
@@ -61,7 +85,10 @@ export default function ProjectMainSection() {
                         </span>
                       </div>
                     </div>
-                    <button className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none">
+                    <button
+                      className="w-10 h-10 rounded-lg overflow-hidden bg-transparent border-none"
+                      onClick={() => handleDeleteProject(project.id)}
+                    >
                       <img
                         src="/images/Antwork/project/project_delete.png"
                         alt="Delete"

@@ -57,6 +57,7 @@ export default function Header({ onToggleAside }) {
       stompClientRef.current = client;
 
       client.subscribe(`/topic/notifications/${user.id}`, (message) => {
+        console.log("✅ WebSocket 구독 성공");
         const notification = JSON.parse(message.body);
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
