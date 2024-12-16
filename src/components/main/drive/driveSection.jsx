@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 
-
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useModalStore from "../../../store/modalStore";
 import {
@@ -977,9 +976,12 @@ export default function DriveSection() {
             </li>
             <li
               onClick={() => {
-                console.log("asdf");
+                console.log("폴더 공유하기");
                 setMenuVisible(false);
-                openModal("c_share");
+                openModal("c_share", {
+                  id: selectedDriveIds[0],
+                  fileid: selectedDriveFileIds[0],
+                });
               }}
               className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
             >

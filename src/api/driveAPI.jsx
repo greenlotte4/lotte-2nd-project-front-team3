@@ -1,5 +1,8 @@
 import axios from "axios";
 import {
+  DRIVE_COLLABORATOR_DELETE,
+  DRIVE_COLLABORATOR_INSERT,
+  DRIVE_COLLABORATOR_SELECT,
   DRIVE_FILES_INSERT_URI,
   DRIVE_FOLDER_FILE_INSERT_URI,
   DRIVE_FOLDER_INSERT_URI,
@@ -190,5 +193,60 @@ export const ToMyTrash = async (driveFolderId, selectedDriveFileIds) => {
     return response.data;
   } catch (err) {
     console.log(err);
+  }
+};
+
+// 폴더별 협업자 조회
+export const selectDriveCollaborators = async (driveFolderNameId) => {
+  console.log("백엔드로 들어오는 협업자조회 projectId :" + driveFolderNameId);
+  try {
+    const response = await axios.get(
+      `${DRIVE_COLLABORATOR_SELECT}/${driveFolderNameId}`
+    );
+
+    console.log("백엔드에서 나온 response.data : " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching project collaborators:", error);
+    throw error;
+  }
+};
+
+// 폴더별 협업자 초대
+export const addDriveCollaborators = async (driveFolderNameId, userIds) => {
+  console.log(
+    "백엔드로 가는 projectId, userIds : " + driveFolderNameId,
+    userIds
+  );
+
+  try {
+    const response = await axios.post(
+      `${DRIVE_COLLABORATOR_INSERT}/${driveFolderNameId}`,
+      userIds
+    );
+
+    console.log("response.data : " + response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("협업자 추가 실패:", error);
+    throw error;
+  }
+};
+
+// 폴더별 협업자 삭제
+export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
+  console.log(
+    "백엔드로 가는 협업자 삭제 projectId, userId : " + driveFolderNameId,
+    userId
+  );
+  try {
+    const response = await axios.delete(
+      `${DRIVE_COLLABORATOR_DELETE}/${driveFolderNameId}/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error removing collaborator:", error);
+    throw error;
   }
 };
