@@ -231,7 +231,8 @@ export default function ChannelMain() {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages]); 
+  
 
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden">
@@ -342,7 +343,7 @@ export default function ChannelMain() {
             </div>
           </div>
 
-          {/* 채팅 본문 */}
+          {/* 채팅 본문
           <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50 bg-white" ref={chatBoxRef}>
             {loading ? (
               <div>로딩 중...</div> // 로딩 중일 때 표시할 내용
@@ -364,14 +365,14 @@ export default function ChannelMain() {
                     className="w-10 h-10 rounded-full"
                   />
                   {/* 보낸 사람 이름 */}
-                  <div className="text-sm text-gray-500 mb-1">
+                  {/* <div className="text-sm text-gray-500 mb-1">
                     {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
                   </div>
 
                   <div
                     className={`p-4 ${message.senderId === user?.id
-                      ? "bg-blue-100"
-                      : "bg-gray-100"
+                      ? "bg-blue-100 shadow-md"
+                      : "bg-gray-100 shadow-md"
                       } rounded-lg`}
                   >
                     <p>{message.content}</p>
@@ -380,7 +381,102 @@ export default function ChannelMain() {
                 </div>
               ))
             )}
+          </div> */}
+<div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50" ref={chatBoxRef}>
+  {loading ? (
+    <div>로딩 중...</div>
+  ) : messages.length === 0 ? (
+    <div>채팅 본문이 없습니다.</div>
+  ) : (
+    messages.map((message, index) => {
+      const isMyMessage = message.senderId === user?.id;
+      const isFirstMessageFromUser =
+        index === 0 || messages[index - 1]?.senderId !== message.senderId;
+      const isLastMessageFromSameUser =
+        index === messages.length - 1 || messages[index + 1]?.senderId !== message.senderId;
+
+      const currentDate = new Date(message.createdAt).toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+      });
+
+      const previousDate =
+        index > 0
+          ? new Date(messages[index - 1]?.createdAt).toLocaleDateString("ko-KR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              weekday: "long",
+            })
+          : null;
+
+      return (
+        <div key={message.id} className="flex flex-col mb-2">
+          {/* 날짜 표시 */}
+          {currentDate !== previousDate && (
+            <div className="flex justify-center items-center my-4">
+              <div className="bg-gray-200 text-gray-600 text-m py-1 px-4 rounded-full">
+                {currentDate}
+              </div>
+            </div>
+          )}
+
+          {/* 메시지 내용 */}
+          <div
+            className={`flex items-end ${isMyMessage ? "justify-end" : "justify-start"} mb-1`}
+          >
+            {/* 상대방 메시지 프로필 & 이름 */}
+            {!isMyMessage && isFirstMessageFromUser && (
+              <div className="w-10 h-10 mr-2">
+                <img
+                  src={message.userProfile || "https://via.placeholder.com/50"}
+                  alt="Profile"
+                  className="w-full h-full rounded-full"
+                />
+              </div>
+            )}
+
+            {/* 말풍선과 시간 */}
+            <div className={`flex flex-col ${isMyMessage ? "items-end" : "items-start"}`}>
+              {/* 상대방 이름 */}
+              {!isMyMessage && isFirstMessageFromUser && (
+                <div className="text-m text-gray-600 mb-1">{message.userName}</div>
+              )}
+
+              {/* 말풍선 */}
+              <div className="relative">
+                <div
+                  className={`p-3 rounded-lg shadow-md text-lg ${
+                    isMyMessage ? "bg-blue-100" : "bg-gray-100"
+                  } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
+                >
+                  <p className="text-base lg:text-lg text-gray-800">{message.content}</p>
+                </div>
+
+
+  {/* 시간 표시 */}
+  {isLastMessageFromSameUser && (
+    <span
+      className={`absolute text-m text-gray-400 ${
+        isMyMessage ? "-left-16 bottom-0" : "right-[-70px] bottom-0" // 여백 조정
+      }`}
+    >
+      {formatChatTime(message.createdAt)}
+    </span>
+  )}
+</div>
+            </div>
           </div>
+        </div>
+      );
+    })
+  )}
+</div>
+
+
+
 
           {/* 입력창 */}
           <div className="flex-none px-6 py-4 bg-white border-t border-gray-200 rounded-b-3xl">
