@@ -62,6 +62,7 @@ import ApprovalVacationPage from "@/pages/Main/approval/approvalVacationPage";
 import ApprovalTripPage from "@/pages/Main/approval/approvalTripPage";
 import TemplateCreatePage from "@/pages/Main/Paging/TemplateCreatePage";
 import SettingCalendarPage from "@/pages/Main/setting/settingCalendarPage";
+import AdminAccessPage from "@/pages/Main/Admin/adminAccessPage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -86,6 +87,7 @@ const router = createBrowserRouter([
   { path: "/antwork/admin/notification", element: <AdminNotificationPage /> }, // 2024/12/06(화) 최준혁 - AdminPopupPage 추가
   { path: "/antwork/admin/attendance", element: <AdminAttendancePage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
   { path: "/antwork/admin/approval", element: <AdminApprovalPage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
+  { path: "/antwork/admin/access", element: <AdminAccessPage /> }, // 2024/12/16(월) 최준혁 - AdminAccessPage 추가
 
   // 메인 페이지 (Antwork)
   { path: "/antwork", element: <MainPage /> }, // Antwork 메인

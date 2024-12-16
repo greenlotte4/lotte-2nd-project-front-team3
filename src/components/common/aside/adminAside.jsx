@@ -189,7 +189,7 @@ export default function AdminAside({ asideVisible }) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/member">
+                  <Link to="/antwork/admin/access">
                     📄&nbsp;&nbsp;멤버접근로그
                   </Link>
                 </li>

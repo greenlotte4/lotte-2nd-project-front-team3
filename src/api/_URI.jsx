@@ -49,6 +49,9 @@ export const USER_VERIFY_EMAIL_URI = `${API_SERVER_HOST}/email/verify`; // 인�
 export const USER_VERIFY_CHECK_EMAIL_URI = `${API_SERVER_HOST}/email/check-verification`; // 인증 요청
 export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 이메일 발송
 
+// access
+export const ACCESS_SELECT_URI = `${API_SERVER_HOST}/logs/search`; // 로그 SELECT
+
 // company
 export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
 
