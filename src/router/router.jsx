@@ -61,6 +61,7 @@ import AdminApprovalPage from "@/pages/Main/Admin/adminApprovalPage";
 import ApprovalVacationPage from "@/pages/Main/approval/approvalVacationPage";
 import ApprovalTripPage from "@/pages/Main/approval/approvalTripPage";
 import TemplateCreatePage from "@/pages/Main/Paging/TemplateCreatePage";
+import SettingCalendarPage from "@/pages/Main/setting/settingCalendarPage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -94,6 +95,7 @@ const router = createBrowserRouter([
   { path: "/antWork/chatting/dm/:id", element: <DmChattingPage /> }, // Antwork 채팅 dm
 
   { path: "/antwork/setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 설정
+  { path: "/antwork/setting/calendar", element: <SettingCalendarPage /> }, // Antwork 설정
   { path: "/antwork/setting", element: <SettingMainPage /> }, // Antwork 설정
 
   { path: "/antwork/drive", element: <DrivePage /> }, // antwork 페이지

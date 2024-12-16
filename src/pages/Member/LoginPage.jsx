@@ -2,14 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/userAPI";
 import axiosInstance from "./../../utils/axiosInstance";
+import FindIdModal from "@/components/common/modal/login/findIdModal";
+import FindPassModal from "@/components/common/modal/login/findPassModal";
 
 export default function LoginPage() {
   const [uid, setUid] = useState(""); // UID 필드로 변경
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // 자동 로그인 여부
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [passIsOpen, setPassIsOpen] = useState(false);
+  const openSet = () => {
+    console.log(isOpen);
+    setIsOpen(true);
+  };
+  const openSetPass = () => {
+    console.log(isOpen);
+    setPassIsOpen(true);
+  };
 
+  const navigate = useNavigate();
   // useEffect(() => {
   //   // 로컬 또는 세션 스토리지에서 액세스 토큰 가져오기
   //   const token = getAccessToken();
@@ -95,10 +107,7 @@ export default function LoginPage() {
               />
 
               {error && (
-                <div
-                  className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg animate-pulseflex items-center space-x-3 flex
-  "
-                >
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r-lg animate-pulseflex items-center space-x-3 flex">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-6 text-red-500"
@@ -125,27 +134,25 @@ export default function LoginPage() {
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-offset-2 border-gray-300 cursor-pointer transition duration-200 ease-in-out custom-checkbox ml-[20px]
-                "
+                  className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-offset-2 border-gray-300 cursor-pointer transition duration-200 ease-in-out custom-checkbox ml-[20px]"
                 />
                 <label
                   htmlFor="rememberMe"
-                  className="text-sm font-medium text-gray-700 select-none cursor-pointer hover:text-blue-600 transition duration-200
-    "
+                  className="text-sm font-medium text-gray-700 select-none cursor-pointer hover:text-blue-600 transition duration-200"
                 >
                   &nbsp; 자동 로그인
                 </label>
                 <button
                   type="button"
-                  className="ml-[20px] w-[80px] bg-[#eceef1] text-black py-3 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95
-  "
+                  className="ml-[20px] w-[80px] bg-[#eceef1] text-black py-3 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95"
+                  onClick={() => openSet()}
                 >
                   아이디 찾기
                 </button>
                 <button
                   type="button"
-                  className="ml-[20px] w-[90px] bg-[#eceef1] text-black py-3 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95
-  "
+                  className="ml-[20px] w-[90px] bg-[#eceef1] text-black py-3 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-1 active:scale-95"
+                  onClick={() => openSetPass()}
                 >
                   비밀번호 찾기
                 </button>
@@ -154,6 +161,8 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      <FindIdModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <FindPassModal isOpen={passIsOpen} setIsOpen={setPassIsOpen} />
     </div>
   );
 }

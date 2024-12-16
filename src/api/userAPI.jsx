@@ -6,6 +6,7 @@ import {
   USER_CEO_URI,
   USER_CHECK_DUPLICATE_ID_URI,
   USER_DETAILS_URI,
+  USER_FINDBYEMAIL_URI,
   USER_GET_ALL_URI,
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
@@ -15,6 +16,7 @@ import {
   USER_LOGOUT_URI,
   USER_REFRESH_URI,
   USER_REGISTER_URI,
+  USER_SEARCHUSER_URI,
   USER_SELECT_URI,
   USER_SEND_EMAIL_URI,
   USER_UPDATEIMG_URI,
@@ -143,6 +145,7 @@ export const logoutUser = async () => {
 
 // 이메일 발송
 export const sendUserEmail = async (data) => {
+  console.log(data);
   try {
     const response = await axios.post(`${USER_SEND_EMAIL_URI}`, data);
     console.log("이메일 전송 성공:", response.data);
@@ -343,6 +346,43 @@ export const fetchUsersByCompanyAndPosition = async (companyId, position) => {
       params: {
         companyId: companyId,
         position: position,
+      },
+    });
+    return response.data; // 필터링된 사용자 목록 반환
+  } catch (error) {
+    console.error("Error fetching users by company and position:", error);
+
+    throw error;
+  }
+};
+
+// 유저 아이디 찾기
+export const findIdByEmail = async (info, email, type) => {
+  console.log("이름?" + info + "메일?" + email + "타입?" + type);
+  try {
+    const response = await axios.get(`${USER_FINDBYEMAIL_URI}`, {
+      params: {
+        info: info,
+        email: email,
+        type: type,
+      },
+    });
+    return response.data; // 필터링된 사용자 목록 반환
+  } catch (error) {
+    console.error("Error fetching users by company and position:", error);
+
+    throw error;
+  }
+};
+
+// 유저 아이디 찾기
+export const searchUser = async (formData, company) => {
+  try {
+    const response = await axios.get(`${USER_SEARCHUSER_URI}`, {
+      params: {
+        type: formData.get("type"),
+        keyword: formData.get("keyword"),
+        company: company,
       },
     });
     return response.data; // 필터링된 사용자 목록 반환

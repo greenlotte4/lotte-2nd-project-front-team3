@@ -70,7 +70,7 @@ export default function SettinngAside({ asideVisible }) {
             {toggles.organizationalManagement && (
               <ol>
                 <li>
-                  <Link to="/admin/organizational-design">
+                  <Link to="/antwork/setting/calendar">
                     🗓️&nbsp;&nbsp;캘린더 설정
                   </Link>
                 </li>
