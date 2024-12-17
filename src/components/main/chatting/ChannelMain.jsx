@@ -163,7 +163,6 @@ export default function ChannelMain() {
       });
 
       setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
-
       setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error("메시지 전송 실패:", error);
@@ -270,14 +269,8 @@ export default function ChannelMain() {
     };
   }, [user?.id, channelId]); // 의존성 배열
 
-  // useLayoutEffect(() => {
-  //   if (chatBoxRef.current) {
-  //     chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-  //   }
-  // }, [messages]);
-
-
   return (
+    //     <div className="w-full max-w-9xl mx-auto px-6 py-12 space-y-8 bg-white min-h-screen">
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-7xl">
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
@@ -389,45 +382,6 @@ export default function ChannelMain() {
             </div>
           </div>
 
-          {/* 채팅 본문
-          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50 bg-white" ref={chatBoxRef}>
-            {loading ? (
-              <div>로딩 중...</div> // 로딩 중일 때 표시할 내용
-            ) : messages.length === 0 ? (
-              <div>채팅 본문이 없습니다.</div>
-            ) : (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-2 mb-3 ${message.senderId === user?.id
-                    ? "flex-row-reverse"
-                    : "flex-row"
-                    }`}
-                >
-
-                  <img
-                    src={message.userProfile || "https://via.placeholder.com/50"}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  {/* 보낸 사람 이름 */}
-          {/* <div className="text-sm text-gray-500 mb-1">
-                    {message.senderId !== user?.id && (message.userName || "알 수 없는 사용자")}
-                  </div>
-
-                  <div
-                    className={`p-4 ${message.senderId === user?.id
-                      ? "bg-blue-100 shadow-md"
-                      : "bg-gray-100 shadow-md"
-                      } rounded-lg`}
-                  >
-                    <p>{message.content}</p>
-                  </div>
-                  <span className="text-slate-400 self-end text-sm">{formatChatTime(message.createdAt)}</span>
-                </div>
-              ))
-            )}
-          </div> */}
           <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50" ref={chatBoxRef}>
             {loading ? (
               <div>로딩 중...</div>
@@ -532,7 +486,11 @@ export default function ChannelMain() {
               <input
                 type="text"
                 disabled={!isMyChannel}
-                placeholder="메시지를 입력하세요."
+                placeholder={
+                  isMyChannel
+                    ? "메시지를 입력하세요."
+                    : "💡채널에 참여하면 바로 메시지를 보낼 수 있습니다. '참여' 버튼을 눌러 함께 대화해보세요! "
+                }
                 className="flex-1 border border-gray-300 rounded-full px-6 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}

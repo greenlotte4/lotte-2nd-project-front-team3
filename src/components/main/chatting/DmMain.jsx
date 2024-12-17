@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getDmMessages, sendDmMessage } from "../../../api/chattingAPI";
+import { getDmList, getDmMessages, sendDmMessage } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
 import formatChatTime from "@/utils/chatTime";
@@ -16,9 +16,12 @@ export default function DmMain() {
   const user = useAuthStore((state) => state.user);
   const chatBoxRef = useRef(null); // 채팅창 Ref  
   const stompClientRef = useRef(null)
-  const { userId } = useAuthStore((state) => state);
+  // const user = useAuthStore((state) => state.user);
 
-    const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
+  const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
+  const [highlightedId, setHighlightedId] = useState(null);
+  const chatRefs = useRef([]);
+
 
  // useToggle 훅 사용
  const [toggleStates, toggleState] = useToggle({
@@ -31,10 +34,20 @@ export default function DmMain() {
 });
 
 
+  const scrollToBottom = useCallback(() => {
+    if (chatBoxRef.current !== null) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [chatBoxRef])
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages])
+
   useEffect(() => {
     const fetchDm = async () => {
       try {
-        const dm = await getDm(dmId);
+        const dm = await getDmList(user?.id);
         setDmData(dm);
       } catch (error) {
         console.error(error);
@@ -66,10 +79,12 @@ export default function DmMain() {
     const newMessage = {
       content: messageInput.trim(),
       senderId: user?.id,
-      dmName: name,
+      userName: user?.name,
       dmId,
       createdAt: new Date()
     };
+
+    console.log("🚀 전송하는 메시지:", newMessage);
 
     try {
       const result = await sendDmMessage(newMessage);
@@ -77,6 +92,7 @@ export default function DmMain() {
       const msg = {
         id: result.data,
         senderId: user?.id,
+        userName: user?.name,
         content: messageInput.trim(),
         createdAt: new Date()
       };
@@ -157,14 +173,11 @@ export default function DmMain() {
 
 
   return (
-    <div className="w-full rounded-3xl shadow-md overflow-hidden">
+    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-7xl">
       <div className="flex flex-col h-full">
-    
-      <div
-          className={`flex flex-col h-full transition-all duration-300 ${toggleStates.isSidebarOpen
-            ? "w-[78%] min-w-[300px]"
-            : "w-full min-w-[300px]"
-            }`}
+        <div
+          // TODO: 스크롤 height 길이
+          className={`flex flex-col h-full transition-all duration-300 w-full min-w-[300px] max-h-[670px]`}
         >
         {/* DM 헤더 */}
         <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
@@ -273,25 +286,46 @@ export default function DmMain() {
   ) : (
     messages.map((message, index) => {
       const isMyMessage = message.senderId === user?.id;
-
-      // 이전 메시지와 비교
-      const previousMessage = index > 0 ? messages[index - 1] : null;
       const isFirstMessageFromUser =
-        !previousMessage || previousMessage.senderId !== message.senderId;
+        index === 0 || messages[index - 1]?.senderId !== message.senderId;
+      const isLastMessageFromSameUser =
+        index === messages.length - 1 || messages[index + 1]?.senderId !== message.senderId;
 
-      // 시간 표시 조건
-      const showTime =
-        !previousMessage ||
-        new Date(previousMessage.createdAt).getMinutes() !==
-          new Date(message.createdAt).getMinutes();
+      const currentDate = new Date(message.createdAt).toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+      });
+
+      const previousDate =
+        index > 0
+          ? new Date(messages[index - 1]?.createdAt).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            weekday: "long",
+          })
+          : null;
 
       return (
-        <div key={message.id} className="flex flex-col mb-2">
+        <div key={message.id}
+          style={{
+            backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
+          }}
+          className="flex flex-col mb-2" ref={(el) => (chatRefs.current[message.id] = el)}>
+          {/* 날짜 표시 */}
+          {currentDate !== previousDate && (
+            <div className="flex justify-center items-center my-4">
+              <div className="bg-gray-200 text-gray-600 text-m py-1 px-4 rounded-full">
+                {currentDate}
+              </div>
+            </div>
+          )}
+
           {/* 메시지 내용 */}
           <div
-            className={`flex items-end ${
-              isMyMessage ? "justify-end" : "justify-start"
-            } mb-1`}
+            className={`flex items-end ${isMyMessage ? "justify-end" : "justify-start"} mb-1`}
           >
             {/* 상대방 메시지 프로필 */}
             {!isMyMessage && isFirstMessageFromUser && (
@@ -308,35 +342,27 @@ export default function DmMain() {
             <div className={`flex flex-col ${isMyMessage ? "items-end" : "items-start"}`}>
               {/* 상대방 이름 */}
               {!isMyMessage && isFirstMessageFromUser && (
-                <div className="text-xs text-gray-500 mb-1 ml-1">
-                  {message.userName || "알 수 없는 사용자"}
-                </div>
+              <div className="text-m text-gray-600 mb-1">{message.userName}</div>
               )}
 
-              {/* 말풍선 */}
-              <div className="relative flex items-center">
+             {/* 말풍선 */}
+             <div className="relative">
                 <div
-                  className={`p-3 rounded-lg shadow-md text-base ${
-                    isMyMessage ? "bg-blue-100" : "bg-gray-100"
-                  }`}
-                >
-                  <p className="text-sm lg:text-base text-gray-800">
-                    {message.content}
-                  </p>
+                  className={`p-3 rounded-lg shadow-md text-lg ${isMyMessage ? "bg-blue-100" : "bg-gray-100"
+                   } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
+                   >
+                  <p className="text-base lg:text-lg text-gray-800">{message.content}</p>
                 </div>
 
+
                 {/* 시간 표시 */}
-                {showTime && (
+                {isLastMessageFromSameUser && (
                   <span
-                    className={`text-xs text-gray-400 ${
-                      isMyMessage ? "ml-2 order-first" : "ml-2"
-                    }`}
+                  className={`absolute text-m text-gray-400 ${isMyMessage ? "-left-16 bottom-0" : "right-[-70px] bottom-0" // 여백 조정
+                  }`}
                   >
-                    {new Date(message.createdAt).toLocaleTimeString("ko-KR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                    {formatChatTime(message.createdAt)}
+                   </span>
                 )}
               </div>
             </div>
@@ -556,10 +582,9 @@ export default function DmMain() {
                 ))}
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
-      </div>
-
   );
 }
