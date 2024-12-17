@@ -11,6 +11,7 @@ import {
   DM_CREATE_URI,
   DM_SEND_MESSAGE_URI,
   CHANNEL_GET_MEMBER_URI,
+  CHANNEL_CHANGE_TITLE_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -71,9 +72,9 @@ export const leaveChannel = async ({ channelId, userId }) => {
   }
 };
 
-export const getAllChannels = async () => {
+export const getAllChannels = async (memberId) => {
   try {
-    const response = await axios.get(CHANNEL_LIST_URI);
+    const response = await axios.get(`${CHANNEL_LIST_URI}?memberId=${memberId}`);
     return response.data; // 채널 목록 데이터를 반환
   } catch (error) {
     console.error("채널 목록 조회 오류:", error);
@@ -112,6 +113,23 @@ export const getChannelMembers = async (channelId) => {
     return response.data; // 성공 응답 반환
   } catch (error) {
     console.error(`[JS] 채널 멤버 조회 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+}
+
+export const changeChannelTitle = async ({ channelId, name }) => {
+  try {
+    console.log(`[JS] 채널 멤버 조회 요청: 채널 ID ${channelId}`);
+
+
+    const response = await axios.patch(CHANNEL_CHANGE_TITLE_URI(channelId), {
+      name
+    });
+
+    console.log(`[JS] 채널 이름 수정 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 채널 이름 수정 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
 }

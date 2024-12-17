@@ -142,6 +142,9 @@ export const CHANNEL_ADD_MEMBER_URI = (channelId) =>
 export const CHANNEL_GET_MEMBER_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/members`; // 채널 멤버 조회
 
+export const CHANNEL_CHANGE_TITLE_URI = (channelId) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/title`;
+
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
 export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회
