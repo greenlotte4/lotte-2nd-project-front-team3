@@ -68,191 +68,6 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
     fetchDMs();
   }, [user.id]);
   return (
-    //   <aside
-    //     className={`h-screen p-4 text-gray-800 flex flex-col shadow-xl rounded-2xl border border-gray-200 ${!asideVisible ? "hidden" : ""
-    //       }`}
-    //   >
-    //     {/* Header */}
-    //     <div className="pb-4 border-b border-gray-200 mb-4 flex items-center justify-between">
-    //       <h1 className="text-2xl font-extrabold text-black">💬 채팅</h1>
-    //       <button
-    //         className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none shadow-md"
-    //         onClick={() => openModal("createChannel", {})} // 모달 열기
-    //       >
-    //         + 채널 추가
-    //       </button>
-    //     </div>
-
-    //     {/* 채팅방 검색 */}
-    //     <div className="mt-3">
-    //       <input
-    //         type="text"
-    //         placeholder="채팅방 검색"
-    //         className="w-full p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-    //       />
-    //     </div>
-
-    //     {/* 개인 채팅 섹션 */}
-    //     <div className="mt-4">
-    //       <div className="flex">
-    //         <div
-    //           className="flex-1 flex items-center gap-4 cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
-    //           onClick={() => toggleState("isPersonalOpen")}
-    //         >
-    //           <span
-    //             className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isPersonalOpen ? "rotate-180" : "rotate-0"
-    //               }`}
-    //           >
-    //             <svg
-    //               xmlns="http://www.w3.org/2000/svg"
-    //               className="h-5 w-5 text-blue-500"
-    //               fill="none"
-    //               viewBox="0 0 24 24"
-    //               stroke="currentColor"
-    //               strokeWidth={2}
-    //             >
-    //               <path
-    //                 strokeLinecap="round"
-    //                 strokeLinejoin="round"
-    //                 d="M19 9l-7 7-7-7"
-    //               />
-    //             </svg>
-    //           </span>
-    //           <span className="text-lg font-semibold text-black">👤 개인 채팅</span>
-
-    //         </div>
-    //         <div
-    //           className="cursor-pointer rounded-lg text-blue-500 hover:bg-blue-200 mb-3 w-[45px] flex justify-center items-center text-2xl"
-    //           onClick={() => openModal("createDm", {})}
-    //         >+</div>
-    //       </div>
-    //       <div
-    //         className={`overflow-hidden transition-all duration-300 ${toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
-    //           }`}
-    //       >
-    //         <ul className="space-y-4">
-    //           {dms.length > 0 ? (
-    //             dms.map((dm) => (
-    //               <li title={dm.dmName} key={dm.dmId}> {/* 각 li에 고유한 key를 추가 */}
-    //                 <NavLink to={`/antwork/chatting/dm/${dm.dmId}`} className="flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition">
-    //                   <img src="path/to/avatar.jpg" alt="User" className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm" />
-    //                   <div className="flex-1 overflow-hidden">
-    //                     <p className="font-medium text-gray-800 text-base truncate ">
-    //                       {dm.dmName}
-    //                     </p>
-    //                     <p className="text-sm text-gray-500">{dm.lastMessage ?? '새로운 메시지가 없습니다.'} </p>
-    //                   </div>
-    //                   <span className="text-sm text-gray-400">11:30</span>
-    //                 </NavLink>
-    //               </li>
-    //             ))
-    //           ) : (
-    //             <li className="text-gray-500 p-3">디엠방이 없습니다.</li>
-    //           )}
-
-    //         </ul>
-    //       </div>
-    //     </div>
-    //     {/* 채널 섹션 */}
-    //     <div className="mt-6">
-    //       <div className="flex">
-    //         <div
-    //           className="flex-1 gap-4 flex items-center cursor-pointer mb-3 bg-white-100 px-3 py-2 rounded-lg hover:bg-blue-200 transition"
-    //           onClick={() => toggleState("isChannelOpen")}
-    //         >
-    //           <span
-    //             className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : "rotate-0"
-    //               }`}
-    //           >
-    //             <svg
-    //               xmlns="http://www.w3.org/2000/svg"
-    //               className="h-5 w-5 text-blue-500"
-    //               fill="none"
-    //               viewBox="0 0 24 24"
-    //               stroke="currentColor"
-    //               strokeWidth={2}
-    //             >
-    //               <path
-    //                 strokeLinecap="round"
-    //                 strokeLinejoin="round"
-    //                 d="M19 9l-7 7-7-7"
-    //               />
-    //             </svg>
-    //           </span>
-    //           <span className="text-lg font-semibold text-black">📢 채널</span>
-
-    //         </div>
-    //         <div
-    //           className="cursor-pointer rounded-lg text-blue-500 hover:bg-blue-200 mb-3 w-[45px] flex justify-center items-center text-2xl"
-    //           onClick={() => openModal("createChannel", {})}
-    //         >+</div>
-    //       </div>
-    //       <div
-    //         className={`overflow-hidden transition-all duration-300 ${toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"
-    //           }`}
-    //       >
-
-    //         <ul className="space-y-4">
-    //           {channels.length > 0 ? (
-    //             channels.map((channel) => (
-    //               <li key={channel.id}>
-    //                 <NavLink
-    //                   to={`/antwork/chatting/channel/${channel.id}`}
-    //                   className={`flex items-center p-3 rounded-lg bg-white hover:bg-blue-100 cursor-pointer transition`}
-    //                 >
-    //                   <img
-    //                     src="path/to/group-icon.svg"
-    //                     alt="Group"
-    //                     className="w-12 h-12 rounded-full mr-4 border border-gray-300 shadow-sm"
-    //                   />
-    //                   <div className="flex-1">
-    //                     <p className="font-medium text-lg text-gray-800">
-    //                       {channel.name}
-    //                     </p>
-    //                   </div>
-    //                   <div className="ml-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full shadow-md">
-    //                     {channel.unreadCount}
-    //                   </div>
-    //                 </NavLink>
-    //               </li>
-    //             ))
-    //           ) : (
-    //             <li className="text-gray-500 p-3">채널이 없습니다.</li>
-    //           )}
-    //         </ul>
-    //       </div>
-    //     </div>
-
-    //     {/* 사용자 초대 버튼 */}
-    //     <div className="border-t border-gray-200 pt-6 mt-6">
-    //       <button
-    //         className="w-full flex items-center justify-center gap-3 bg-blue-500 text-white px-6 py-3 rounded-full hover:shadow-xl transition-transform hover:scale-105"
-    //         onClick={() => {
-    //           console.log("채널 ID 전달:", channelId); // *** 로그 추가 ***
-    //           openModal("invite", { channelId }); // channelId를 전달
-    //         }}
-    //       >
-    //         <svg
-    //           xmlns="http://www.w3.org/2000/svg"
-    //           className="h-6 w-6"
-    //           fill="none"
-    //           viewBox="0 0 24 24"
-    //           stroke="currentColor"
-    //           strokeWidth={2}
-    //         >
-    //           <path
-    //             strokeLinecap="round"
-    //             strokeLinejoin="round"
-    //             d="M12 4v16m8-8H4"
-    //           />
-    //         </svg>
-    //         <span className="text-lg font-semibold">사용자 초대</span>
-    //       </button>
-
-
-    //     </div>
-    //   </aside>
-
     <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell`}>
       {/* 타이틀 영역 */}
       <div className="logo pb-4 border-b border-gray-200 mb-4">
@@ -264,19 +79,24 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
           </div>
         </div>
       </div>
-
-      {/* 채팅방 검색 */}
-      <div className="mt-4">
-        <div className="flex items-center gap-4 p-3 hover:bg-gray-100 rounded-lg">
-          <span className="text-2xl">🔍</span>
-          <input
-            type="text"
-            placeholder="채팅방 검색"
-            className="w-full p-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-          />
-        </div>
-      </div>
-
+  {/* 채팅 홈 아이콘 */}
+  <div className="logo pb-4 border-b border-gray-200 mb-4">
+  <div className="lnb-item mb-6">
+    <div className="lnb-header flex items-center gap-2">
+      <img
+        src="/images/ico/page_home_22_999999.svg"
+        className="cate-icon w-[22px] h-[22px] cursor-pointer"
+        alt="Chat Home Icon"
+      />
+      <NavLink
+        to="/antwork/chatting"
+        className="main-cate text-[16px] text-gray-700 hover:text-blue-500 transition"
+      >
+        채팅 홈
+      </NavLink>
+    </div>
+  </div>
+  </div>
       {/* 개인 채팅 섹션 */}
       <div className="mt-6">
         <div className="flex items-center justify-between">
@@ -302,10 +122,10 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             <span className="text-[14px] font-semibold text-gray-700">✉️ 나의 채팅</span>
           </div>
           <button
-            className="cursor-pointer text-blue-500 hover:bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center text-xl"
+            className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block 0 hover:bg-blue-200 w-8 h-8 rounded-full"
             onClick={() => openModal("createDm", {})}
           >
-            +
+            
           </button>
         </div>
         <div
@@ -363,10 +183,11 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             <span className="text-[14px] font-semibold text-gray-700">👥 채널 (단체 채팅) </span>
           </div>
           <button
-            className="cursor-pointer text-blue-500 hover:bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center text-xl"
+            className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block
+            cursor-pointer text-blue-500 hover:bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center text-xl"
             onClick={() => openModal("createChannel", {})}
           >
-            +
+            
           </button>
         </div>
         <div
