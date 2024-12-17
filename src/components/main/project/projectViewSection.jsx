@@ -189,7 +189,9 @@ export default function ProjectViewSection() {
   const handleEditState = (updatedState) => {
     setStates((prevStates) =>
       prevStates.map((state) =>
-        state.id === updatedState.id ? updatedState : state
+        state.id === updatedState.id
+          ? { ...updatedState, items: state.items || [] } // items가 없으면 빈 배열로 초기화
+          : state
       )
     );
   };
@@ -202,13 +204,13 @@ export default function ProjectViewSection() {
       const createdTask = await createTask(newTask); // API 호출
       console.log("생성된 작업:", createdTask);
 
-      setStates((prevStates) =>
-        prevStates.map((state) =>
-          state.id === newTask.stateId // stateId로 매칭
-            ? { ...state, items: [...(state.items || []), createdTask] }
-            : state
-        )
-      );
+      // setStates((prevStates) =>
+      //   prevStates.map((state) =>
+      //     state.id === newTask.stateId // stateId로 매칭
+      //       ? { ...state, items: [...(state.items || []), createdTask] }
+      //       : state
+      //   )
+      // );
     } catch (error) {
       console.error("작업 추가 중 오류 발생:", error.message || error);
       alert("작업 등록 중 문제가 발생했습니다.");
@@ -482,6 +484,8 @@ export default function ProjectViewSection() {
     handleEditState,
     setStates,
     handleAddItem,
+    fetchCollaborators,
+    setProject,
   });
 
   const { isOpen } = useModalStore(); // Zustand store에서 모달 상태 가져오기
