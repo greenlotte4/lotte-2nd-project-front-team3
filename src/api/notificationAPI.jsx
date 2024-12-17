@@ -2,6 +2,7 @@ import {
   NOTIFICATION_MY_SELECT_URI,
   NOTIFICATION_READ_URI,
   NOTIFICATION_SEND_URI,
+  NOTIFICATION_SENDER_SELECT_URI,
 } from "./_URI";
 import axiosInstance from "./../utils/axiosInstance";
 
@@ -53,5 +54,26 @@ export const markNotificationAsRead = async (notificationId) => {
       error.response || error
     );
     throw new Error("Failed to mark notification as read. Please try again.");
+  }
+};
+
+// 보내는사람 알림 조회
+export const fetchNotificationsBySenderId = async (senderId) => {
+  if (!senderId) {
+    throw new Error("Sender ID is required for fetching sent notifications.");
+  }
+  try {
+    console.log("조회");
+    const response = await axiosInstance.get(
+      `${NOTIFICATION_SENDER_SELECT_URI}/${senderId}`
+    );
+    console.log("✅ 보낸 알림 조회 성공:", response.data);
+    return response.data; // 알림 목록 반환
+  } catch (error) {
+    console.error(
+      "❌ Failed to fetch sent notifications:",
+      error.response || error
+    );
+    throw new Error("Failed to fetch sent notifications. Please try again.");
   }
 };

@@ -6,6 +6,7 @@ export const DEPARTMENT_INSERT_URI = `${API_SERVER_HOST}/department/insert`; // 
 export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; // 회사별 부서 조회
 export const DEPARTMENT_UPDATE_URI = `${API_SERVER_HOST}/department`; // 부서 이름 수정
 export const DEPARTMENT_USER_UPDATE_URI = `${API_SERVER_HOST}/department/move-user`; // 유저 부서 이동
+export const DEPARTMENT_DELETE_URI = `${API_SERVER_HOST}/department`; // 부서 삭제
 
 // user
 export const USER_URI = `${SERVER_HOST}/user`;
@@ -32,6 +33,7 @@ export const USER_SEARCHUSER_URI = `${API_SERVER_HOST}/user/search`; // 유저 �
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송
 export const NOTIFICATION_MY_SELECT_URI = `${API_SERVER_HOST}/notification`; // 본인 알림 조회
 export const NOTIFICATION_READ_URI = `${API_SERVER_HOST}/notification`; // 알림 읽음 처리
+export const NOTIFICATION_SENDER_SELECT_URI = `${API_SERVER_HOST}/notification/sent`; // 보내는사람 알림조회
 
 // popup
 export const POPUP_URI = `${API_SERVER_HOST}/popups`;
