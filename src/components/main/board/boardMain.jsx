@@ -130,6 +130,8 @@ export default function BoardMain() {
                 {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
               </div>
 
+              
+
               <div className="page-grid cursor-pointer">
                 {/* 인기급상승 게시물  */}
                 <div className="page-card !bg-slate-50">

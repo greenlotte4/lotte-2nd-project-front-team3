@@ -13,7 +13,7 @@ import {
 import BoardComment from "./boardComment";
 import BoardFileDownload from "./boardFileDownload";
 import { toast } from 'react-toastify';
-import { updateBoardApi , uploadBoardFile} from "@/api/boardAPI";
+import { updateBoardApi, deleteBoardApi, uploadBoardFile } from "@/api/boardAPI";
 // import { uploadBoardFile } from "../../../api/boardAPI";
 
 export default function BoardView() {
@@ -25,7 +25,7 @@ export default function BoardView() {
   console.log("사용자 정보 (user) :", user);
 
   // 업로드된 파일 목록 상태 초기화
-  const [fileList, setFileList] = useState([]); 
+  const [fileList, setFileList] = useState([]);
   console.log("업로드된 파일 목록:", fileList);
 
   // 수정 모드와 로딩 상태 관리
@@ -52,6 +52,7 @@ export default function BoardView() {
     // attachedFiles: null,
     attachedFiles: [], // 빈 배열로 초기화
   });
+  // ------------------------------------------------------------------------------------------------------------------- 
 
   // 좋아요 관련 상태
   const [likes, setLikes] = useState(0);
@@ -65,22 +66,22 @@ export default function BoardView() {
       console.log("사용자 ID : ", user.id);
       console.log("게시글 Writer : ", board.writer);
 
-      console.log("게시글 writerName :",board.writerName);  // writerName이 무엇인지 확인
+      console.log("게시글 writerName :", board.writerName);  // writerName이 무엇인지 확인
 
 
       if (!id) {
         console.warn("게시글 ID가 없습니다.");
         return;
       }
-  
+
       try {
         // 게시글 데이터 조회
         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
         console.log("서버 응답 데이터:", response.data);
-        
+
         // 게시글 데이터 설정
         setBoard(response.data);
-        
+
         // 수정 폼 초기값 설정
         setUpdateBoard({
           id: response.data.id,
@@ -88,31 +89,32 @@ export default function BoardView() {
           content: response.data.content,
           attachedFiles: response.data.attachedFiles,
         });
-  
+
         // 좋아요 상태 설정
         setLikes(response.data.likes || 0);
         setIsLiked(response.data.isLiked || false);
-  
+
         // 파일 목록 별도 조회
         const fileResponse = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}/files`);
-        
+
         if (fileResponse.data) {
           setFileList(fileResponse.data);
           console.log("파일 데이터:", fileResponse.data);
         }
-        
-        
+
+
       } catch (error) {
         console.error("게시글 데이터 로딩 실패:", error);
         toast.error("게시글을 불러오는데 실패했습니다.");
       }
 
     };
-  
+
     fetchBoardData();
 
   }, [id]);
 
+  // ------------------------------------------------------------------------------------------------------------------- 
 
 
   // 좋아요 처리 함수
@@ -136,154 +138,136 @@ export default function BoardView() {
       alert("좋아요 처리 중 오류가 발생했습니다.");
     }
   };
+  // ------------------------------------------------------------------------------------------------------------------- 
 
-
-  // 게시글 수정 처리 함수 (수정 후 저장 클릭 -> 실행) 
-  // const handleUpdate = async () => {
-  //   console.log("게시글 수정 처리 요청");
-  //   console.log("사용자 ID : ", user.id);
-  //   console.log("게시글 Writer : ", board.writer);
-
-  //   console.log("사용자 ID 타입:", typeof user.id);
-  //   console.log("게시글 Writer 타입:", typeof board.writer);
-
-  //   // 타입 변환 후 비교
-  //   if (Number(user.id) !== Number(board.writer)) {
-  //     console.log("수정 권한 없음: user.id와 board.writer가 다릅니다.");
-  //     console.log("user.id:", user.id, "board.writer:", board.writer);
-  //     alert("수정 권한이 없습니다.");
-  //     return;
-  //   }
-
-
-  //   setIsLoading(true);
-  //   try {
-  //     const formData = new FormData();
-  //     console.log("formData : ", formData);
-
-  //     formData.append("title", updateBoard.title);
-  //     console.log("업데이트 된 제목 데이터 : ", updateBoard.title);
-
-  //     formData.append("content", updateBoard.content);
-  //     console.log("업데이트 된 내용 데이터 : ", updateBoard.content);
-
-  //     // //  파일 데이터 업데이트 
-  //     // if (updateBoard.attachedFiles) {
-  //     //   console.log("업데이트 된 파일 : ", updateBoard.attachedFiles);
-
-  //     //   Array.from(updateBoard.attachedFiles).forEach((file) => {
-  //     //     console.log("Array.from");
-
-  //     //     formData.append("files", file);
-  //     //     console.log("업데이트 된 파일 Array : ", file);
-  //     //   });
-  //     // }
-
-  //     const response = await updateBoardApi
-  //     if (response.data) {
-  //       setBoard({
-  //         ...board,
-  //         cate1: updateBoard.cate1,
-  //         cate2: updateBoard.cate2,
-  //         title: updateBoard.title,
-  //         content: updateBoard.content,
-  //         updatedAt: new Date().toISOString(),
-  //       });
-  //       setIsUpdate(false);
-  //       alert("수정이 완료되었습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.error("수정 실패:", error);
-  //     alert("수정 중 오류가 발생했습니다. *****");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-  // // 게시글 수정 처리 함수 끝 (수정 후 저장 클릭 -> 실행) 
-// 게시글 수정 처리 함수 (수정 후 저장 클릭 -> 실행)
-const handleUpdate = async () => {
+  // 게시글 수정 처리 함수 (수정 후 저장 클릭 -> 실행)
+  const handleUpdate = async () => {
     console.log("게시글 수정 처리 요청");
     console.log("게시글 데이터 전체:", board);
 
     console.log("사용자 ID : ", user.id);
     console.log("게시글 Writer : ", board.writer);
 
-    console.log("게시글 writerName :",board.writerName);  // writerName이 무엇인지 확인
-  
+    console.log("게시글 writerName :", board.writerName);  // writerName이 무엇인지 확인
+
 
     // 사용자 권한 확인
     if (Number(user.id) !== Number(board.writer)) {
-        console.error("수정 권한 없음: user.id와 board.writer가 다릅니다.");
-        alert("수정 권한이 없습니다.");
-        return;
-    }
-
-    setIsLoading(true);
-    try {
-        // 수정할 데이터 준비
-        const formData = new FormData();
-        formData.append("id", updateBoard.id);
-        formData.append("title", updateBoard.title);
-        formData.append("content", updateBoard.content);
-
-        if (updateBoard.attachedFiles) {
-            Array.from(updateBoard.attachedFiles).forEach((file) => {
-                formData.append("files", file);
-            });
-        }
-        if (updateBoard.attachedFiles) {
-          formData.append("boardId", updateBoard.id);
-          formData.append("writerId", updateBoard.writerId);
-          formData.append("boardFile", updateBoard.file);
-          await uploadBoardFile(formData); // 파일 업로드 함수 호출
-        }
-        const response = await updateBoardApi(user.id, formData); // 기존 updateBoardApi 호출 방식에서 파라미터 수정
-        if (response) {
-            setBoard((prevBoard) => ({
-                ...prevBoard,
-                title: updateBoard.title,
-                writerName: board.writerName,
-                content: updateBoard.content,
-                updatedAt: new Date().toISOString(),
-                cate1: updateBoard.cate1,
-                cate2: updateBoard.cate2,
-            }));
-            setIsUpdate(false);
-            alert("수정이 완료되었습니다.");
-        }
-    } catch (error) {
-        console.error("수정 실패:", error);
-        alert("수정 중 오류가 발생했습니다.");
-    } finally {
-        setIsLoading(false);
-    }
-};                                                                                                                                                                                                                                                                                                                                                                                                                                        
-
-
-
-  // 게시글 삭제 처리 함수
-  const handleDelete = async () => {
-    if (!user || user.id !== board.writer?.id) {
-      alert("삭제 권한이 없습니다.");
+      console.error("수정 권한 없음: user.id와 board.writer가 다릅니다.");
+      alert("수정 권한이 없습니다.");
       return;
     }
 
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
-
     setIsLoading(true);
     try {
-      const response = await axiosInstance.delete(`${BOARD_DELETE_URI}/${id}`);
-      if (response.data.success) {
-        alert("삭제되었습니다.");
-        navigate("/antwork/board/list");
+      // 수정할 데이터 준비
+      const formData = new FormData();
+      formData.append("id", updateBoard.id);
+      formData.append("title", updateBoard.title);
+      formData.append("content", updateBoard.content);
+
+      if (updateBoard.attachedFiles) {
+        Array.from(updateBoard.attachedFiles).forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+      if (updateBoard.attachedFiles) {
+        formData.append("boardId", updateBoard.id);
+        formData.append("writerId", updateBoard.writerId);
+        formData.append("boardFile", updateBoard.file);
+        await uploadBoardFile(formData); // 파일 업로드 함수 호출
+      }
+      const response = await updateBoardApi(user.id, formData); // 기존 updateBoardApi 호출 방식에서 파라미터 수정
+      if (response) {
+        setBoard((prevBoard) => ({
+          ...prevBoard,
+          title: updateBoard.title,
+          writerName: board.writerName,
+          content: updateBoard.content,
+          updatedAt: new Date().toISOString(),
+          cate1: updateBoard.cate1,
+          cate2: updateBoard.cate2,
+        }));
+        setIsUpdate(false);
+        alert("수정이 완료되었습니다.");
       }
     } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제 중 오류가 발생했습니다.");
+      console.error("수정 실패:", error);
+      alert("수정 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // ------------------------------------------------------------------------------------------------------------------- 
+
+  // 게시글 삭제 처리 함수
+  // const handleDelete = async () => {
+
+  //   console.log("게시글 삭제 처리 요청");
+  //   console.log("user.id : ", user.id);
+  //   console.log("board.writer.id : ", Number(board.writer));
+
+  //   if (!user || Number(user.id) !== Number(board.writer)) {
+  //     alert("삭제 권한이 없습니다.");
+  //     return;
+  //   }
+
+  //   if (!window.confirm("정말 삭제하시겠습니까❓ 네네")) return;
+
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axiosInstance.delete(`${BOARD_DELETE_URI}/${id}`);
+  //     if (response.data.success) {
+  //       alert("삭제되었습니다.");
+  //       navigate("/antwork/board/list");
+  //       // navigate(`${BOARD_LIST_URI}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("삭제 실패:", error); // 기존 오류 출력
+  //     if (error.response) {
+  //       // 서버가 응답한 경우 (4xx, 5xx 상태 코드)
+  //       console.error("서버 응답 에러:", error.response.data);
+  //       console.error("상태 코드:", error.response.status);
+  //       console.error("응답 헤더:", error.response.headers);
+  //     } else if (error.request) {
+  //       // 요청이 전송되었으나 응답이 없는 경우
+  //       console.error("응답이 없습니다. 요청 데이터:", error.request);
+  //     } else {
+  //       // 다른 종류의 오류
+  //       console.error("오류 메시지:", error.message);
+  //     }
+  //     alert("❌❌❌ 삭제 중 오류가 발생했습니다. ❌❌❌");
+  //     // alert(`삭제 실패: ${error.response?.data?.message || error.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const handleDelete = async () => {
+    if (!user || Number(user.id) !== Number(board.writer)) {
+      alert("삭제 권한이 없습니다.");
+      return;
+    }
+
+    if (!window.confirm("정말 삭제하시겠습니까❓❓❓")) return;
+
+    setIsLoading(true);
+    try {
+      const isDeleted = await deleteBoardApi(id);
+
+      if (isDeleted) {
+        alert("삭제되었습니다 ❗️❗️❗️");
+        navigate("/antwork/board/list");
+      }
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert("❌❌❌ 삭제 중 오류가 발생했습니다. ❌❌❌");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // ------------------------------------------------------------------------------------------------------------------- 
 
   return (
     <article className="page-list">
@@ -319,9 +303,9 @@ const handleUpdate = async () => {
             <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
               <div className="writer">
                 <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
-                
+
                 {
-                  board.writerName 
+                  board.writerName
                     ? board.writerName // 게시글 작성자가 있으면 표시
                     : user?.name || "익명" // 없으면 로그인한 사용자의 이름, 그것도 없으면 '익명'
                 }
@@ -346,10 +330,9 @@ const handleUpdate = async () => {
                 className={`
                   flex items-center space-x-2 px-4 py-2 rounded-md
                   transition-all duration-200 mb-4
-                  ${
-                    isLiked
-                      ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                  ${isLiked
+                    ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   }
                   ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
@@ -398,7 +381,7 @@ const handleUpdate = async () => {
                   />
                 </div>
 
-                
+
               </div>
             ) : (
               // 보기 모드 - 본문

@@ -24,7 +24,7 @@ export default function BoardList() {
   const [boards, setBoards] = useState([]);
   console.log("게시글 정보:", boards);
 
-  
+
 
   // useEffect(() => {
   //   // 게시글 목록을 가져오는 함수
@@ -71,7 +71,7 @@ export default function BoardList() {
         console.log("게시글 데이터를 가져오는 중...");
         // API 호출 직전에 URL 로깅
         console.log("요청 URL:", `${BOARD_LIST_URI}`);
-        
+
         const response = await axiosInstance.get(BOARD_LIST_URI, {
           // 요청 타임아웃 설정
           timeout: 5000,
@@ -81,9 +81,9 @@ export default function BoardList() {
             'X-Request-For': 'board-list'
           }
         });
-  
+
         console.log("응답 데이터:", response.data);
-  
+
         if (response.data && Array.isArray(response.data.content)) {
           setBoards(response.data.content.map(board => ({
             id: board.id,
@@ -105,24 +105,17 @@ export default function BoardList() {
         setBoards([]);
       }
     };
-  
+
     fetchBoards();
   }, []);
 
 
-  
+
   // BoardPagination으로부터 데이터를 받아 상태 업데이트
   const handlePageData = (newData) => {
     setBoards(newData);
   };
 
-  // 날짜 포맷팅 함수
-  const formatDate = (dateString) => {
-
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-
-  };
 
   return (
     <>
@@ -217,7 +210,7 @@ export default function BoardList() {
                 </tr>
               </thead>
 
-          
+
               <tbody className="text-gray-600 text-sm font-light">
                 {Array.isArray(boards) && boards.length > 0 ? (
                   boards.map((board, index) => (
@@ -227,30 +220,30 @@ export default function BoardList() {
 
                       {/* 제목 */}
                       <td className="py-3 px-6 text-left">
-                      <Link to={`/antwork/board/view/${board.id}`} className="hover:text-blue-500">
-                        {board.title && board.title.length > 30
-                          ? `${board.title.slice(0, 30)}...`
-                          : board.title}
-                        <span className="text-blue-500 ml-2">
-                          ({board.comment || 0})
-                        </span>
-                      </Link>
+                        <Link to={`/antwork/board/view/${board.id}`} className="hover:text-blue-500">
+                          {board.title && board.title.length > 30
+                            ? `${board.title.slice(0, 30)}...`
+                            : board.title}
+                          <span className="text-blue-500 ml-2">
+                            ({board.comment || 0})
+                          </span>
+                        </Link>
                       </td>
 
                       {/* 작성자 */}
                       <td className="py-3 px-6 text-center">
-                        {board.writerName 
+                        {board.writerName
                           ? board.writerName.length > 2
-                            ? `${board.writerName.charAt(0)}${'*'.repeat(board.writerName.length-2)}${board.writerName.slice(-1)}`
+                            ? `${board.writerName.charAt(0)}${'*'.repeat(board.writerName.length - 2)}${board.writerName.slice(-1)}`
                             : `${board.writerName.charAt(0)}*`
                           : '익명'
                         }
                       </td>
 
-                      <td className="py-3 px-6 text-center">{formatDate(board.regDate)}</td>
+                      <td className="py-3 px-6 text-center">{board.regDate}</td>
                       <td className="py-3 px-6 text-center">{board.hit || 0}</td>
                       <td className="py-3 px-6 text-center">
-                        ❤️ {board.like || 0}
+                        ❤️ {board.likes || 0}
                       </td>
                     </tr>
                   ))
@@ -264,7 +257,7 @@ export default function BoardList() {
               </tbody>
             </table>
 
-          <BoardPagination onPageChange={handlePageData}/>
+            <BoardPagination onPageChange={handlePageData} />
 
           </section>
         </article>
