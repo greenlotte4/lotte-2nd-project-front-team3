@@ -11,6 +11,8 @@ const useProjectWebSocket = ({
   handleEditState,
   setStates,
   handleAddItem,
+  fetchCollaborators,
+  setProject,
 }) => {
   const stompClientRef = useRef(null);
 
@@ -60,6 +62,20 @@ const useProjectWebSocket = ({
 
             // 메시지의 action에 따라 처리
             switch (data.action) {
+              // 협업자 초대
+              case "collaboratorAdd":
+                console.log("협업자 추가 메시지 수신:", data);
+                // 최신 협업자 목록을 가져오는 함수 호출
+                fetchCollaborators()
+                  .then(() =>
+                    console.log(
+                      "✅ 협업자 목록이 성공적으로 업데이트되었습니다."
+                    )
+                  )
+                  .catch((error) =>
+                    console.error("❌ 협업자 목록 갱신 중 에러:", error)
+                  );
+                break;
               // 협업자 삭제
               case "collaboratorDelete":
                 console.log("setCollaborators : " + setCollaborators);
@@ -96,18 +112,122 @@ const useProjectWebSocket = ({
               // 작업 추가
               case "taskInsert":
                 setStates((prevStates) =>
-                  prevStates.map((state) =>
-                    String(state.id) === String(data.id)
-                      ? {
-                          ...state,
-                          items: [...(state.items || []), ...data],
-                        }
-                      : state
-                  )
+                  prevStates.map((state) => {
+                    if (String(state.id) === String(data.stateId)) {
+                      // 중복 작업 확인
+                      const isDuplicate = state.items.some(
+                        (item) => item.id === data.id
+                      );
+                      if (isDuplicate) {
+                        console.warn(
+                          "⚠️ 중복된 작업입니다. 추가하지 않습니다."
+                        );
+                        return state;
+                      }
+                      // 중복이 아니면 작업 추가
+                      return {
+                        ...state,
+                        items: [...(state.items || []), data],
+                      };
+                    }
+                    return state;
+                  })
                 );
                 break;
-              default:
-                console.warn("⚠️ 알 수 없는 액션:", data.action);
+              // 작업 수정
+              case "taskUpdate":
+                setStates((prevStates) =>
+                  prevStates.map((state) => {
+                    // 수정된 작업이 속한 상태인지 확인
+                    if (String(state.id) === String(data.stateId)) {
+                      return {
+                        ...state,
+                        items: state.items.map((item) =>
+                          String(item.id) === String(data.id)
+                            ? { ...item, ...data }
+                            : item
+                        ),
+                      };
+                    }
+                    return state;
+                  })
+                );
+                break;
+              // 작업 삭제
+              case "taskDelete":
+                setStates((prevStates) =>
+                  prevStates.map((state) => ({
+                    ...state,
+                    items: state.items.filter(
+                      (item) => String(item.id) !== String(data.id)
+                    ),
+                  }))
+                );
+                break;
+              // 작업 드래그앤드랍
+              case "taskDrag":
+                console.log("🚚 작업 드래그 앤 드롭 메시지 수신:", data);
+
+                setStates((prevStates) => {
+                  let originalTask = null;
+
+                  // 기존 상태에서 작업 찾기 및 제거
+                  const updatedStates = prevStates.map((state) => {
+                    const filteredItems = state.items.filter((item) => {
+                      if (String(item.id) === String(data.id)) {
+                        originalTask = item; // 기존 작업 객체 저장
+                        return false; // 해당 작업 제거
+                      }
+                      return true;
+                    });
+
+                    return {
+                      ...state,
+                      items: filteredItems,
+                    };
+                  });
+
+                  // 기존 작업과 수신된 데이터를 병합
+                  if (originalTask) {
+                    const updatedTask = {
+                      ...originalTask, // 기존 작업의 모든 속성 유지
+                      ...data, // 새 데이터 병합
+                      assignedUserDetails:
+                        originalTask.assignedUserDetails || [], // 작업담당자 유지
+                    };
+
+                    // 새로운 stateId에 맞는 상태에 작업 추가
+                    return updatedStates.map((state) => {
+                      if (String(state.id) === String(data.stateId)) {
+                        return {
+                          ...state,
+                          items: [...state.items, updatedTask],
+                        };
+                      }
+                      return state;
+                    });
+                  }
+
+                  console.warn("⚠️ 기존 작업을 찾을 수 없습니다.");
+                  return updatedStates;
+                });
+
+                console.log("✅ 작업이 실시간으로 업데이트되었습니다.");
+                break;
+
+              // 프로젝트 수정
+              case "projectUpdate":
+                console.log("🔄 프로젝트 이름 업데이트 수신:", data);
+
+                setProject((prevProject) =>
+                  prevProject.id === data.id
+                    ? { ...prevProject, projectName: data.projectName }
+                    : prevProject
+                );
+
+                console.log(
+                  "✅ 프로젝트 이름이 실시간으로 업데이트되었습니다."
+                );
                 break;
             }
           } catch (error) {
