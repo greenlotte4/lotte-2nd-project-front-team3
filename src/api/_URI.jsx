@@ -85,7 +85,7 @@ export const PROJECT_DELETE_URI = `${API_SERVER_HOST}/project/delete`; // 프로
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
 export const DRIVE_FILES_INSERT_URI = `${API_SERVER_HOST}/drive/files/insert`; // 드라이브 파일 넣기
-export const DRIVE_FOLDER_FILE_INSERT_URI = `${API_SERVER_HOST}/drive/folder/files/insert`; // 드라이브 파일 넣기(폴더이)
+export const DRIVE_FOLDER_FILE_INSERT_URI = `${API_SERVER_HOST}/drive/folder/files/insert`; // 드라이브 파일 넣기(폴더에에)
 export const MY_DRIVE_URI = `${API_SERVER_HOST}/drive/folder/myDriveView`; // 마이드라이브 전체보기
 export const MY_TRASH_URI = `${API_SERVER_HOST}/drive/folder/myTrashView`; // 휴지통 전체보기
 export const MY_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myDriveSelectView`; //마이드라이브 선택보기
@@ -93,8 +93,11 @@ export const MY_TRASH_SELECT_URI = `${API_SERVER_HOST}/drive/folder/myTrashSelec
 export const MY_DRIVE_FILE_DOWNLOAD = `${API_SERVER_HOST}/drive/files/MyDriveFileDownload`;
 export const DRIVE_FOLDER_NAME = `${API_SERVER_HOST}/drive/folder/name`; //delete1로 변경
 export const ONE_DRIVE_FOLDER_TRASH = `${API_SERVER_HOST}/drive/folder/toOneTrash`; //delete1로변경(단일)
-export const TRASH_FOLDER_DRIVE = `${API_SERVER_HOST}/drive/folder/toDrive`; //delete0으로변경
+export const TRASH_FOLDER_DRIVE = `${API_SERVER_HOST}/drive/folder/toDrive`; //delete1으로변경
 export const DRIVE_FOLDER_TRASH = `${API_SERVER_HOST}/drive/folder/toTrash`; //delete0으로변경
+export const DRIVE_COLLABORATOR_SELECT = `${API_SERVER_HOST}/drive/collaborator/select`; //현재등록된협업자조회회
+export const DRIVE_COLLABORATOR_INSERT = `${API_SERVER_HOST}/drive/collaborator/insert`; // 드라이브 협업자 추가
+export const DRIVE_COLLABORATOR_DELETE = `${API_SERVER_HOST}/drive/collaborator/delete`; // 드라이브 협업자 삭제
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
