@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  DEPARTMENT_DELETE_URI,
   DEPARTMENT_INSERT_URI,
   DEPARTMENT_SELECT_URI,
   DEPARTMENT_UPDATE_URI,
@@ -78,5 +79,29 @@ export const moveUserToDepartment = async (userId, departmentId) => {
       error.response?.data?.message ||
       "사용자 부서 이동 중 오류가 발생했습니다."
     );
+  }
+};
+
+// 부서 삭제
+export const deleteDepartmentAPI = async (departmentId, payload) => {
+  const response = await fetch(`${DEPARTMENT_DELETE_URI}/${departmentId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text(); // 응답을 텍스트로 먼저 받음
+
+  if (!response.ok) {
+    throw new Error("부서 삭제 실패: " + text || "서버 오류");
+  }
+
+  // 응답 본문이 비어있지 않은 경우 JSON 파싱
+  if (text) {
+    return JSON.parse(text);
+  } else {
+    return { message: "부서가 성공적으로 삭제되었습니다." }; // 서버가 빈 응답을 보낸 경우
   }
 };

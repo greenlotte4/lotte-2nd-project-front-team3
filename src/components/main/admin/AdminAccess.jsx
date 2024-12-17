@@ -1,4 +1,5 @@
 import { fetchAccessLogs } from "@/api/accessAPI";
+import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 
 export default function AdminAccess() {
@@ -7,6 +8,7 @@ export default function AdminAccess() {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 상태
 
   useEffect(() => {
     loadLogs();
@@ -35,6 +37,21 @@ export default function AdminAccess() {
   const handlePageSizeChange = (event) => {
     setPageSize(event.target.value);
     setCurrentPage(1);
+  };
+
+  const parseDateTime = (localDateTime) => {
+    if (!localDateTime) return "Invalid Date";
+
+    const dateTimeString = Array.isArray(localDateTime)
+      ? `${localDateTime[0]}-${localDateTime[1]
+          .toString()
+          .padStart(2, "0")}-${localDateTime[2].toString().padStart(2, "0")}T` +
+        `${localDateTime[3].toString().padStart(2, "0")}:${localDateTime[4]
+          .toString()
+          .padStart(2, "0")}:${localDateTime[5].toString().padStart(2, "0")}`
+      : localDateTime;
+
+    return new Date(dateTimeString);
   };
 
   return (
@@ -104,8 +121,9 @@ export default function AdminAccess() {
                   <td className="py-3 px-6">{log.urlPath}</td>
                   <td className="py-3 px-6">{log.httpMethod}</td>
                   <td className="py-3 px-6">
-                    {new Date(log.accessTime).toLocaleString()}
+                    {parseDateTime(log.accessTime).toLocaleString()}
                   </td>
+
                   <td className="py-3 px-6">{log.methodDescription}</td>
                 </tr>
               ))
@@ -119,22 +137,69 @@ export default function AdminAccess() {
           </tbody>
         </table>
         {/* 페이지네이션 */}
-        <div className="flex justify-center items-center mt-4">
+        {/* 페이지네이션 */}
+        <div className="flex justify-center items-center mt-4 space-x-2">
+          {/* 처음으로 이동 */}
           {currentPage > 0 && (
             <button
-              onClick={() => handlePageChange(currentPage)}
-              className="text-gray-700 py-2 px-4 rounded-l hover:bg-gray-100"
+              onClick={() => {
+                setPageGroup(0);
+                handlePageChange(1);
+              }}
+              className="text-gray-700 py-2 px-3 rounded hover:bg-gray-100"
             >
-              이전
+              «
             </button>
           )}
-          <span className="mx-4">{currentPage + 1}</span>
+
+          {/* 이전 그룹 */}
+          {pageGroup > 0 && (
+            <button
+              onClick={() => setPageGroup(pageGroup - 1)}
+              className="text-gray-700 py-2 px-3 rounded hover:bg-gray-100"
+            >
+              ‹
+            </button>
+          )}
+
+          {/* 페이지 번호 */}
+          {Array.from(
+            { length: Math.min(10, totalPages - pageGroup * 10) },
+            (_, index) => pageGroup * 10 + index + 1
+          ).map((pageNumber) => (
+            <button
+              key={pageNumber}
+              onClick={() => handlePageChange(pageNumber)}
+              className={`py-2 px-3 rounded ${
+                currentPage === pageNumber - 1
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {pageNumber}
+            </button>
+          ))}
+
+          {/* 다음 그룹 */}
+          {totalPages > (pageGroup + 1) * 10 && (
+            <button
+              onClick={() => setPageGroup(pageGroup + 1)}
+              className="text-gray-700 py-2 px-3 rounded hover:bg-gray-100"
+            >
+              ›
+            </button>
+          )}
+
+          {/* 마지막으로 이동 */}
           {currentPage < totalPages - 1 && (
             <button
-              onClick={() => handlePageChange(currentPage + 2)}
-              className="text-gray-700 py-2 px-4 rounded-r hover:bg-gray-100"
+              onClick={() => {
+                setPageGroup(Math.floor((totalPages - 1) / 10));
+                handlePageChange(totalPages);
+              }}
+              className="text-gray-700 py-2 px-3 rounded hover:bg-gray-100"
             >
-              다음
+              »
             </button>
           )}
         </div>

@@ -22,6 +22,7 @@ const AdminModal = () => {
   const [error, setError] = useState(null);
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const [departments, setDepartments] = useState([]); // 부서 목록 상태 추가
+  const [localTargetDepartmentId, setLocalTargetDepartmentId] = useState("");
 
   // 모달 열릴 때 부서 목록 가져오기
   useEffect(() => {
@@ -39,6 +40,13 @@ const AdminModal = () => {
       loadDepartments();
     }
   }, [isOpen, type, user?.company.id]);
+
+  // 초기 상태 설정
+  useEffect(() => {
+    if (props.targetDepartmentId) {
+      setLocalTargetDepartmentId(props.targetDepartmentId);
+    }
+  }, [props.targetDepartmentId]);
 
   if (!isOpen) return null;
 
@@ -281,6 +289,68 @@ const AdminModal = () => {
             </div>
           </div>
         );
+      case "delete-department":
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-[500px] p-6">
+              {/* 헤더 */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-red-500">
+                  부서 삭제 확인
+                </h2>
+                <button
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={closeModal}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* 내용 */}
+              <p className="text-gray-600 mb-4">
+                <strong>"{props.department.name}"</strong> 부서에는{" "}
+                <strong>{props.department.users.length}명</strong>의 부서원이
+                있습니다. 삭제 시 부서원을 이동할 부서를 선택하세요.
+              </p>
+
+              {/* 옵션 선택 */}
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">이동할 부서</label>
+                <select
+                  value={localTargetDepartmentId}
+                  onChange={(e) => setLocalTargetDepartmentId(e.target.value)}
+                  className="w-full border rounded px-3 py-2 focus:ring-blue-300 focus:outline-none"
+                >
+                  <option value="">부서 미지정</option>
+                  {props.departments
+                    .filter((dept) => dept.id !== props.department.id)
+                    .map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* 버튼 */}
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => props.onConfirm(localTargetDepartmentId)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  삭제 확인
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }

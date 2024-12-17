@@ -6,6 +6,7 @@ import {
   deletePopup,
 } from "../../../api/popupAPI";
 import useAuthStore from "@/store/AuthStore";
+import dayjs from "dayjs";
 const PopupManager = () => {
   const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
   const [editingPopup, setEditingPopup] = useState(null);
@@ -13,7 +14,7 @@ const PopupManager = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState(""); // 사용자 알림 메시지 상태
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
- 
+
   // 팝업 데이터 가져오기
   useEffect(() => {
     const loadPopups = async () => {
@@ -40,7 +41,10 @@ const PopupManager = () => {
       const popupWithCompanyId = { ...popup, companyId: user.company }; // 회사 ID 추가
       if (editingPopup) {
         // 수정
-        const updatedPopup = await updatePopup(editingPopup.id, popupWithCompanyId);
+        const updatedPopup = await updatePopup(
+          editingPopup.id,
+          popupWithCompanyId
+        );
         setPopups(
           popups.map((p) => (p.id === editingPopup.id ? updatedPopup : p))
         );
@@ -94,7 +98,9 @@ const PopupManager = () => {
         </div>
 
         {popups.length === 0 ? (
-          <p className="text-gray-600 text-center mt-6">현재 등록된 팝업이 없습니다.</p>
+          <p className="text-gray-600 text-center mt-6">
+            현재 등록된 팝업이 없습니다.
+          </p>
         ) : (
           <PopupTable
             popups={popups}
@@ -153,7 +159,8 @@ const PopupTable = ({ popups, onDelete, onEdit }) => (
             )}
           </td>
           <td className="text-center py-3 px-6">
-            {popup.startDate} ~ {popup.endDate}
+            {dayjs(popup.startDate).format("YYYY-MM-DD")} ~{" "}
+            {dayjs(popup.endDate).format("YYYY-MM-DD")}
           </td>
           <td className="text-center py-3 px-6 space-x-2">
             <button
@@ -229,7 +236,9 @@ const PopupForm = ({ popup, onSave, onCancel }) => {
         <label className="text-gray-600 font-medium">활성화</label>
       </div>
       <div className="mb-4">
-        <label className="block text-gray-600 font-medium mb-1">시작 날짜</label>
+        <label className="block text-gray-600 font-medium mb-1">
+          시작 날짜
+        </label>
         <input
           type="date"
           value={startDate}
@@ -239,7 +248,9 @@ const PopupForm = ({ popup, onSave, onCancel }) => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-gray-600 font-medium mb-1">종료 날짜</label>
+        <label className="block text-gray-600 font-medium mb-1">
+          종료 날짜
+        </label>
         <input
           type="date"
           value={endDate}
@@ -271,6 +282,6 @@ const PopupForm = ({ popup, onSave, onCancel }) => {
       </div>
     </form>
   );
-};  
+};
 
 export default PopupManager;
