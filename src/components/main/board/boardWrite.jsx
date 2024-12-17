@@ -99,11 +99,92 @@ export default function BoardWrite() {
     e.preventDefault();
     setBoard({ ...board, [e.target.name]: e.target.value });
   };
+
+  // // 새 글 작성 -> 작성하기 클릭 시 실행 *********
+  // const submitHandler = async (e) => {
+  //   e.preventDefault();
+  //   if (isSubmitting) return;
+
+  //   setIsSubmitting(true);
+  //   try {
+  //     // 유효성 검사
+  //     if (!board.cate1 || !board.cate2) {
+  //       alert("카테고리를 선택해주세요.");
+  //       return;
+  //     }
+  //     if (!board.title.trim()) {
+  //       alert("제목을 입력해주세요.");
+  //       return;
+  //     }
+  //     if (!board.content.trim()) {
+  //       alert("내용을 입력해주세요.");
+  //       return;
+  //     }
+
+  //     // FormData 생성하여 한번에 전송
+  //     const formData = new FormData();
+  //     console.log("게시글 데이터 전체 (boardWrite):", board);
+
+  //     // 게시글 정보를 JSON으로 변환하여 추가
+  //     const boardInfo = {
+  //       //boardId: 0, // 새글이므로 null
+  //       cate1: String(board.cate1),
+  //       cate2: String(board.cate2),
+  //       writerId: user?.id || "guest", // user 객체에 id가 없으면 'guest'로 처리
+  //       title: board.title.trim(),
+  //       content: board.content.trim(),
+  //     };
+
+  //     console.log("게시글 정보를 JSON으로 변환 (boardWrite)", boardInfo);
+
+
+  //     // formData.append('boardInfo', new Blob([JSON.stringify(boardInfo)], {
+  //     //   type: 'application/json'
+  //     // }));
+
+  //     // 지금 여기서 안됨 ********************
+
+
+
+  //     // 게시글 전송
+  //     const savedBoardId = await postBoard(boardInfo);
+  //     console.log("게시글 전송 postBoard ", postBoard);
+  //     // 파일이 있으면 추가
+  //     if (board.file) {
+  //       formData.append("boardId (boardWrite)", savedBoardId);
+  //       formData.append("writerId (boardWrite)", boardInfo.writerId);
+  //       formData.append("boardFile (boardWrite) ", board.file);
+  //       await uploadBoardFile(formData); // 파일 업로드 함수 호출
+  //     }
+
+  //     console.log("boardId 보드아이디 -> ", savedBoardId);
+  //     console.log("writerId 작성자 아이디 -> ", boardInfo.writerId);
+  //     console.log("board.file 파일 있으면 -> ", board.file);
+
+
+  //     alert("글 작성이 완료되었습니다.");
+  //     navigate("/antwork/board/list");
+
+  //   } catch (error) {
+  //     console.error("게시글 작성 실패 ------:", error);
+  //     alert("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+
+
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  // // 새 글 작성 -> 작성하기 끝 *********
+
+
+  // 글 쓰기 
   const submitHandler = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
     setIsSubmitting(true);
+
     try {
       // 유효성 검사
       if (!board.cate1 || !board.cate2) {
@@ -119,45 +200,55 @@ export default function BoardWrite() {
         return;
       }
 
-      // FormData 생성하여 한번에 전송
-      const formData = new FormData();
+      console.log("게시글 데이터 전체 (boardWrite):", board);
 
-      // 게시글 정보를 JSON으로 변환하여 추가
+      // **1. 게시글 데이터 전송 (JSON)**
       const boardInfo = {
-        boardId: 0, // 새글이므로 null
         cate1: String(board.cate1),
         cate2: String(board.cate2),
-        writerId: user?.id || "guest", // user 객체에 id가 없으면 'guest'로 처리
+        writerId: user?.id || "guest",
         title: board.title.trim(),
         content: board.content.trim(),
       };
 
-      console.log(boardInfo);
+      const savedBoardId = await postBoard(boardInfo); // `/write` 엔드포인트 호출
+      console.log("게시글 저장 완료 -> savedBoardId:", savedBoardId);
 
-      /*
-        formData.append('boardInfo', new Blob([JSON.stringify(boardInfo)], { 
-            type: 'application/json' 
-        }));*/
-      // 게시글 전송
-      const savedBoardId = await postBoard(boardInfo);
-
-      // 파일이 있으면 추가
+      // **2. 파일 업로드 (FormData)**
       if (board.file) {
-        formData.append("boardId", savedBoardId);
-        formData.append("writerId", boardInfo.writerId);
-        formData.append("boardFile", board.file);
-        await uploadBoardFile(formData); // 파일 업로드 함수 호출
+        const formData = new FormData();
+
+        // uploadRequest 객체를 FormData에 추가 (JSON으로 변환)
+        const uploadRequest = {
+          boardId: savedBoardId,
+          writerId: user?.id || "guest",
+        };
+        formData.append(
+          "uploadRequest",
+          new Blob([JSON.stringify(uploadRequest)], { type: "application/json" })
+        );
+
+        // 실제 파일 추가
+        formData.append("file", board.file);
+
+        console.log("파일 업로드 준비된 FormData:", formData);
+
+        // 파일 업로드 API 호출
+        await uploadBoardFile(formData); // `/upload` 엔드포인트 호출
+        console.log("파일 업로드 성공");
       }
 
-      alert("글 작성이 완료되었습니다.");
-      navigate("/antwork/board/list");
+      alert("글 작성이 완료되었습니다❗️");
+      navigate("/antwork/board/list"); // 게시판 리스트로 이동
     } catch (error) {
       console.error("게시글 작성 실패:", error);
-      alert("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+      alert("글 작성 또는 파일 업로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+
 
   return (
     <>
