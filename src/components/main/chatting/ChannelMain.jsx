@@ -6,7 +6,8 @@ import {
   leaveChannel,
   sendChannelMessage,
   getChannelMembers,
-  addChannelMember
+  addChannelMember,
+  changeChannelTitle
 } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
@@ -31,6 +32,8 @@ export default function ChannelMain() {
   const [searchText, setSearchText] = useState("");
   const [highlightedId, setHighlightedId] = useState(null);
   const chatRefs = useRef([]);
+  const [isChangeTitleMode, setIsChangeTitleMode] = useState(false)
+  const [titleChangeText, setTitleChangeText] = useState('')
 
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
@@ -41,7 +44,6 @@ export default function ChannelMain() {
     isFileOpen: false, // 첨부 파일 토글
     isSearchOpen: false, // 검색창 토글
   });
-
 
   useEffect(() => {
     if (highlightedId !== null) {
@@ -281,17 +283,43 @@ export default function ChannelMain() {
           {/* 채팅 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
             {/* 프로필 섹션 */}
-            <div className="flex items-center">
+            <div className="flex items-stretch">
               <img
                 src="https://via.placeholder.com/40"
                 alt="Profile"
                 className="w-16 h-16 rounded-full border border-gray-300 shadow-sm"
               />
-              <div className="flex items-center ml-4">
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
-                  {channelData?.name}
-                </h1>
-              </div>
+              {isChangeTitleMode ?
+                <div className="flex items-stretch ml-4 text-[22.5px]">
+                  <input type="text" value={titleChangeText} onChange={(e) => { setTitleChangeText(e.target.value) }} />
+                  <button onClick={async () => {
+                    try {
+                      await changeChannelTitle({ channelId, name: titleChangeText })
+                      setChannelData(prev => ({ ...prev, name: titleChangeText }))
+                      setIsChangeTitleMode(prev => !prev)
+
+                    } catch (err) {
+                      console.error("이름 수정 실패 : ", err)
+                    }
+                  }}>변경</button>
+                </div> :
+                <div className="flex items-center ml-4 gap-2">
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
+                    {channelData?.name}
+                  </h1>
+                  {channelData?.ownerId === user.id ?
+                    <button onClick={() => {
+                      setIsChangeTitleMode(prev => !prev)
+                      setTitleChangeText(channelData?.name)
+                    }}>수정</button>
+                    :
+                    null
+                  }
+
+                </div>
+              }
+
+
             </div>
 
             {/* 아이콘 섹션 */}
@@ -599,22 +627,17 @@ export default function ChannelMain() {
             </div>
             {toggleStates.isContactOpen && (
               <ul className="space-y-4 mt-4">
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  준혁
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  모라존잘
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  서영이
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  김혜민
-                </li>
+                {members.map(member =>
+                  <li className="flex items-center" key={member.userId}>
+                    <img
+                      src={member.profileImageUrl || "https://via.placeholder.com/50"}
+                      alt="Profile"
+                      className="w-8 h-8 mr-4 rounded-full"
+                    />
+                    {member.userName}
+                  </li>
+                )}
+
               </ul>
             )}
           </div>
@@ -712,7 +735,7 @@ export default function ChannelMain() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 
   function onClickLeaveButton() {

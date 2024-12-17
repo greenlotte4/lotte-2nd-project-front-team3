@@ -30,7 +30,9 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await getAllChannels(); // getAllChannels 함수 호출
+        if (user === null)
+          return;
+        const response = await getAllChannels(user.id); // getAllChannels 함수 호출
         console.log(response)
         setChannels(response); // API에서 받은 채널 목록 상태에 저장
       } catch (error) {
@@ -68,7 +70,7 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
     fetchDMs();
   }, [user.id]);
   return (
-    <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell`}>
+    <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell px-[20px]`}>
       {/* 타이틀 영역 */}
       <div className="logo pb-4 border-b border-gray-200 mb-4">
         <div className="flex flex-col">
@@ -79,24 +81,24 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
           </div>
         </div>
       </div>
-  {/* 채팅 홈 아이콘 */}
-  <div className="logo pb-4 border-b border-gray-200 mb-4">
-  <div className="lnb-item mb-6">
-    <div className="lnb-header flex items-center gap-2">
-      <img
-        src="/images/ico/page_home_22_999999.svg"
-        className="cate-icon w-[22px] h-[22px] cursor-pointer"
-        alt="Chat Home Icon"
-      />
-      <NavLink
-        to="/antwork/chatting"
-        className="main-cate text-[16px] text-gray-700 hover:text-blue-500 transition"
-      >
-        채팅 홈
-      </NavLink>
-    </div>
-  </div>
-  </div>
+      {/* 채팅 홈 아이콘 */}
+      <div className="logo pb-4 border-b border-gray-200 mb-4">
+        <div className="lnb-item mb-6">
+          <div className="lnb-header flex items-center gap-2">
+            <img
+              src="/images/ico/page_home_22_999999.svg"
+              className="cate-icon w-[22px] h-[22px] cursor-pointer"
+              alt="Chat Home Icon"
+            />
+            <NavLink
+              to="/antwork/chatting"
+              className="main-cate text-[16px] text-gray-700 hover:text-blue-500 transition"
+            >
+              채팅 홈
+            </NavLink>
+          </div>
+        </div>
+      </div>
       {/* 개인 채팅 섹션 */}
       <div className="mt-6">
         <div className="flex items-center justify-between">
@@ -125,7 +127,7 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block 0 hover:bg-blue-200 w-8 h-8 rounded-full"
             onClick={() => openModal("createDm", {})}
           >
-            
+
           </button>
         </div>
         <div
@@ -135,10 +137,10 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
           <ul className="ml-1 mt-2 space-y-2">
             {dms.length > 0 ? (
               dms.map((dm) => (
-                <li key={dm.dmId} className="px-2">
+                <li key={dm.dmId} >
                   <NavLink
                     to={`/antwork/chatting/dm/${dm.dmId}`}
-                    className="flex items-center p-2 rounded-md hover:bg-gray-100 transition"
+                    className="flex items-center p-2 rounded-md hover:bg-gray-100 transition pl-0"
                   >
                     <span className="text-lg">🗨️</span>
                     <div className="flex-1 ml-2">
@@ -187,7 +189,7 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             cursor-pointer text-blue-500 hover:bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center text-xl"
             onClick={() => openModal("createChannel", {})}
           >
-            
+
           </button>
         </div>
         <div
@@ -197,10 +199,10 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
           <ul className="ml-1 mt-2 space-y-2">
             {channels.length > 0 ? (
               channels.map((channel) => (
-                <li key={channel.id} className="px-2">
+                <li key={channel.id} >
                   <NavLink
                     to={`/antwork/chatting/channel/${channel.id}`}
-                    className="flex items-center p-2 rounded-md hover:bg-gray-100 transition"
+                    className="flex items-center p-2 rounded-md hover:bg-gray-100 transition pl-0"
                   >
                     {channel.ChannelPrivacy ? (
                       <span className="mr-2">🔒</span> // 비공개 채널
@@ -224,7 +226,7 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
       </div>
 
       {/* 사용자 초대 버튼 */}
-      <div className="border-t border-gray-200 pt-6 mt-6">
+      <div className=" pt-6 mt-6">
         <button
           className="w-full flex items-center justify-center gap-4 bg-blue-500 text-white px-6 py-3 rounded-md text-[16px] hover:shadow-xl transition-transform hover:scale-105"
           onClick={() => openModal("invite", { channelId })}
