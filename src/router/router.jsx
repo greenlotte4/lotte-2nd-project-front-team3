@@ -63,7 +63,7 @@ import ApprovalTripPage from "@/pages/Main/approval/approvalTripPage";
 import TemplateCreatePage from "@/pages/Main/Paging/TemplateCreatePage";
 import SettingCalendarPage from "@/pages/Main/setting/settingCalendarPage";
 import AdminAccessPage from "@/pages/Main/Admin/adminAccessPage";
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedLayout from "@/layouts/ProtectedLayout";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -81,15 +81,10 @@ const router = createBrowserRouter([
 
   // ProtectedRoute 적용된 antwork 경로
   {
-    path: "/antwork/*",
-    element: (
-      <ProtectedRoute>
-        <MainPage /> 
-      </ProtectedRoute>
-    ),
+    path: "/antwork",
+    element: <ProtectedLayout />, // ProtectedRoute + Outlet 적용
     children: [
-    // 관리자 페이지
-    // { path: "/admin/login", element: <AdminLoginPage /> }, // 2024/11/26(화) 최준혁 - AdminLoginPage 추가
+      { index: true, element: <MainPage /> }, // "/antwork" 기본 페이지 설정
       { path: "admin", element: <AdminPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
       { path: "admin/member", element: <AdminMemberPage /> }, // 2024/11/26(화) 황수빈 - AdminPage 추가
       { path: "admin/department", element: <AdminDepartmentPage /> }, // 2024/12/03(화) 최준혁 - AdminDepartmentPage 추가
