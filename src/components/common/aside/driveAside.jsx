@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 
 import DriveModal from "../modal/driveModal";
 import useModalStore from "../../../store/modalStore";
+import useAuthStore from "@/store/AuthStore";
 
 export default function DriveAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
+
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
 
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);

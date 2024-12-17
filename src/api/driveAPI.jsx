@@ -14,6 +14,8 @@ import {
   MY_TRASH_SELECT_URI,
   MY_TRASH_URI,
   ONE_DRIVE_FOLDER_TRASH,
+  SHARE_DRIVE_SELECT_URI,
+  SHARE_DRIVE_URI,
   TRASH_FOLDER_DRIVE,
 } from "./_URI";
 
@@ -119,9 +121,9 @@ export const driveFileDownload = async (driveFileId) => {
 };
 
 //마이 드라이브 전체보기
-export const MyDriveView = async () => {
+export const MyDriveView = async (uid) => {
   try {
-    const response = await axios.get(`${MY_DRIVE_URI}`);
+    const response = await axios.get(`${MY_DRIVE_URI}/${uid}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -248,5 +250,31 @@ export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
   } catch (error) {
     console.error("Error removing collaborator:", error);
     throw error;
+  }
+};
+
+//공유 드라이브 전체보기
+export const ShareDriveView = async (userId) => {
+  try {
+    const response = await axios.get(`${SHARE_DRIVE_URI}/${userId}`);
+    console.log("Email verification response:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+//공유유 드라이브 선택보기
+export const ShareDriveSelectView = async (driveFolderId, userId) => {
+  try {
+    const response = await axios.get(
+      `${SHARE_DRIVE_SELECT_URI}/${driveFolderId}/${userId}`
+    );
+    console.log("마이 드라이브 선택보기:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
   }
 };
