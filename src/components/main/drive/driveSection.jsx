@@ -176,6 +176,7 @@ export default function DriveSection() {
 
   const fetchFolderData = async (driveFolderId) => {
     setIsLoading(true); // 로딩 시작
+    const uid = user.uid
     try {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
@@ -183,7 +184,7 @@ export default function DriveSection() {
         response = await MyDriveSelectView(driveFolderId); // 상세 정보 API 호출
         console.log("선택된 폴더:", response.data);
       } else {
-        response = await MyDriveView(); // 목록 정보 API 호출
+        response = await MyDriveView(uid); // 목록 정보 API 호출
         console.log("폴더+파일 목록 데이터:", response.data);
       }
 
@@ -210,6 +211,7 @@ export default function DriveSection() {
           driveFolderId: folder.driveFolderId,
           driveParentFolderId: folder.driveParentFolderId,
           driveParentFolderName: folder.parentFolderName,
+          driveShareType: folder.driveFolderShareType,
         }))
       );
 
@@ -681,7 +683,13 @@ export default function DriveSection() {
                               </button>
                             </td>
                             <td>
-                              <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
+                              <i
+                                className={
+                                  folder.driveShareType === 1
+                                    ? "fa-solid fa-folder-open text-[16px] text-[#FFC558]" // driveFoldershareType이 1일 경우
+                                    : "fa-solid fa-folder text-[16px] text-[#FFC558]" // 그 외의 경우
+                                }
+                              ></i>
                             </td>
                             <td>
                               <Link

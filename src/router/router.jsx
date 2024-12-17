@@ -116,6 +116,7 @@ const router = createBrowserRouter([
   { path: "/antwork/drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage
   // { path: "/antwork/drive/recycle/folder/:driveFolderId", element: <DriveRecylcePage /> }, // 조건을 통한 dirvePage
   { path: "/antwork/drive/share", element: <DriveSharePage /> }, // antwork 페이지
+  { path: "/antwork/drive/share/folder/:driveFolderId", element: <DriveSharePage /> }, // antwork 페이지
   { path: "/antwork/drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
   { path: "/antwork/board", element: <BoardPage /> }, //
   { path: "/antwork/board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
