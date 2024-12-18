@@ -16,7 +16,7 @@ export default function MainSection() {
 
   useEffect(() => {
     console.log("사용자 정보:", user);
-  }, []);
+  }, [user]);
 
   const handleToggle = () => {
     toggleSection("showMenu");

@@ -28,6 +28,8 @@ const AttendanceCard = ({ userId }) => {
         setCheckInTime(data.checkInTime);
         setCheckOutTime(data.checkOutTime);
         setError(null);
+        console.log("출근타임" + data.checkInTime);
+        console.log("퇴근타임" + data.checkOutTime);
       } catch (err) {
         console.error("출퇴근 상태를 가져오는 중 오류 발생:", err);
         setError("출퇴근 상태를 불러오는 데 실패했습니다.");
@@ -50,11 +52,30 @@ const AttendanceCard = ({ userId }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // 근무 시간 계산
   useEffect(() => {
+    const parseDateTime = (dateTime) => {
+      if (!dateTime) return null; // 값이 없으면 null 반환
+
+      try {
+        // dateTime이 문자열이 아닌 경우 문자열로 변환
+        const dateTimeStr =
+          typeof dateTime === "string" ? dateTime : String(dateTime);
+
+        // 쉼표로 분리하여 Date 객체 생성
+        const parts = dateTimeStr.split(",");
+        if (parts.length < 6) return null; // 필요한 값이 모두 없는 경우 null 반환
+
+        const [year, month, day, hour, minute, second] = parts.map(Number);
+        return new Date(year, month - 1, day, hour, minute, second);
+      } catch (error) {
+        console.error("DateTime 파싱 실패:", error);
+        return null;
+      }
+    };
+
     const calculateWorkProgress = () => {
-      const startTime = checkInTime ? new Date(checkInTime) : null;
-      const endTime = checkOutTime ? new Date(checkOutTime) : null;
+      const startTime = checkInTime ? parseDateTime(checkInTime) : null;
+      const endTime = checkOutTime ? parseDateTime(checkOutTime) : null;
 
       if (startTime && !endTime) {
         const now = new Date();
@@ -113,10 +134,33 @@ const AttendanceCard = ({ userId }) => {
   };
 
   const formatDateTime = (dateTime) => {
-    if (!dateTime) return "--:--:--";
+    if (!dateTime) return "--:--:--"; // 값이 없을 때 기본값 반환
+
     try {
-      return format(new Date(dateTime), "yyyy-MM-dd HH:mm:ss");
-    } catch {
+      // dateTime이 문자열이 아니면 문자열로 변환
+      const dateTimeStr =
+        typeof dateTime === "string" ? dateTime : String(dateTime);
+
+      // 쉼표로 분리하여 배열로 변환
+      const parts = dateTimeStr.split(",");
+      if (parts.length < 6) {
+        // 필요한 부분이 모두 존재하지 않을 경우 기본값 반환
+        return "--:--:--";
+      }
+
+      // 배열 값으로 Date 객체 생성
+      const [year, month, day, hour, minute, second] = parts.map(Number);
+      const date = new Date(year, month - 1, day, hour, minute, second);
+
+      // Date 객체가 유효한지 확인
+      if (isNaN(date.getTime())) {
+        return "--:--:--";
+      }
+
+      // 날짜를 원하는 형식으로 변환
+      return format(date, "yyyy-MM-dd HH:mm:ss");
+    } catch (error) {
+      console.error("날짜 변환 실패:", error);
       return "--:--:--";
     }
   };
