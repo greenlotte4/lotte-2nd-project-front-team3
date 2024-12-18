@@ -49,6 +49,7 @@ const PagingWrite = () => {
   const uid = user?.uid;
   const name = user?.name;
   const profile = user?.profile;
+  const rate = user?.companyRate;
 
   // uid 체크 로그인 안되어 있으면 로그인 페이지로
   useEffect(() => {
@@ -193,6 +194,7 @@ const PagingWrite = () => {
             ownerName: name,
             ownerImage: profile,
             isTemplate: Boolean(false),
+            companyRate: rate,
           };
 
           console.log("Creating new page with data:", pageData);
@@ -205,6 +207,12 @@ const PagingWrite = () => {
           await initializeEditor();
         } catch (error) {
           console.error("Error creating new page:", error);
+          if (error.response && error.response.status === 403) {
+            alert(
+              "무료 회원은 5개 이상의 페이지를 생성할 수 없습니다.\n임시 삭제된 페이지를 포함하여 5개의 페이지를 허용합니다."
+            );
+            navigate("/antwork/page");
+          }
         }
       } else {
         // 기존 페이지 접근 시 권한 체크
@@ -280,7 +288,7 @@ const PagingWrite = () => {
         });
       }
     } catch (error) {
-      console.error("❌ 제목 ���경 중 에러:", error);
+      console.error("❌ 제목 변경 중 에러:", error);
     }
   };
 
@@ -477,7 +485,7 @@ const PagingWrite = () => {
                 <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <div className="py-1">
                     <div className="border-t border-gray-300 border-b border-gray-300 p-3">
-                      {isOwner && ( // 소유자�� 경우에만 삭제 버튼 표시
+                      {isOwner && ( // 소유자 경우에만 삭제 버튼 표시
                         <button
                           onClick={() => {
                             handleDelete();

@@ -23,7 +23,7 @@ const TemplateCreate = () => {
   const uid = user?.uid;
   const name = user?.name;
   const profile = user?.profile;
-
+  const rate = user?.companyRate;
   // uid 체크 로그인 안되어 있으면 로그인 페이지로
   useEffect(() => {
     if (!uid) {
@@ -91,8 +91,9 @@ const TemplateCreate = () => {
         title: title || "제목 없는 템플릿",
         content: JSON.stringify(savedData),
         owner: uid,
-        ownerName: user.name,
+        ownerName: name,
         isTemplate: Boolean(true),
+        companyRate: rate,
       };
       console.log("templateData", templateData);
 

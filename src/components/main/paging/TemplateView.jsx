@@ -23,6 +23,7 @@ const TemplateView = () => {
 
   const user = useAuthStore((state) => state.user);
 
+  console.log(user);
   // Editor 훅 사용 - readOnly 상태를 isEditable에 따라 결정
   const editor = useEditor(
     () => {},
@@ -159,15 +160,23 @@ const TemplateView = () => {
           typeof template.content === "string"
             ? template.content
             : JSON.stringify(template.content),
-        owner: user.uid,
-        ownerName: user.name,
-        ownerImage: user.profile,
+        owner: user?.uid,
+        ownerName: user?.name,
+        ownerImage: user?.profile,
+        isTemplate: false,
+        companyRate: user?.companyRate,
       });
 
       const newPageId = response.data;
       navigate(`/antwork/page/write?id=${newPageId}`);
     } catch (error) {
-      alert("페이지 생성에 실패했습니다.");
+      console.error("Error creating new page:", error);
+      if (error.response && error.response.status === 403) {
+        alert(
+          "무료 회원은 5개 이상의 페이지를 생성할 수 없습니다.\n임시 삭제된 페이지를 포함하여 5개의 페이지를 허용합니다."
+        );
+        navigate("/antwork/page/template");
+      }
     } finally {
       setIsLoading(false);
     }
