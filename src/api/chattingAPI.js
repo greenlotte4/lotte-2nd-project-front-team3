@@ -12,6 +12,7 @@ import {
   DM_SEND_MESSAGE_URI,
   CHANNEL_GET_MEMBER_URI,
   CHANNEL_CHANGE_TITLE_URI,
+  DM_GET_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -169,6 +170,16 @@ export const getDmList = async (userId) => {
   }
 };
 
+export const getDmById = async (dmId) => {
+  try {
+    const response = await axios.get(DM_GET_URI(dmId));
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch DM data:", error);
+    throw error;
+  }
+};
+
 export const createDm = async ({ creatorId, receiverIds }) => {
   try {
     const response = await axios.post(`${DM_CREATE_URI}`, { creatorId, receiverIds });
@@ -178,4 +189,19 @@ export const createDm = async ({ creatorId, receiverIds }) => {
     throw error; // 에러 발생 시 처리
   }
 
+}
+
+export const getDmMembers = async (dmId) => {
+  try {
+    console.log(`[JS] 디엠 멤버 조회 요청: 채널 ID ${dmId}`);
+
+
+    const response = await axios.get(CHANNEL_GET_MEMBER_URI(dmId));
+
+    console.log(`[JS] 멤버 조회 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 디엠 멤버 조회 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
 }

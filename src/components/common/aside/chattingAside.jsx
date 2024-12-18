@@ -127,7 +127,6 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block 0 hover:bg-blue-200 w-8 h-8 rounded-full"
             onClick={() => openModal("createDm", {})}
           >
-
           </button>
         </div>
         <div
@@ -223,26 +222,6 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
             )}
           </ul>
         </div>
-      </div>
-
-      {/* 사용자 초대 버튼 */}
-      <div className=" pt-6 mt-6">
-        <button
-          className="w-full flex items-center justify-center gap-4 bg-blue-500 text-white px-6 py-3 rounded-md text-[16px] hover:shadow-xl transition-transform hover:scale-105"
-          onClick={() => openModal("invite", { channelId })}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          <span className="font-semibold">사용자 초대</span>
-        </button>
       </div>
     </aside>
 

@@ -1,10 +1,15 @@
 import { useState } from "react";
 import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
+import { useInviteModal } from "../../../hooks/chatting/invitemodal";
+import useAuthStore from "../../../store/AuthStore"; // userId 가져오기 위한 import
 
 export default function ChattingMain() {
-  const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
   const { openModal } = useModalStore(); // 모달 열기 함수 가져오기
+  const inviteModalProps = useInviteModal(); // 채팅방 초대 모달 props 호출
+  const user = useAuthStore((state) => state.user); // user 정보가 state에 저장되어 있다고 가정
+  const { userId } = useAuthStore((state) => state);
+
 
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
@@ -23,7 +28,7 @@ export default function ChattingMain() {
           <div className="max-w-9xl mx-auto p-6">
             <div className="mb-6">
               <h1 className="text-xl font-semibold">Chatting</h1>
-              <p className="text-sm text-gray-500">채팅 메인 페이지입니다.</p>
+              <p className="text-sm text-gray-500">채팅 Home 입니다.</p>
             </div>
     <div className="w-full max-w-9xl mx-auto px-6 py-12 space-y-8 bg-white min-h-screen">
    
@@ -63,14 +68,16 @@ export default function ChattingMain() {
             <p className="text-gray-600 mb-4 leading-relaxed">
               개인 메시지로 중요한 대화를 이어가보세요.
             </p>
-            <a
-              className="w-full text-center block bg-green-500 text-white 
+            <button
+            className="w-full text-center block bg-green-500 text-white 
                          py-3 rounded-xl hover:bg-green-600 
                          transition-colors font-medium"
-            >
-              DM 초대하기
-            </a>
+            onClick={() => openModal("createDm", {})}
+          >
+            DM 대화방 생성
+          </button>
           </div>
+          
 
           {/* 채널 카드 */}
           <div
@@ -103,14 +110,12 @@ export default function ChattingMain() {
             <p className="text-gray-600 mb-4 leading-relaxed">
               팀원들과 실시간으로 소통할 수 있는 채널에 참여해보세요.
             </p>
-            <a
-              href="/channels"
-              className="w-full text-center block bg-blue-500 text-white 
+            <button
+            className="w-full text-center block bg-blue-500 text-white 
                          py-3 rounded-xl hover:bg-blue-600 
                          transition-colors font-medium"
-            >
-              채널 추가
-            </a>
+            onClick={() => openModal("createChannel", {})}
+          >채널 추가</button>
           </div>
 
           {/* 도움말 카드 */}
@@ -142,15 +147,14 @@ export default function ChattingMain() {
             </div>
             <h2 className="text-xl font-semibold mb-3 text-gray-800">도움말</h2>
             <p className="text-gray-600 mb-4 leading-relaxed">
-              버튼을 클릭하여 DM 초대와 채널 생성을 할 수 있어요.
+              채널을 생성한 채널 소유자는 채널 이름을 변경 할 수 있어요.
             </p>
             <a
-              href="/help"
               className="w-full text-center block bg-yellow-500 text-white 
-                         py-3 rounded-xl hover:bg-yellow-600 
-                         transition-colors font-medium"
+              py-3 rounded-xl hover:bg-yellow-600 
+              transition-colors font-medium"
             >
-              AntWork
+              AntWork 채팅
             </a>
           </div>
         </div>

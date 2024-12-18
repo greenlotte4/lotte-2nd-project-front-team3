@@ -284,15 +284,15 @@ export default function ChannelMain() {
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
             {/* 프로필 섹션 */}
             <div className="flex items-stretch">
-              <img
+              {/* <img
                 src="https://via.placeholder.com/40"
                 alt="Profile"
                 className="w-16 h-16 rounded-full border border-gray-300 shadow-sm"
-              />
+              /> */}
               {isChangeTitleMode ?
                 <div className="flex items-stretch ml-4 text-[22.5px]">
                   <input type="text" value={titleChangeText} onChange={(e) => { setTitleChangeText(e.target.value) }} />
-                  <button onClick={async () => {
+                  <button className="font-semibold text-blue-500 text-[12px]" onClick={async () => {
                     try {
                       await changeChannelTitle({ channelId, name: titleChangeText })
                       setChannelData(prev => ({ ...prev, name: titleChangeText }))
@@ -308,10 +308,10 @@ export default function ChannelMain() {
                     {channelData?.name}
                   </h1>
                   {channelData?.ownerId === user.id ?
-                    <button onClick={() => {
+                    <button className="font-semibold text-blue-500" onClick={() => {
                       setIsChangeTitleMode(prev => !prev)
                       setTitleChangeText(channelData?.name)
-                    }}>수정</button>
+                    }}>편집</button>
                     :
                     null
                   }
@@ -582,31 +582,17 @@ export default function ChannelMain() {
                   alt="알림 아이콘"
                 />
               </button>
-
-              {/* 나가기 아이콘 */}
-              <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
-                onClick={onClickLeaveButton()}
-              >
-                <img src="/images/ico/outchat.svg"></img>
-              </button>
             </div>
           </div>
 
-          {/* 검색창 */}
-          <div className="flex items-center mb-6">
-            <input
-              type="text"
-              placeholder="DM 검색"
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
+         
           {/* 대화 상대 */}
           <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
               onClick={() => toggleState("isContactOpen")}
             >
-              <h3 className="text-lg font-semibold mb-2">대화 상대</h3>
+              <h3 className="text-lg font-semibold mb-2">채널 멤버</h3>
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -733,6 +719,25 @@ export default function ChannelMain() {
               </div>
             )}
           </div>
+           {/* 사용자 초대 버튼 */}
+      <div className=" pt-6 mt-6">
+        <button
+          className="w-full flex items-center justify-center gap-4 bg-blue-500 text-white px-6 py-3 rounded-md text-[16px] hover:shadow-xl transition-transform hover:scale-105"
+          onClick={() => openModal("invite", { channelId })}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span className="font-semibold">사용자 추가</span>
+        </button>
+      </div>
         </div>
       </div>
     </div >

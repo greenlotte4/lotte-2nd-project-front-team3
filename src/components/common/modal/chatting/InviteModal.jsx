@@ -63,7 +63,7 @@ export default function InviteModal({ closeModal }) {
     <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
       {/* 제목 */}
       <h2 className="text-xl font-bold mb-4 border-b pb-2 text-gray-700">
-        대화상대 초대
+        이 채널에 멤버 추가하기
       </h2>
       {/* 검색 필드 */}
       <div className="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-50">

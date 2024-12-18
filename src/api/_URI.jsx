@@ -155,6 +155,8 @@ export const DM_SEND_MESSAGE_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
+export const DM_GET_MEMBER_URI = (dmId) =>
+  `${API_SERVER_HOST}/chatting/dm/${dmId}/members`; // 디엠 멤버 조회
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘린더 조회하기
