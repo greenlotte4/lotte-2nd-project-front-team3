@@ -13,6 +13,7 @@ const useProjectWebSocket = ({
   handleAddItem,
   fetchCollaborators,
   setProject,
+  fetchStatesAndTasks,
 }) => {
   const stompClientRef = useRef(null);
 
@@ -87,6 +88,7 @@ const useProjectWebSocket = ({
                   console.log("updatedCollaborators:", updatedCollaborators); // 상태 업데이트 후 새 배열을 찍어봄
                   return updatedCollaborators;
                 });
+                fetchStatesAndTasks();
                 break;
               // 작업상태 추가
               case "stateInsert":
@@ -227,6 +229,23 @@ const useProjectWebSocket = ({
 
                 console.log(
                   "✅ 프로젝트 이름이 실시간으로 업데이트되었습니다."
+                );
+                break;
+              // 프로젝트 상태변경
+              case "projectStatusUpdate":
+                console.log("🔄 프로젝트 상태 업데이트 수신:", data);
+
+                setProject((prevProject) =>
+                  prevProject.id === data.id
+                    ? {
+                        ...prevProject,
+                        projectName: data.projectName,
+                        status: data.status,
+                      }
+                    : prevProject
+                );
+                console.log(
+                  "✅ 프로젝트 상태가 실시간으로 업데이트되었습니다."
                 );
                 break;
             }
