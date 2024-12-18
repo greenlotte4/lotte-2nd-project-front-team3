@@ -65,6 +65,8 @@ import SettingCalendarPage from "@/pages/Main/setting/settingCalendarPage";
 import AdminAccessPage from "@/pages/Main/Admin/adminAccessPage";
 import ProtectedLayout from "@/layouts/ProtectedLayout";
 
+import TemplateViewPage from "@/pages/Main/Paging/TemplateViewPage";
+
 // prettier-ignore
 const router = createBrowserRouter([
 
@@ -98,6 +100,7 @@ const router = createBrowserRouter([
       { path: "page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가
       { path: "page/template", element: <TemplatePage /> },  // 2024/12/11(수) 황수빈 - TemplatePage 추가
       { path: "page/template/create", element: <TemplateCreatePage /> },  // 2024/12/11(수) 황수빈 - TemplateCreatePage 추가P
+      { path: "/antwork/page/template/view/:id", element: <TemplateViewPage /> }, // 2024/12/11(수) 황수빈 - TemplateCreatePage 추가P
 
       { path: "chatting", element: <ChattingPage /> }, // Antwork 채팅 main
       { path: "chatting/dm/:id", element: <DmChattingPage /> }, // Antwork 채팅 channel

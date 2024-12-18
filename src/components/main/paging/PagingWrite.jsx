@@ -15,11 +15,7 @@ import useModalStore from "../../../store/modalStore";
 import PageCollaboratorModal from "../../common/modal/pageCollaboratorModal";
 import { usePageActions } from "../../../hooks/paging/usePageActions";
 import { usePageList } from "../../../hooks/paging/usePageList";
-import {
-  PAGE_LIST_UID_URI,
-  PAGE_LIST_MODIFIED_URI,
-  PAGE_LIST_DELETED_URI,
-} from "../../../api/_URI";
+import { PAGE_LIST_UID_URI, PAGE_LIST_DELETED_URI } from "../../../api/_URI";
 
 const PagingWrite = () => {
   // 기본 상태들
@@ -27,12 +23,14 @@ const PagingWrite = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [stompClient, setStompClient] = useState(null);
   const [componentId, setComponentId] = useState(null);
-  const [emoji, setEmoji] = useState("");
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [collaborators, setCollaborators] = useState([]);
   const [showAllCollaborators, setShowAllCollaborators] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
+
+  const { handleSoftDeletePage } = usePageActions();
 
   // location & navigation - 주소값에서 id값 찾기
   const location = useLocation();
@@ -78,7 +76,6 @@ const PagingWrite = () => {
         _id: currentId,
         content: JSON.stringify(savedData),
         componentId: componentId,
-        timestamp: Date.now(),
         uid: uid,
       };
 
@@ -195,13 +192,7 @@ const PagingWrite = () => {
             owner: uid,
             ownerName: name,
             ownerImage: profile,
-            collaborators: [
-              {
-                uid: uid,
-                type: "OWNER",
-                isOwner: true,
-              },
-            ],
+            isTemplate: Boolean(false),
           };
 
           console.log("Creating new page with data:", pageData);
@@ -238,7 +229,6 @@ const PagingWrite = () => {
     stompClientRef,
   });
 
-  // 신 이 함수 사용
   const generateUUID = () => {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
       /[xy]/g,
@@ -280,7 +270,6 @@ const PagingWrite = () => {
           _id: id,
           title: newTitle,
           content: JSON.stringify(currentContent),
-          timestamp: Date.now(),
           componentId: componentId,
           uid: uid,
         };
@@ -291,7 +280,7 @@ const PagingWrite = () => {
         });
       }
     } catch (error) {
-      console.error("❌ 제목 변경 중 에러:", error);
+      console.error("❌ 제목 ���경 중 에러:", error);
     }
   };
 
@@ -346,7 +335,6 @@ const PagingWrite = () => {
 
     fetchCollaborators();
   }, [id]);
-
   // departments 데이터 가져오기
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -371,37 +359,16 @@ const PagingWrite = () => {
     setCollaborators(updatedCollaborators);
   };
 
-  // 페이지 목록 상태 추가
-  const { setPages: setPersonalPageList } = usePageList(
-    `${PAGE_LIST_UID_URI}/${uid}`
-  );
-  const { setPages: setLatestPages } = usePageList(
-    `${PAGE_LIST_MODIFIED_URI}/${uid}`
-  );
-  const { setPages: setDeletedPages } = usePageList(
-    `${PAGE_LIST_DELETED_URI}/${uid}`
-  );
-
-  // 페이지 액션 훅 사용
-  const { handleDeletePage } = usePageActions();
-
   // 삭제 핸들러 수정
   const handleDelete = async () => {
     try {
-      await handleDeletePage(id, {
-        personalPageList: [],
-        setPersonalPageList,
-        latestPages: [],
-        setLatestPages,
-        deletedPages: [],
-        setDeletedPages,
-      });
-
-      // 페이지 이동 전에 약간의 딜레이를 주어 상태 업데이트가 완되도록 함
-      setTimeout(() => {
+      if (confirm("페이지를 삭제하시겠습니까?")) {
+        console.log("Deleting page with ID:", id); // 디버깅 로그 추가
+        await handleSoftDeletePage(id);
+        console.log("Page deleted successfully"); // 성공 로그 추가
+        alert("페이지가 삭제되었습니다.");
         navigate("/antwork/page");
-        window.location.reload(); // 페이지 새로고침
-      }, 100);
+      }
     } catch (error) {
       console.error("페이지 삭제 중 오류 발생:", error);
       alert("페이지 삭제에 실패했습니다.");
@@ -510,7 +477,7 @@ const PagingWrite = () => {
                 <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <div className="py-1">
                     <div className="border-t border-gray-300 border-b border-gray-300 p-3">
-                      {isOwner && ( // 소유자인 경우에만 삭제 버튼 표시
+                      {isOwner && ( // 소유자�� 경우에만 삭제 버튼 표시
                         <button
                           onClick={() => {
                             handleDelete();

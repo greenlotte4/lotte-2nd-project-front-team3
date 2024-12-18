@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  PAGE_LIST_UID_URI,
-  PAGE_LIST_MODIFIED_URI,
-  PAGE_LIST_DELETED_URI,
-} from "../../../api/_URI";
+import { PAGE_LIST_UID_URI, PAGE_LIST_DELETED_URI } from "../../../api/_URI";
 
 import { usePageList } from "../../../hooks/paging/usePageList";
 import { usePageActions } from "../../../hooks/paging/usePageActions";

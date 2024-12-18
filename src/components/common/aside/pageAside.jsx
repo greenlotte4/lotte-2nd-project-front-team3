@@ -232,7 +232,11 @@ export default function PageAside({ asideVisible }) {
               <ol>
                 {personalPageList.map((page) => (
                   <li key={page._id}>
-                    <Link to={`/antwork/page/write?id=${page._id}`}>
+                    <Link
+                      to={`/antwork/page/write?id=${page._id}`}
+                      className="block truncate max-w-[200px] hover:text-blue-500"
+                      title={pageTitles[page._id] || page.title}
+                    >
                       {pageTitles[page._id] || page.title}
                     </Link>
                   </li>
@@ -259,12 +263,16 @@ export default function PageAside({ asideVisible }) {
             {toggles.sharedPages && (
               <ol>
                 {isLoading ? (
-                  <li className="text-gray-500 text-center">��딩 중...</li>
+                  <li className="text-gray-500 text-center">로딩 중...</li>
                 ) : sharedPageList && sharedPageList.length > 0 ? (
                   sharedPageList.map((page) => (
                     <li key={page._id}>
-                      <Link to={`/antwork/page/write?id=${page._id}`}>
-                        {page.title || "제목 없음"}
+                      <Link
+                        to={`/antwork/page/write?id=${page._id}`}
+                        className="block truncate max-w-[200px] hover:text-blue-500"
+                        title={pageTitles[page._id] || page.title}
+                      >
+                        {pageTitles[page._id] || page.title}
                       </Link>
                     </li>
                   ))
