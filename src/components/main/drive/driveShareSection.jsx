@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
-import { ShareDriveSelectView, ShareDriveView } from "@/api/driveAPI";
+import {
+  driveFileDownload,
+  driveFilesInsert,
+  ShareDriveSelectView,
+  ShareDriveView,
+} from "@/api/driveAPI";
 
 export default function DriveShareSection() {
   const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
@@ -238,6 +243,7 @@ export default function DriveShareSection() {
           driveFileSize: file.driveFileSize,
           driveFileCreatedAt: file.driveFileCreatedAt,
           driveFileId: file.driveFileId,
+          driveFileSharedAt: file.driveFileSharedAt,
         }))
       );
     } catch (err) {
@@ -529,6 +535,24 @@ export default function DriveShareSection() {
                   />
                 </div>
               )}
+              {driveFolderId && (
+                <button
+                  onClick={() =>
+                    openModal("insert", {
+                      driveFolderId,
+                      onFolderAdd: (newFolder) => {
+                        setFolderStates((prevState) => [
+                          ...prevState,
+                          newFolder,
+                        ]); // 기존 상태 배열에 새 폴더 추가
+                      },
+                    })
+                  } // driveFolderId 값을 객체로 전달
+                  className="w-[70px] h-[30px] border rounded-[4px]"
+                >
+                  새폴더
+                </button>
+              )}
               <button className="w-[70px] h-[30px] border rounded-[4px]">
                 파일유형
               </button>
@@ -589,8 +613,11 @@ export default function DriveShareSection() {
                     <th className="w-[3%]">종류</th>
                     <th className="w-[20%]">이름</th>
                     <th className="w-[5%]">크기</th>
-                    <th className="w-[5%]">공유자</th>
-                    <th className="w-[5%]">수정자</th>
+                    {driveFolderId ? (
+                      <th className="w-[5%]">수정자</th>
+                    ) : (
+                      <th className="w-[5%]">공유자</th>
+                    )}
                     <th className="w-[7.5%]">생성한날짜</th>
                     <th className="w-[7.5%]">공유한날짜</th>
                   </tr>
@@ -641,9 +668,7 @@ export default function DriveShareSection() {
                             <td>
                               <i
                                 className={
-                                  folder.driveShareType === 1
-                                    ? "fa-solid fa-folder-open text-[16px] text-[#6BBFFC]" // driveFoldershareType이 1일 경우
-                                    : "fa-solid fa-folder text-[16px] text-[#FFC558]" // 그 외의 경우
+                                  "fa-solid fa-folder-open text-[16px] text-[#6BBFFC]" // driveFoldershareType이 1일 경우
                                 }
                               ></i>
                             </td>
@@ -655,8 +680,11 @@ export default function DriveShareSection() {
                               </Link>
                             </td>
                             <td>{folder.driveFolderSize}</td>
-                            <td>{folder.driveFolderMaker}</td>
-                            <td>{folder.driveFolderMaker}</td>
+                            {driveFolderId ? (
+                              <td>{folder.driveFolderMaker}</td>
+                            ) : (
+                              <td>{folder.driveFolderMaker}</td>
+                            )}
                             <td>{folder.driveFolderCreatedAt}</td>
                             <td>{folder.driveFolderSharedAt}</td>
                           </tr>
@@ -725,8 +753,13 @@ export default function DriveShareSection() {
                               {file.driveFileSName}
                             </td>
                             <td>{file.driveFileSize}</td>
-                            <td>{file.driveFileMaker}</td>
+                            {driveFolderId ? (
+                              <td>{file.driveFileMaker}</td>
+                            ) : (
+                              <td>{file.driveFileMaker}</td>
+                            )}
                             <td>{file.driveFileCreatedAt}</td>
+                            <td>{file.driveFileSharedAt}</td>
                           </tr>
                         );
                       })}
@@ -785,7 +818,7 @@ export default function DriveShareSection() {
                               <i className="fa-solid fa-check"></i>
                             )}
                           </div>
-                          <i className="fa-solid fa-folder text-[43px] text-[#FFC558] mx-20 my-[25px]"></i>
+                          <i className="fa-solid fa-folder-open text-[43px] text-[#6BBFFC] mx-20 my-[25px]"></i>
                           <div className="text-center mt-2">
                             {folder.driveFolderName}
                           </div>
