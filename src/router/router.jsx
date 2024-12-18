@@ -112,6 +112,7 @@ const router = createBrowserRouter([
       { path: "drive", element: <DrivePage /> }, // antwork 페이지
       { path: "drive/folder/:driveFolderId", element: <DrivePage /> }, // 조건을 통한 dirvePage
       { path: "drive/share", element: <DriveSharePage /> }, // antwork 페이지
+      { path: "drive/share/folder/:driveFolderId", element: <DriveSharePage /> }, // antwork 페이지
       { path: "drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
 
       { path: "calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가

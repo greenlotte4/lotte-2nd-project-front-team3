@@ -18,11 +18,15 @@ import {
   SHARE_DRIVE_URI,
   TRASH_FOLDER_DRIVE,
 } from "./_URI";
+import axiosInstance from "@/utils/axiosInstance";
 
 //드라이브 폴더 등록
 export const driveFolderInsert = async (data) => {
   try {
-    const response = await axios.post(`${DRIVE_FOLDER_INSERT_URI}`, data);
+    const response = await axiosInstance.post(
+      `${DRIVE_FOLDER_INSERT_URI}`,
+      data
+    );
     console.log(response.data);
     return response.data;
   } catch (err) {
@@ -33,7 +37,7 @@ export const driveFolderInsert = async (data) => {
 //드라이브 폴더 등록
 export const driveFolderNewNameUpDate = async (data) => {
   try {
-    const response = await axios.post(`${DRIVE_FOLDER_NAME}`, data);
+    const response = await axiosInstance.post(`${DRIVE_FOLDER_NAME}`, data);
     console.log(response.data);
     return response.data;
   } catch (err) {
@@ -47,7 +51,7 @@ export const driveFolderTrashUpDate = async (
   selectedDriveFileId
 ) => {
   try {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `${ONE_DRIVE_FOLDER_TRASH}/${driveFolderNameId || "null"}/${
         selectedDriveFileId || "0"
       }`
@@ -74,11 +78,15 @@ export const driveFolderTrashUpDate = async (
 //드라이브 파일 등록
 export const driveFilesInsert = async (formData) => {
   try {
-    const response = await axios.post(`${DRIVE_FILES_INSERT_URI}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.post(
+      `${DRIVE_FILES_INSERT_URI}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     console.log(response.data);
     return response.data;
   } catch (err) {
@@ -89,7 +97,7 @@ export const driveFilesInsert = async (formData) => {
 //드라이브 폴더 등록
 export const driveFolderFileInsert = async (formData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${DRIVE_FOLDER_FILE_INSERT_URI}`,
       formData,
       {
@@ -107,7 +115,7 @@ export const driveFolderFileInsert = async (formData) => {
 
 export const driveFileDownload = async (driveFileId) => {
   try {
-    const response = await axios.get(`${MY_DRIVE_FILE_DOWNLOAD}`, {
+    const response = await axiosInstance.get(`${MY_DRIVE_FILE_DOWNLOAD}`, {
       params: { driveFileId }, //id전달
       responseType: "blob", // 바이너리 데이터로 응답 받음
     });
@@ -123,7 +131,7 @@ export const driveFileDownload = async (driveFileId) => {
 //마이 드라이브 전체보기
 export const MyDriveView = async (uid) => {
   try {
-    const response = await axios.get(`${MY_DRIVE_URI}/${uid}`);
+    const response = await axiosInstance.get(`${MY_DRIVE_URI}/${uid}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -135,7 +143,9 @@ export const MyDriveView = async (uid) => {
 // 마이 드라이브 선택보기
 export const MyDriveSelectView = async (driveFolderId) => {
   try {
-    const response = await axios.get(`${MY_DRIVE_SELECT_URI}/${driveFolderId}`);
+    const response = await axiosInstance.get(
+      `${MY_DRIVE_SELECT_URI}/${driveFolderId}`
+    );
     console.log("마이 드라이브 선택보기:", response.data);
     return response;
   } catch (error) {
@@ -147,7 +157,7 @@ export const MyDriveSelectView = async (driveFolderId) => {
 //마이 휴지통 전체보기
 export const MyTrashView = async () => {
   try {
-    const response = await axios.get(`${MY_TRASH_URI}`);
+    const response = await axiosInstance.get(`${MY_TRASH_URI}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -159,7 +169,9 @@ export const MyTrashView = async () => {
 // 마이 드라이브 선택보기
 export const MyTrashSelectView = async (driveFolderId) => {
   try {
-    const response = await axios.get(`${MY_TRASH_SELECT_URI}/${driveFolderId}`);
+    const response = await axiosInstance.get(
+      `${MY_TRASH_SELECT_URI}/${driveFolderId}`
+    );
     console.log("마이 드라이브 선택보기:", response.data);
     return response;
   } catch (error) {
@@ -172,7 +184,7 @@ export const MyTrashSelectView = async (driveFolderId) => {
 export const ToMyDrive = async (driveFolderId, selectedDriveFileIds) => {
   try {
     console.log("오에에에엥? : " + driveFolderId, selectedDriveFileIds);
-    const response = await axios.post(`${TRASH_FOLDER_DRIVE}`, {
+    const response = await axiosInstance.post(`${TRASH_FOLDER_DRIVE}`, {
       driveFolderId: driveFolderId || [],
       selectedDriveFileIds: selectedDriveFileIds || [],
     });
@@ -187,7 +199,7 @@ export const ToMyDrive = async (driveFolderId, selectedDriveFileIds) => {
 export const ToMyTrash = async (driveFolderId, selectedDriveFileIds) => {
   try {
     console.log("오에에에엥? : " + driveFolderId, selectedDriveFileIds);
-    const response = await axios.post(`${DRIVE_FOLDER_TRASH}`, {
+    const response = await axiosInstance.post(`${DRIVE_FOLDER_TRASH}`, {
       driveFolderId: driveFolderId || [],
       selectedDriveFileIds: selectedDriveFileIds || [],
     });
@@ -202,7 +214,7 @@ export const ToMyTrash = async (driveFolderId, selectedDriveFileIds) => {
 export const selectDriveCollaborators = async (driveFolderNameId) => {
   console.log("백엔드로 들어오는 협업자조회 projectId :" + driveFolderNameId);
   try {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `${DRIVE_COLLABORATOR_SELECT}/${driveFolderNameId}`
     );
 
@@ -222,7 +234,7 @@ export const addDriveCollaborators = async (driveFolderNameId, userIds) => {
   );
 
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${DRIVE_COLLABORATOR_INSERT}/${driveFolderNameId}`,
       userIds
     );
@@ -243,7 +255,7 @@ export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
     userId
   );
   try {
-    const response = await axios.delete(
+    const response = await axiosInstance.delete(
       `${DRIVE_COLLABORATOR_DELETE}/${driveFolderNameId}/${userId}`
     );
     return response.data;
@@ -256,7 +268,7 @@ export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
 //공유 드라이브 전체보기
 export const ShareDriveView = async (userId) => {
   try {
-    const response = await axios.get(`${SHARE_DRIVE_URI}/${userId}`);
+    const response = await axiosInstance.get(`${SHARE_DRIVE_URI}/${userId}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -268,7 +280,7 @@ export const ShareDriveView = async (userId) => {
 //공유유 드라이브 선택보기
 export const ShareDriveSelectView = async (driveFolderId, userId) => {
   try {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `${SHARE_DRIVE_SELECT_URI}/${driveFolderId}/${userId}`
     );
     console.log("마이 드라이브 선택보기:", response.data);

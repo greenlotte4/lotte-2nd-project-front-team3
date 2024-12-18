@@ -4,16 +4,107 @@ import { Link } from "react-router-dom";
 import DriveModal from "../modal/driveModal";
 import useModalStore from "../../../store/modalStore";
 import useAuthStore from "@/store/AuthStore";
+import { MyDriveSelectView, MyDriveView, ShareDriveView } from "@/api/driveAPI";
 
 export default function DriveAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
-  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const [folderStates, setFolderStates] = useState([]);
+  const [shareFolderStates, setShareFolderStates] = useState([]);
+  const [fileStates, setFileStates] = useState([]);
 
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+
+  const fetchFolderData = async (driveFolderId) => {
+    // 로딩 시작
+    const uid = user.uid;
+    const userId = user.id;
+    try {
+      let response;
+      let response1;
+      // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
+      if (driveFolderId) {
+        response = await MyDriveSelectView(driveFolderId); // 상세 정보 API 호출
+        console.log("선택된 폴더:", response.data);
+      } else {
+        console.log("일로 들어가니?");
+        response = await MyDriveView(uid); // 목록 정보 API 호출
+
+        response1 = await ShareDriveView(userId);
+        console.log("폴더+파일 목록 데이터:", response.data);
+      }
+
+      // API 응답 구조에 맞게 데이터 추출
+      const folders = Array.isArray(response.data.folders)
+        ? response.data.folders
+        : [];
+      const shareFolers = Array.isArray(response1.data.folders)
+        ? response1.data.folders
+        : [];
+      const files = Array.isArray(response.data.files)
+        ? response.data.files
+        : [];
+
+      console.log("폴더 데이터 매핑:", folders);
+      setFolderStates(
+        folders.map((folder) => ({
+          isChecked: folder.isChecked || false,
+          isStarred: folder.isStarred || false,
+          driveFolderName: folder.driveFolderName,
+          driveFolderSize: folder.driveFolderSize,
+          driveFolderCreatedAt: folder.driveFolderCreatedAt,
+          driveFolderMaker: folder.driveFolderMaker,
+          driveFolderId: folder.driveFolderId,
+          driveParentFolderId: folder.driveParentFolderId,
+          driveParentFolderName: folder.parentFolderName,
+          driveShareType: folder.driveFolderShareType,
+        }))
+      );
+      setShareFolderStates(
+        shareFolers.map((folder) => ({
+          isChecked: folder.isChecked || false,
+          isStarred: folder.isStarred || false,
+          driveFolderName: folder.driveFolderName,
+          driveFolderSize: folder.driveFolderSize,
+          driveFolderCreatedAt: folder.driveFolderCreatedAt,
+          driveFolderMaker: folder.driveFolderMaker,
+          driveFolderId: folder.driveFolderId,
+          driveParentFolderId: folder.driveParentFolderId,
+          driveParentFolderName: folder.parentFolderName,
+          driveShareType: folder.driveFolderShareType,
+        }))
+      );
+
+      setFileStates(
+        files.map((file) => ({
+          isChecked: file.isChecked || false,
+          isStarred: file.isStarred || false,
+          driveFolderId: file.driveFolderId,
+          driveFileSsName: file.driveFileSName,
+          driveFileSName: file.driveFileSName.includes("_")
+            ? file.driveFileSName.split("_")[1]
+            : file.driveFileSName,
+          Ext: file.driveFileSName.includes(".")
+            ? file.driveFileSName.split(".").pop()
+            : "",
+          driveFileMaker: file.driveFileMaker,
+          driveFileSize: file.driveFileSize,
+          driveFileCreatedAt: file.driveFileCreatedAt,
+          driveFileId: file.driveFileId,
+        }))
+      );
+    } catch (err) {
+      console.error("폴더 데이터를 가져오는 중 오류 발생:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchFolderData(); // driveFolderId가 변경될 때마다 데이터 로드
+  }, []);
 
   const HorizontalBar = ({ usedSpace, totalSpace }) => {
     const [percentage, setPercentage] = useState(0);
@@ -107,30 +198,24 @@ export default function DriveAside({ asideVisible }) {
               } pl-8`}
             >
               <ul>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
+                {folderStates.map((folder, index) => {
+                  return (
+                    <li key={`folder-${index}`}>
+                      <a href="#">
+                        <div className="flex items-start items-center mb-2">
+                          <i className="fa-solid fa-folder text-[16px] text-[#FFC558]"></i>
+                          <span className="ml-[10px]">
+                            <Link
+                              to={`/antwork/drive/folder/${folder.driveFolderId}`}
+                            >
+                              {folder.driveFolderName}
+                            </Link>
+                          </span>
+                        </div>
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </li>
@@ -164,58 +249,28 @@ export default function DriveAside({ asideVisible }) {
               } pl-8`}
             >
               <ul>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4 text-center">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    <div className="flex items-start items-center mb-2 space-x-4">
-                      <img
-                        src="/images/Antwork/main/drive/폴더.png"
-                        alt="#"
-                        className="w-7 h-7"
-                      />
-                      <span>안녕</span>
-                    </div>
-                  </a>
-                </li>
+                {shareFolderStates.map((folder, index) => {
+                  return (
+                    <li key={`folder-${index}`}>
+                      <a href="#">
+                        <div className="flex items-start items-center mb-2">
+                          <i className="fa-solid fa-folder-open text-[16px] text-[#6BBFFC]"></i>
+                          <span className="ml-[10px]">
+                            <Link
+                              to={`/antwork/drive/share/folder/${folder.driveFolderId}`}
+                            >
+                              {folder.driveFolderName}
+                            </Link>
+                          </span>
+                        </div>
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </li>
-          <li className="lnb-item mt-[30px]">
+          <li className="lnb-item mt-[10px]">
             <div className="lnb-header !mb-[10px]">
               <img
                 src="/images/ico/page_delete24_999999.svg"
