@@ -83,6 +83,7 @@ export const PROJECT_COLLABORATOR_INSERT_URI = `${API_SERVER_HOST}/project/colla
 export const PROJECT_COLLABORATOR_SELECT_URI = `${API_SERVER_HOST}/project/collaborator/select`; // 프로젝트 협업자 조회
 export const PROJECT_COLLABORATOR_DELETE_URI = `${API_SERVER_HOST}/project/collaborator/delete`; // 프로젝트 협업자 삭제
 export const PROJECT_DELETE_URI = `${API_SERVER_HOST}/project/delete`; // 프로젝트 삭제
+export const PROJECT_STATUS_UPDATE_URI = `${API_SERVER_HOST}/project/update/status`; // 프로젝트 상태 수정(진행중/완료)
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기

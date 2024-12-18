@@ -251,6 +251,7 @@ export default function ProjectModal({
 
       // 프로젝트 생성 후 view 화면으로 이동
       navigate(`/antwork/project/view?id=${result.id}`);
+      window.location.reload();
     } catch (error) {
       console.error("Error submitting project:", error);
       alert("프로젝트 생성 중 문제가 발생했습니다.");
