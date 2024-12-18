@@ -12,10 +12,11 @@ import {
   getProjectStates,
   getTasksByStateId,
   updateProject,
+  updateProjectStatus,
   updateTask,
   updateTaskPosition,
 } from "../../../api/projectAPI";
-import { AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineCheckCircle, AiOutlineEdit } from "react-icons/ai";
 import useProjectWebSocket from "@/hooks/project/useProjectWebSocket";
 import useAuthStore from "@/store/AuthStore";
 import { Client } from "@stomp/stompjs";
@@ -497,6 +498,30 @@ export default function ProjectViewSection() {
     }
   }, [isOpen]); // isOpen 상태가 변경될 때마다 실행
 
+  // 프로젝트 상태 변경(진행중/완료)
+  const handleProjectStatusUpdate = async () => {
+    try {
+      // 새로운 상태 설정: 현재 상태가 1이면 0으로, 아니면 1로 변경
+      const newStatus = project.status === 1 ? 0 : 1;
+
+      // 백엔드로 상태 업데이트 요청
+      const updatedProject = await updateProjectStatus(project.id, newStatus);
+
+      // 상태 업데이트 후, 프로젝트 상태 반영
+      setProject(updatedProject);
+
+      alert(
+        `프로젝트가 ${
+          newStatus === 1 ? "완료" : "진행 중"
+        } 상태로 변경되었습니다.`
+      );
+      window.location.reload(); // 페이지 새로 고침
+    } catch (error) {
+      console.error("프로젝트 상태 변경 중 오류 발생:", error.message || error);
+      alert("프로젝트 상태 변경 중 문제가 발생했습니다.");
+    }
+  };
+
   if (loadingStates) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -527,34 +552,64 @@ export default function ProjectViewSection() {
             <div className="max-w-9xl mx-auto p-2">
               <div className="mb-3 text-center">
                 <div className="flex justify-between items-center">
-                  <div className="flex justify-center items-center space-x-3">
-                    {editingProject === project.id ? (
-                      <input
-                        type="text"
-                        value={newProjectName}
-                        onChange={(e) => setNewProjectName(e.target.value)}
-                        className="text-2xl font-semibold tracking-tight text-blue-800 border-b-2 border-blue-500 focus:outline-none"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleSaveProjectName(); // Enter 키로 저장
-                          if (e.key === "Escape") handleCancelEdit(); // Esc 키로 취소
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
-                        {project.projectName}
-                      </h1>
-                    )}
+                  <div className="flex items-center space-x-3">
+                    {/* 프로젝트 이름 및 편집 버튼 */}
+                    <div className="flex items-center space-x-2">
+                      {editingProject === project.id ? (
+                        <input
+                          type="text"
+                          value={newProjectName}
+                          onChange={(e) => setNewProjectName(e.target.value)}
+                          className="text-2xl font-semibold tracking-tight text-blue-800 border-b-2 border-blue-500 focus:outline-none"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveProjectName(); // Enter 키로 저장
+                            if (e.key === "Escape") handleCancelEdit(); // Esc 키로 취소
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <h1 className="text-5xl font-semibold tracking-tight text-blue-800">
+                          {project.projectName}
+                        </h1>
+                      )}
 
-                    <button
-                      className="ml-2 text-gray-500 hover:text-gray-700"
-                      onClick={() => {
-                        setEditingProject(project.id);
-                        setNewProjectName(project.projectName); // 현재 프로젝트 이름으로 초기화
-                      }}
-                    >
-                      <AiOutlineEdit />
-                    </button>
+                      <button
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={() => {
+                          setEditingProject(project.id);
+                          setNewProjectName(project.projectName); // 현재 프로젝트 이름으로 초기화
+                        }}
+                      >
+                        <AiOutlineEdit />
+                      </button>
+                    </div>
+
+                    {/* 프로젝트 상태 토글 */}
+                    <div className="relative flex items-center space-x-2 group">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={project?.status === 1}
+                          onChange={handleProjectStatusUpdate}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                      </label>
+
+                      {project?.status === 1 && (
+                        <AiOutlineCheckCircle
+                          size={24}
+                          className="text-green-500"
+                        />
+                      )}
+
+                      {/* 툴팁: 상태에 따라 반대 상태 표시 */}
+                      <div className="absolute left-full ml-2 transform -translate-y-1/2 hidden group-hover:block">
+                        <div className="bg-gray-700 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                          {project?.status === 1 ? "진행 중" : "완료"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex items-center">

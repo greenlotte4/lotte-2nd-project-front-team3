@@ -16,6 +16,7 @@ import {
   PROJECT_COLLABORATOR_SELECT_URI,
   PROJECT_COLLABORATOR_DELETE_URI,
   PROJECT_DELETE_URI,
+  PROJECT_STATUS_UPDATE_URI,
 } from "./_URI";
 import axiosInstance from "@/utils/axiosInstance";
 
@@ -335,5 +336,31 @@ export const deleteProject = async (projectId) => {
       error.response?.data || error.message
     );
     throw error;
+  }
+};
+
+// 프로젝트 상태 수정(진행중/완료)
+export const updateProjectStatus = async (projectId, status) => {
+  console.log(
+    "상태변경 백엔드로 들어오는 projectId, status : " + projectId,
+    status
+  );
+
+  try {
+    const response = await axiosInstance.put(
+      `${PROJECT_STATUS_UPDATE_URI}/${projectId}?status=${status}`,
+      {}, // 요청 본문은 비워둡니다.
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("백엔드에서 반환된 데이터 : " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error; // 오류를 호출한 곳으로 전달
   }
 };

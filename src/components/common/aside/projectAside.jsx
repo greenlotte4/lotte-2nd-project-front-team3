@@ -5,12 +5,14 @@ import useModalStore from "../../../store/modalStore";
 import ProjectModal from "../modal/projectModal";
 import { getProjects } from "../../../api/projectAPI";
 import useAuthStore from "../../../store/AuthStore";
+import useProjectAsideWebSocket from "@/hooks/project/useProjectAsideWebSocket";
 
 export default function ProjectAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const updatedProjectName = useProjectAsideWebSocket(); // 웹소켓에서 수신한 프로젝트 이름
 
   // 토글 상태
   const [toggles, toggleSection] = useToggle({
@@ -24,28 +26,35 @@ export default function ProjectAside({ asideVisible }) {
     completed: [],
   });
 
+  const fetchProjects = async () => {
+    try {
+      console.log("사용자 정보:", user);
+      const response = await getProjects(user?.uid);
+      console.log("response : " + response);
+
+      // 상태(진행, 완료)에 따라 데이터 분리
+      const ongoing = response.filter((project) => project.status === 0);
+      const completed = response.filter((project) => project.status === 1);
+      console.log("ongoing :" + ongoing);
+      console.log("completed :" + completed);
+
+      setProjects({ ongoing, completed });
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      alert("프로젝트 데이터를 가져오는 중 오류가 발생했습니다.");
+    }
+  };
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        console.log("사용자 정보:", user);
-        const response = await getProjects(user?.uid);
-        console.log("response : " + response);
-
-        // 상태(진행, 완료)에 따라 데이터 분리
-        const ongoing = response.filter((project) => project.status === 0);
-        const completed = response.filter((project) => project.status === 1);
-        console.log("ongoing :" + ongoing);
-        console.log("completed :" + completed);
-
-        setProjects({ ongoing, completed });
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        alert("프로젝트 데이터를 가져오는 중 오류가 발생했습니다.");
-      }
-    };
-
     fetchProjects(); // 컴포넌트 마운트 시 데이터 가져오기
   }, [user]); // UID 변경 시 데이터 다시 가져오기
+
+  // 웹소켓에서 프로젝트 이름을 수신하면 목록을 새로고침
+  useEffect(() => {
+    if (updatedProjectName) {
+      console.log("🔄 프로젝트 이름 업데이트:", updatedProjectName);
+      fetchProjects();
+    }
+  }, [updatedProjectName]);
 
   return (
     <>
@@ -148,18 +157,6 @@ export default function ProjectAside({ asideVisible }) {
             )}
           </li>
           <li className="lnb-item">
-            <div className="lnb-header !mb-[10px]">
-              <img
-                src="/images/ico/page_delete24_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <Link
-                to="/antwork/project"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
-                휴지통
-              </Link>
-            </div>
             <div className="lnb-header !mb-[10px]">
               <img
                 src="/images/ico/page_setting_22_999999.svg"
