@@ -26,6 +26,7 @@ export default function ProjectModal({
   setCurrentTask,
   onEditState,
   currentState,
+  fetchStatesAndTasks,
 }) {
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -182,6 +183,7 @@ export default function ProjectModal({
       setCollaborators(updatedCollaborators);
 
       alert("협업자가 삭제되었습니다.");
+      fetchStatesAndTasks();
     } catch (error) {
       console.error("협업자 삭제 실패:", error);
       alert("협업자 삭제에 실패했습니다.");

@@ -25,6 +25,7 @@ export default function ProjectViewSection() {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const projectRef = useRef(null);
+  const { isOpen } = useModalStore(); // Zustand store에서 모달 상태 가져오기
 
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -125,6 +126,36 @@ export default function ProjectViewSection() {
     setLoadingStates(true); // 새 요청 전 로딩 상태로 설정
     fetchProjectDetails(); // 컴포넌트 마운트 시 데이터 로드
   }, [id]); // location을 의존성 배열에 추가
+
+  const fetchStatesAndTasks = async () => {
+    try {
+      const statesData = await getProjectStates(id);
+      console.log("상태 데이터 가져옴:", statesData);
+
+      // 각 상태의 작업들을 한 번에 가져오기
+      const statesWithTasks = await Promise.all(
+        statesData.map(async (state) => {
+          const tasks = await getTasksByStateId(state.id);
+          return {
+            ...state,
+            items: tasks.map((task) => ({
+              ...task,
+              assignedUserIds: task.assignedUserIds || [],
+            })),
+          };
+        })
+      );
+
+      setStates(statesWithTasks);
+    } catch (error) {
+      console.error(
+        "상태와 작업을 가져오는 중 오류 발생:",
+        error.message || error
+      );
+    } finally {
+      setLoadingStates(false);
+    }
+  };
 
   // states 관련 useEffect 수정
   useEffect(() => {
@@ -487,9 +518,8 @@ export default function ProjectViewSection() {
     handleAddItem,
     fetchCollaborators,
     setProject,
+    fetchStatesAndTasks,
   });
-
-  const { isOpen } = useModalStore(); // Zustand store에서 모달 상태 가져오기
 
   // 모달이 닫힐 때마다 협업자 목록을 새로 불러옴
   useEffect(() => {
@@ -545,6 +575,7 @@ export default function ProjectViewSection() {
         onEditState={handleEditState}
         currentState={currentState}
         fetchCollaborators={fetchCollaborators}
+        fetchStatesAndTasks={fetchStatesAndTasks}
       />
       {project ? (
         <article className="page-list min-h-[850px]">
@@ -604,7 +635,7 @@ export default function ProjectViewSection() {
                       )}
 
                       {/* 툴팁: 상태에 따라 반대 상태 표시 */}
-                      <div className="absolute left-full ml-2 transform -translate-y-1/2 hidden group-hover:block">
+                      <div className="absolute top-[-1.8rem] left-[10px] transform -translate-x-1/2 hidden group-hover:block">
                         <div className="bg-gray-700 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
                           {project?.status === 1 ? "진행 중" : "완료"}
                         </div>

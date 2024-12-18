@@ -149,9 +149,11 @@ export default function ProjectAside({ asideVisible }) {
             {toggles.completedProjects && (
               <ol>
                 {projects.completed.map((project) => (
-                  <Link to={`/antwork/project/view?id=${project.id}`}>
-                    📋&nbsp;&nbsp;{project.projectName}
-                  </Link>
+                  <li key={project.id}>
+                    <Link to={`/antwork/project/view?id=${project.id}`}>
+                      📋&nbsp;&nbsp;{project.projectName}
+                    </Link>
+                  </li>
                 ))}
               </ol>
             )}

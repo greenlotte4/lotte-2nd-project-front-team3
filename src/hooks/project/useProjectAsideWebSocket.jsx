@@ -24,8 +24,8 @@ const useProjectAsideWebSocket = () => {
         `/topic/project/aside`,
         (message) => {
           try {
-            const data = message.body; // 메시지 내용 (프로젝트 이름)
-            console.log("🔔 프로젝트 이름 수정 메시지 수신:", data);
+            const data = message.body;
+            console.log("🔔 알림 메시지 수신:", data);
 
             // 상태 업데이트
             setUpdatedProjectName(data);
