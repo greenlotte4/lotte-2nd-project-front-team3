@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const TemplateCard = ({
   page,
@@ -6,11 +6,20 @@ export const TemplateCard = ({
   setMenuActive,
   menuOptions,
   isDeleted = false,
-  onClick,
   hideAuthor = false,
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/antwork/page/template/view/${page._id}`);
+  };
+
   return (
-    <div className="page-card cursor-pointer" key={page._id} onClick={onClick}>
+    <div
+      className="page-card cursor-pointer"
+      key={page._id}
+      onClick={handleCardClick}
+    >
       <div className="card-content">
         <div className="user-details">
           {!isDeleted ? (
@@ -22,16 +31,11 @@ export const TemplateCard = ({
               {page.icon}&nbsp;&nbsp;{page.title}
             </h3>
           )}
-          {!hideAuthor && (
+          {
             <div className="user-info !ml-3">
-              <img
-                src={page.ownerImage || "/api/placeholder/32/32"}
-                alt="profile"
-                className="avatar"
-              />
               <p className="!text-[13px]">{page.ownerName || "Unknown"}</p>
             </div>
-          )}
+          }
         </div>
         <div className="relative menu-container">
           <button

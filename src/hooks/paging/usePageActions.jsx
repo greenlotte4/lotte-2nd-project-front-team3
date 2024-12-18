@@ -19,7 +19,7 @@ export const usePageActions = () => {
     }
   }, []);
 
-  // 페이지 소프트 삭제
+  // 페이지 소프트 삭제 후 페이지 반영
   const handleDeletePage = async (
     pageId,
     {
@@ -94,6 +94,15 @@ export const usePageActions = () => {
     }
   };
 
+  const handleSoftDeletePage = async (pageId) => {
+    try {
+      console.log("Attempting to delete page with ID:", pageId);
+      await axiosInstance.delete(PAGE_SOFT_DELETE_URI.replace(":id", pageId));
+    } catch (error) {
+      console.error("Error soft deleting page:", error);
+    }
+  };
+
   // 페이지 영구 삭제
   const handleHardDeletePage = async (pageId, uid, { setDeletedPages }) => {
     if (!pageId) return false;
@@ -125,5 +134,6 @@ export const usePageActions = () => {
     handleDeletePage,
     handleRestorePage,
     handleHardDeletePage,
+    handleSoftDeletePage,
   };
 };

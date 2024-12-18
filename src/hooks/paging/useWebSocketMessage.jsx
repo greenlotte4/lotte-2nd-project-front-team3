@@ -21,10 +21,7 @@ export const useWebSocketMessage = (
           return;
         }
 
-        if (
-          componentId === data.componentId ||
-          data.timestamp <= lastUpdateRef.current
-        ) {
+        if (componentId === data.componentId) {
           console.log("Ignoring own changes or old message");
           return;
         }

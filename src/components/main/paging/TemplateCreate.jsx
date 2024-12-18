@@ -93,9 +93,6 @@ const TemplateCreate = () => {
         owner: uid,
         ownerName: user.name,
         isTemplate: Boolean(true),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        _class: "BackAnt.document.page.PageDocument",
       };
       console.log("templateData", templateData);
 

@@ -42,7 +42,7 @@ export default function PageCollaboratorModal({
   const fetchPageDetails = async () => {
     try {
       const pageDetails = await getPageDetails(pageId);
-      setPageOwner(pageDetails.owner);
+      setPageOwner(pageDetails.pageOwner);
     } catch (error) {
       console.error("Failed to fetch page details:", error);
     }
@@ -75,13 +75,6 @@ export default function PageCollaboratorModal({
     }
   }, [user, isOpen, type]);
 
-  useEffect(() => {
-    if (!isOpen && type === "page-collaborator") {
-      // 모달이 닫힐 때 collaborators 상태를 유지
-      // setCollaborators([]); // 이 부분을 제거하거나 주석 처리
-    }
-  }, [isOpen, type]);
-
   const toggleDepartment = (departmentId) => {
     setExpandedDepartments((prev) => ({
       ...prev,
@@ -111,6 +104,7 @@ export default function PageCollaboratorModal({
 
       await removePageCollaborator(pageId, userId);
       const updatedCollaborators = await getPageCollaborators(pageId);
+      alert("협업자가 삭제되었습니다.");
       setCollaborators(updatedCollaborators);
       onCollaboratorsUpdate?.(updatedCollaborators);
     } catch (error) {
@@ -119,7 +113,7 @@ export default function PageCollaboratorModal({
     }
   };
 
-  const handleConfirm = async () => {
+  async function handleConfirm() {
     try {
       if (!pageId) {
         alert("페이지 ID가 없습니다.");
@@ -132,6 +126,7 @@ export default function PageCollaboratorModal({
       }
 
       await addPageCollaborators(pageId, selectedUsers);
+
       const updatedCollaborators = await getPageCollaborators(pageId);
       setCollaborators(updatedCollaborators);
       onCollaboratorsUpdate?.(updatedCollaborators);
@@ -141,23 +136,28 @@ export default function PageCollaboratorModal({
         const payload = {
           targetType: "사용자",
           targetId: invitedUser.id,
+          senderId: user.id,
           message: notificationMessage || defaultMessage,
           metadata: {
             url: `/antwork/page/write?id=${pageId}`,
           },
         };
+        console.log(`🔔알림 전송 시작: ${invitedUser.name}`);
+        console.log("📄 payload", payload);
         await sendNotification(payload);
+        console.log(`🔔알림 전송 완료: ${invitedUser.name}`);
       }
 
+      console.log("모든 알림 전송 완료");
+      alert("협업자가 성공적으로 추가되었습니다!");
       setSelectedUsers([]);
       setNotificationMessage("");
       closeModal();
-      alert("협업자가 성공적으로 추가되었습니다!");
     } catch (error) {
       console.error("협업자 추가 실패:", error);
       alert("협업자 추가에 실패했습니다.");
     }
-  };
+  }
 
   const loadData = async () => {
     try {
@@ -173,6 +173,7 @@ export default function PageCollaboratorModal({
       if (pageId) {
         const collaboratorsData = await getPageCollaborators(pageId);
         setCollaborators(collaboratorsData);
+        console.log("👥 협업자 데이터 로드 완료 : ", collaboratorsData);
       }
     } catch (error) {
       console.error("데이터 로드 중 오류 발생:", error);
@@ -201,7 +202,7 @@ export default function PageCollaboratorModal({
         .flatMap((dept) => dept.users)
         .find((u) => u.id === collaborator.user_id);
 
-      const isOwner = collaborator.owner === true;
+      const isOwner = collaborator.isOwner === true;
 
       return (
         <div
@@ -249,6 +250,49 @@ export default function PageCollaboratorModal({
     };
   };
 
+  const renderDepartmentUsers = (department) => {
+    return department.users.map((user) => {
+      const { isCollaborator, isSelected } = isUserSelected(user.id);
+      const isOwner = collaborators.some(
+        (collaborator) =>
+          collaborator.user_id === user.id && collaborator.isOwner
+      );
+      const isDisabled = isCollaborator || isSelected;
+
+      console.log(
+        `User: ${user.name}, Position: ${user.position}, Is Owner: ${isOwner}`
+      );
+
+      return (
+        <div
+          key={user.id}
+          className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">{user.position}</span>
+            <span>{user.name}</span>
+          </div>
+          <span>
+            {isOwner ? (
+              <span className="text-green-500 text-sm font-medium">생성자</span>
+            ) : isCollaborator ? (
+              <span className="text-gray-400 text-sm">협업자</span>
+            ) : isSelected ? (
+              <span></span>
+            ) : (
+              <button
+                onClick={() => handleInvite(user)}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                추가
+              </button>
+            )}
+          </span>
+        </div>
+      );
+    });
+  };
+
   if (!isOpen || type !== "page-collaborator") return null;
 
   return (
@@ -283,49 +327,7 @@ export default function PageCollaboratorModal({
                   </button>
                   {expandedDepartments[department.id] && department.users && (
                     <div className="ml-6 mt-2">
-                      {department.users.map((user) => {
-                        const { isCollaborator, isSelected } = isUserSelected(
-                          user.id
-                        );
-                        const isOwner = collaborators.some(
-                          (c) => c.user_id === user.id && c.owner === true
-                        );
-                        const isDisabled = isCollaborator || isSelected;
-
-                        return (
-                          <div
-                            key={user.id}
-                            className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-600">
-                                {user.position}
-                              </span>
-                              <span>{user.name}</span>
-                            </div>
-                            <span>
-                              {isOwner ? (
-                                <span className="text-green-500 text-sm font-medium">
-                                  생성자
-                                </span>
-                              ) : isCollaborator ? (
-                                <span className="text-gray-400 text-sm">
-                                  협업자
-                                </span>
-                              ) : isSelected ? (
-                                <span></span>
-                              ) : (
-                                <button
-                                  onClick={() => handleInvite(user)}
-                                  className="text-blue-500 hover:text-blue-700"
-                                >
-                                  추가
-                                </button>
-                              )}
-                            </span>
-                          </div>
-                        );
-                      })}
+                      {renderDepartmentUsers(department)}
                     </div>
                   )}
                 </div>
