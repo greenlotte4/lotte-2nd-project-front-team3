@@ -34,6 +34,7 @@ export const addPageCollaborators = async (pageId, collaborators) => {
           invitedAt: null,
           isOwner: false,
           type: 0,
+          companyRate: user.companyRate,
         })),
       }
     );

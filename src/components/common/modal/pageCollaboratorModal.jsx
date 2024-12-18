@@ -113,6 +113,7 @@ export default function PageCollaboratorModal({
     }
   };
 
+  // 협업자 추가
   async function handleConfirm() {
     try {
       if (!pageId) {
@@ -173,7 +174,6 @@ export default function PageCollaboratorModal({
       if (pageId) {
         const collaboratorsData = await getPageCollaborators(pageId);
         setCollaborators(collaboratorsData);
-        console.log("👥 협업자 데이터 로드 완료 : ", collaboratorsData);
       }
     } catch (error) {
       console.error("데이터 로드 중 오류 발생:", error);
