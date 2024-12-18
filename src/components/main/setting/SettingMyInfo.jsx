@@ -107,6 +107,7 @@ export default function SettingMyinfo() {
       updateInfo(info, user?.uid, type);
     };
     fetchData();
+    
     alert("정보가 수정되었습니다!");
   };
 
