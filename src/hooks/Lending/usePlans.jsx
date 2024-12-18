@@ -11,9 +11,9 @@ import { useState } from "react";
 const usePlans = () => {
   const [plans] = useState([
     {
-      title: "Basic 요금제",
-      price: "$19",
-      description: "개인 및 소규모 팀에게 적합한 요금제입니다.",
+      title: "Free 요금제",
+      price: "$0",
+      description: "무료 체험 요금제입니다.",
       features: [
         { text: "메시지: 팀원 간 채팅 기능 제공 (최대 5명)", enabled: true },
         { text: "프로젝트: 프로젝트 2개 생성 가능", enabled: true },
@@ -21,13 +21,13 @@ const usePlans = () => {
         { text: "페이지: 페이지 생성 불가 (읽기만 가능)", enabled: false },
         { text: "게시판: 공지사항 읽기 전용", enabled: false },
       ],
-      link: "/complete",
+      link: `/complete`, // Free 요금제 링크
       color: "basic",
     },
     {
-      title: "Professional 요금제",
-      price: "$49",
-      description: "중소기업 및 전문 사용자에게 적합한 요금제입니다.",
+      title: "Month 요금제",
+      price: "$50",
+      description: "월별 결제 요금제입니다.",
       features: [
         {
           text: "메시지: 팀 채팅 및 파일 첨부 기능 (최대 15명)",
@@ -38,13 +38,15 @@ const usePlans = () => {
         { text: "페이지: 페이지 5개 생성 가능", enabled: true },
         { text: "게시판: 게시판 작성 및 댓글 가능", enabled: true },
       ],
-      link: "/complete",
+      link: `/toss?title=${encodeURIComponent(
+        "Month 요금제"
+      )}&price=${encodeURIComponent("$50")}`, // Month 요금제 링크
       color: "professional",
     },
     {
-      title: "Advanced 요금제",
-      price: "$99",
-      description: "대기업 및 고급 사용자에게 적합한 요금제입니다.",
+      title: "Year 요금제",
+      price: "$550",
+      description: "1년 결제 요금제입니다.",
       features: [
         {
           text: "메시지: 무제한 팀 채팅 및 대규모 파일 공유 지원",
@@ -55,7 +57,9 @@ const usePlans = () => {
         { text: "페이지: 무제한 페이지 생성 가능", enabled: true },
         { text: "게시판: 게시판 작성, 댓글, 커스터마이징 가능", enabled: true },
       ],
-      link: "/complete",
+      link: `/toss?title=${encodeURIComponent(
+        "Year 요금제"
+      )}&price=${encodeURIComponent("$550")}`, // Year 요금제 링크
       color: "advanced",
     },
   ]);

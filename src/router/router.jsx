@@ -64,6 +64,8 @@ import TemplateCreatePage from "@/pages/Main/Paging/TemplateCreatePage";
 import SettingCalendarPage from "@/pages/Main/setting/settingCalendarPage";
 import AdminAccessPage from "@/pages/Main/Admin/adminAccessPage";
 import ProtectedLayout from "@/layouts/ProtectedLayout";
+import IntermediatePage from "@/pages/Landing/TossPaymentPage";
+import TossPaymentPage from "@/pages/Landing/TossPaymentPage";
 
 import TemplateViewPage from "@/pages/Main/Paging/TemplateViewPage";
 
@@ -77,6 +79,7 @@ const router = createBrowserRouter([
   { path: "/function", element: <LandingFunctionPage /> }, // 2024/11/29(금) 강은경 - LandingFunctionPage 추가
   { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
   { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
+  { path: "/toss", element: <TossPaymentPage /> }, // 2024/11/27(수) 최준혁 - IntermediatePage 추가
 
   { path: "/login", element: <LoginPage /> }, // 로그인
   { path: "/register", element: <RegisterPage /> }, // 약관, 회원가입 통합
