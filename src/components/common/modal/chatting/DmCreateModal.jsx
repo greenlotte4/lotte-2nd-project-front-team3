@@ -68,7 +68,7 @@ export default function DmCreateModal({ closeModal }) {
     <div className="flex flex-col h-full overflow-hidden p-6 bg-white rounded-lg shadow-lg">
       {/* 제목 */}
       <h2 className="text-xl font-bold mb-4 border-b pb-2 text-gray-700">
-        DM 초대
+        DM 생성하기
       </h2>
       {/* 검색 필드 */}
       <div className="mb-4 flex items-center border rounded-lg px-3 py-2 bg-gray-50">
@@ -82,7 +82,7 @@ export default function DmCreateModal({ closeModal }) {
       <div className="flex flex-1 space-x-4 h-full overflow-auto">
         {/* 초대 가능한 사용자 */}
         <div className="w-1/2 border rounded-lg p-4 overflow-y-auto">
-          <h3 className="text-lg font-semibold">초대 가능한 사용자</h3>
+          <h3 className="text-lg font-semibold">DM 초대 가능한 사용자</h3>
           <ul className="space-y-3">
             {inviteableUsers.map((user) => (
               <li
@@ -127,7 +127,7 @@ export default function DmCreateModal({ closeModal }) {
           onClick={handleSendInvite} // 초대 버튼 동작
           className="px-6 py-2 bg-blue-500 text-white rounded-lg"
         >
-          초대
+          생성
         </button>
         <button
           onClick={closeModal} // 닫기 버튼

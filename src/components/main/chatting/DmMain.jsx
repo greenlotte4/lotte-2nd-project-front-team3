@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useLayoutEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getDmList, getDmMessages, sendDmMessage } from "../../../api/chattingAPI";
+import { getDmList, getDmMessages, sendDmMessage, getDmById, getDmMembers } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
 import formatChatTime from "@/utils/chatTime";
@@ -15,6 +15,7 @@ export default function DmMain() {
   const [loading, setLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
   const chatBoxRef = useRef(null); // 채팅창 Ref  
+  const [members, setMembers] = useState([])
   const stompClientRef = useRef(null)
   // const user = useAuthStore((state) => state.user);
 
@@ -38,12 +39,48 @@ export default function DmMain() {
     if (chatBoxRef.current !== null) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  }, [chatBoxRef])
-
+  }, [chatBoxRef]);
+  
+  useEffect(() => {
+    const fetchDmMembers = async () => {
+      try {
+        const members = await getDmMembers(dmId);
+        console.log(`members:`, members);
+        setMembers(members);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+  
+    const fetchDm = async () => {
+      try {
+        const dm = await getDmById(dmId); // 단일 디엠방 조회 API 호출
+        setDmData(dm);
+      } catch (error) {
+        console.error("Failed to fetch DM data:", error);
+      }
+    };
+  
+    const fetchMessages = async () => {
+      try {
+        const messages = await getDmMessages(dmId); // 메시지 조회 API 호출
+        setMessages(messages);
+      } catch (error) {
+        console.error("Failed to fetch messages:", error);
+      }
+    };
+  
+    if (dmId) {
+      fetchDmMembers();
+      fetchDm();
+      fetchMessages();
+    }
+  }, [dmId]);
+  
   useEffect(() => {
     scrollToBottom();
-  }, [messages])
-
+  }, [messages]);
+  
   useEffect(() => {
     const fetchDm = async () => {
       try {
@@ -189,7 +226,7 @@ export default function DmMain() {
               />
               <div className="flex items-center ml-4">
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
-                  {dmData?.name}
+                  {dmData?.dmName}
                 </h1>
               </div>
             </div>
@@ -410,7 +447,7 @@ export default function DmMain() {
             </button>
 
             {/* 채팅방 이름 */}
-            <h3 className="text-lg font-semibold text-gray-900">{dmData?.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{dmData?.dmName}</h3>
 
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
@@ -427,26 +464,12 @@ export default function DmMain() {
                   }
                   alt="알림 아이콘"
                 />
-              </button>
-
-              {/* 나가기 아이콘 */}
-              <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
-              >
-                <img src="/images/ico/outchat.svg"></img>
-              </button>
+              </button>      
             </div>
           </div>
-
-          {/* 검색창 */}
-          <div className="flex items-center mb-6">
-            <input
-              type="text"
-              placeholder="DM 검색"
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          {/* 대화 상대 */}
-          <div className="my-5">
+         
+            {/* 대화 상대 */}
+            <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
               onClick={() => toggleState("isContactOpen")}
@@ -472,25 +495,21 @@ export default function DmMain() {
             </div>
             {toggleStates.isContactOpen && (
               <ul className="space-y-4 mt-4">
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  준혁
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  모라존잘
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  서영이
-                </li>
-                <li className="flex items-center">
-                  <span className="w-8 h-8 rounded-full bg-gray-300 mr-4"></span>
-                  김혜민
-                </li>
+                {members.map(member =>
+                  <li className="flex items-center" key={member.userId}>
+                    <img
+                      src={member.profileImageUrl || "https://via.placeholder.com/50"}
+                      alt="Profile"
+                      className="w-8 h-8 mr-4 rounded-full"
+                    />
+                    {member.userName}
+                  </li>
+                )}
+
               </ul>
             )}
           </div>
+
 
           {/* 사진 파일 */}
           <div className="my-5">
