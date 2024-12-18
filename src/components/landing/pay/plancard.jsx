@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 {
   /*
     날짜 : 2024/11/27(수)
@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
   */
 }
+
 const PlanCard = ({ title, price, description, features, link, color }) => {
   return (
     <div
@@ -41,11 +42,8 @@ const PlanCard = ({ title, price, description, features, link, color }) => {
             : "bg-yellow-500 hover:bg-yellow-600"
         } text-white py-2 px-4 rounded-lg transition`}
       >
-        14일 무료 체험 시작
+        결제 하기
       </Link>
-      <p className="text-xs text-gray-500 mt-2 text-center">
-        신용카드 정보 필요 없음
-      </p>
     </div>
   );
 };
