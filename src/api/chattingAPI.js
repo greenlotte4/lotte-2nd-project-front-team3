@@ -13,6 +13,9 @@ import {
   CHANNEL_GET_MEMBER_URI,
   CHANNEL_CHANGE_TITLE_URI,
   DM_GET_URI,
+  DM_GET_MEMBER_URI,
+  CHANNEL_ROOM_SEARCH_URI,
+  DM_DELETE_MESSAGE_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -110,7 +113,7 @@ export const getChannelMembers = async (channelId) => {
 
     const response = await axios.get(CHANNEL_GET_MEMBER_URI(channelId));
 
-    console.log(`[JS] 멤버 조회 성공:`, response.data);
+    console.log(`[JS] 채널 멤버 조회 성공:`, response.data);
     return response.data; // 성공 응답 반환
   } catch (error) {
     console.error(`[JS] 채널 멤버 조회 실패:`, error.message || error);
@@ -196,12 +199,45 @@ export const getDmMembers = async (dmId) => {
     console.log(`[JS] 디엠 멤버 조회 요청: 채널 ID ${dmId}`);
 
 
-    const response = await axios.get(CHANNEL_GET_MEMBER_URI(dmId));
+    const response = await axios.get(DM_GET_MEMBER_URI(dmId));
 
-    console.log(`[JS] 멤버 조회 성공:`, response.data);
+    console.log(`[JS] 디엠 멤버 조회 성공:`, response.data);
     return response.data; // 성공 응답 반환
   } catch (error) {
     console.error(`[JS] 디엠 멤버 조회 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
 }
+
+export const searchChatRooms = async (memberId, searchName) => {
+  try {
+    const response = await axios.get(CHANNEL_ROOM_SEARCH_URI, {
+      params: { memberId, channelName: searchName },
+    });
+
+    console.log("API 응답:", response.data); // 응답 데이터 확인
+    if (!Array.isArray(response.data)) {
+      console.error("API에서 배열 형태의 데이터를 반환하지 않음:", response.data);
+      return []; // 빈 배열 반환
+    }
+    return response.data; // 검색 결과 반환
+  } catch (error) {
+    console.error("채팅방 검색 실패:", error);
+    throw error;
+  }
+};
+
+export const deleteDmMessage = async (messageId, userId) => {
+  try {
+    const response = await axios.delete(DM_DELETE_MESSAGE_URI(messageId), {
+      params: { userId }, // userId를 쿼리 파라미터로 전달
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // 삭제 성공 시 반환
+  } catch (error) {
+    console.error("메시지 삭제 실패:", error);
+    throw new Error(`삭제 실패: ${error.response?.status || error.message}`);
+  }
+};

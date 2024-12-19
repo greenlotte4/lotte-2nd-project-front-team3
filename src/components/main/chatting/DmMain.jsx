@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useLayoutEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getDmList, getDmMessages, sendDmMessage, getDmById, getDmMembers } from "../../../api/chattingAPI";
+import { getDmList, getDmMessages, sendDmMessage, getDmById, getDmMembers, deleteDmMessage } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useAuthStore from "../../../store/AuthStore";
 import formatChatTime from "@/utils/chatTime";
@@ -17,12 +17,11 @@ export default function DmMain() {
   const chatBoxRef = useRef(null); // 채팅창 Ref  
   const [members, setMembers] = useState([])
   const stompClientRef = useRef(null)
-  // const user = useAuthStore((state) => state.user);
 
   const [searchQuery, setSearchQuery] = useState(""); // 검색 입력 상태
   const [highlightedId, setHighlightedId] = useState(null);
   const chatRefs = useRef([]);
-
+  const [contextMenu, setContextMenu] = useState(null); // 컨텍스트 메뉴 상태 관리
 
   // useToggle 훅 사용
   const [toggleStates, toggleState] = useToggle({
@@ -41,6 +40,38 @@ export default function DmMain() {
     }
   }, [chatBoxRef]);
   
+  const handleContextMenu = (e, messageId) => {
+    e.preventDefault(); // 기본 브라우저 메뉴 방지
+    setContextMenu({
+      x: e.pageX,
+      y: e.pageY,
+      messageId,
+    });
+  };
+  
+
+  const closeContextMenu = () => setContextMenu(null);
+
+  const handleDeleteMessage = async (messageId) => {
+    closeContextMenu();
+    if (!window.confirm("메시지를 삭제하시겠습니까?")) return;
+  
+    try {
+      // 실제 서버 요청으로 메시지 삭제
+      await deleteDmMessage(messageId, user?.id); // user.id와 messageId를 전달
+  
+      // 프론트엔드에서 상태 업데이트
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
+  
+      alert("메시지가 삭제되었습니다.");
+    } catch (error) {
+      console.error("메시지 삭제 중 오류 발생:", error.message || error);
+      alert("메시지 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   useEffect(() => {
     const fetchDmMembers = async () => {
       try {
@@ -51,6 +82,7 @@ export default function DmMain() {
         console.error(err);
       }
     };
+  
   
     const fetchDm = async () => {
       try {
@@ -219,11 +251,32 @@ export default function DmMain() {
           {/* DM 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
             <div className="flex items-center">
-              <img
-                src="https://via.placeholder.com/40"
-                alt="Profile"
-                className="w-16 h-16 rounded-full border border-gray-300 shadow-sm"
-              />
+               
+                   {/* DM 멤버 프로필 */}
+    <div className="flex items-center">
+      {members && members.length > 0 ? (
+        members.slice(0, 3).map((user, index) => (
+          <img
+            key={user.id}
+            src={user.profileImageUrl || "/images/default_profile.png"}
+            alt={`Profile of ${user.name}`}
+            className={`w-10 h-10 rounded-full border-2 border-white -ml-2 ${
+              index === 0 ? "ml-0" : ""
+            }`} // 첫 번째 이미지는 좌측 마진 제거
+          />
+        ))
+      ) : (
+        <span className="text-gray-500 text-xs">No Members</span>
+      )}
+      {/* 3명을 초과한 멤버 수 표시 */}
+      {members && members.length > 3 && (
+        <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
+          +{members.length - 3}
+        </div>
+      )}
+    </div>
+
+          {/* DM 이름 */}
               <div className="flex items-center ml-4">
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
                   {dmData?.dmName}
@@ -345,12 +398,18 @@ export default function DmMain() {
                     })
                     : null;
 
-                return (
-                  <div key={message.id}
-                    style={{
-                      backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
-                    }}
-                    className="flex flex-col mb-2" ref={(el) => (chatRefs.current[message.id] = el)}>
+                    return (
+                      <div
+                        key={message.id}
+                        onContextMenu={(e) => isMyMessage && handleContextMenu(e, message.id)} // 내 메시지일 때만 컨텍스트 메뉴 표시
+                        style={{
+                          backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
+                        }}
+                        className="flex flex-col mb-2"
+                        ref={(el) => (chatRefs.current[message.id] = el)}
+                      >
+
+
                     {/* 날짜 표시 */}
                     {currentDate !== previousDate && (
                       <div className="flex justify-center items-center my-4">
@@ -391,7 +450,6 @@ export default function DmMain() {
                             <p className="text-base lg:text-lg text-gray-800">{message.content}</p>
                           </div>
 
-
                           {/* 시간 표시 */}
                           {isLastMessageFromSameUser && (
                             <span
@@ -408,7 +466,27 @@ export default function DmMain() {
                 );
               })
             )}
-          </div>
+
+          {/* 컨텍스트 메뉴 */}
+          {contextMenu && (
+  <div
+    className="absolute bg-white border shadow-lg rounded-md"
+    style={{
+      top: `${contextMenu.y}px`,
+      left: `${contextMenu.x}px`,
+      zIndex: 1000,
+    }}
+    onClick={() => setContextMenu(null)} // 메뉴 닫기
+  >
+    <button
+      className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
+      onClick={() => handleDeleteMessage(contextMenu.messageId)}
+    >
+      삭제
+    </button>
+  </div>
+)}
+</div>
 
           {/* 입력창 */}
           <div className="flex-none px-6 py-4 bg-white border-t border-gray-200">
@@ -604,6 +682,7 @@ export default function DmMain() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+
   );
 }
