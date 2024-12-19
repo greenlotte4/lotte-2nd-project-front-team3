@@ -17,27 +17,43 @@ import {
   PROJECT_COLLABORATOR_DELETE_URI,
   PROJECT_DELETE_URI,
   PROJECT_STATUS_UPDATE_URI,
+  PROJECT_COUNT_USER_SELECT_URI,
+  PROJECT_COLLABORATOR_SELECT_COUNT_URI,
 } from "./_URI";
 import axiosInstance from "@/utils/axiosInstance";
 
 // 프로젝트 등록
 export const postProject = async (project, uid) => {
   try {
-    // 프로젝트 객체에 uid를 추가해서 전송
-    const projectWithUid = { ...project, uid }; // project와 uid를 합쳐서 전송
-    console.log("projectWithUid:", projectWithUid);
-
-    // 요청 본문에 JSON 데이터 전송
+    const projectWithUid = { ...project, uid }; // 프로젝트 객체에 uid 추가
     const response = await axiosInstance.post(PROJECT_ADD_URI, projectWithUid, {
       headers: {
         "Content-Type": "application/json", // JSON 형식으로 전송
       },
     });
 
-    return response.data; // 응답 데이터 반환
+    return response.data; // 서버 응답 데이터 반환
   } catch (error) {
-    console.error("Error submitting project:", error);
-    throw error;
+    // 에러가 발생하면 상세 오류 처리
+    if (error.response) {
+      // 서버에서 반환된 오류 응답 처리
+      console.error("Error response:", error.response);
+      // 여기서 반환된 에러 메시지로 알림을 표시
+      if (error.response.status === 403) {
+        alert(`프로젝트 생성 실패: ${error.response.data}`);
+      } else {
+        alert("프로젝트 생성 중 다른 문제가 발생했습니다.");
+      }
+    } else if (error.request) {
+      // 서버에 요청은 보냈지만 응답이 없을 때
+      console.error("Error request:", error.request);
+      alert("서버 응답이 없습니다. 다시 시도해 주세요.");
+    } else {
+      // 오류가 요청이나 응답에 관련되지 않은 경우
+      console.error("Error message:", error.message);
+      alert("프로젝트 생성 중 문제가 발생했습니다.");
+    }
+    throw error; // 예외를 다시 던져서 호출한 곳에서 처리하도록 합니다.
   }
 };
 
@@ -362,5 +378,32 @@ export const updateProjectStatus = async (projectId, status) => {
   } catch (error) {
     console.error("Error updating project:", error);
     throw error; // 오류를 호출한 곳으로 전달
+  }
+};
+
+// 사용자가 생성한 프로젝트 수를 가져오는 함수
+export const getUserProjectCount = async (uid) => {
+  try {
+    const response = await axiosInstance.get(
+      `${PROJECT_COUNT_USER_SELECT_URI}/${uid}`
+    );
+    console.log("프로젝트 수 백엔드에서 반환된 데이터 : " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 수를 가져오는 중 오류 발생:", error);
+    return 0; // 오류 발생 시 기본값으로 0 반환
+  }
+};
+
+// 해당 프로젝트의 협업자 수를 가져오는 함수
+export const getCurrentCollaboratorCount = async (projectId) => {
+  try {
+    const response = await axiosInstance.get(
+      `${PROJECT_COLLABORATOR_SELECT_COUNT_URI}/${projectId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("협업자 수를 가져오는 중 오류 발생:", error);
+    throw error;
   }
 };

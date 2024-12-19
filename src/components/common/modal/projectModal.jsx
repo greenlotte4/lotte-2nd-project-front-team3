@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 import {
   addProjectCollaborators,
+  getCurrentCollaboratorCount,
   getProjectCollaborators,
+  getUserProjectCount,
   postProject,
   postProjectState,
   removeProjectCollaborator,
@@ -31,6 +33,8 @@ export default function ProjectModal({
   const { isOpen, type, closeModal } = useModalStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+  const rate = user?.companyRate; // 무료/유료
+  console.log("111rate : " + rate);
   const [departments, setDepartments] = useState([]);
   const [expandedDepartments, setExpandedDepartments] = useState({});
   const [collaborators, setCollaborators] = useState([]);
@@ -150,6 +154,26 @@ export default function ProjectModal({
     console.log("projectId:", projectId);
 
     try {
+      // 현재 프로젝트에 이미 존재하는 협업자 수 가져오기
+      const currentCollaboratorCount = await getCurrentCollaboratorCount(
+        projectId
+      );
+      console.log(
+        "현재 프로젝트에 이미 존재하는 협업자 수:",
+        currentCollaboratorCount
+      );
+
+      // 새로 초대하려는 협업자 수
+      const newCollaboratorCount = selectedUsers.length;
+      console.log("새로 초대하려는 협업자 수:", newCollaboratorCount);
+
+      // 무료회원은 최대 3명까지 협업자를 초대할 수 있음
+      if (rate === 0 && currentCollaboratorCount + newCollaboratorCount > 4) {
+        alert("무료회원은 최대 3명의 협업자만 초대할 수 있습니다.");
+        return;
+      }
+
+      // 협업자 초대
       await addProjectCollaborators(projectId, userIds, user.id);
       alert("협업자가 성공적으로 초대되었습니다!");
 
@@ -224,6 +248,7 @@ export default function ProjectModal({
   const [project, setProject] = useState({
     projectName: "",
     status: 0,
+    companyRate: rate,
   });
 
   // 프로젝트 추가 changeHandler
@@ -236,6 +261,19 @@ export default function ProjectModal({
     e.preventDefault();
 
     try {
+      // 현재 사용자가 생성한 프로젝트 수 확인
+      const userProjectCount = await getUserProjectCount(user.uid);
+      console.log(
+        "백엔드에서 나온 현재 사용자가 생성한 프로젝트 수 : ",
+        userProjectCount
+      );
+
+      // 무료회원인 경우, 프로젝트 수가 2개 이상이면 생성 불가
+      if (rate === 0 && userProjectCount >= 2) {
+        alert("무료회원은 최대 2개의 프로젝트만 생성할 수 있습니다.");
+        return;
+      }
+
       // 프로젝트 추가 전 확인 알림창
       if (!window.confirm("프로젝트를 생성하시겠습니까?")) {
         return;
@@ -255,6 +293,7 @@ export default function ProjectModal({
       navigate(`/antwork/project/view?id=${result.id}`);
       window.location.reload();
     } catch (error) {
+      // 에러를 console.log로 출력하고 사용자에게 알림
       console.error("Error submitting project:", error);
       alert("프로젝트 생성 중 문제가 발생했습니다.");
     }
