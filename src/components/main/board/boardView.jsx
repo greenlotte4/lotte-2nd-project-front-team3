@@ -8,7 +8,6 @@ import useAuthStore from "../../../store/AuthStore";
 import { ThumbsUp } from "lucide-react";
 import {
   BOARD_VIEW_URI,
-  BOARD_DELETE_URI,
 } from "../../../api/_URI";
 import BoardComment from "./boardComment";
 import BoardFileDownload from "./boardFileDownload";
@@ -202,48 +201,6 @@ export default function BoardView() {
   // ------------------------------------------------------------------------------------------------------------------- 
 
   // 게시글 삭제 처리 함수
-  // const handleDelete = async () => {
-
-  //   console.log("게시글 삭제 처리 요청");
-  //   console.log("user.id : ", user.id);
-  //   console.log("board.writer.id : ", Number(board.writer));
-
-  //   if (!user || Number(user.id) !== Number(board.writer)) {
-  //     alert("삭제 권한이 없습니다.");
-  //     return;
-  //   }
-
-  //   if (!window.confirm("정말 삭제하시겠습니까❓ 네네")) return;
-
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await axiosInstance.delete(`${BOARD_DELETE_URI}/${id}`);
-  //     if (response.data.success) {
-  //       alert("삭제되었습니다.");
-  //       navigate("/antwork/board/list");
-  //       // navigate(`${BOARD_LIST_URI}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("삭제 실패:", error); // 기존 오류 출력
-  //     if (error.response) {
-  //       // 서버가 응답한 경우 (4xx, 5xx 상태 코드)
-  //       console.error("서버 응답 에러:", error.response.data);
-  //       console.error("상태 코드:", error.response.status);
-  //       console.error("응답 헤더:", error.response.headers);
-  //     } else if (error.request) {
-  //       // 요청이 전송되었으나 응답이 없는 경우
-  //       console.error("응답이 없습니다. 요청 데이터:", error.request);
-  //     } else {
-  //       // 다른 종류의 오류
-  //       console.error("오류 메시지:", error.message);
-  //     }
-  //     alert("❌❌❌ 삭제 중 오류가 발생했습니다. ❌❌❌");
-  //     // alert(`삭제 실패: ${error.response?.data?.message || error.message}`);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const handleDelete = async () => {
     if (!user || Number(user.id) !== Number(board.writer)) {
       alert("삭제 권한이 없습니다.");
@@ -395,6 +352,7 @@ export default function BoardView() {
           </div>
         </div>
 
+        {/* 댓글 영역 comment */}
         <BoardComment boardId={id} />
 
         {/* 버튼 영역 */}

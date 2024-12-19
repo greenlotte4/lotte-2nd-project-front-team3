@@ -22,11 +22,11 @@ export default function BoardDataRoomView() {
               3. 시장 동향 분석
               4. 하반기 추진 전략`,
     attachedFiles: [
-      { 
+      {
         id: 'file1',
-        name: '2024_상반기_영업보고서.pptx', 
+        name: '2024_상반기_영업보고서.pptx',
         type: 'pptx',
-        size: '2.5MB' 
+        size: '2.5MB'
       }
     ]
   });
@@ -87,10 +87,10 @@ export default function BoardDataRoomView() {
     };
 
     if (replyTo) {
-      setComments(prev => 
-        prev.map(comment => 
-          comment.id === replyTo 
-            ? {...comment, replies: [...comment.replies, commentObject]} 
+      setComments(prev =>
+        prev.map(comment =>
+          comment.id === replyTo
+            ? { ...comment, replies: [...comment.replies, commentObject] }
             : comment
         )
       );
@@ -104,11 +104,10 @@ export default function BoardDataRoomView() {
   };
 
   const renderComment = (comment, isNested = false) => (
-    <div 
-      key={comment.id} 
-      className={`flex flex-col p-3 ${
-        isNested ? 'ml-6 border-l-2 border-gray-200' : 'border-b'
-      } space-y-2`}
+    <div
+      key={comment.id}
+      className={`flex flex-col p-3 ${isNested ? 'ml-6 border-l-2 border-gray-200' : 'border-b'
+        } space-y-2`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -177,7 +176,7 @@ export default function BoardDataRoomView() {
         <div className="border-b border-gray-200 p-6 bg-gray-50">
           <h3 className="text-lg font-semibold mb-3">첨부파일</h3>
           {post.attachedFiles.map((file) => (
-            <div 
+            <div
               key={file.id}
               className="flex justify-between items-center bg-white p-3 rounded border border-gray-200"
             >
@@ -233,7 +232,7 @@ export default function BoardDataRoomView() {
                 </label>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleAddComment}
               className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600"
             >
@@ -244,8 +243,8 @@ export default function BoardDataRoomView() {
 
         {/* 하단 버튼 */}
         <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between">
-          <Link 
-            to="/dataroom" 
+          <Link
+            to="/dataroom"
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
           >
             목록으로
@@ -257,7 +256,7 @@ export default function BoardDataRoomView() {
             >
               수정
             </Link>
-            <button 
+            <button
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
             >
               삭제
