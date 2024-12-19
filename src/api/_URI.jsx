@@ -132,6 +132,9 @@ export const PAGE_HARD_DELETE_URI = `${API_SERVER_HOST}/page/:id/hard`; // 하�
 export const CHANNEL_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 관련 URI
 export const CHANNEL_CREATE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
 export const CHANNEL_LIST_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널 생성/추가
+
+export const CHANNEL_FILE_URI = `${API_SERVER_HOST}/chatting/channel`; // 채널에 파일업로드
+
 export const CHANNEL_GET_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}`; // 채널 조회
 
@@ -170,6 +173,7 @@ export const DM_DELETE_MESSAGE_URI = (messageId) =>
 
 export const DM_GET_MEMBER_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/members`; // 디엠 멤버 조회
+
 // calendar
 export const CALENDAR_INSERT_URI = `${API_SERVER_HOST}/calendar/insert`; // 새 캘린더 추가하기
 export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘린더 조회하기

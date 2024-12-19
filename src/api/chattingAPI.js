@@ -16,6 +16,7 @@ import {
   DM_GET_MEMBER_URI,
   CHANNEL_ROOM_SEARCH_URI,
   DM_DELETE_MESSAGE_URI,
+  CHANNEL_FILE_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -78,7 +79,9 @@ export const leaveChannel = async ({ channelId, userId }) => {
 
 export const getAllChannels = async (memberId) => {
   try {
-    const response = await axios.get(`${CHANNEL_LIST_URI}?memberId=${memberId}`);
+    const response = await axios.get(
+      `${CHANNEL_LIST_URI}?memberId=${memberId}`
+    );
     return response.data; // 채널 목록 데이터를 반환
   } catch (error) {
     console.error("채널 목록 조회 오류:", error);
@@ -110,7 +113,6 @@ export const getChannelMembers = async (channelId) => {
   try {
     console.log(`[JS] 채널 멤버 조회 요청: 채널 ID ${channelId}`);
 
-
     const response = await axios.get(CHANNEL_GET_MEMBER_URI(channelId));
 
     console.log(`[JS] 채널 멤버 조회 성공:`, response.data);
@@ -119,15 +121,14 @@ export const getChannelMembers = async (channelId) => {
     console.error(`[JS] 채널 멤버 조회 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
-}
+};
 
 export const changeChannelTitle = async ({ channelId, name }) => {
   try {
     console.log(`[JS] 채널 멤버 조회 요청: 채널 ID ${channelId}`);
 
-
     const response = await axios.patch(CHANNEL_CHANGE_TITLE_URI(channelId), {
-      name
+      name,
     });
 
     console.log(`[JS] 채널 이름 수정 성공:`, response.data);
@@ -136,7 +137,7 @@ export const changeChannelTitle = async ({ channelId, name }) => {
     console.error(`[JS] 채널 이름 수정 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
-}
+};
 
 export const getDmMessages = async (dmId) => {
   try {
@@ -185,19 +186,20 @@ export const getDmById = async (dmId) => {
 
 export const createDm = async ({ creatorId, receiverIds }) => {
   try {
-    const response = await axios.post(`${DM_CREATE_URI}`, { creatorId, receiverIds });
+    const response = await axios.post(`${DM_CREATE_URI}`, {
+      creatorId,
+      receiverIds,
+    });
     return response.data; // 디엠 방 목록 데이터 반환
   } catch (error) {
     console.error("디엠 방 생성 실패:", error);
     throw error; // 에러 발생 시 처리
   }
-
-}
+};
 
 export const getDmMembers = async (dmId) => {
   try {
     console.log(`[JS] 디엠 멤버 조회 요청: 채널 ID ${dmId}`);
-
 
     const response = await axios.get(DM_GET_MEMBER_URI(dmId));
 
@@ -207,7 +209,7 @@ export const getDmMembers = async (dmId) => {
     console.error(`[JS] 디엠 멤버 조회 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
-}
+};
 
 export const searchChatRooms = async (memberId, searchName) => {
   try {
@@ -217,7 +219,10 @@ export const searchChatRooms = async (memberId, searchName) => {
 
     console.log("API 응답:", response.data); // 응답 데이터 확인
     if (!Array.isArray(response.data)) {
-      console.error("API에서 배열 형태의 데이터를 반환하지 않음:", response.data);
+      console.error(
+        "API에서 배열 형태의 데이터를 반환하지 않음:",
+        response.data
+      );
       return []; // 빈 배열 반환
     }
     return response.data; // 검색 결과 반환
@@ -240,4 +245,26 @@ export const deleteDmMessage = async (messageId, userId) => {
     console.error("메시지 삭제 실패:", error);
     throw new Error(`삭제 실패: ${error.response?.status || error.message}`);
   }
+};
+
+// 파일 업로드 API
+export const uploadFileToChannel = async ({
+  channelId,
+  file,
+  content,
+  senderId,
+}) => {
+  const formData = new FormData();
+
+  // FormData에 필드 추가
+  formData.append("file", file); // 파일
+  formData.append("content", content || ""); // 메시지 내용
+  formData.append("senderId", senderId); // 보낸 사람 ID
+
+  // POST 요청
+  return axios.post(`${CHANNEL_FILE_URI}/${channelId}/files`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
