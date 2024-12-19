@@ -14,15 +14,21 @@ import { fetchDepartmentsByCompanyId } from "@/api/departmentAPI";
 import useModalStore from "../../../store/modalStore";
 import PageCollaboratorModal from "../../common/modal/pageCollaboratorModal";
 import { usePageActions } from "../../../hooks/paging/usePageActions";
-import { usePageList } from "../../../hooks/paging/usePageList";
-import { PAGE_LIST_UID_URI, PAGE_LIST_DELETED_URI } from "../../../api/_URI";
+
+const generateUUID = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 const PagingWrite = () => {
   // 기본 상태들
   const [title, setTitle] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [stompClient, setStompClient] = useState(null);
-  const [componentId, setComponentId] = useState(null);
+  const [componentId] = useState(() => generateUUID());
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [collaborators, setCollaborators] = useState([]);
@@ -51,15 +57,6 @@ const PagingWrite = () => {
   const profile = user?.profile;
   const rate = user?.companyRate;
 
-  // uid 체크 로그인 안되어 있으면 로그인 페이지로
-  useEffect(() => {
-    if (!uid) {
-      console.warn("User ID is not available");
-      navigate("/login"); // 로그인 페이지로 리다이렉트
-      return;
-    }
-  }, [uid, navigate]);
-
   // WebSocket 메시지 핸들러
   const handleWebSocketMessage = useWebSocketMessage(
     editorRef,
@@ -68,9 +65,20 @@ const PagingWrite = () => {
     setTitle
   );
 
-  // content 수정 - throttle된 브로드캐스트 함수 생성
+  // componentId 생성
+  useEffect(() => {
+    console.log("useEffect - componentId 초기화 시작");
+    if (!componentId) {
+      const id = generateUUID();
+      setComponentId(id);
+      console.log("🔍 Component ID initialized:", id);
+    }
+  }, []);
+
+  // throttledBroadcast 생성 - componentId가 undefined일 수 있음
   const throttledBroadcast = useThrottle(async (savedData) => {
     console.log("throttledBroadcast - throttle된 브로드캐스트 함수 실행");
+    console.log("🔍 componentId", componentId);
     if (stompClientRef.current?.active) {
       const currentId = new URLSearchParams(window.location.search).get("id");
       const message = {
@@ -81,11 +89,11 @@ const PagingWrite = () => {
       };
 
       stompClientRef.current.publish({
-        destination: `/app/page/${id}`,
+        destination: `/app/page/${currentId}`,
         body: JSON.stringify(message),
       });
     }
-  }, 500); // 500ms 쓰로틀
+  }, 500);
 
   // Editor 훅 사용
   const createEditor = useEditor(throttledBroadcast);
@@ -131,7 +139,7 @@ const PagingWrite = () => {
     }
   };
 
-  // 페이지 접근 권한 확인
+  // 페이지 접�� 권한 확인
   const checkPageAccess = useCallback(
     async (pageId) => {
       try {
@@ -167,7 +175,7 @@ const PagingWrite = () => {
         return true;
       } catch (error) {
         console.error("페이지 접근 권한 확인 중 오류:", error);
-        console.error("상세 에러:", error.response?.data);
+        console.error("상 에러:", error.response?.data);
         alert("해당 페이지에 접근 권한이 없습니다.");
         navigate("/antwork/page");
         return false;
@@ -237,26 +245,6 @@ const PagingWrite = () => {
     stompClientRef,
   });
 
-  const generateUUID = () => {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  };
-
-  useEffect(() => {
-    console.log("useEffect - componentId 초기화 시작");
-    if (!componentId) {
-      const id = generateUUID(); // uuidv4() 대신 generateUUID() 사용
-      setComponentId(id);
-      console.log("🔍 Component ID initialized:", id);
-    }
-  }, []);
-
   // 제목 변경 핸들러 수정
   const handleTitleChange = async (e) => {
     console.log("handleTitleChange - 제목 변경 처리 시작");
@@ -297,14 +285,18 @@ const PagingWrite = () => {
     const params = new URLSearchParams(location.search);
     const newId = params.get("id");
 
+    console.log(`현재 ID: ${id}, 새로운 ID: ${newId}`);
+
     if (newId !== id) {
       // WebSocket 연결 정리
       if (stompClientRef.current?.active) {
+        console.log("page내 동 WebSocket 연결 해제");
         stompClientRef.current.deactivate();
       }
 
       // 에디터 정리
       if (editorRef.current) {
+        console.log("에디터 정리");
         editorRef.current.destroy();
       }
 
@@ -312,15 +304,15 @@ const PagingWrite = () => {
       setId(newId);
 
       // 에디터 다시 초기화
+      console.log("에디터 초기화");
       initializeEditor();
     }
-  }, [location.search]); // URL 변경 감지
+  }, [location.search, id]); // URL 및 ID 변경 감지
 
   // 이모지 선택 핸들러 수정
   const onEmojiClick = (emojiObject) => {
     // 기존 제목에서 첫 번째 이모지와 공백을 제거
     const titleWithoutEmoji = title.replace(/^\p{Emoji}\s*/u, "");
-    // 새로운 이모지 추가
     const newTitle = `${emojiObject.emoji} ${titleWithoutEmoji}`;
 
     // handleTitleChange를 호출하여 제목 변경 및 브로드캐스트 처리
@@ -343,7 +335,7 @@ const PagingWrite = () => {
 
     fetchCollaborators();
   }, [id]);
-  // departments 데이터 가져오기
+  // departments 데이터 가져오기t
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -383,7 +375,7 @@ const PagingWrite = () => {
     }
   };
 
-  // useEffect에서 페이지 로드 시 소유자 여부 확인
+  // useEffect에서 페이지 드 시 소유자 여부 확인
   useEffect(() => {
     const checkOwnership = async () => {
       if (id && uid) {
@@ -411,7 +403,7 @@ const PagingWrite = () => {
                 ? collaborators
                 : collaborators.slice(0, 3)
               ).map((collaborator) => {
-                // departments에서 사용자와 해당 부서 정보 찾기
+                // departments에서 사용자와 해당 부서 정보 ��기
                 const matchedDepartment = departments?.find((dept) =>
                   dept.users.some((u) => u.id === collaborator.user_id)
                 );

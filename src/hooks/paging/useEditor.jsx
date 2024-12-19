@@ -51,7 +51,6 @@ export const useEditor = (
           image: {
             class: ImageTool,
             config: {
-              caption: false,
               uploader: {
                 uploadByFile: async (file) => {
                   const formData = new FormData();
@@ -66,10 +65,28 @@ export const useEditor = (
                         },
                       }
                     );
-                    return { success: 1, file: { url: response.data } };
+                    console.log("이미지 업로드 응답:", response.data);
+
+                    // Editor.js의 이미지 블록이 기대하는 정확한 데이터 구조
+                    const imageData = {
+                      success: 1,
+                      file: {
+                        url: response.data,
+                      },
+                    };
+
+                    // 저장 및 브로드캐스트
+                    setTimeout(async () => {
+                      const savedData = await editor.save();
+                      throttledBroadcast(savedData);
+                    }, 100);
+
+                    return imageData;
                   } catch (error) {
                     console.error("Upload failed:", error);
-                    return { success: 0, message: "Upload failed" };
+                    return {
+                      success: 0,
+                    };
                   }
                 },
               },
@@ -110,6 +127,18 @@ export const useEditor = (
               throttledBroadcast(savedData);
             } catch (error) {
               console.error("Error in input handler:", error);
+            }
+          });
+          // 키보드 이벤트로 삭제 감지
+          editorElement.addEventListener("keyup", async (e) => {
+            // Backspace 또는 Delete 키 감지
+            if (e.key === "Backspace" || e.key === "Delete") {
+              try {
+                const savedData = await editor.save();
+                throttledBroadcast(savedData);
+              } catch (error) {
+                console.error("Error in keyup handler:", error);
+              }
             }
           });
         },
