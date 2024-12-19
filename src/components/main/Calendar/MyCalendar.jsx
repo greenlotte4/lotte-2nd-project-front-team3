@@ -365,7 +365,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           dayMaxEvents={dayMaxEvents} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
           datesSet={handleDatesSet} // 뷰 변경시마다 호출되는 이벤트
           moreLinkText={(n) => `+${n}개의 일정 더보기`} // 3개 이상일 때 나타날 + 텍스트
-          locale="ko" // 언어를 한국어로 설정
+          locale="ar" // 언어를 한국어로 설정
           eventContent={renderEventContent} // 커스터마이징 렌더링
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정

@@ -1,3 +1,5 @@
+import { selectVersion } from "@/api/versionAPI";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 {
   /*
@@ -8,6 +10,15 @@ import { Link } from "react-router-dom";
   */
 }
 export default function LandingFooter() {
+  const [version, setVersion] = useState();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response3 = await selectVersion();
+      setVersion(response3.version);
+    };
+    fetchData();
+  });
+
   return (
     <footer
       id="footer"
@@ -22,7 +33,7 @@ export default function LandingFooter() {
               alt="Antwork footer logo"
             />
             <span>App Version:</span> <br />
-            <span>3조-0.1.5-SNAPSHOT</span>
+            <span>3조-{version}</span>
           </Link>
         </div>
 

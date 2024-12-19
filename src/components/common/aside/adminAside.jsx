@@ -25,7 +25,7 @@ export default function AdminAside({ asideVisible }) {
     const log = clickedLinks.map((item) => {
       if (item === "서비스정보") {
         return {
-          path: "/antwork/admin/member",
+          path: "/antwork/admin/service",
           label: "서비스 정보",
           icon: "🌐",
         };
@@ -58,12 +58,6 @@ export default function AdminAside({ asideVisible }) {
           path: "/admin/organizational-design",
           label: "조직도 설계",
           icon: "📁",
-        };
-      } else if (item === "멤버 통합 관리") {
-        return {
-          path: "/admin/member-integration",
-          label: "멤버 통합 관리",
-          icon: "👤",
         };
       } else if (item === "부서 관리") {
         return {
@@ -156,18 +150,10 @@ export default function AdminAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/admin/member"
+                    to="/antwork/admin/service"
                     onClick={() => handleLinkClick("서비스정보")}
                   >
                     🌐&nbsp;&nbsp;서비스 정보
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/antwork/admin/member"
-                    onClick={() => handleLinkClick("멤버관리")}
-                  >
-                    👨‍💻&nbsp;&nbsp;멤버관리
                   </Link>
                 </li>
                 <li>
@@ -202,38 +188,7 @@ export default function AdminAside({ asideVisible }) {
                     >
                       💻&nbsp;&nbsp;전자결제
                     </Link>
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        color: "#888",
-                        marginLeft: "10px",
-                      }}
-                    >
-                      {isOpen ? "▲" : "▼"}
-                    </span>
                   </div>
-
-                  {/* 하위 메뉴 */}
-                  {isOpen && (
-                    <ul className="mt-2 ml-4 space-y-2">
-                      <li>
-                        <Link
-                          to="/antwork/admin/approval/pending"
-                          className="text-gray-700 hover:text-blue-600 hover:underline"
-                        >
-                          📂 결제대기
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          to="/antwork/admin/approval/approved"
-                          className="text-gray-700 hover:text-blue-600 hover:underline"
-                        >
-                          ✅ 결제완료
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
                 </li>
               </ol>
             )}
@@ -258,18 +213,10 @@ export default function AdminAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/admin/organizational-design"
-                    onClick={() => handleLinkClick("조직도 설계")}
+                    to="/antwork/admin/member"
+                    onClick={() => handleLinkClick("멤버관리")}
                   >
-                    📁&nbsp;&nbsp;조직도 설계
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/member-integration"
-                    onClick={() => handleLinkClick("멤버 통합 관리")}
-                  >
-                    👤&nbsp;&nbsp;멤버 통합 관리
+                    👨‍💻&nbsp;&nbsp;멤버관리
                   </Link>
                 </li>
                 <li>

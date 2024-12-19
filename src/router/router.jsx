@@ -68,7 +68,10 @@ import IntermediatePage from "@/pages/Landing/TossPaymentPage";
 import TossPaymentPage from "@/pages/Landing/TossPaymentPage";
 
 import TemplateViewPage from "@/pages/Main/Paging/TemplateViewPage";
+
 import SettingProjectPage from "@/pages/Main/setting/settingProjectPage";
+
+import AdminServicePage from "@/pages/Main/Admin/adminServicePage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -99,6 +102,8 @@ const router = createBrowserRouter([
       { path: "admin/attendance", element: <AdminAttendancePage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
       { path: "admin/approval", element: <AdminApprovalPage /> }, // 2024/12/10(화) 최준혁 - AdminAttendancePage 추가
       { path: "admin/access", element: <AdminAccessPage /> }, // 2024/12/16(월) 최준혁 - AdminAccessPage 추가
+      { path: "admin/service", element: <AdminServicePage /> }, // 2024/12/19(목) 하정훈 - AdminServicePage 추가
+
 
       { path: "page", element: <PagingPage /> }, // Antwork 페이지
       { path: "page/write", element: <PagingWritePage /> }, // 2024/11/25(월) 황수빈 - Page Writer 추가

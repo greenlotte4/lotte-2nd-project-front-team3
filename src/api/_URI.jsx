@@ -60,6 +60,7 @@ export const ACCESS_USERLOG_URI = `${API_SERVER_HOST}/logs/user`; // 로그 SELE
 
 // company
 export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert
+export const COMPANY_SELECT_URI = `${API_SERVER_HOST}/company/select`; // 회사 select
 
 // approval
 export const APPROVAL_TRIP_CREATE = `${API_SERVER_HOST}/businesstrips`; // 출장 신청
@@ -185,6 +186,9 @@ export const SCHEDULE_UPDATE_URI = `${API_SERVER_HOST}/schedule/update`; // 일�
 export const SCHEDULE_UPDATEDETAIL_URI = `${API_SERVER_HOST}/schedule/update/detail`; // 일정 수정하기
 export const SCHEDULE_DELETE_URI = `${API_SERVER_HOST}/schedule/delete`; // 일정 삭제하기
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
+
+// version
+export const VERSION_SELECT_URI = `${API_SERVER_HOST}/version/select`; // 버전 조회
 
 // board
 export const BOARD_WRITE_URI = `${API_SERVER_HOST}/board/write`; // 게시판 글쓰기
