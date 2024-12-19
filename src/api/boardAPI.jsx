@@ -5,7 +5,8 @@ import {
     BOARD_LIST_URI, // 게시판 리스트 (글목록)
     BOARD_VIEW_URI, // 게시판 뷰 (글보기)
     BOARD_UPDATE_URI,
-    BOARD_DELETE_URI
+    BOARD_DELETE_URI,
+    BOARD_COMMENT_URI
     //BOARD_MAIN_URI, // 게시판 메인
 
 } from "./_URI";
@@ -176,7 +177,7 @@ export const deleteBoardApi = async (uid) => {
             console.log("삭제 성공");
             return true;
         }
-        
+
         console.log("예상치 못한 응답 상태:", response.status);
         throw new Error('게시글 삭제에 실패했습니다.');
     } catch (error) {
@@ -190,6 +191,97 @@ export const deleteBoardApi = async (uid) => {
                 data: error.response?.data
             }
         });
+        throw error;
+    }
+};
+
+
+
+// 댓글 작성
+export const createComment = async (boardId, commentData, user) => {
+    try {
+
+        const requestData = {
+            content: commentData.content,
+            parentCommentId: commentData.parentId,
+            secret: commentData.isSecret,
+            userId: user.id // 로그인된 사용자 ID 추가
+        };
+
+        const response = await axiosInstance.post(
+            `${BOARD_COMMENT_URI}/${boardId}`,
+            requestData
+        );
+        return response.data;
+    } catch (error) {
+        console.error('댓글 작성 실패:', error);
+        throw error;
+    }
+};
+
+
+// 댓글 작성
+// export const createComment = async (boardId, commentData) => {
+//     try {
+//         const response = await axiosInstance.post(
+//             `${BOARD_COMMENT_URI}/${boardId}`,
+//             commentData
+//         );
+//         return response.data;
+//     } catch (error) {
+//         console.error('댓글 작성 실패:', error);
+//         throw error;
+//     }
+// };
+
+
+
+
+
+// 댓글 수정
+export const updateComment = async (commentId, updateData) => {
+    try {
+        const response = await axiosInstance.put(
+            `${BOARD_COMMENT_URI}/${commentId}`,
+            updateData
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('댓글 수정 실패:', error);
+        throw error;
+    }
+};
+
+
+
+
+
+
+
+// 댓글 삭제
+export const deleteComment = async (commentId, userId) => {
+    try {
+        const response = await axiosInstance.delete(
+            `${BOARD_COMMENT_URI}/${commentId}/${userId}`
+        );
+        console.log(response.data)
+        return response.data;
+    } catch (error) {
+        console.error('댓글 삭제 실패:', error);
+        throw error;
+    }
+};
+
+// 댓글 목록 조회
+export const getCommentList = async (boardId, userId, isAdmin = false) => {
+    try {
+        const response = await axiosInstance.get(
+            `${BOARD_COMMENT_URI}/board/${boardId}?userId=${userId}&isAdmin=${isAdmin}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error('댓글 목록 조회 실패:', error);
         throw error;
     }
 };
