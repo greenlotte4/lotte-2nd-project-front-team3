@@ -122,7 +122,7 @@ export default function ProjectAside({ asideVisible }) {
                 {projects.ongoing.map((project) => (
                   <li key={project.id}>
                     <Link to={`/antwork/project/view?id=${project.id}`}>
-                      📋&nbsp;&nbsp;{project.projectName}
+                      📊&nbsp;&nbsp;{project.projectName}
                     </Link>
                   </li>
                 ))}
@@ -151,7 +151,7 @@ export default function ProjectAside({ asideVisible }) {
                 {projects.completed.map((project) => (
                   <li key={project.id}>
                     <Link to={`/antwork/project/view?id=${project.id}`}>
-                      📋&nbsp;&nbsp;{project.projectName}
+                      📊&nbsp;&nbsp;{project.projectName}
                     </Link>
                   </li>
                 ))}
