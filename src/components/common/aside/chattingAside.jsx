@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useInviteModal } from "../../../hooks/chatting/invitemodal";
 import useModalStore from "../../../store/modalStore";
 import useToggle from "../../../hooks/useToggle";
-import { getAllChannels, getDmList } from "../../../api/chattingAPI"; // 경로 확인
+import { getAllChannels, getDmList, searchChatRooms } from "../../../api/chattingAPI"; // 경로 확인
 import { Link, NavLink } from "react-router-dom";
 import { channelStore } from "../../../store/chattingStore";
 import useAuthStore from "../../../store/AuthStore"; // userId 가져오기 위한 import
@@ -25,6 +25,32 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
   const user = useAuthStore((state) => state.user); // user 정보가 state에 저장되어 있다고 가정
   // userId를 상태에서 가져옵니다.
   const { userId } = useAuthStore((state) => state);
+
+  const [searchText, setSearchText] = useState(""); // 검색어 상태
+  const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태
+
+  const handleSearch = async () => {
+    if (!searchText.trim()) {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const results = await searchChatRooms(user.id, searchText.trim());
+      console.log("검색 결과:", results); // 결과 확인
+      setSearchResults(results); // 상태 업데이트
+    } catch (error) {
+      console.error("채널 검색 실패:", error);
+      setSearchResults([]); // 검색 실패 시 빈 배열 설정
+    } finally {
+      setLoading(false);
+    }
+  };  
+  
+  useEffect(() => {
+    console.log("최종 업데이트된 searchResults:", searchResults);
+  }, [searchResults]);  
 
   // 채널 목록을 가져오는 함수
   useEffect(() => {
@@ -69,39 +95,100 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
 
     fetchDMs();
   }, [user.id]);
+
   return (
     <aside className={`sidebar ${!asideVisible ? "hidden" : ""} table-cell px-[20px]`}>
-      {/* 타이틀 영역 */}
-      <div className="logo pb-4 border-b border-gray-200 mb-4">
-        <div className="flex flex-col">
-          <span className="sub-title text-gray-500 text-[14px] mb-1">Direct Message</span>
-          <div className="flex items-center">
-            <span className="title font-extrabold text-[22px]">Chatting</span>
-            <span className="ml-2 text-xl">💬</span>
-          </div>
+  {/* 타이틀 영역 */}
+  <div className="logo pb-4 border-b border-gray-200 mb-4">
+    <div className="flex flex-col">
+      <span className="sub-title text-gray-500 text-[14px] mb-1">Direct Message</span>
+      <div className="flex items-center">
+        <span className="title font-extrabold text-[22px]">Chatting</span>
+        <span className="ml-2 text-xl">💬</span>
+      </div>
+    </div>
+  </div>
+
+     <ul className="lnb inline-grid">
+    {/* 채팅 홈 아이콘 */}
+    <li className="lnb-item">
+      <div className="lnb-header !mb-[10px]">
+        <img
+          src="/images/ico/page_home_22_999999.svg"
+          className="cate-icon !w-[22px] !h-[22px]"
+          alt="Chat Home Icon"
+        />
+        <Link to="/antwork/chatting" className="main-cate !text-[16px]">
+          홈
+        </Link>
+      </div>
+
+   {/* 채널 검색 섹션 */}
+    <li className="lnb-item mt-6 !pb-[15px] border-b border-[#ddd]">
+      <div
+        className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
+        onClick={() => toggleState("isSearchOpen")}
+      >
+        <img
+      src="/images/ico/page_search_22_999999.svg"
+      className="cate-icon !w-[22px] !h-[22px]"
+      alt="Search Icon"
+    />
+    <span className="main-cate !text-[16px] ">채널 검색</span>
+  </div>
+
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          toggleStates.isSearchOpen ? "max-h-screen" : "max-h-0"
+        }`}
+      >
+        {/* 검색 입력창 */}
+        <div className="mt-2">
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="찾고 싶은 채널 이름을 입력하세요."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm w-full"
+          />
+        </div>
+
+        {/* 검색 결과 */}
+        <div className="mt-4">
+          {loading ? (
+            <p className="text-gray-500">검색 결과는 아래에 표시됩니다.</p>
+          ) : searchResults.length > 0 ? (
+            <ul className="space-y-2">
+              {searchResults.map((channel) => (
+                <li key={channel.id}>
+                  <NavLink
+                    to={`/antwork/chatting/channel/${channel.id}`}
+                    className="flex items-center p-2 rounded-md hover:bg-gray-100 transition"
+                  >
+                    <span className="mr-2">{channel.ChannelPrivacy ? "🔒" : "📢"}</span>
+                    <p className="font-medium text-gray-800 text-[14px] truncate">{channel.name}</p>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            searchText && <p className="text-gray-500">검색 결과가 없습니다.</p>
+          )}
         </div>
       </div>
-      {/* 채팅 홈 아이콘 */}
-      <div className="logo pb-4 border-b border-gray-200 mb-4">
-        <div className="lnb-item mb-6">
-          <div className="lnb-header flex items-center gap-2">
-            <img
-              src="/images/ico/page_home_22_999999.svg"
-              className="cate-icon w-[22px] h-[22px] cursor-pointer"
-              alt="Chat Home Icon"
-            />
-            <NavLink
-              to="/antwork/chatting"
-              className="main-cate text-[16px] text-gray-700 hover:text-blue-500 transition"
-            >
-              채팅 홈
-            </NavLink>
-          </div>
-        </div>
-      </div>
+    </li>
       {/* 개인 채팅 섹션 */}
       <div className="mt-6">
         <div className="flex items-center justify-between">
+
+
+          
           <div
             className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
             onClick={() => toggleState("isPersonalOpen")}
@@ -223,6 +310,8 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
           </ul>
         </div>
       </div>
+      </li>
+      </ul>
     </aside>
 
 
