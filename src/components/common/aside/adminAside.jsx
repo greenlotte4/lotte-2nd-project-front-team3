@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
 
@@ -8,12 +8,109 @@ export default function AdminAside({ asideVisible }) {
     organizationalManagement: true,
     securityManagement: true,
     menuManagement: true,
+    RecentlyUsedList: true,
   });
 
+  const [logs, setLogs] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSubMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    const clickedLinks =
+      JSON.parse(sessionStorage.getItem("clickedLinks")) || [];
+    console.log("Clicked links:", clickedLinks);
+    const log = clickedLinks.map((item) => {
+      if (item === "서비스정보") {
+        return {
+          path: "/antwork/admin/member",
+          label: "서비스 정보",
+          icon: "🌐",
+        };
+      } else if (item === "멤버관리") {
+        return {
+          path: "/antwork/admin/member",
+          label: "멤버관리",
+          icon: "👨‍💻",
+        };
+      } else if (item === "팝업관리") {
+        return {
+          path: "/antwork/admin/popup",
+          label: "팝업관리",
+          icon: "🔔",
+        };
+      } else if (item === "알림관리") {
+        return {
+          path: "/antwork/admin/notification",
+          label: "알림관리",
+          icon: "📩",
+        };
+      } else if (item === "전자결제") {
+        return {
+          path: "/antwork/admin/approval",
+          label: "전자결제",
+          icon: "💻",
+        };
+      } else if (item === "조직도 설계") {
+        return {
+          path: "/admin/organizational-design",
+          label: "조직도 설계",
+          icon: "📁",
+        };
+      } else if (item === "멤버 통합 관리") {
+        return {
+          path: "/admin/member-integration",
+          label: "멤버 통합 관리",
+          icon: "👤",
+        };
+      } else if (item === "부서 관리") {
+        return {
+          path: "/antwork/admin/department",
+          label: "부서 관리",
+          icon: "🏢",
+        };
+      } else if (item === "근태관리") {
+        return {
+          path: "/antwork/admin/attendance",
+          label: "근태관리",
+          icon: "🕒",
+        };
+      } else if (item === "접근 제한") {
+        return {
+          path: "/antwork/admin/member",
+          label: "접근 제한",
+          icon: "🚫",
+        };
+      } else if (item === "멤버접근로그") {
+        return {
+          path: "/antwork/admin/access",
+          label: "멤버접근로그",
+          icon: "📄",
+        };
+      }
+    });
+    console.log(JSON.stringify(log));
+    setLogs(log);
+    console.log(JSON.stringify(logs));
+  }, []);
+
+  const handleLinkClick = (label) => {
+    // 1. 기존의 기록을 localStorage에서 불러오기 (없으면 빈 배열로 초기화)
+    const clickedLinks =
+      JSON.parse(sessionStorage.getItem("clickedLinks")) || [];
+
+    // 2. 중복된 항목이 있는지 확인
+    const filteredLinks = clickedLinks.filter((link) => link !== label); // 기존에 있는 항목은 제외
+
+    // 3. 새로운 클릭 기록 추가 (중복 방지)
+    filteredLinks.push(label);
+
+    // 4. 업데이트된 배열을 localStorage에 다시 저장
+    sessionStorage.setItem("clickedLinks", JSON.stringify(filteredLinks));
+    const lastClickedLink = sessionStorage.getItem("clickedLinks");
+    console.log("Clicked item saved to localStorage:", lastClickedLink);
   };
 
   return (
@@ -58,18 +155,34 @@ export default function AdminAside({ asideVisible }) {
             {toggles.basicManagement && (
               <ol>
                 <li>
-                  <Link to="/antwork/admin/member">
+                  <Link
+                    to="/antwork/admin/member"
+                    onClick={() => handleLinkClick("서비스정보")}
+                  >
                     🌐&nbsp;&nbsp;서비스 정보
                   </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/member">👨‍💻&nbsp;&nbsp;멤버관리</Link>
+                  <Link
+                    to="/antwork/admin/member"
+                    onClick={() => handleLinkClick("멤버관리")}
+                  >
+                    👨‍💻&nbsp;&nbsp;멤버관리
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/popup">🔔&nbsp;&nbsp;팝업관리</Link>
+                  <Link
+                    to="/antwork/admin/popup"
+                    onClick={() => handleLinkClick("팝업관리")}
+                  >
+                    🔔&nbsp;&nbsp;팝업관리
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/notification">
+                  <Link
+                    to="/antwork/admin/notification"
+                    onClick={() => handleLinkClick("알림관리")}
+                  >
                     📩&nbsp;&nbsp;알림관리
                   </Link>
                 </li>
@@ -85,6 +198,7 @@ export default function AdminAside({ asideVisible }) {
                       }}
                       onMouseEnter={(e) => (e.target.style.color = "#007BFF")}
                       onMouseLeave={(e) => (e.target.style.color = "#555")}
+                      onClick={() => handleLinkClick("전자결제")}
                     >
                       💻&nbsp;&nbsp;전자결제
                     </Link>
@@ -143,22 +257,34 @@ export default function AdminAside({ asideVisible }) {
             {toggles.organizationalManagement && (
               <ol>
                 <li>
-                  <Link to="/admin/organizational-design">
+                  <Link
+                    to="/admin/organizational-design"
+                    onClick={() => handleLinkClick("조직도 설계")}
+                  >
                     📁&nbsp;&nbsp;조직도 설계
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin/member-integration">
+                  <Link
+                    to="/admin/member-integration"
+                    onClick={() => handleLinkClick("멤버 통합 관리")}
+                  >
                     👤&nbsp;&nbsp;멤버 통합 관리
                   </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/department">
+                  <Link
+                    to="/antwork/admin/department"
+                    onClick={() => handleLinkClick("부서 관리")}
+                  >
                     🏢&nbsp;&nbsp;부서 관리
                   </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/attendance">
+                  <Link
+                    to="/antwork/admin/attendance"
+                    onClick={() => handleLinkClick("근태관리")}
+                  >
                     🕒&nbsp;&nbsp;근태 관리
                   </Link>
                 </li>
@@ -184,12 +310,18 @@ export default function AdminAside({ asideVisible }) {
             {toggles.securityManagement && (
               <ol>
                 <li>
-                  <Link to="/antwork/admin/member">
+                  <Link
+                    to="/antwork/admin/member"
+                    onClick={() => handleLinkClick("접근 제한")}
+                  >
                     🚫&nbsp;&nbsp;접근 제한
                   </Link>
                 </li>
                 <li>
-                  <Link to="/antwork/admin/access">
+                  <Link
+                    to="/antwork/admin/access"
+                    onClick={() => handleLinkClick("멤버접근로그")}
+                  >
                     📄&nbsp;&nbsp;멤버접근로그
                   </Link>
                 </li>
@@ -198,18 +330,36 @@ export default function AdminAside({ asideVisible }) {
           </li>
 
           <li className="lnb-item">
-            <div className="lnb-header !mb-[10px]">
+            <div
+              className="lnb-header !mb-[10px]"
+              onClick={() => toggleSection("RecentlyUsedList")}
+            >
               <img
                 src="/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 className="cate-icon !w-[22px] !h-[22px]"
               />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
+              <button className="main-cate !text-[16px] text-[#757575]">
                 최근사용목록
-              </Link>
+              </button>
             </div>
+            {toggles.RecentlyUsedList &&
+              logs &&
+              Array.isArray(logs) &&
+              logs.length > 0 && (
+                <ol>
+                  {logs
+                    .slice()
+                    .reverse()
+                    .slice(0, 5)
+                    .map((log, index) => (
+                      <li key={index}>
+                        <Link to={log?.path}>
+                          {log?.icon}&nbsp;&nbsp;{log?.label}
+                        </Link>
+                      </li>
+                    ))}
+                </ol>
+              )}
             <div className="lnb-header !mb-[10px]">
               <img
                 src="/images/ico/page_setting_22_999999.svg"

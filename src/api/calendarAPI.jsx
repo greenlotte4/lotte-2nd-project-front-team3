@@ -20,6 +20,7 @@ import axiosInstance from "../utils/axiosInstance";
 
 // 캘린더 insert
 export const insertCalendar = async (calendar) => {
+  console.log(calendar);
   try {
     // JSON 데이터로 전송
     const response = await axiosInstance.post(CALENDAR_INSERT_URI, calendar, {

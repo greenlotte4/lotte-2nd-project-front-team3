@@ -28,6 +28,9 @@ export const USER_UPDATEPASS_URI = `${API_SERVER_HOST}/user/password`; // 유저
 export const USER_UPDATEIMG_URI = `${API_SERVER_HOST}/user/img`; // 유저 프로필이미지 수정하기
 export const USER_FINDBYEMAIL_URI = `${API_SERVER_HOST}/user/findId`; // 유저 아이디 찾기
 export const USER_SEARCHUSER_URI = `${API_SERVER_HOST}/user/search`; // 유저 검색해서 찾기
+export const USER_UPDATEPOSITION_URI = `${API_SERVER_HOST}/user/position`; // 유저 직위 변경
+export const USER_DELETEUSER_URI = `${API_SERVER_HOST}/user/delete`; // 유저 삭제하기
+export const USER_FINDDELETE_URI = `${API_SERVER_HOST}/user/findDelete`; // 삭제 유저찾기
 
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송
@@ -53,6 +56,7 @@ export const USER_INVITE_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/invite`; // 
 
 // access
 export const ACCESS_SELECT_URI = `${API_SERVER_HOST}/logs/search`; // 로그 SELECT
+export const ACCESS_USERLOG_URI = `${API_SERVER_HOST}/logs/user`; // 로그 SELECT
 
 // company
 export const COMPANY_INSERT_URI = `${API_SERVER_HOST}/company/insert`; // 회사 insert

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import useModalStore from "../../../store/modalStore";
-import { inviteUser } from "../../../api/userAPI";
+import {
+  getAllUserCompany,
+  inviteUser,
+  updatePosition,
+} from "../../../api/userAPI";
 import {
   fetchDepartmentsByCompanyId,
   insertDepartment,
@@ -14,7 +18,7 @@ const AdminModal = () => {
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [department, setDepartment] = useState("");
-  const [position, setPositon] = useState("");
+  const [position, setPosition] = useState("");
   const [role, setRole] = useState("USER"); // 기본값: 'USER'
   const [note, setNote] = useState("");
   const [newDepartmentName, setNewDepartmentName] = useState("");
@@ -23,6 +27,8 @@ const AdminModal = () => {
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
   const [departments, setDepartments] = useState([]); // 부서 목록 상태 추가
   const [localTargetDepartmentId, setLocalTargetDepartmentId] = useState("");
+  const [users, setUsers] = useState([]);
+  const [changes, setChanges] = useState([]);
 
   // 모달 열릴 때 부서 목록 가져오기
   useEffect(() => {
@@ -38,6 +44,12 @@ const AdminModal = () => {
       };
 
       loadDepartments();
+    } else if (isOpen && type == "position-change") {
+      const loadUsers = async () => {
+        const response = await getAllUserCompany(user?.company);
+        setUsers(response);
+      };
+      loadUsers();
     }
   }, [isOpen, type, user?.company.id]);
 
@@ -116,6 +128,31 @@ const AdminModal = () => {
     }
   };
 
+  const handlePosition = (id, position) => {
+    console.log(id + ":::" + position + "::::");
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === id ? { ...user, position: position } : user
+      )
+    );
+    setChanges((prevChanges) => {
+      const existingChange = prevChanges.find((change) => change.id === id);
+      if (existingChange) {
+        // 이미 존재하는 경우 업데이트
+        return prevChanges.map((change) =>
+          change.id === id ? { id, position } : change
+        );
+      } else {
+        // 새로 추가
+        return [...prevChanges, { id, position }];
+      }
+    });
+  };
+
+  const submitPosition = async () => {
+    await updatePosition(changes);
+    closeModal();
+  };
   const renderContent = () => {
     switch (type) {
       case "member-invite":
@@ -192,13 +229,27 @@ const AdminModal = () => {
                     >
                       직급
                     </label>
-                    <input
-                      type="text"
-                      id="position"
-                      value={position}
-                      onChange={(e) => setPositon(e.target.value)}
+                    <select
                       className="border rounded-md px-3 py-2 w-full focus:ring focus:ring-blue-300 focus:outline-none"
-                    />
+                      value={position}
+                      onChange={(e) => setPosition(e.target.value)}
+                    >
+                      <option value="사원">사원</option>
+                      <option value="주임">주임</option>
+                      <option value="대리">대리</option>
+                      <option value="과장">과장</option>
+                      <option value="차장">차장</option>
+                      <option value="부장">부장</option>
+                      <option value="이사">이사</option>
+                      <option value="상무">상무</option>
+                      <option value="전무">전무</option>
+                      <option value="부사장">부사장</option>
+                      <option value="사장">사장</option>
+                      <option value="연구원">연구원</option>
+                      <option value="선임연구원">선임연구원</option>
+                      <option value="책임연구원">책임연구원</option>
+                      <option value="수석연구원">수석연구원</option>
+                    </select>
                   </div>
                   <div>
                     <label
@@ -350,7 +401,67 @@ const AdminModal = () => {
             </div>
           </div>
         );
+      case "position-change":
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-[500px] h-auto p-6">
+              <div className="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 className="text-xl font-bold text-gray-800">직위 변경</h2>
+                <button
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={closeModal}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                {users.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-bold text-gray-700">{item.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.departmentName}
+                      </p>
+                    </div>
 
+                    <select
+                      className="border rounded px-2 py-1"
+                      value={item.position}
+                      onChange={(e) => handlePosition(item.id, e.target.value)}
+                    >
+                      <option value="사원">사원</option>
+                      <option value="주임">주임</option>
+                      <option value="대리">대리</option>
+                      <option value="과장">과장</option>
+                      <option value="차장">차장</option>
+                      <option value="부장">부장</option>
+                      <option value="이사">이사</option>
+                      <option value="상무">상무</option>
+                      <option value="전무">전무</option>
+                      <option value="부사장">부사장</option>
+                      <option value="사장">사장</option>
+                      <option value="연구원">연구원</option>
+                      <option value="선임연구원">선임연구원</option>
+                      <option value="책임연구원">책임연구원</option>
+                      <option value="수석연구원">수석연구원</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={submitPosition}
+                >
+                  저장
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
