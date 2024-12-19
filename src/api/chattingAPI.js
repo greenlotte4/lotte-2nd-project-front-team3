@@ -17,6 +17,8 @@ import {
   CHANNEL_ROOM_SEARCH_URI,
   DM_DELETE_MESSAGE_URI,
   CHANNEL_FILE_URI,
+  CHANNEL_GET_UNREAD_COUNT_URI,
+  CHANNEL_VISIT_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -139,6 +141,35 @@ export const changeChannelTitle = async ({ channelId, name }) => {
   }
 };
 
+export const getChannelUnreadCount = async ({ channelId, messageId }) => {
+  try {
+    console.log(`[JS] 채널 안읽은 멤버수 조회 요청: 채널 ID ${channelId}, messageId ${messageId}`);
+
+    const response = await axios.get(CHANNEL_GET_UNREAD_COUNT_URI({ channelId, messageId }), {
+      name,
+    });
+
+    console.log(`[JS] 채널 안읽은 멤버수 조회 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 채널 안읽은 멤버수 조회 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+}
+
+export const visitChannel = async ({ channelId, memberId }) => {
+  try {
+    console.log(`[JS] 채널 방문 요청: 채널 ID ${channelId}, memberId ${memberId}`);
+
+    const response = await axios.post(CHANNEL_VISIT_URI({ channelId, memberId }));
+
+    console.log(`[JS] 채널 방문 성공:`, response.data);
+  } catch (error) {
+    console.error(`[JS] 채널 방문 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+}
+
 export const getDmMessages = async (dmId) => {
   try {
     const response = await axios.get(DM_GET_MESSAGES_URI(dmId));
@@ -162,6 +193,7 @@ export const sendDmMessage = async ({ dmId, content, senderId }) => {
     throw error;
   }
 };
+
 
 // 디엠 방 목록을 가져오는 함수 (user.id를 사용하여 디엠 방 목록을 가져옴)
 export const getDmList = async (userId) => {
