@@ -146,7 +146,7 @@ export default function SettinngAside({ asideVisible }) {
                 </li>
 
                 <li>
-                  <Link to="/admin/member-integration">
+                  <Link to="/antwork/setting/project">
                     📊&nbsp;&nbsp;프로젝트 설정
                   </Link>
                 </li>
