@@ -5,8 +5,10 @@ import {
   USER_ADMIN_CREATE_URI,
   USER_CEO_URI,
   USER_CHECK_DUPLICATE_ID_URI,
+  USER_DELETEUSER_URI,
   USER_DETAILS_URI,
   USER_FINDBYEMAIL_URI,
+  USER_FINDDELETE_URI,
   USER_GET_ALL_URI,
   USER_INVITE_SEND_EMAIL_URI,
   USER_INVITE_URI,
@@ -22,6 +24,7 @@ import {
   USER_UPDATEIMG_URI,
   USER_UPDATEINFO_URI,
   USER_UPDATEPASS_URI,
+  USER_UPDATEPOSITION_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
@@ -375,20 +378,85 @@ export const findIdByEmail = async (info, email, type) => {
   }
 };
 
-// 유저 아이디 찾기
-export const searchUser = async (formData, company) => {
+// 멤버 검색해서 찾기
+export const searchUser = async (formData, company, page, size) => {
+  console.log("hhh" + page + "bbb" + size);
   try {
     const response = await axios.get(`${USER_SEARCHUSER_URI}`, {
       params: {
         type: formData.get("type"),
         keyword: formData.get("keyword"),
         company: company,
+        page: page,
+        size: size,
       },
     });
     return response.data; // 필터링된 사용자 목록 반환
   } catch (error) {
     console.error("Error fetching users by company and position:", error);
 
+    throw error;
+  }
+};
+
+// 회사 유저 조회
+export const getAllUserCompany = async (companyId) => {
+  console.log(`${USER_GET_ALL_URI}/company/${companyId}`);
+  try {
+    const response = await axiosInstance.get(
+      `${USER_GET_ALL_URI}/company/${companyId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 직위 변경
+export const updatePosition = async (data) => {
+  console.log(data);
+  try {
+    const response = await axiosInstance.put(
+      `${USER_UPDATEPOSITION_URI}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// 유저 delete 처리
+export const deleteUser = async (checkUser, type) => {
+  console.log(checkUser);
+  try {
+    const response = await axiosInstance.put(
+      `${USER_DELETEUSER_URI}/${type}`,
+      checkUser
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// delete 유저 찾기
+export const findDeleteUser = async (
+  companyId,
+  currentPage,
+  pageSize,
+  status
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `${USER_FINDDELETE_URI}/${companyId}/${currentPage}/${pageSize}/${status}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
     throw error;
   }
 };

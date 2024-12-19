@@ -48,7 +48,12 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       setCalendars([...calendars, newCalendar]); // 상태 업데이트
       await insertCalendar(newCalendar);
       const data = await getCalendar(id);
-      setData(data);
+      console.log(data);
+      console.log(shares);
+      const filteredData = data.filter(
+        (data) => !shares.some((share) => share.calendarId === data.calendarId)
+      );
+      setData(filteredData);
     }
   };
 
@@ -95,7 +100,11 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       const fetchData = async () => {
         await deleteCalendar(no);
         const data = await getCalendar(id);
-        setData(data);
+        const filteredData = data.filter(
+          (data) =>
+            !shares.some((share) => share.calendarId === data.calendarId)
+        );
+        setData(filteredData);
       };
       fetchData();
     }

@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import useToggle from "../../../hooks/useToggle";
+import { useEffect, useState } from "react";
+import { userLogs } from "@/api/accessAPI";
+import useAuthStore from "@/store/AuthStore";
 
 export default function SettinngAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -7,7 +10,64 @@ export default function SettinngAside({ asideVisible }) {
     organizationalManagement: true,
     securityManagement: true,
     menuManagement: true,
+    RecentlyUsedList: true,
   });
+
+  const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await userLogs(user?.uid);
+      console.log("12345" + response);
+
+      const log = response.map((item) => {
+        if (item === "calendar") {
+          return {
+            path: "/antwork/calendar",
+            label: "캘린더",
+            icon: "🗓️",
+          };
+        } else if (item === "project") {
+          return {
+            path: "/antwork/project/main",
+            label: "프로젝트",
+            icon: "📊",
+          };
+        } else if (item === "page") {
+          return {
+            path: "/antwork/page",
+            label: "페이지",
+            icon: "📄",
+          };
+        } else if (item === "drive") {
+          return {
+            path: "/antwork/drive",
+            label: "드라이브",
+            icon: "☁️",
+          };
+        } else if (item === "chatting") {
+          return {
+            path: "/antwork/chatting",
+            label: "채팅",
+            icon: "📮",
+          };
+        } else if (item === "board") {
+          return {
+            path: "/antwork/board",
+            label: "게시판",
+            icon: "📋",
+          };
+        } else {
+          return null; // 조건에 맞지 않는 경우 처리
+        }
+      });
+      console.log("77777" + JSON.stringify(log));
+      setLogs(log);
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -76,12 +136,12 @@ export default function SettinngAside({ asideVisible }) {
                 </li>
                 <li>
                   <Link to="/admin/member-integration">
-                    📮&nbsp;&nbsp;메신저 설정
+                    📮&nbsp;&nbsp;채팅 설정
                   </Link>
                 </li>
                 <li>
                   <Link to="/admin/member-integration">
-                    🗒️&nbsp;&nbsp;페이지 설정
+                    📄&nbsp;&nbsp;페이지 설정
                   </Link>
                 </li>
 
@@ -105,18 +165,29 @@ export default function SettinngAside({ asideVisible }) {
           </li>
 
           <li className="lnb-item">
-            <div className="lnb-header !mb-[10px]">
+            <div
+              className="lnb-header !mb-[10px]"
+              onClick={() => toggleSection("RecentlyUsedList")}
+            >
               <img
                 src="/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
                 className="cate-icon !w-[22px] !h-[22px]"
               />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
+              <button className="main-cate !text-[16px] text-[#757575]">
                 최근사용목록
-              </Link>
+              </button>
             </div>
+            {toggles.RecentlyUsedList && (
+              <ol>
+                {logs.map((log, index) => (
+                  <li key={index}>
+                    <Link to={log.path}>
+                      {log.icon}&nbsp;&nbsp;{log.label}
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            )}
           </li>
         </ul>
       </aside>
