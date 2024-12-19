@@ -20,17 +20,17 @@ export const useWebSocketMessage = (
           console.log("Ignoring message from different page:", data._id);
           return;
         }
-
-        if (componentId === data.componentId) {
+        console.log(componentId + "컴포넌트 아이디");
+        console.log(data.componentId + " 데이터 컴포넌트 아이디");
+        if (
+          componentId === data.componentId ||
+          data.timestamp <= lastUpdateRef.current
+        ) {
           console.log("Ignoring own changes or old message");
           return;
         }
 
         const editorElement = document.getElementById("editorjs");
-        if (editorElement && editorElement.contains(document.activeElement)) {
-          console.log("Currently editing, ignoring update");
-          return;
-        }
 
         lastUpdateRef.current = data.timestamp;
 
@@ -84,7 +84,6 @@ export const useWebSocketMessage = (
     [componentId, pageId, setTitle]
   );
 };
-
 const shouldFullUpdate = (currentBlocks, newBlocks) => {
   if (currentBlocks.length !== newBlocks.length) return true;
 
@@ -112,6 +111,12 @@ const updateBlocks = async (
     }
 
     switch (block.type) {
+      case "table":
+        await editor.render({ blocks: newBlocks });
+        return;
+      case "checklist":
+        await editor.render({ blocks: newBlocks });
+        return;
       case "paragraph":
       case "header":
         updateTextBlock(blockElement, block);
