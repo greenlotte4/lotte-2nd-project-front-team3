@@ -68,6 +68,7 @@ import IntermediatePage from "@/pages/Landing/TossPaymentPage";
 import TossPaymentPage from "@/pages/Landing/TossPaymentPage";
 
 import TemplateViewPage from "@/pages/Main/Paging/TemplateViewPage";
+import SettingProjectPage from "@/pages/Main/setting/settingProjectPage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -132,6 +133,7 @@ const router = createBrowserRouter([
 
       { path: "project/main", element: <ProjectMainPage /> }, // 2024/11/27(월) 강은경 - Project main 추가
       { path: "project/view", element: <ProjectViewPage /> }, // 2024/11/27(월) 강은경 - Project view 추가
+      { path: "setting/project", element: <SettingProjectPage /> }, // 2024/12/19(목) 강은경 - 프로젝트 설정 추가
 
       { path: "approval", element: <ApprovalMainPage /> }, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
       { path: "approval/my", element: <ApprovalMainPage /> }, // 2024/12/11(수) 황수빈 - ApprovalMainPage 추가
