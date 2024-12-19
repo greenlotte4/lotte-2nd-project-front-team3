@@ -16,6 +16,7 @@ import {
   addChannelMember,
   changeChannelTitle,
   uploadFileToChannel,
+  visitChannel,
 } from "../../../api/chattingAPI";
 import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
@@ -24,6 +25,7 @@ import useAuthStore from "../../../store/AuthStore";
 import { Client } from "@stomp/stompjs";
 import { WS_URL } from "@/api/_URI";
 import formatChatTime from "@/utils/chatTime";
+import MessageItem from "./MessageItem";
 
 export default function ChannelMain() {
   const [zoomLevel, setZoomLevel] = useState(1); // 초기 확대 비율은 1 (100%)
@@ -52,6 +54,31 @@ export default function ChannelMain() {
   const imageMessages = messages.filter((message) =>
     message.fileType?.startsWith("image")
   );
+
+  useEffect(() => {
+    // (1) define within effect callback scope
+    const visitChannelAsync = async () => {
+      if (!channelId || !user?.id)
+        return;
+
+      try {
+        await visitChannel({ channelId, memberId: user?.id })
+        stompClientRef.current?.publish({
+          destination: `/app/chatting/channel/${channelId}/visit`,
+        });
+        // TODO: 소켓 날림 : channelId
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    visitChannelAsync();
+    stompClientRef.current?.publish({
+      destination: `/app/chatting/channel/${channelId}/visit`,
+    });
+    // TODO: 소켓 날림 : channelId
+
+  }, [channelId])
 
   // 이미지 모달
   useEffect(() => {
@@ -225,21 +252,22 @@ export default function ChannelMain() {
 
     try {
       const result = await sendChannelMessage(newMessage); // 서버 전송
-
+      console.log(`메시지 보내기 성공 : ${result.data}`)
       const msg = {
         id: result.data,
         senderId: user?.id,
         userName: user?.name,
+        channelId,
         content: messageInput.trim(),
         createdAt: new Date(),
       };
-      console.log(`소켓 보낸 메시지 : ${msg}`);
+      console.log(`소켓 보낸 메시지 : `, msg);
       stompClientRef.current.publish({
         destination: `/app/chatting/channel/${channelId}/send`,
         body: JSON.stringify(msg),
       });
 
-      setMessages((prevMessages) => [...prevMessages, newMessage]); // 즉시 상태 업데이트
+      setMessages((prevMessages) => [...prevMessages, msg]); // 즉시 상태 업데이트
       setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error("메시지 전송 실패:", error);
@@ -320,7 +348,7 @@ export default function ChannelMain() {
 
       client.subscribe(
         `/topic/chatting/channel/${channelId}/messages`,
-        (message) => {
+        async (message) => {
           try {
             const newMessage = JSON.parse(message.body);
             if (newMessage.senderId === user?.id) {
@@ -330,6 +358,7 @@ export default function ChannelMain() {
             setMessages((prevMessages) => {
               return [...prevMessages, newMessage];
             });
+            await visitChannel({ channelId, memberId: user.id });
           } catch (error) {
             console.error("❌ 메시지 처리 중 에러:", error);
           }
@@ -513,234 +542,24 @@ export default function ChannelMain() {
             ) : messages.length === 0 ? (
               <div>채팅 본문이 없습니다.</div>
             ) : (
-              messages.map((message, index) => {
-                const isMyMessage = message.senderId === user?.id;
-                const isFirstMessageFromUser =
-                  index === 0 ||
-                  messages[index - 1]?.senderId !== message.senderId;
-                const isLastMessageFromSameUser =
-                  index === messages.length - 1 ||
-                  messages[index + 1]?.senderId !== message.senderId;
-
-                const currentDate = new Date(
-                  message.createdAt
-                ).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  weekday: "long",
-                });
-
-                const previousDate =
-                  index > 0
-                    ? new Date(
-                        messages[index - 1]?.createdAt
-                      ).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        weekday: "long",
-                      })
-                    : null;
-
-                return (
-                  <div
-                    key={message.id}
-                    style={{
-                      backgroundColor:
-                        message.id === highlightedId
-                          ? "#e0f7fa"
-                          : "rgb(249, 250, 251)",
-                    }}
-                    className="flex flex-col mb-2"
-                    ref={(el) => (chatRefs.current[message.id] = el)}
-                  >
-                    {/* 날짜 표시 */}
-                    {currentDate !== previousDate && (
-                      <div className="flex justify-center items-center my-4">
-                        <div className="bg-gray-200 text-gray-600 text-m py-1 px-4 rounded-full">
-                          {currentDate}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 메시지 내용 */}
-                    <div
-                      className={`flex items-end ${
-                        isMyMessage ? "justify-end" : "justify-start"
-                      } mb-1`}
-                    >
-                      {/* 상대방 메시지 프로필 & 이름 */}
-                      {!isMyMessage && isFirstMessageFromUser && (
-                        <div className="w-10 h-10 mr-2">
-                          <img
-                            src={
-                              message.userProfile ||
-                              "https://via.placeholder.com/50"
-                            }
-                            alt="Profile"
-                            className="w-full h-full rounded-full"
-                          />
-                        </div>
-                      )}
-
-                      {/* 말풍선과 시간 */}
-                      <div
-                        className={`flex flex-col ${
-                          isMyMessage ? "items-end" : "items-start"
-                        }`}
-                      >
-                        {/* 상대방 이름 */}
-                        {!isMyMessage && isFirstMessageFromUser && (
-                          <div className="text-m text-gray-600 mb-1">
-                            {message.userName}
-                          </div>
-                        )}
-
-                        {/* 말풍선 */}
-                        <div className="relative">
-                          <div
-                            className={`p-3 rounded-lg shadow-md text-lg ${
-                              isMyMessage ? "bg-blue-100" : "bg-gray-100"
-                            } ${
-                              !isMyMessage && isFirstMessageFromUser
-                                ? "ml-0"
-                                : "ml-12"
-                            }`}
-                          >
-                            {message.fileUrl ? (
-                              // 이미지파일
-                              message.fileType?.startsWith("image") ? (
-                                <img
-                                  src={message.fileUrl}
-                                  alt={message.fileName || "이미지"}
-                                  className="max-w-full h-auto rounded-md cursor-pointer"
-                                  onClick={() => {
-                                    const index = imageMessages.findIndex(
-                                      (img) => img.id === message.id
-                                    );
-                                    setCurrentImageIndex(index);
-                                    setIsModalOpen(true);
-                                  }}
-                                />
-                              ) : (
-                                // 일반 파일
-                                <a
-                                  href={message.fileUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 underline hover:text-blue-700"
-                                  download
-                                >
-                                  {message.content || "파일 열기"}
-                                </a>
-                              )
-                            ) : (
-                              // 텍스트 메시지
-                              <p className="text-base lg:text-lg text-gray-800">
-                                {message.content}
-                              </p>
-                            )}
-                          </div>
-
-                          {isModalOpen && (
-                            <div className="fixed inset-0 flex items-center justify-center z-50">
-                              {/* 모달 박스 */}
-                              <div className="relative w-[80vw] max-w-4xl max-h-[80vh] bg-white rounded-lg border border-gray-300 p-4 flex flex-col items-center justify-center">
-                                {/* 닫기 버튼 */}
-                                <button
-                                  onClick={() => setIsModalOpen(false)} // 모달 닫기
-                                  className="absolute top-4 right-4 text-gray-800 bg-gray-200 rounded-full p-2 hover:bg-gray-300 focus:outline-none"
-                                >
-                                  ❌
-                                </button>
-
-                                {/* 이미지 */}
-                                <div
-                                  className="flex items-center justify-center overflow-hidden"
-                                  style={{
-                                    width: "100%", // 모달 너비
-                                    height: "80vh", // 모달 높이
-                                  }}
-                                >
-                                  <img
-                                    src={
-                                      imageMessages[currentImageIndex]?.fileUrl
-                                    }
-                                    alt={`이미지 ${currentImageIndex + 1}`}
-                                    className={`rounded-md transform transition-transform duration-300 cursor-pointer ${
-                                      zoomLevel > 1
-                                        ? "cursor-zoom-out"
-                                        : "cursor-zoom-in"
-                                    }`}
-                                    style={{
-                                      maxWidth: "100%", // 모달 너비에 맞춤
-                                      maxHeight: "100%", // 모달 높이에 맞춤
-                                      transform: `scale(${zoomLevel})`, // 확대/축소 적용
-                                      objectFit: "contain", // 이미지가 비율에 맞게 조정됨
-                                    }}
-                                    onClick={
-                                      () =>
-                                        setZoomLevel((prev) =>
-                                          prev === 1 ? 1.5 : 1
-                                        ) // 클릭 시 확대/축소 전환
-                                    }
-                                  />
-                                </div>
-
-                                {/* 왼쪽 네비게이션 버튼 */}
-                                {currentImageIndex > 0 && (
-                                  <button
-                                    className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black bg-gray-200 p-3 rounded-full shadow-lg hover:bg-gray-300"
-                                    onClick={() =>
-                                      setCurrentImageIndex((prev) =>
-                                        Math.max(0, prev - 1)
-                                      )
-                                    }
-                                  >
-                                    ◀
-                                  </button>
-                                )}
-
-                                {/* 오른쪽 네비게이션 버튼 */}
-                                {currentImageIndex <
-                                  imageMessages.length - 1 && (
-                                  <button
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black bg-gray-200 p-3 rounded-full shadow-lg hover:bg-gray-300"
-                                    onClick={() =>
-                                      setCurrentImageIndex((prev) =>
-                                        Math.min(
-                                          imageMessages.length - 1,
-                                          prev + 1
-                                        )
-                                      )
-                                    }
-                                  >
-                                    ▶
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* 시간 표시 */}
-                          {isLastMessageFromSameUser && (
-                            <span
-                              className={`absolute text-m text-gray-400 ${
-                                isMyMessage
-                                  ? "-left-16 bottom-0"
-                                  : "right-[-70px] bottom-0" // 여백 조정
-                              }`}
-                            >
-                              {formatChatTime(message.createdAt)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+              messages.map((message, index) => (
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  index={index}
+                  messages={messages}
+                  user={user}
+                  highlightedId={highlightedId}
+                  chatRefs={chatRefs}
+                  imageMessages={imageMessages}
+                  setCurrentImageIndex={setCurrentImageIndex}
+                  setIsModalOpen={setIsModalOpen}
+                  isModalOpen={isModalOpen}
+                  formatChatTime={formatChatTime}
+                  channelId={channelId}
+                  stompClientRef={stompClientRef.current}
+                />
+              ))
             )}
           </div>
 
@@ -798,9 +617,8 @@ export default function ChannelMain() {
 
         {/* 오른쪽 토글 패널 */}
         <div
-          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${
-            toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
-          } duration-300`}
+          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
+            } duration-300`}
         >
           {/* 상단 영역 */}
           <div className="flex items-center justify-between mb-6">
@@ -845,9 +663,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -890,9 +707,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -937,9 +753,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

@@ -157,15 +157,20 @@ export const CHANNEL_CHANGE_TITLE_URI = (channelId) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/title`;
 
 export const CHANNEL_ROOM_SEARCH_URI = `${API_SERVER_HOST}/chatting/channel/search`; // 채팅방 통합 검색
+export const CHANNEL_GET_UNREAD_COUNT_URI = ({ channelId, messageId }) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/messages/${messageId}/unreadCount`;
+
+export const CHANNEL_VISIT_URI = ({ channelId, memberId }) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/members/${memberId}/visit`
 
 
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
 export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회
-export const DM_GET_URI = (dmId) => `${API_SERVER_HOST}/chatting/dm/${dmId}`; // 디엠방 조회
+export const DM_GET_URI = (dmId) => `${API_SERVER_HOST} /chatting/dm / ${dmId} `; // 디엠방 조회
 
 export const DM_SEND_MESSAGE_URI = (dmId) =>
-  `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 보내기
+  `${API_SERVER_HOST} /chatting/dm / ${dmId} /messages`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
 export const DM_DELETE_MESSAGE_URI = (messageId) =>
