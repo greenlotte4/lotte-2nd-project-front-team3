@@ -96,7 +96,7 @@ export default function BoardMain() {
 
           {/* 게시판 홈(메인) 검색 */}
 
-          <div className="flex justify-between mb-4">
+          {/* <div className="flex justify-between mb-4">
             <div className="flex items-center">
               <select className="border border-gray-300 rounded py-2 px-2 mr-2 w-20 cursor-pointer">
                 <option>제목</option>
@@ -121,7 +121,7 @@ export default function BoardMain() {
               </select>
               <span className="text-gray-600">개</span>
             </div>
-          </div>
+          </div> */}
 
           <section className="main_article flex ">
             <article className="page-list mr-7">
@@ -130,7 +130,7 @@ export default function BoardMain() {
                 {/* <p className="display !text-[14px]" >인기급상승 게시물입니당</p> */}
               </div>
 
-              
+
 
               <div className="page-grid cursor-pointer">
                 {/* 인기급상승 게시물  */}
@@ -145,10 +145,10 @@ export default function BoardMain() {
                           </h3>
                         </Link>
                         <p className="!mt-3 !text-[12px] line-clamp-2">
-                        어제와 같은 GPT 서비스 중단 이슈는 중요한 문제입니다. 
-                        이를 해결하고 예방하기 위해 서버 부하 관리, 
-                        장애 복구 계획 Disaster Recovery Plan, 
-                        사용자 커뮤니케이션 방안을 체계적으로 마련해야 합니다.
+                          어제와 같은 GPT 서비스 중단 이슈는 중요한 문제입니다.
+                          이를 해결하고 예방하기 위해 서버 부하 관리,
+                          장애 복구 계획 Disaster Recovery Plan,
+                          사용자 커뮤니케이션 방안을 체계적으로 마련해야 합니다.
                         </p>
                         <ul className="mt-4 flex gap-2">
                           <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
@@ -236,7 +236,7 @@ export default function BoardMain() {
 
                           <li className="article_comment w-13 h-7 flex items-center gap-2 ">
                             <img
-                              className="w-6 h-6"
+                              className="w-6 h-6 "
                               src="/images/ico/comment.svg"
                               alt="comment 댓글수"
                             />
@@ -267,12 +267,11 @@ export default function BoardMain() {
                 <div>
                   <div className="flex justify-between items-center mb-2 cursor-pointer">
                     <span className="text-sm font-medium">첨부</span>
-                    <span className="text-sm text-gray-500">{`${
-                      files.length
-                    }개 (${files.reduce(
-                      (acc, file) => acc + parseInt(file.size),
-                      0
-                    )}MB)`}</span>
+                    <span className="text-sm text-gray-500">{`${files.length
+                      }개 (${files.reduce(
+                        (acc, file) => acc + parseInt(file.size),
+                        0
+                      )}MB)`}</span>
                   </div>
 
                   <Link to="/antwork/board/boardDataRoom">
