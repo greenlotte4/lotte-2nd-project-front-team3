@@ -216,7 +216,7 @@ const AttendanceCard = ({ userId }) => {
 
       <section className="flex justify-between">
         <button
-          className={`w-[100px] h-[50px] font-medium rounded-3xl transition ${
+          className={`w-[100px] h-[36px] font-medium rounded-3xl transition ${
             isCheckInDisabled
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
