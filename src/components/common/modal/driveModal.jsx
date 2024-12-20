@@ -231,7 +231,7 @@ export default function DriveModal() {
 
       // 백엔드 응답 확인
       console.log("Response from backend:", response);
-      alert("우선 백엔드한테 응답은 받음");
+      alert("폴더가 등록되었습니다.");
 
       if (props?.onFolderAdd) {
         props.onFolderAdd({

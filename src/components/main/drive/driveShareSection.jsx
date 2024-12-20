@@ -90,6 +90,9 @@ export default function DriveShareSection() {
         const response = await driveFilesInsert(formData);
         console.log("백엔드 응답 안받아도됨:", response);
         driveFilesRef.current.value = "";
+        setIsLoading(true);
+        await fetchFolderData(driveFolderId);
+        setIsLoading(false);
         setIsDropdownOpen(false);
       } catch (err) {
         console.err("에러에러에러", err);
@@ -129,7 +132,7 @@ export default function DriveShareSection() {
       // 서버로 파일 업로드 요청
       const fileResponse = await driveFilesInsert(formData);
 
-      if (fileResponse.status === 200) {
+      if (fileResponse !== null && fileResponse !== undefined) {
         alert("폴더 업로드 성공!");
       } else {
         throw new Error("폴더 업로드 실패");
@@ -214,38 +217,90 @@ export default function DriveShareSection() {
 
       console.log("폴더 데이터 매핑:", folders);
       setFolderStates(
-        folders.map((folder) => ({
-          isChecked: folder.isChecked || false,
-          isStarred: folder.isStarred || false,
-          driveFolderName: folder.driveFolderName,
-          driveFolderSize: folder.driveFolderSize,
-          driveFolderCreatedAt: folder.driveFolderCreatedAt,
-          driveFolderSharedAt: folder.driveFolderSharedAt,
-          driveFolderMaker: folder.driveFolderMaker,
-          driveFolderId: folder.driveFolderId,
-          driveParentFolderId: folder.driveParentFolderId,
-          driveShareType: folder.driveFolderShareType,
-        }))
+        folders.map((folder) => {
+          // 날짜 데이터 변환
+          const createdAtArray = folder.driveFolderCreatedAt;
+          const sharedAtArray = folder.driveFolderSharedAt;
+
+          // CreatedAt 포맷팅
+          let formattedCreatedAt = "N/A";
+          if (Array.isArray(createdAtArray) && createdAtArray.length >= 3) {
+            const [year, month, day] = createdAtArray;
+            formattedCreatedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          // SharedAt 포맷팅
+          let formattedSharedAt = "N/A";
+          if (Array.isArray(sharedAtArray) && sharedAtArray.length >= 3) {
+            const [year, month, day] = sharedAtArray;
+            formattedSharedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: folder.isChecked || false,
+            isStarred: folder.isStarred || false,
+            driveFolderName: folder.driveFolderName,
+            driveFolderSize: folder.driveFolderSize,
+            driveFolderCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
+            driveFolderSharedAt: formattedSharedAt, // 포맷된 SharedAt 날짜
+            driveFolderMaker: folder.driveFolderMaker,
+            driveFolderId: folder.driveFolderId,
+            driveParentFolderId: folder.driveParentFolderId,
+            driveShareType: folder.driveShareType,
+          };
+        })
       );
 
       setFileStates(
-        files.map((file) => ({
-          isChecked: file.isChecked || false,
-          isStarred: file.isStarred || false,
-          driveFolderId: file.driveFolderId,
-          driveFileSsName: file.driveFileSName,
-          driveFileSName: file.driveFileSName.includes("_")
-            ? file.driveFileSName.split("_")[1]
-            : file.driveFileSName,
-          Ext: file.driveFileSName.includes(".")
-            ? file.driveFileSName.split(".").pop()
-            : "",
-          driveFileMaker: file.driveFileMaker,
-          driveFileSize: file.driveFileSize,
-          driveFileCreatedAt: file.driveFileCreatedAt,
-          driveFileId: file.driveFileId,
-          driveFileSharedAt: file.driveFileSharedAt,
-        }))
+        files.map((file) => {
+          // 날짜 데이터 변환
+          const createdAtArray = file.driveFileCreatedAt;
+          const sharedAtArray = file.driveFileSharedAt;
+
+          // CreatedAt 포맷팅
+          let formattedCreatedAt = "N/A";
+          if (Array.isArray(createdAtArray) && createdAtArray.length >= 3) {
+            const [year, month, day] = createdAtArray;
+            formattedCreatedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          // SharedAt 포맷팅
+          let formattedSharedAt = "N/A";
+          if (Array.isArray(sharedAtArray) && sharedAtArray.length >= 3) {
+            const [year, month, day] = sharedAtArray;
+            formattedSharedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: file.isChecked || false,
+            isStarred: file.isStarred || false,
+            driveFolderId: file.driveFolderId,
+            driveFileSsName: file.driveFileSName,
+            driveFileSName: file.driveFileSName.includes("_")
+              ? file.driveFileSName.split("_")[1]
+              : file.driveFileSName,
+            Ext: file.driveFileSName.includes(".")
+              ? file.driveFileSName.split(".").pop()
+              : "",
+            driveFileMaker: file.driveFileMaker,
+            driveFileSize: file.driveFileSize,
+            driveFileCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
+            driveFileSharedAt: formattedSharedAt, // 포맷된 SharedAt 날짜
+            driveFileId: file.driveFileId,
+          };
+        })
       );
     } catch (err) {
       console.error("폴더 데이터를 가져오는 중 오류 발생:", err);

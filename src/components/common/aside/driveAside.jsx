@@ -12,7 +12,7 @@ import {
 } from "@/api/driveAPI";
 import { size } from "lodash";
 
-export default function DriveAside({ asideVisible }) {
+export default function DriveAside({ asideVisible, refreshUsage }) {
   // 모달 상태 관리를 위한 useState 추가
   const openModal = useModalStore((state) => state.openModal);
 
@@ -134,29 +134,36 @@ export default function DriveAside({ asideVisible }) {
     fileAllSize(); // driveFolderId가 변경될 때마다 데이터 로드
   }, []);
 
+  // `refreshUsage`에 `fileAllSize` 함수 전달
+  useEffect(() => {
+    if (refreshUsage) {
+      refreshUsage.current = fileAllSize;
+    }
+  }, [refreshUsage]);
+
   const HorizontalBar = ({ usedSpace, totalSpace }) => {
     const [percentage, setPercentage] = useState(0);
     const [usedSpaceDisplay, setUsedSpaceDisplay] = useState(""); // 표시용 사용량
     const [totalSpaceDisplay, setTotalSpaceDisplay] = useState(""); // 표시용 총 용량
 
     useEffect(() => {
-      // 단위 변환: 사용량 (usedSpace)
-      const usedSpaceInMB = usedSpace / 1024 ** 2;
-      const usedSpaceFormatted =
-        usedSpaceInMB >= 1024
-          ? `${(usedSpaceInMB / 1024).toFixed(2)} GB`
-          : `${usedSpaceInMB.toFixed(2)} MB`;
-      setUsedSpaceDisplay(usedSpaceFormatted);
-
-      // 단위 변환: 총 용량 (totalSpace)
-      const totalSpaceInGB = totalSpace / 1024 ** 3;
-      const totalSpaceFormatted = `${totalSpaceInGB.toFixed(2)} GB`;
-      setTotalSpaceDisplay(totalSpaceFormatted);
-
-      // 퍼센트 계산: 소수점 포함
       if (totalSpace > 0) {
+        // 퍼센트 계산 (바이트 기준으로 정확히 계산)
         const percentageValue = (usedSpace / totalSpace) * 100;
-        setPercentage(percentageValue); // 정밀하게 계산된 값을 설정
+        setPercentage(percentageValue); // 계산된 퍼센트 값 설정
+
+        // 사용량 단위 변환
+        const usedSpaceInMB = usedSpace / 1024 ** 2; // 바이트 → MB
+        const usedSpaceFormatted =
+          usedSpaceInMB >= 1024
+            ? `${(usedSpaceInMB / 1024).toFixed(2)} GB` // 1024MB 이상이면 GB
+            : `${usedSpaceInMB.toFixed(2)} MB`; // MB 유지
+        setUsedSpaceDisplay(usedSpaceFormatted);
+
+        // 총 용량 단위 변환
+        const totalSpaceInGB = totalSpace / 1024 ** 3; // 바이트 → GB
+        const totalSpaceFormatted = `${totalSpaceInGB.toFixed(2)} GB`;
+        setTotalSpaceDisplay(totalSpaceFormatted);
       }
     }, [usedSpace, totalSpace]);
 
@@ -178,7 +185,7 @@ export default function DriveAside({ asideVisible }) {
 
         {/* 퍼센트 표시 */}
         <div className="text-center text-sm mt-2 font-semibold">
-          {percentage.toFixed(2)}% 사용 중
+          {percentage.toFixed(2)}% 사용 중 {/* 소수점 6자리까지 표시 */}
         </div>
       </div>
     );

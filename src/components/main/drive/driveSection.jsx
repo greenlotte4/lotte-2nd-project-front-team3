@@ -15,7 +15,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 
-export default function DriveSection() {
+export default function DriveSection({ refreshUsage }) {
   const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
 
   // 모달 상태 관리를 위한 useState 추가
@@ -30,6 +30,8 @@ export default function DriveSection() {
   const [breadcrumbs, setBreadcrumbs] = useState([
     { id: null, name: "MY DRIVE" },
   ]); // 초기 경로
+
+  // const updateDriveUsage = useDriveStore((state) => state.updateDriveUsage);
 
   const [menuVisible, setMenuVisible] = useState(false); // 컨텍스트 메뉴 표시 상태
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 }); // 메뉴 위치
@@ -63,7 +65,6 @@ export default function DriveSection() {
       console.log("총 파일 크기:", response.data);
       console.log("adsf : " + response.data.driveFileLimitSize);
       console.log("asdfasdf :" + response.data.driveFileSize);
-      
     } catch (error) {
       console.error("fileAllSize 중 오류 발생:", error);
     }
@@ -92,7 +93,14 @@ export default function DriveSection() {
         const response = await driveFilesInsert(formData);
         console.log("백엔드 응답 안받아도됨:", response);
         driveFilesRef.current.value = "";
-        await fileAllSize();
+        // 최신 데이터 가져오기
+        setIsLoading(true);
+        await fetchFolderData(driveFolderId);
+        setIsLoading(false);
+        // 파일 업로드 후 DriveAside 상태 갱신 호출
+        if (refreshUsage && refreshUsage.current) {
+          refreshUsage.current();
+        }
         setIsDropdownOpen(false);
       } catch (err) {
         console.error("에러에러에러", err);
@@ -131,13 +139,17 @@ export default function DriveSection() {
 
       // 서버로 파일 업로드 요청
       const fileResponse = await driveFilesInsert(formData);
+      console.log("아니 도대체 먼데 : " + fileResponse.status);
+      console.log("아니 도대체 먼데 : ", fileResponse[0]);
 
-      if (fileResponse.status === 200) {
+      if (fileResponse !== null && fileResponse !== undefined) {
         alert("폴더 업로드 성공!");
       } else {
         throw new Error("폴더 업로드 실패");
       }
-
+      setIsLoading(true);
+      await fetchFolderData(driveFolderId);
+      setIsLoading(false);
       // 드롭다운 닫기
       setIsDropdownOpen(false);
     } catch (error) {
@@ -216,37 +228,65 @@ export default function DriveSection() {
 
       console.log("폴더 데이터 매핑:", folders);
       setFolderStates(
-        folders.map((folder) => ({
-          isChecked: folder.isChecked || false,
-          isStarred: folder.isStarred || false,
-          driveFolderName: folder.driveFolderName,
-          driveFolderSize: folder.driveFolderSize,
-          driveFolderCreatedAt: folder.driveFolderCreatedAt,
-          driveFolderMaker: folder.driveFolderMaker,
-          driveFolderId: folder.driveFolderId,
-          driveParentFolderId: folder.driveParentFolderId,
-          driveParentFolderName: folder.parentFolderName,
-          driveShareType: folder.driveFolderShareType,
-        }))
+        folders.map((folder) => {
+          // 날짜 데이터 변환
+          const dateArray = folder.driveFolderCreatedAt; // 배열 형태의 날짜
+          let formattedDate = "N/A";
+
+          if (Array.isArray(dateArray) && dateArray.length >= 3) {
+            // 배열에서 연도, 월, 일 추출 및 포맷팅
+            const [year, month, day] = dateArray;
+            formattedDate = `${year}.${String(month).padStart(2, "0")}.${String(
+              day
+            ).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: folder.isChecked || false,
+            isStarred: folder.isStarred || false,
+            driveFolderName: folder.driveFolderName,
+            driveFolderSize: folder.driveFolderSize,
+            driveFolderCreatedAt: formattedDate, // 포맷된 날짜를 설정
+            driveFolderMaker: folder.driveFolderMaker,
+            driveFolderId: folder.driveFolderId,
+            driveParentFolderId: folder.driveParentFolderId,
+            driveParentFolderName: folder.parentFolderName,
+            driveShareType: folder.driveFolderShareType,
+          };
+        })
       );
 
       setFileStates(
-        files.map((file) => ({
-          isChecked: file.isChecked || false,
-          isStarred: file.isStarred || false,
-          driveFolderId: file.driveFolderId,
-          driveFileSsName: file.driveFileSName,
-          driveFileSName: file.driveFileSName.includes("_")
-            ? file.driveFileSName.split("_")[1]
-            : file.driveFileSName,
-          Ext: file.driveFileSName.includes(".")
-            ? file.driveFileSName.split(".").pop()
-            : "",
-          driveFileMaker: file.driveFileMaker,
-          driveFileSize: file.driveFileSize,
-          driveFileCreatedAt: file.driveFileCreatedAt,
-          driveFileId: file.driveFileId,
-        }))
+        files.map((file) => {
+          // 날짜 데이터 변환
+          const dateArray = file.driveFileCreatedAt; // 배열 형태의 날짜
+          let formattedDate = "N/A";
+
+          if (Array.isArray(dateArray) && dateArray.length >= 3) {
+            // 배열에서 연도, 월, 일 추출 및 포맷팅
+            const [year, month, day] = dateArray;
+            formattedDate = `${year}.${String(month).padStart(2, "0")}.${String(
+              day
+            ).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: file.isChecked || false,
+            isStarred: file.isStarred || false,
+            driveFolderId: file.driveFolderId,
+            driveFileSsName: file.driveFileSName,
+            driveFileSName: file.driveFileSName.includes("_")
+              ? file.driveFileSName.split("_")[1]
+              : file.driveFileSName,
+            Ext: file.driveFileSName.includes(".")
+              ? file.driveFileSName.split(".").pop()
+              : "",
+            driveFileMaker: file.driveFileMaker,
+            driveFileSize: file.driveFileSize,
+            driveFileCreatedAt: formattedDate, // 포맷된 날짜 설정
+            driveFileId: file.driveFileId,
+          };
+        })
       );
     } catch (err) {
       console.error("폴더 데이터를 가져오는 중 오류 발생:", err);
@@ -467,6 +507,9 @@ export default function DriveSection() {
         selectedDriveFileIds
       ); // MyTrashSelectView는 선택된 항목들로 작업을 처리
       console.log("응답 : ", response);
+      setIsLoading(true);
+      await fetchFolderData(driveFolderId);
+      setIsLoading(false);
     } catch (err) {
       console.error("휴지통 폴더 데이터를 가져오는 중 오류 발생:", err);
     }
