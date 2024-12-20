@@ -25,7 +25,6 @@ import useAuthStore from "../../../store/AuthStore";
 import { Client } from "@stomp/stompjs";
 import { WS_URL } from "@/api/_URI";
 import formatChatTime from "@/utils/chatTime";
-import MessageItem from "./MessageItem";
 
 export default function ChannelMain() {
   const [zoomLevel, setZoomLevel] = useState(1); // 초기 확대 비율은 1 (100%)
@@ -49,34 +48,12 @@ export default function ChannelMain() {
   const fileInputRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
   // 현재 채널의 이미지 메시지 필터링
   const imageMessages = messages.filter((message) =>
     message.fileType?.startsWith("image")
   );
-
-  useEffect(() => {
-    // (1) define within effect callback scope
-    const visitChannelAsync = async () => {
-      if (!channelId || !user?.id) return;
-
-      try {
-        await visitChannel({ channelId, memberId: user?.id });
-        stompClientRef.current?.publish({
-          destination: `/app/chatting/channel/${channelId}/visit`,
-        });
-        // TODO: 소켓 날림 : channelId
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    visitChannelAsync();
-    stompClientRef.current?.publish({
-      destination: `/app/chatting/channel/${channelId}/visit`,
-    });
-    // TODO: 소켓 날림 : channelId
-  }, [channelId]);
 
   // 이미지 모달
   useEffect(() => {
@@ -696,97 +673,183 @@ export default function ChannelMain() {
               </ul>
             )}
           </div>
-
-          {/* 사진 파일 */}
-          <div className="my-5">
-            <div
-              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => toggleState("isPhotoOpen")}
-            >
-              <h3 className="text-lg font-semibold mb-2">사진 파일</h3>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-            {toggleStates.isPhotoOpen && (
-              <div className="space-y-4 mt-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="파일"
-                      className="w-10 h-10 rounded-md shadow-md"
+          <div>
+            {/* 사진 파일 섹션 */}
+            <div className="my-5">
+              <div
+                className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+                onClick={() => toggleState("isPhotoOpen")}
+              >
+                <h3 className="text-lg font-semibold mb-2">사진 파일</h3>
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 transform transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
                     />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        사진 {i + 1}
-                      </p>
-                      <p className="text-sm text-gray-400">어제</p>
+                  </svg>
+                </button>
+              </div>
+              {toggleStates.isPhotoOpen && (
+                <div className="space-y-4 mt-4">
+                  {photoFiles.slice(0, 4).map((file, index) => (
+                    <div key={index} className="flex items-center space-x-4">
+                      <img
+                        src={file.fileUrl}
+                        alt={file.fileName || "사진"}
+                        className="w-10 h-10 rounded-md shadow-md"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {file.fileName || `사진 ${index + 1}`}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {format(new Date(file.createdAt), "yyyy-MM-dd")}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                  {photoFiles.length > 4 && (
+                    <button
+                      className="text-blue-500 mt-2"
+                      onClick={() => setIsPhotoModalOpen(true)}
+                    >
+                      더보기
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 첨부 파일 섹션 */}
+            <div className="my-5">
+              <div
+                className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+                onClick={() => toggleState("isFileOpen")}
+              >
+                <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 transform transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {toggleStates.isFileOpen && (
+                <div className="space-y-4 mt-4">
+                  {attachmentFiles.slice(0, 4).map((file, index) => (
+                    <div key={index} className="flex items-center space-x-4">
+                      <img
+                        src="/images/file-icon.png"
+                        alt="파일"
+                        className="w-10 h-10"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {file.fileName}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {format(new Date(file.createdAt), "yyyy-MM-dd")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {attachmentFiles.length > 4 && (
+                    <button
+                      className="text-blue-500 mt-2"
+                      onClick={() => setIsFileModalOpen(true)}
+                    >
+                      더보기
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 사진 파일 모달 */}
+            {isPhotoModalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white w-[80%] max-h-[80%] overflow-y-auto p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">모든 사진</h3>
+                  {Object.entries(photoGroups).map(([date, files]) => (
+                    <div key={date}>
+                      <h4 className="font-semibold mb-2">{date}</h4>
+                      <div className="grid grid-cols-4 gap-4">
+                        {files.map((file, index) => (
+                          <img
+                            key={index}
+                            src={file.fileUrl}
+                            alt={file.fileName || "사진"}
+                            className="w-24 h-24 rounded-md shadow-md"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    className="text-red-500 mt-4"
+                    onClick={() => setIsPhotoModalOpen(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
               </div>
             )}
-          </div>
 
-          {/* 첨부 파일 */}
-          <div className="my-5">
-            <div
-              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => toggleState("isFileOpen")}
-            >
-              <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-            {toggleStates.isFileOpen && (
-              <div className="space-y-4 mt-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="파일"
-                      className="w-10 h-10"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        11월 회의록.pptx
-                      </p>
-                      <p className="text-sm text-gray-400">어제</p>
+            {/* 첨부 파일 모달 */}
+            {isFileModalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white w-[80%] max-h-[80%] overflow-y-auto p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">모든 첨부 파일</h3>
+                  {Object.entries(fileGroups).map(([date, files]) => (
+                    <div key={date}>
+                      <h4 className="font-semibold mb-2">{date}</h4>
+                      <ul>
+                        {files.map((file, index) => (
+                          <li key={index} className="flex items-center mb-2">
+                            <img
+                              src="/images/file-icon.png"
+                              alt="파일"
+                              className="w-8 h-8 mr-2"
+                            />
+                            <a
+                              href={file.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline"
+                            >
+                              {file.content}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                  <button
+                    className="text-red-500 mt-4"
+                    onClick={() => setIsFileModalOpen(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
               </div>
             )}
           </div>
