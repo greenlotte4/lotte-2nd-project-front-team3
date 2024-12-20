@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  DRIVE_ALL_SIZE,
   DRIVE_COLLABORATOR_DELETE,
   DRIVE_COLLABORATOR_INSERT,
   DRIVE_COLLABORATOR_SELECT,
@@ -155,9 +156,9 @@ export const MyDriveSelectView = async (driveFolderId) => {
 };
 
 //마이 휴지통 전체보기
-export const MyTrashView = async () => {
+export const MyTrashView = async (uid) => {
   try {
-    const response = await axiosInstance.get(`${MY_TRASH_URI}`);
+    const response = await axiosInstance.get(`${MY_TRASH_URI}/${uid}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -284,6 +285,18 @@ export const ShareDriveSelectView = async (driveFolderId, userId) => {
       `${SHARE_DRIVE_SELECT_URI}/${driveFolderId}/${userId}`
     );
     console.log("마이 드라이브 선택보기:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+
+//공유 드라이브 전체보기
+export const selectDriveAllSize = async (uid) => {
+  try {
+    const response = await axiosInstance.get(`${DRIVE_ALL_SIZE}/${uid}`);
+    console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);

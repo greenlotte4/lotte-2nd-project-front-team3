@@ -9,6 +9,7 @@ import {
   driveFolderInsert,
   MyDriveSelectView,
   MyDriveView,
+  selectDriveAllSize,
   ToMyTrash,
 } from "../../../api/driveAPI";
 import { Link, useParams } from "react-router-dom";
@@ -53,6 +54,21 @@ export default function DriveSection() {
   const driveFilesRef = useRef(null);
 
   ////////////////파일,폴더 업로드/////////////////////
+
+  const fileAllSize = async () => {
+    console.log("여기로 들어와? ");
+    const uid = user.uid;
+    try {
+      const response = await selectDriveAllSize(uid);
+      console.log("총 파일 크기:", response.data);
+      console.log("adsf : " + response.data.driveFileLimitSize);
+      console.log("asdfasdf :" + response.data.driveFileSize);
+      
+    } catch (error) {
+      console.error("fileAllSize 중 오류 발생:", error);
+    }
+  };
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -76,9 +92,10 @@ export default function DriveSection() {
         const response = await driveFilesInsert(formData);
         console.log("백엔드 응답 안받아도됨:", response);
         driveFilesRef.current.value = "";
+        await fileAllSize();
         setIsDropdownOpen(false);
       } catch (err) {
-        console.err("에러에러에러", err);
+        console.error("에러에러에러", err);
       }
     }
   };
@@ -170,11 +187,11 @@ export default function DriveSection() {
     }
   };
 
-  //////////////////////////////MyDrive목록 가져오기/////////////////////////////////////////////
+  //////////////////////////////MyDrive목록 가져오기////////////////////////////////////
 
   const fetchFolderData = async (driveFolderId) => {
     setIsLoading(true); // 로딩 시작
-    const uid = user.uid
+    const uid = user.uid;
     try {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
@@ -238,6 +255,19 @@ export default function DriveSection() {
     }
   };
 
+  const formatFileSize = (driveFileSize) => {
+    if (driveFileSize >= 1024 * 1024 * 1024) {
+      return `${(driveFileSize / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    } else if (driveFileSize >= 1024 * 1024) {
+      return `${(driveFileSize / (1024 * 1024)).toFixed(2)} MB`;
+    } else if (driveFileSize >= 1024) {
+      return `${(driveFileSize / 1024).toFixed(2)} KB`;
+    } else {
+      return `${driveFileSize} BT`;
+    }
+  };
+
+  //상위 네비게이션
   const handleBreadcrumbClick = (breadcrumbId) => {
     if (breadcrumbId) {
       navigate(`/antwork/drive/folder/${breadcrumbId}`); // 클릭한 폴더로 이동
@@ -246,10 +276,12 @@ export default function DriveSection() {
     }
   };
 
+  //주소의 드라이브 아이디가 바뀔때마다 실행
   useEffect(() => {
     fetchFolderData(driveFolderId); // driveFolderId가 있을 때는 상세 정보, 없으면 목록 데이터 불러오기
   }, [driveFolderId]); //  const { folderId } = useParams();의 folderId가 바뀔때마다 감지함
 
+  //네비게이션변경시 확인하는 콘솔코드
   useEffect(() => {
     console.log("Updated Breadcrumbs:", breadcrumbs);
   }, [breadcrumbs]);
@@ -764,7 +796,7 @@ export default function DriveSection() {
                             >
                               {file.driveFileSName}
                             </td>
-                            <td>{file.driveFileSize}</td>
+                            <td>{formatFileSize(file.driveFileSize)}</td>
                             <td>{file.driveFileMaker}</td>
                             <td>{file.driveFileCreatedAt}</td>
                           </tr>
