@@ -67,36 +67,64 @@ export default function DriveSection() {
         : [];
       console.log("휴지통 폴더 데이터 매핑:", folders);
       setFolderStates(
-        folders.map((folder) => ({
-          isChecked: folder.isChecked || false,
-          isStarred: folder.isStarred || false,
-          driveFolderName: folder.driveFolderName,
-          driveFolderSize: folder.driveFolderSize,
-          driveFolderCreatedAt: folder.driveFolderCreatedAt,
-          driveFolderMaker: folder.driveFolderMaker,
-          driveFolderId: folder.driveFolderId,
-          driveParentFolderId: folder.driveParentFolderId,
-          driveParentFolderName: folder.parentFolderName,
-        }))
+        folders.map((folder) => {
+          // 날짜 데이터 변환
+          const createdAtArray = folder.driveFolderCreatedAt;
+
+          let formattedCreatedAt = "N/A";
+          if (Array.isArray(createdAtArray) && createdAtArray.length >= 3) {
+            const [year, month, day] = createdAtArray;
+            formattedCreatedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: folder.isChecked || false,
+            isStarred: folder.isStarred || false,
+            driveFolderName: folder.driveFolderName,
+            driveFolderSize: folder.driveFolderSize,
+            driveFolderCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
+            driveFolderMaker: folder.driveFolderMaker,
+            driveFolderId: folder.driveFolderId,
+            driveParentFolderId: folder.driveParentFolderId,
+            driveParentFolderName: folder.parentFolderName,
+          };
+        })
       );
 
       setFileStates(
-        files.map((file) => ({
-          isChecked: file.isChecked || false,
-          isStarred: file.isStarred || false,
-          driveFileSsName: file.driveFileSName,
-          driveFileSName: file.driveFileSName.includes("_")
-            ? file.driveFileSName.split("_")[1]
-            : file.driveFileSName,
-          Ext: file.driveFileSName.includes(".")
-            ? file.driveFileSName.split(".").pop()
-            : "",
-          driveFileMaker: file.driveFileMaker,
-          driveFileSize: file.driveFileSize,
-          driveFileCreatedAt: file.driveFileCreatedAt,
-          driveFileId: file.driveFileId,
-          driveParentFolderName: file.parentFolderName,
-        }))
+        files.map((file) => {
+          // 날짜 데이터 변환
+          const createdAtArray = file.driveFileCreatedAt;
+
+          let formattedCreatedAt = "N/A";
+          if (Array.isArray(createdAtArray) && createdAtArray.length >= 3) {
+            const [year, month, day] = createdAtArray;
+            formattedCreatedAt = `${year}.${String(month).padStart(
+              2,
+              "0"
+            )}.${String(day).padStart(2, "0")}`;
+          }
+
+          return {
+            isChecked: file.isChecked || false,
+            isStarred: file.isStarred || false,
+            driveFileSsName: file.driveFileSName,
+            driveFileSName: file.driveFileSName.includes("_")
+              ? file.driveFileSName.split("_")[1]
+              : file.driveFileSName,
+            Ext: file.driveFileSName.includes(".")
+              ? file.driveFileSName.split(".").pop()
+              : "",
+            driveFileMaker: file.driveFileMaker,
+            driveFileSize: file.driveFileSize,
+            driveFileCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
+            driveFileId: file.driveFileId,
+            driveParentFolderName: file.parentFolderName,
+          };
+        })
       );
     } catch (err) {
       console.error("휴지통 폴더 데이터를 가져오는 중 오류 발생:", err);
