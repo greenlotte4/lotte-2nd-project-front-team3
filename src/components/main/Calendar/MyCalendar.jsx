@@ -280,17 +280,15 @@ function MyCalendar({ listMonth, setListMonth }) {
 
   const handleEventDrop = (info) => {
     const { event } = info;
-    const isHoliday = holidays.some((holiday) => holiday.title === event.title);
-    if (isHoliday) {
-      // 공휴일인 경우 드래그를 되돌려 원래 위치로 복원
-      info.revert();
-    }
+
     console.log("ppppppppppp:::" + JSON.stringify(event));
 
     const fetchData = async () => {
       await updateScheduleDrag(event.id, event.start, event.end);
     };
     fetchData();
+
+    console.log(event.startStr);
 
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
@@ -365,7 +363,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           dayMaxEvents={dayMaxEvents} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
           datesSet={handleDatesSet} // 뷰 변경시마다 호출되는 이벤트
           moreLinkText={(n) => `+${n}개의 일정 더보기`} // 3개 이상일 때 나타날 + 텍스트
-          locale="ar" // 언어를 한국어로 설정
+          locale="ko" // 언어를 한국어로 설정
           eventContent={renderEventContent} // 커스터마이징 렌더링
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정

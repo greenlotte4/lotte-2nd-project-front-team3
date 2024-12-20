@@ -21,9 +21,21 @@ export default function SettinngAside({ asideVisible }) {
     const fetchData = async () => {
       const response = await userLogs(user?.uid);
       console.log("12345" + response);
-
+      if (response.includes("schedule") && response.includes("calendar")) {
+        // 'schedule'이 앞에 있으면 'calendar'를 제거
+        if (response.indexOf("schedule") < response.indexOf("calendar")) {
+          response.splice(response.indexOf("calendar"), 1);
+        }
+        // 'calendar'가 앞에 있으면 'schedule'을 제거
+        else {
+          response.splice(response.indexOf("schedule"), 1);
+        }
+      }
       const log = response.map((item) => {
-        if (item === "calendar") {
+        if (item == "schedule") {
+          item = "calendar";
+        }
+        if (item === "calendar" || item === "schedule") {
           return {
             path: "/antwork/calendar",
             label: "캘린더",
