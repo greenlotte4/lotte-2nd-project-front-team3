@@ -10,7 +10,6 @@ import { CompletePageProvider } from "./../hooks/Lending/completePageReducer";
   */
 }
 const LandingLayout = ({ children }) => {
-  console.log("LandingLayout children:", children); // 추가
   return (
     <div id="wrap">
       <LandingHeader />
