@@ -189,7 +189,7 @@ export const sendDmMessage = async ({ dmId, content, senderId }) => {
 
     return response.data;
   } catch (error) {
-    console.error("채널 메시지 전송 오류:", error);
+    console.error("디엠 메시지 전송 오류:", error);
     throw error;
   }
 };
