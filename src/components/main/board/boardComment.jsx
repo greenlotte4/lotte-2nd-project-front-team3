@@ -11,23 +11,17 @@ export default function BoardComment({ boardId }) {
     const user = useAuthStore((state) => state.user);
     const [isLoading, setIsLoading] = useState(false);
 
-    // *** 추가: 댓글 수정 관련 상태
-    const [editingCommentId, setEditingCommentId] = useState(null);
-    const [editedContent, setEditedContent] = useState("");
-
     // 댓글 관련 상태 관리
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     const [isSecretComment, setIsSecretComment] = useState(false);
 
-    // 댓글 enter 했을 때 바로 입력되도록 하는 함수
-    // const handleKeyPress = (e) => {
-    //     if (e.key === "Enter") {
-    //         handleAddComment();
-    //     }
-    // };
+    // 댓글 수정 상태
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editedContent, setEditedContent] = useState("");
 
+    // 댓글 입력창 상태
     const handleKeyPress = (e) => {
         if (e.key === "Enter") {
             console.log()
@@ -73,7 +67,7 @@ export default function BoardComment({ boardId }) {
     }, [boardId]);
     // -----------------------------------------------------------------------------------------------------------
 
-    // *** 추가: 댓글 수정 처리 함수
+    //  댓글 수정 처리 함수
     const handleEditComment = async (commentId) => {
         if (!user) return;
         const comment = comments.find(c => c.id === commentId);
@@ -81,7 +75,7 @@ export default function BoardComment({ boardId }) {
         setEditedContent(comment.content);
     };
 
-    // *** 추가: 댓글 수정 저장 함수
+    //  댓글 수정 저장
     const handleSaveEdit = async (commentId) => {
         if (!editedContent.trim()) {
             alert('댓글 내용을 입력해주세요.');
@@ -196,59 +190,10 @@ export default function BoardComment({ boardId }) {
     };
 
 
-    // -----------------------------------------------------------------------------------------------------------
-    // 댓글 렌더링
-    // const renderComment = (comment, isNested = false) => (
-    //     <div
-    //         key={comment.id}
-    //         className={`flex flex-col p-3 ${isNested ? "ml-6 border-l-2 border-gray-200" : "border-b"
-    //             } space-y-2`}
-    //     >
-    //         <div className="flex items-center justify-between">
-    //             <div className="flex items-center space-x-2">
-    //                 {comment.writerImage && (
-    //                     <img
-    //                         src={comment.writerImage} // 이미지 URL을 src로 지정
-    //                         alt={comment.writerName} // 이미지 대체 텍스트
-    //                         className="w-10 h-10 rounded-full border-2 border-white -ml-2" // 이미지 크기와 스타일 조정
-    //                     />
-    //                 )}
-    //                 <span className="font-medium">{comment.writerName}</span>
-    //                 <span className="text-sm text-gray-500">({comment.writerDepartment})</span>
-    //                 <span className="text-slate-600 text-sm">
-    //                     {comment.createdAt}
-    //                 </span>
-    //                 {/* {comment.isSecret && <Lock size={12} className="text-gray-500" />} */}
-    //             </div>
-    //             <div className="flex space-x-2">
-    //                 {!isNested && (
-    //                     <button
-    //                         onClick={() => {
-    //                             setReplyTo(comment.id);
-    //                             setIsSecretComment(false);
-    //                         }}
-    //                         className="text-gray-500 hover:text-blue-600"
-    //                     >
-    //                         <Reply size={16} />
-    //                     </button>
-    //                 )}
-    //                 {user?.id === comment.authorId && (
-    //                     <button
-    //                         onClick={() => handleDeleteComment(comment.id)}
-    //                         className="text-gray-500 hover:text-red-600 text-sm"
-    //                     >
-    //                         삭제
-    //                     </button>
-    //                 )}
-    //             </div>
-    //         </div>
-    //         <p className={comment.secret && user?.id !== comment.authorId ? "text-gray-500 italic" : ""}>
-    //             {comment.secret && user?.id !== comment.authorId ? "비밀 댓글입니다." : comment.content}
-    //         </p>
-    //         {/* {comment.replies?.map(reply => renderComment(reply, true))} */}
-    //     </div>
-    // );
 
+    // -----------------------------------------------------------------------------------------------------------
+
+    // 댓글 렌더링
     const renderComment = (comment, isNested = false) => (
         <div
             key={comment.id}
@@ -261,7 +206,7 @@ export default function BoardComment({ boardId }) {
                         <img
                             src={comment.writerImage}
                             alt={comment.writerName}
-                            className="w-10 h-10 rounded-full border-2 border-white -ml-2"
+                            className="w-10 h-10 rounded-full border-2 border-white -ml-2 shadow-[1px_px_1px_rgba(0,0,0,0.2)]"
                         />
                     )}
                     <span className="font-medium">{comment.writerName}</span>
@@ -303,13 +248,12 @@ export default function BoardComment({ boardId }) {
                     )}
                     {/* *** 수정 끝: 수정 버튼 추가 */}
 
-
                 </div>
             </div>
 
 
 
-            {/* *** 수정: 수정 모드 UI 추가 */}
+            {/* *** 수정 버튼 클릭 시 : 댓글 수정 *** */}
             {editingCommentId === comment.id ? (
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
@@ -337,7 +281,7 @@ export default function BoardComment({ boardId }) {
                             className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                             disabled={isLoading}
                         >
-                            저장
+                            수정
                         </button>
                         <button
                             onClick={() => {

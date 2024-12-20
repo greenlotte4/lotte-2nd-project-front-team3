@@ -25,47 +25,8 @@ export default function BoardList() {
   console.log("게시글 정보:", boards);
 
 
-
-  // useEffect(() => {
-  //   // 게시글 목록을 가져오는 함수
-  //   const fetchBoards = async () => {
-  //     try {
-  //       console.log("게시글 데이터를 가져오는 중...");
-  //       const response = await axiosInstance.get(`${BOARD_LIST_URI}`);
-  //       console.log("응답 데이터 : ", response.data);
-
-
-  //       if (response.data && Array.isArray(response.data.content)) {
-  //         // 응답에서 받은 게시글 목록을 setBoards에 저장
-  //         setBoards(response.data.content.map(board => ({
-  //           id: board.id,
-  //           title: board.title,
-  //           writerName: board.writerName, // 작성자 이름
-  //           regDate: board.regDate,
-  //           hit: board.hit,
-  //           likes: board.likes,
-  //         })));
-  //       console.log("응답에서 받은 게시글 목록 : ", setBoards);
-
-  //       } else {
-  //         throw new Error("예상치 못한 응답 형식");
-  //       }
-
-  //     } catch (error) {
-  //       // console.error("게시글 목록을 가져오는데 실패했습니다:", error);
-  //       console.error("에러 상세 : ", {
-  //         message: error.message,
-  //         response: error.response?.data,  // 서버에서 보낸 에러 메시지
-  //         status: error.response?.status
-  //       });
-  //       setBoards([]); // 에러 시 빈 배열로 초기화
-  //     }
-  //   };
-
-  //   fetchBoards();
-  // }, []);
-
   useEffect(() => {
+    // 게시글 목록을 가져오는 함수
     const fetchBoards = async () => {
       try {
         console.log("게시글 데이터를 가져오는 중...");
@@ -85,6 +46,7 @@ export default function BoardList() {
         console.log("응답 데이터:", response.data);
 
         if (response.data && Array.isArray(response.data.content)) {
+          // 응답에서 받은 게시글 목록을 setBoards에 저장
           setBoards(response.data.content.map(board => ({
             id: board.id,
             title: board.title,
@@ -119,7 +81,7 @@ export default function BoardList() {
 
   return (
     <>
-      <>
+
         <article className="page-list">
           <div className="content-header mx-auto">
             <h1>자유게시판</h1>
@@ -261,7 +223,10 @@ export default function BoardList() {
 
           </section>
         </article>
-      </>
+
+
+
+
     </>
   );
 }
