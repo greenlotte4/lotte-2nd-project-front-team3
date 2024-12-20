@@ -3,7 +3,11 @@ import { useLocation } from "react-router-dom";
 import LandingLayout from "../../layouts/LandingLayout";
 import Modal from "../../components/Modal";
 import axios from "axios";
-import { LANDING_ANSWER_URI, LANDING_QNA_URI } from "@/api/_URI";
+import {
+  LANDING_ANSWER_URI,
+  LANDING_QNA_MODIFY_URI,
+  LANDING_QNA_URI,
+} from "@/api/_URI";
 
 export default function LandingMyQnaPage() {
   const location = useLocation();
@@ -12,12 +16,64 @@ export default function LandingMyQnaPage() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [answer, setAnswer] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    companyName: "",
+    businessType: "",
+    name: "",
+    contactNumber: "",
+    inquiryDetails: "",
+  });
 
   const handleInquiryClick = (inquiry) => {
-    console.log("Clicked inquiry:", inquiry);
     setSelectedInquiry(inquiry);
-    setAnswer(inquiry.answer || "");
     setIsModalOpen(true);
+
+    setTimeout(() => {
+      setEditForm({
+        companyName: inquiry.companyName,
+        businessType: inquiry.businessType,
+        name: inquiry.name,
+        contactNumber: inquiry.contactNumber,
+        inquiryDetails: inquiry.inquiryDetails,
+      });
+      setAnswer(inquiry.answer || "");
+      setIsEditing(false);
+    }, 0);
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const saveButton = document.querySelector('button[type="submit"]');
+      if (saveButton) saveButton.disabled = true;
+
+      const response = await axios.put(
+        `${LANDING_QNA_MODIFY_URI}/${selectedInquiry.id}`,
+        {
+          ...editForm,
+          email: selectedInquiry.email,
+          tempPassword: selectedInquiry.tempPassword,
+        }
+      );
+
+      if (response.status === 200) {
+        alert("문의가 수정되었습니다.");
+        const updatedInquiries = inquiries.map((inquiry) =>
+          inquiry.id === selectedInquiry.id
+            ? { ...inquiry, ...response.data }
+            : inquiry
+        );
+        location.state.inquiries = updatedInquiries;
+        setSelectedInquiry({ ...selectedInquiry, ...response.data });
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Error modifying inquiry:", error);
+      alert("문의 수정에 실패했습니다.");
+    } finally {
+      const saveButton = document.querySelector('button[type="submit"]');
+      if (saveButton) saveButton.disabled = false;
+    }
   };
 
   const handleAnswerSubmit = async () => {
@@ -72,7 +128,7 @@ export default function LandingMyQnaPage() {
               <p className="text-gray-400 mb-[2rem] mt-[20px] text-[15px]">
                 {isAdmin
                   ? "문의 내역에 대한 답변을 작성할 수 있습니다."
-                  : "AntWork를 이용하시면서 궁금하신 점이 있으시면 언제든 물어보세요!"}
+                  : "AntWork를 이용시면서 궁금하신 점이 있으시면 언제든 물어보세요!"}
               </p>
             </div>
           </div>
@@ -105,12 +161,123 @@ export default function LandingMyQnaPage() {
             </h2>
             <div className="space-y-8">
               <div className="border-b pb-6">
-                <h3 className="text-xl font-semibold mb-4">회사 정보</h3>
-                <p className="mb-3 text-lg">문의 ID: {selectedInquiry.id}</p>
-                <p className="mb-3 text-lg">
-                  회사명: {selectedInquiry.companyName}
-                </p>
-                <p className="text-lg">업종: {selectedInquiry.businessType}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold">회사 정보</h3>
+                  {!selectedInquiry.answer && !isAdmin && (
+                    <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      {isEditing ? "취소" : "수정"}
+                    </button>
+                  )}
+                </div>
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        회사명
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.companyName}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            companyName: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        업종
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.businessType}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            businessType: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        이름
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.name}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, name: e.target.value })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        연락처
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.contactNumber}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            contactNumber: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        문의 내용
+                      </label>
+                      <textarea
+                        value={editForm.inquiryDetails}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            inquiryDetails: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded h-32"
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                      >
+                        취소
+                      </button>
+                      <button
+                        onClick={handleEditSubmit}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        저장
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="mb-3 text-lg">
+                      문의 ID: {selectedInquiry.id}
+                    </p>
+                    <p className="mb-3 text-lg">
+                      회사명: {selectedInquiry.companyName}
+                    </p>
+                    <p className="text-lg">
+                      업종: {selectedInquiry.businessType}
+                    </p>
+                  </>
+                )}
               </div>
               <div className="border-b pb-6">
                 <h3 className="text-xl font-semibold mb-4">담당자 정보</h3>
@@ -120,64 +287,68 @@ export default function LandingMyQnaPage() {
                   연락처: {selectedInquiry.contactNumber}
                 </p>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-4">문의 내용</h3>
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <div className="flex justify-between items-center mb-3">
-                    <p className="text-sm text-gray-500">
-                      작성일:{" "}
-                      {new Date(selectedInquiry.createdAt).toLocaleString()}
+              {!isEditing && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">문의 내��</h3>
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <p className="text-sm text-gray-500">
+                        작성일:{" "}
+                        {new Date(selectedInquiry.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <p className="whitespace-pre-wrap text-lg">
+                      {selectedInquiry.inquiryDetails}
                     </p>
                   </div>
-                  <p className="whitespace-pre-wrap text-lg">
-                    {selectedInquiry.inquiryDetails}
-                  </p>
                 </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-4">답변 내용</h3>
-                {isAdmin && !selectedInquiry.answer ? (
-                  <div className="space-y-4">
-                    <textarea
-                      value={answer}
-                      onChange={(e) => setAnswer(e.target.value)}
-                      className="w-full p-4 border rounded-lg h-32"
-                      placeholder="답변을 입력하세요"
-                    />
-                    <button
-                      onClick={handleAnswerSubmit}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                    >
-                      답변 저장
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    {selectedInquiry.answer ? (
-                      <div className="bg-gray-50 p-6 rounded-lg">
-                        <div className="flex justify-between items-center mb-3">
-                          <p className="text-sm text-gray-500">답변 완료</p>
-                          <p className="text-sm text-gray-500">
-                            답변일:{" "}
-                            {selectedInquiry.answeredAt
-                              ? new Date(
-                                  selectedInquiry.answeredAt
-                                ).toLocaleString()
-                              : "답변 시간 정보 없음"}
+              )}
+              {!isEditing && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">답변 내용</h3>
+                  {isAdmin && !selectedInquiry.answer ? (
+                    <div className="space-y-4">
+                      <textarea
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                        className="w-full p-4 border rounded-lg h-32"
+                        placeholder="답변을 입력하세요"
+                      />
+                      <button
+                        onClick={handleAnswerSubmit}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                      >
+                        답변 저장
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      {selectedInquiry.answer ? (
+                        <div className="bg-gray-50 p-6 rounded-lg">
+                          <div className="flex justify-between items-center mb-3">
+                            <p className="text-sm text-gray-500">답변 완료</p>
+                            <p className="text-sm text-gray-500">
+                              답변일:{" "}
+                              {selectedInquiry.answeredAt
+                                ? new Date(
+                                    selectedInquiry.answeredAt
+                                  ).toLocaleString()
+                                : "답변 시간 정보 없음"}
+                            </p>
+                          </div>
+                          <p className="whitespace-pre-wrap text-lg">
+                            {selectedInquiry.answer}
                           </p>
                         </div>
-                        <p className="whitespace-pre-wrap text-lg">
-                          {selectedInquiry.answer}
+                      ) : (
+                        <p className="whitespace-pre-wrap bg-yellow-50 p-6 rounded-lg text-lg text-yellow-800">
+                          답변 대기중입니다.
                         </p>
-                      </div>
-                    ) : (
-                      <p className="whitespace-pre-wrap bg-yellow-50 p-6 rounded-lg text-lg text-yellow-800">
-                        답변 대기중입니다.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </Modal>

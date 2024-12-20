@@ -163,13 +163,13 @@ export const CHANNEL_GET_UNREAD_COUNT_URI = ({ channelId, messageId }) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/messages/${messageId}/unreadCount`;
 
 export const CHANNEL_VISIT_URI = ({ channelId, memberId }) =>
-  `${API_SERVER_HOST}/chatting/channel/${channelId}/members/${memberId}/visit`
-
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/members/${memberId}/visit`;
 
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
 export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회
-export const DM_GET_URI = (dmId) => `${API_SERVER_HOST} /chatting/dm / ${dmId} `; // 디엠방 조회
+export const DM_GET_URI = (dmId) =>
+  `${API_SERVER_HOST} /chatting/dm / ${dmId} `; // 디엠방 조회
 
 export const DM_SEND_MESSAGE_URI = (dmId) =>
   `${API_SERVER_HOST} /chatting/dm / ${dmId} /messages`; // 디엠 메시지 보내기
@@ -216,6 +216,8 @@ console.log("API_SERVER_HOST:", import.meta.env.VITE_API_SERVER_HOST);
 export const LANDING_QNA_URI = `${API_SERVER_HOST}/qna/save`; // 랜딩 문의하기
 export const LANDING_QNA_SEARCH_URI = `${API_SERVER_HOST}/qna/search`; // 랜딩 문의하기
 export const LANDING_ANSWER_URI = `${API_SERVER_HOST}/qna/answer`;
+export const LANDING_QNA_MODIFY_URI = `${API_SERVER_HOST}/qna/modify`;
+
 export const WS_URL =
   process.env.NODE_ENV === "production"
     ? import.meta.env.VITE_WS_URL
