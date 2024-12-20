@@ -227,7 +227,7 @@ const AttendanceCard = ({ userId }) => {
           출근하기
         </button>
         <button
-          className={`w-[100px] h-[50px] font-medium rounded-3xl transition ${
+          className={`w-[100px] h-[36px] font-medium rounded-3xl transition ${
             isCheckOutDisabled
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-red-500 text-white hover:bg-red-600"
