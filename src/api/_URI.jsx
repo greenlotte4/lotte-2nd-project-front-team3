@@ -1,6 +1,8 @@
 const SERVER_HOST = import.meta.env.VITE_SERVER_HOST;
 const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
+export const API_SERVER_URI = `${API_SERVER_HOST}`;
 
+// department
 // department
 export const DEPARTMENT_INSERT_URI = `${API_SERVER_HOST}/department/insert`; // 부서 생성
 export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; // 회사별 부서 조회
@@ -210,6 +212,10 @@ export const BOARD_COMMENT_URI = `${API_SERVER_HOST}/board/comment`; // 게시�
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
 console.log("API_SERVER_HOST:", import.meta.env.VITE_API_SERVER_HOST);
 
+// landing
+export const LANDING_QNA_URI = `${API_SERVER_HOST}/qna/save`; // 랜딩 문의하기
+export const LANDING_QNA_SEARCH_URI = `${API_SERVER_HOST}/qna/search`; // 랜딩 문의하기
+export const LANDING_ANSWER_URI = `${API_SERVER_HOST}/qna/answer`;
 export const WS_URL =
   process.env.NODE_ENV === "production"
     ? import.meta.env.VITE_WS_URL

@@ -68,6 +68,7 @@ import IntermediatePage from "@/pages/Landing/TossPaymentPage";
 import TossPaymentPage from "@/pages/Landing/TossPaymentPage";
 
 import TemplateViewPage from "@/pages/Main/Paging/TemplateViewPage";
+import LandingMyQnaPage from "@/pages/Landing/LandingMyQnaPage";
 
 import SettingProjectPage from "@/pages/Main/setting/settingProjectPage";
 
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
   { path: "/", element: <LandingMainPage /> }, // 2024/11/25(월) 최준혁 - LendingMainPage 추가
   { path: "/pay", element: <LandingPayPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가추가
   { path: "/support", element: <LandingSupportPage /> }, // 2024/11/29(금) 강은경 - LendingSupportPage 추가
+  { path: "/support/my", element: <LandingMyQnaPage /> }, // 2024/12/19(목) 황수빈 - LendingSupportPage 추가
   { path: "/function", element: <LandingFunctionPage /> }, // 2024/11/29(금) 강은경 - LandingFunctionPage 추가
   { path: "/complete", element: <CompletePage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
   { path: "/email-verification", element: <EmailVerificationPage /> }, // 2024/11/27(수) 최준혁 - LendingPayPage 추가
