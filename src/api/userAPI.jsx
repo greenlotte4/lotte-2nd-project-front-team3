@@ -336,6 +336,8 @@ export const updatePassword = async (pass, uid, type) => {
         uid: uid,
       }
     );
+    const newAccessToken = await refreshAccessToken(); // 토큰 갱신
+    useAuthStore.getState().setAccessToken(newAccessToken); // Zustand 업데이트
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);
