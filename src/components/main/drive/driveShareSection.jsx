@@ -311,6 +311,18 @@ export default function DriveShareSection() {
     }
   };
 
+  const formatFileSize = (driveFileSize) => {
+    if (driveFileSize >= 1024 * 1024 * 1024) {
+      return `${(driveFileSize / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    } else if (driveFileSize >= 1024 * 1024) {
+      return `${(driveFileSize / (1024 * 1024)).toFixed(2)} MB`;
+    } else if (driveFileSize >= 1024) {
+      return `${(driveFileSize / 1024).toFixed(2)} KB`;
+    } else {
+      return `${driveFileSize} BT`;
+    }
+  };
+
   const handleBreadcrumbClick = (breadcrumbId) => {
     if (breadcrumbId) {
       navigate(`/antwork/drive/folder/${breadcrumbId}`); // 클릭한 폴더로 이동
@@ -813,7 +825,7 @@ export default function DriveShareSection() {
                             >
                               {file.driveFileSName}
                             </td>
-                            <td>{file.driveFileSize}</td>
+                            <td>{formatFileSize(file.driveFileSize)}</td>
                             {driveFolderId ? (
                               <td>{file.driveFileMaker}</td>
                             ) : (
