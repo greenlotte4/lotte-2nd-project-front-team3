@@ -173,7 +173,7 @@ export const DM_GET_URI = (dmId) =>
   `${API_SERVER_HOST} /chatting/dm / ${dmId} `; // 디엠방 조회
 
 export const DM_SEND_MESSAGE_URI = (dmId) =>
-  `${API_SERVER_HOST} /chatting/dm / ${dmId} /messages`; // 디엠 메시지 보내기
+  `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 보내기
 export const DM_GET_MESSAGES_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 조회
 export const DM_DELETE_MESSAGE_URI = (messageId) =>
