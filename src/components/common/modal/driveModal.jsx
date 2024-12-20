@@ -47,7 +47,7 @@ export default function DriveModal() {
   //   setIsCollaboratorsDropdownOpen(!isCollaboratorsDropdownOpen);
   // };
 
-  //협업자목록록 가져오는 fetch함수수
+  //협업자목록록 가져오는 fetch함수
   const fetchCollaborators = async () => {
     try {
       if (driveFolderNameId) {
