@@ -221,6 +221,8 @@ export default function DriveShareSection() {
           // 날짜 데이터 변환
           const createdAtArray = folder.driveFolderCreatedAt;
           const sharedAtArray = folder.driveFolderSharedAt;
+          console.log("ㅁㄴㅇㅁㄴㅇㄹ  : " + folder.driveFolderSharedAt);
+          console.log("ㅣ와라라라라라 : ", folder);
 
           // CreatedAt 포맷팅
           let formattedCreatedAt = "N/A";
@@ -549,12 +551,14 @@ export default function DriveShareSection() {
         <article className="drive_update flex-shrink-0 my-[20px]">
           <div className="flex justify-between">
             <div className="drive_active flex space-x-2">
-              <button
-                onClick={toggleDropdown}
-                className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white"
-              >
-                업로드
-              </button>
+              {driveFolderId && (
+                <button
+                  onClick={toggleDropdown}
+                  className="w-[70px] h-[30px] border rounded-[4px] bg-[#4078ff] text-white"
+                >
+                  업로드
+                </button>
+              )}
               {/* 드롭다운 메뉴 */}
               {isDropdownOpen && (
                 <div className="absolute mt-11 w-[150px] bg-white border border-gray-200 rounded-lg shadow-lg z-10">
@@ -591,6 +595,7 @@ export default function DriveShareSection() {
                   />
                 </div>
               )}
+
               {driveFolderId && (
                 <button
                   onClick={() =>
@@ -741,7 +746,7 @@ export default function DriveShareSection() {
                             ) : (
                               <td>{folder.driveFolderMaker}</td>
                             )}
-                            <td>{folder.driveFolderCreatedAt}</td>
+                            <td>{folder.driveFolderSharedAt}</td>
                             <td>{folder.driveFolderSharedAt}</td>
                           </tr>
                         );

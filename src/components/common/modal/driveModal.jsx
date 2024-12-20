@@ -233,11 +233,26 @@ export default function DriveModal() {
       console.log("Response from backend:", response);
       alert("폴더가 등록되었습니다.");
 
+      // 날짜 포맷 변경 로직
+      const formatDate = (dateArray) => {
+        if (Array.isArray(dateArray) && dateArray.length >= 3) {
+          const [year, month, day] = dateArray;
+          return `${year}.${String(month).padStart(2, "0")}.${String(
+            day
+          ).padStart(2, "0")}`;
+        }
+        return "N/A"; // 기본값
+      };
+
+      const formattedCreatedAt = formatDate(response.driveFolderCreatedAt);
+      const formattedSharedAt = formatDate(response.driveFolderCreatedAt);
+
       if (props?.onFolderAdd) {
         props.onFolderAdd({
           driveFolderName: response.driveFolderName,
           driveFolderId: response.driveFolderId,
-          driveFolderCreatedAt: response.driveFolderCreatedAt,
+          driveFolderCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
+          driveFolderSharedAt: formattedSharedAt, // 포맷된 SharedAt 날짜
           driveFolderSize: response.driveFolderSize,
           driveFolderMaker: response.driveFolderMaker,
           driveParentFolderId: response.driveParentFolderId,
