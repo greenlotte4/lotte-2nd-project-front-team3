@@ -118,15 +118,19 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
       const data2 = await getSchedule(id);
 
       const updatedData = data2.filter((item) => {
-        const startTime = new Date(item.start); // start 값을 Date 객체로 변환
-        const endTime = new Date(item.end); // end 값을 Date 객체로 변환
+        const startTime = Array.isArray(item.start)
+          ? arrayToDate(item.start)
+          : new Date(item.start);
+        const endTime = Array.isArray(item.end)
+          ? arrayToDate(item.end)
+          : new Date(item.end);
         const today = new Date(); // 현재 날짜를 기준으로 검사
         today.setHours(0, 0, 0, 0); // 오늘의 00:00:00
         const tomorrow = new Date(today); // 내일의 00:00:00
         tomorrow.setDate(today.getDate() + 1);
 
         // 조건: start <= today < end
-        return startTime <= today && endTime >= tomorrow;
+        return startTime <= tomorrow && endTime >= today;
       });
       console.log("흐흐흐흐흠흠흠흠누누누" + JSON.stringify(data));
 
@@ -139,6 +143,11 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
     fetchData();
   }, [uid]);
+
+  function arrayToDate(arr) {
+    const [year, month, day, hour = 0, minute = 0] = arr;
+    return new Date(year, month - 1, day, hour, minute);
+  }
 
   // WebSocket 설정
   useEffect(() => {
@@ -171,14 +180,19 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
 
             if (newSchedule.action == "update") {
               const updatedData = [newSchedule].filter((item) => {
-                const startTime = new Date(item.start); // start 값을 Date 객체로 변환
-                const endTime = new Date(item.end); // end 값을 Date 객체로 변환
+                const startTime = Array.isArray(item.start)
+                  ? arrayToDate(item.start)
+                  : new Date(item.start);
+                console.log(startTime);
+                const endTime = Array.isArray(item.end)
+                  ? arrayToDate(item.end)
+                  : new Date(item.end);
                 const today = new Date(); // 현재 날짜를 기준으로 검사
                 today.setHours(0, 0, 0, 0); // 오늘의 00:00:00
                 const tomorrow = new Date(today); // 내일의 00:00:00
                 tomorrow.setDate(today.getDate() + 1);
 
-                return startTime <= today && endTime >= tomorrow;
+                return startTime <= tomorrow && endTime >= today;
               });
               if (updatedData.length < 1) {
                 setSchedule((prevSchedule) =>
@@ -186,9 +200,24 @@ export default function CalendarAside({ asideVisible, setListMonth }) {
                     (schedule) => schedule.id !== newSchedule.id
                   )
                 );
-              }
+              } else {
+                setSchedule((prevSchedule) => {
+                  // 기존 데이터에 같은 ID가 있는지 확인
+                  const isDuplicate = updatedData.some((newItem) =>
+                    prevSchedule.some(
+                      (existingItem) => existingItem.id === newItem.id
+                    )
+                  );
 
-              setSchedule((prevSchedule) => [...prevSchedule, ...updatedData]);
+                  // 중복된 ID가 없다면 데이터를 추가
+                  if (!isDuplicate) {
+                    return [...prevSchedule, ...updatedData];
+                  }
+
+                  // 중복된 ID가 있으면 기존 상태 유지
+                  return prevSchedule;
+                });
+              }
             }
           } catch (error) {
             console.error("❌ 메시지 처리 중 에러:", error);

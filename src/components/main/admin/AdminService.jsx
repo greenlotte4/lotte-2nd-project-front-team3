@@ -1,5 +1,5 @@
 import { selectCompany } from "@/api/companyAPI";
-import { getAllUserCompany } from "@/api/userAPI";
+import { findVacationUser, getAllUserCompany } from "@/api/userAPI";
 import { selectVersion } from "@/api/versionAPI";
 import useAuthStore from "@/store/AuthStore";
 import { useEffect, useState } from "react";
@@ -15,11 +15,11 @@ export default function AdminService() {
   const [start, setStart] = useState();
   const [expired, setExpired] = useState();
   const [deleted, setDeleted] = useState();
+  const [vacation, setVacation] = useState();
   useEffect(() => {
     const fetchData = async () => {
       const response = await selectCompany(user?.company);
       setCompany(response);
-
       const date = response.createdAt;
       const formattedDate = `${date[0]}-${String(date[1]).padStart(
         2,
@@ -43,6 +43,7 @@ export default function AdminService() {
       setDeleted(countInDeleted);
       const response3 = await selectVersion();
       setVersion(response3.version);
+      const response4 = await findVacationUser();
     };
     const currentUrl = window.location.href;
     const basePath = currentUrl.substring(
@@ -84,11 +85,11 @@ export default function AdminService() {
 
   // 도넛 차트 데이터
   const doughnutData2 = {
-    labels: ["출근", "연차", "반차"],
+    labels: ["출장", "연차", "반차"],
     datasets: [
       {
         label: "사용자 상태",
-        data: [active, deleted, expired],
+        data: [null, deleted, expired],
         backgroundColor: [
           "rgb(54, 162, 235)",
           "rgb(255, 99, 132)",
@@ -177,14 +178,16 @@ export default function AdminService() {
           </div>
         </article>
       </div>
-      <div className="flex justify-center gap-5">
-        <div className="w-[450px] h-[500px] bg-white rounded-lg p-[20px] border-[1px] border-solid border-gray">
+      <div className="flex justify-center gap-5 ">
+        <div className="w-[462px] h-[500px] bg-white rounded-lg p-[20px] border-[1px] border-solid border-gray">
           <h3 className="text-lg font-bold text-gray-800 mb-4">유저 상태</h3>
           <Doughnut data={doughnutData} />
         </div>
-        <div className="w-[450px] h-[500px] bg-white rounded-lg p-[20px] border-[1px] border-solid border-gray">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">유저 상태</h3>
-          <Doughnut data={doughnutData2} />
+        <div className="w-[462px] h-[500px] bg-white rounded-lg p-[20px] border-[1px] border-solid border-gray">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">
+            금일 부재 인원
+          </h3>
+          <Bar data={doughnutData2} className="mt-[100px]" />
         </div>
       </div>
     </>

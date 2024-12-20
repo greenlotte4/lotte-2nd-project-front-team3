@@ -33,6 +33,7 @@ export const USER_SEARCHUSER_URI = `${API_SERVER_HOST}/user/search`; // 유저 �
 export const USER_UPDATEPOSITION_URI = `${API_SERVER_HOST}/user/position`; // 유저 직위 변경
 export const USER_DELETEUSER_URI = `${API_SERVER_HOST}/user/delete`; // 유저 삭제하기
 export const USER_FINDDELETE_URI = `${API_SERVER_HOST}/user/findDelete`; // 삭제 유저찾기
+export const USER_VACATIONSELECT_URI = `${API_SERVER_HOST}/user/vacation`; // 삭제 유저찾기
 
 // notification
 export const NOTIFICATION_SEND_URI = `${API_SERVER_HOST}/notification/send`; // 초대전송

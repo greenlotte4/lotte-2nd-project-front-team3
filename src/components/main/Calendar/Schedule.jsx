@@ -46,6 +46,8 @@ export default function Schedule() {
       const fetchData = async () => {
         const data2 = await getScheduleDetail(id);
 
+        console.log("엥엥엥엥엥" + JSON.stringify(data2));
+
         setFormData({
           title: data2.title,
           start: data2.start,
@@ -102,6 +104,7 @@ export default function Schedule() {
         ...formData,
         [name]: value, // 다른 필드는 일반적으로 처리
       });
+      console.log(formData);
     }
   };
 

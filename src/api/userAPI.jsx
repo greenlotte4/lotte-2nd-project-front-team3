@@ -25,6 +25,7 @@ import {
   USER_UPDATEINFO_URI,
   USER_UPDATEPASS_URI,
   USER_UPDATEPOSITION_URI,
+  USER_VACATIONSELECT_URI,
   USER_VERIFY_CHECK_EMAIL_URI,
   USER_VERIFY_EMAIL_URI,
 } from "./_URI";
@@ -454,6 +455,17 @@ export const findDeleteUser = async (
     const response = await axiosInstance.get(
       `${USER_FINDDELETE_URI}/${companyId}/${currentPage}/${pageSize}/${status}`
     );
+    return response.data;
+  } catch (error) {
+    console.error("유저 가져오기 요청 실패:", error);
+    throw error;
+  }
+};
+
+// vacation 유저 찾기
+export const findVacationUser = async () => {
+  try {
+    const response = await axiosInstance.get(`${USER_VACATIONSELECT_URI}`);
     return response.data;
   } catch (error) {
     console.error("유저 가져오기 요청 실패:", error);

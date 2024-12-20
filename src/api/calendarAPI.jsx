@@ -201,6 +201,7 @@ export const getScheduleDetail = async (id) => {
         "Content-Type": "application/json", // JSON 형식으로 전송
       },
     });
+    console.log(response.data);
     return response.data;
   } catch (err) {
     console.log(err);
@@ -226,6 +227,7 @@ export const updateScheduleDrag = async (no, start, end) => {
 
 // 일정 상세update
 export const updateSchedule = async (formData) => {
+  console.log(formData);
   try {
     const response = await axiosInstance.put(
       SCHEDULE_UPDATEDETAIL_URI,
