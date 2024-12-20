@@ -27,15 +27,15 @@ export default function AdminAttendance() {
 
   const itemsPerPage = 10;
 
-  // 시간 데이터를 'HH:mm' 형식으로 변환하는 함수
+  // Helper to format time into 'HH:mm'
   const formatToHHmm = (time) => {
     if (!time || time === "-") return "-";
     const [hours, minutes] = time.split(":");
     return `${hours}:${minutes}`;
   };
 
-  // 주간 기록 데이터를 가공
-  const processWeeklyRecords = (weeklyRecords) => {
+  // Weekly record processing
+  const processWeeklyRecords = (weeklyRecords = []) => {
     return weeklyRecords.map((record) => ({
       ...record,
       checkIn: formatToHHmm(record.checkIn),
@@ -43,7 +43,7 @@ export default function AdminAttendance() {
     }));
   };
 
-  // 주간 날짜 배열 생성
+  // Generate weekly dates
   const getWeeklyDates = () => {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 });
     const end = endOfWeek(currentDate, { weekStartsOn: 1 });
@@ -52,8 +52,8 @@ export default function AdminAttendance() {
     );
   };
 
-  // 월간 기록 데이터를 가공
-  const processMonthlyRecords = (monthlyRecords) => {
+  // Monthly record processing
+  const processMonthlyRecords = (monthlyRecords = []) => {
     return monthlyRecords.map((weekRecord) => ({
       total: weekRecord.total || "-",
       basic: weekRecord.basic || "-",
@@ -62,7 +62,7 @@ export default function AdminAttendance() {
     }));
   };
 
-  // 월별 날짜 배열 생성
+  // Generate monthly weeks
   const getMonthlyWeeks = () => {
     const start = startOfMonth(currentDate);
     const end = endOfMonth(currentDate);
@@ -79,6 +79,7 @@ export default function AdminAttendance() {
     return weeks;
   };
 
+  // Fetch attendance data
   const fetchAttendanceData = async () => {
     if (!user?.company) return;
     setLoading(true);
@@ -98,7 +99,7 @@ export default function AdminAttendance() {
         startDate,
         endDate,
         filter,
-        currentPage - 1, // 백엔드는 0-based pagination
+        currentPage - 1,
         itemsPerPage
       );
 
@@ -115,20 +116,19 @@ export default function AdminAttendance() {
       setAttendanceData(processedData || []);
       setTotalPages(response.totalPages || 0);
     } catch (error) {
-      console.error("데이터 가져오기 중 오류:", error);
+      console.error("Error fetching attendance data:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Reset state and fetch data when filters or pagination change
   useEffect(() => {
-    console.log("Attendance Data:", attendanceData);
-  }, [attendanceData]);
-
-  useEffect(() => {
+    setAttendanceData([]); // Clear stale data on filter change
     fetchAttendanceData();
   }, [currentDate, filter, currentPage]);
 
+  // Pagination handlers
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
   };
@@ -137,6 +137,7 @@ export default function AdminAttendance() {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
+  // Filter data based on search and department selection
   const filteredData = attendanceData.filter(
     (record) =>
       record.name.includes(searchTerm) &&
@@ -144,6 +145,7 @@ export default function AdminAttendance() {
         record.departmentName === selectedDepartment)
   );
 
+  // Navigation handlers
   const handlePrev = () => {
     if (filter === "weekly") {
       setCurrentDate((prev) => subWeeks(prev, 1));
@@ -176,7 +178,6 @@ export default function AdminAttendance() {
       return start;
     }
   };
-
   return (
     <div className="p-8 bg-white min-h-screen">
       {/* Header */}
@@ -186,7 +187,10 @@ export default function AdminAttendance() {
         </h1>
         <div className="flex gap-3">
           <button
-            onClick={() => setFilter("weekly")}
+            onClick={() => {
+              setFilter("weekly");
+              setCurrentPage(1);
+            }}
             className={`relative px-6 py-2 rounded-lg font-medium transition-all duration-300 ease-in-out shadow-md focus:outline-none ${
               filter === "weekly"
                 ? "bg-gray-600 text-white hover:bg-gray-700 ring-2 ring-gray-400 ring-offset-1"
@@ -196,7 +200,10 @@ export default function AdminAttendance() {
             주간
           </button>
           <button
-            onClick={() => setFilter("monthly")}
+            onClick={() => {
+              setFilter("monthly");
+              setCurrentPage(1);
+            }}
             className={`relative px-6 py-2 rounded-lg font-medium transition-all duration-300 ease-in-out shadow-md focus:outline-none ${
               filter === "monthly"
                 ? "bg-gray-600 text-white hover:bg-gray-700 ring-2 ring-gray-400 ring-offset-1"
@@ -264,23 +271,9 @@ export default function AdminAttendance() {
                   누적 근무시간
                 </th>
                 {filter === "weekly" &&
-                  getWeeklyDates().map((date) => (
-                    <th
-                      key={date}
-                      className="px-4 py-3 text-center text-gray-600 font-semibold"
-                    >
-                      {date}
-                    </th>
-                  ))}
+                  getWeeklyDates().map((date) => <th key={date}>{date}</th>)}
                 {filter === "monthly" &&
-                  getMonthlyWeeks().map((week, index) => (
-                    <th
-                      key={index}
-                      className="px-4 py-3 text-center text-gray-600 font-semibold"
-                    >
-                      {week}
-                    </th>
-                  ))}
+                  getMonthlyWeeks().map((week, i) => <th key={i}>{week}</th>)}
               </tr>
             </thead>
 
@@ -319,14 +312,15 @@ export default function AdminAttendance() {
                     {/* 주간 데이터 */}
                     {filter === "weekly" &&
                       getWeeklyDates().map((date, i) => {
-                        const dayRecord = record.weeklyRecords?.[i];
+                        const dayRecord = record?.weeklyRecords?.[i];
                         return (
                           <td
                             key={i}
                             className="px-4 py-4 text-center text-gray-800 border-l"
                           >
-                            {dayRecord?.checkIn !== "-" &&
-                            dayRecord?.checkOut !== "-" ? (
+                            {dayRecord &&
+                            dayRecord.checkIn &&
+                            dayRecord.checkOut ? (
                               <>
                                 <p>
                                   {dayRecord.checkIn} ~ {dayRecord.checkOut}
@@ -345,7 +339,7 @@ export default function AdminAttendance() {
                     {/* 월간 데이터 */}
                     {filter === "monthly" &&
                       getMonthlyWeeks().map((week, i) => {
-                        const weekRecord = record.monthlyRecords?.[i];
+                        const weekRecord = record?.monthlyRecords?.[i];
                         return (
                           <td
                             key={i}

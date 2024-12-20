@@ -109,7 +109,7 @@ const CompletePage = () => {
     <LandingLayout>
       <TransitionGroup className="step-transition">
         <CSSTransition key={state.step} timeout={300} classNames="fade">
-          <div>
+          <div className=" bg-white">
             {state.step === 1 && (
               <Step1
                 state={state}
