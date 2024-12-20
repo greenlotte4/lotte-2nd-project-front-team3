@@ -58,11 +58,10 @@ export default function ChannelMain() {
   useEffect(() => {
     // (1) define within effect callback scope
     const visitChannelAsync = async () => {
-      if (!channelId || !user?.id)
-        return;
+      if (!channelId || !user?.id) return;
 
       try {
-        await visitChannel({ channelId, memberId: user?.id })
+        await visitChannel({ channelId, memberId: user?.id });
         stompClientRef.current?.publish({
           destination: `/app/chatting/channel/${channelId}/visit`,
         });
@@ -77,8 +76,7 @@ export default function ChannelMain() {
       destination: `/app/chatting/channel/${channelId}/visit`,
     });
     // TODO: 소켓 날림 : channelId
-
-  }, [channelId])
+  }, [channelId]);
 
   // 이미지 모달
   useEffect(() => {
@@ -252,7 +250,7 @@ export default function ChannelMain() {
 
     try {
       const result = await sendChannelMessage(newMessage); // 서버 전송
-      console.log(`메시지 보내기 성공 : ${result.data}`)
+      console.log(`메시지 보내기 성공 : ${result.data}`);
       const msg = {
         id: result.data,
         senderId: user?.id,
@@ -558,6 +556,7 @@ export default function ChannelMain() {
                   formatChatTime={formatChatTime}
                   channelId={channelId}
                   stompClientRef={stompClientRef.current}
+                  currentImageIndex={currentImageIndex}
                 />
               ))
             )}
@@ -617,8 +616,9 @@ export default function ChannelMain() {
 
         {/* 오른쪽 토글 패널 */}
         <div
-          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
-            } duration-300`}
+          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${
+            toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
+          } duration-300`}
         >
           {/* 상단 영역 */}
           <div className="flex items-center justify-between mb-6">
@@ -663,8 +663,9 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`h-5 w-5 transform transition-transform ${
+                    toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
+                  }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -707,8 +708,9 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`h-5 w-5 transform transition-transform ${
+                    toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
+                  }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -753,8 +755,9 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`h-5 w-5 transform transition-transform ${
+                    toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
+                  }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
