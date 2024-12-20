@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [passIsOpen, setPassIsOpen] = useState(false);
+
   const openSet = () => {
     console.log(isOpen);
     setIsOpen(true);
@@ -22,14 +23,6 @@ export default function LoginPage() {
   };
 
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   // 로컬 또는 세션 스토리지에서 액세스 토큰 가져오기
-  //   const token = getAccessToken();
-  //   if (token) {
-  //     console.log("Access token found, redirecting to dashboard...");
-  //     navigate("/antwork"); // 토큰이 있으면 대시보드로 이동
-  //   }
-  // }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // 폼 기본 동작 막기
@@ -79,7 +72,14 @@ export default function LoginPage() {
                 />
               </Link>
             </h1>
-
+            {/* 뒤로가기 버튼 */}
+            <button
+              className="back-button flex items-center text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium mb-4"
+              onClick={() => navigate("/")}
+            >
+              <span className="mr-2 text-lg">←</span> {/* 뒤로가기 아이콘 */}
+              메인으로
+            </button>
             {/* 로그인 폼 */}
             <form className="login_form" onSubmit={handleLogin}>
               <label htmlFor="uid" className="email_lbl">

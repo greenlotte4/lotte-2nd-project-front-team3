@@ -16,7 +16,7 @@ const PlanCard = ({ title, price, description, features, link, color }) => {
     >
       <h2 className="text-xl font-bold text-gray-800">{title}</h2>
       <p className="text-sm text-gray-600">{description}</p>
-      <h3 className="text-2xl font-semibold text-gray-800">{price}</h3>
+      <h3 className="text-m font-semibold">{price}</h3>
       <p className="text-sm text-gray-600">월 요금 (1인당)</p>
       <ul className="space-y-2">
         {features.map((feature, index) => (

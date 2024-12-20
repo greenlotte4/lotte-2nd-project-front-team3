@@ -27,18 +27,8 @@ export default function LandingPayPage() {
             가격으로 제공합니다.
           </p>
           <div className="footer">
-            <p className="plan-text">100% 무료 플랜을 사용해 보세요</p>
-            <div className="trial-container">
-              <p className="trial-text">
-                무료 플랜을 시작하고 한 달에 10번의 조회를 완전 무료로 수행해
-                보세요!
-              </p>
-              <button className="trial-button" onClick={handleTrialClick}>
-                무료 체험
-              </button>
-            </div>
+            <p className="plan-text">Antwork의 세계를 체험해보세요.</p>
             <div className="payment-methods">
-              <p>결제 수단</p>
               <div className="payment-images">
                 <img src="/images/Landing/payment.png" alt="결제 수단" />
                 <img src="/images/Landing/paymentbottom.png" alt="결제 수단" />

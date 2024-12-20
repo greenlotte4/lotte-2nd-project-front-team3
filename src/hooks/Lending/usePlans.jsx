@@ -12,7 +12,7 @@ const usePlans = () => {
   const [plans] = useState([
     {
       title: "Free 요금제",
-      price: "$0",
+      price: "0원",
       description: "무료 체험 요금제입니다.",
       features: [
         { text: "메시지: 팀원 간 채팅 기능 제공 (최대 5명)", enabled: true },
@@ -26,7 +26,7 @@ const usePlans = () => {
     },
     {
       title: "Month 요금제",
-      price: "$50",
+      price: "100,000원",
       description: "월별 결제 요금제입니다.",
       features: [
         {
@@ -45,7 +45,7 @@ const usePlans = () => {
     },
     {
       title: "Year 요금제",
-      price: "$550",
+      price: "1,000,000원",
       description: "1년 결제 요금제입니다.",
       features: [
         {

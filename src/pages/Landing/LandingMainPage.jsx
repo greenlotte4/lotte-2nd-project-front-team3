@@ -52,7 +52,7 @@ export default function LandingMainPage() {
           </p>
 
           <p className="more">
-            <Link to="#">
+            <Link to="/pay">
               무료로 이용하기
               <i></i>
               <span></span>

@@ -26,11 +26,6 @@ export default function LandingHeader() {
         <nav className="gnb">
           <ul className="">
             <li>
-              <Link to="#" className="home cursor-pointer">
-                <img src="/images/Landing/home.svg" alt="home ico" />
-              </Link>
-            </li>
-            <li>
               <Link to="/function" className="cursor-pointer">
                 서비스 소개
                 <img

@@ -47,7 +47,7 @@ export default function ApprovalAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/approval/vaction"
+                    to="/antwork/approval/vacation"
                     className="block text-gray-700 hover:text-blue-500"
                   >
                     🏝️&nbsp;&nbsp;휴가 신청
@@ -59,14 +59,6 @@ export default function ApprovalAside({ asideVisible }) {
                     className="block text-gray-700 hover:text-blue-500"
                   >
                     💼&nbsp;&nbsp;출장 신청
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/antwork/setting/electronic-approval"
-                    className="block text-gray-700 hover:text-blue-500"
-                  >
-                    💰&nbsp;&nbsp;경비 신청
                   </Link>
                 </li>
               </ol>
