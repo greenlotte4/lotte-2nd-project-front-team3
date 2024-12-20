@@ -374,8 +374,7 @@ export default function ChannelMain() {
   }, [user?.id, channelId]); // 의존성 배열
 
   return (
-    //     <div className="w-full max-w-9xl mx-auto px-6 py-12 space-y-8 bg-white min-h-screen">
-    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-7xl">
+    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-9xl">
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
         <div

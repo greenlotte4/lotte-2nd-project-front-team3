@@ -242,7 +242,7 @@ export default function DmMain() {
 
 
   return (
-    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-7xl">
+    <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-9xl">
       <div className="flex flex-col h-full">
         <div
           // TODO: 스크롤 height 길이
