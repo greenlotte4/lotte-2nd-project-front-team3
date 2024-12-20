@@ -310,7 +310,7 @@ export default function DriveShareSection() {
       setIsLoading(false); // 로딩 종료
     }
   };
-
+  //바이트로 받아온 사이즈 계산하기
   const formatFileSize = (driveFileSize) => {
     if (driveFileSize >= 1024 * 1024 * 1024) {
       return `${(driveFileSize / (1024 * 1024 * 1024)).toFixed(2)} GB`;
@@ -486,6 +486,46 @@ export default function DriveShareSection() {
     // 최신 선택된 ID 반환
     return updatedSelectedIds;
   };
+  const handleSelectAll = (isChecked) => {
+    //폴더 상태 업데이트
+    const updatedFolders = folderStates.map((folder) => ({
+      ...folder,
+      isChecked: isChecked,
+    }));
+    // 파일 상태 업데이트
+    const updatedFiles = fileStates.map((file) => ({
+      ...file,
+      isChecked: isChecked,
+    }));
+    // 상태 업데이트
+    setFolderStates(updatedFolders);
+    setFileStates(updatedFiles);
+
+    // 선택된 ID와 이름을 업데이트
+    const updatedSelectedFolderIds = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderId); // ID 추출
+
+    const updatedSelectedFolderName = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderName); // 이름 추출
+    const updatedSelectedFileIds = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileId); // ID 추출
+
+    const updatedSelectedFileName = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileSsName); // 이름 추출
+    setSelectedDriveIds(updatedSelectedFolderIds);
+    console.log("먀먀먀먀 : " + updatedSelectedFolderIds);
+    setSelectedDriveName(updatedSelectedFolderName);
+    setSelectedDriveFileIds(updatedSelectedFileIds);
+    console.log("모모모모 : " + updatedSelectedFileIds);
+    setSelectedDriveFileName(updatedSelectedFileName);
+  };
+  const isAllSelected =
+    folderStates.every((folder) => folder.isChecked) &&
+    fileStates.every((file) => file.isChecked);
 
   const toggleFileStar = (index) => {
     setFileStates((prevStates) =>
@@ -680,7 +720,14 @@ export default function DriveShareSection() {
                 <thead>
                   <tr className="h-14">
                     <th className="w-[3%]">
-                      <input type="checkbox" />
+                      <input
+                        checked={isAllSelected} // 모든 항목이 선택되었을 때 checked상태를 유지
+                        onChange={(e) => handleSelectAll(e.target.checked)} //전체 선택/해제처리
+                        disabled={
+                          folderStates.length === 0 && fileStates.length === 0
+                        }
+                        type="checkbox"
+                      />
                     </th>
                     <th className="w-[2%]">⭐</th>
                     <th className="w-[3%]">종류</th>
@@ -858,7 +905,7 @@ export default function DriveShareSection() {
                           // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
                           if (folder.isChecked) {
                             e.preventDefault(); // 링크 이동 방지
-                            toggleFolderCheck(index); // 체크 해제
+                            // toggleFolderCheck(index); // 체크 해제
                           }
                         }}
                       >

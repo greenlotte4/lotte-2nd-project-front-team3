@@ -50,6 +50,8 @@ export default function DriveSection({ refreshUsage }) {
   const [selectedDriveFileIds, setSelectedDriveFileIds] = useState([]); // 체크된 폴더들의 ID
   const [selectedDriveFileName, setSelectedDriveFileName] = useState([]); // 체크된 폴더들의 ID
 
+  const [activeBreadcrumb, setActiveBreadcrumb] = useState(null); //네비게이션 위치치
+
   const aa = selectedDriveIds[0];
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -309,6 +311,7 @@ export default function DriveSection({ refreshUsage }) {
 
   //상위 네비게이션
   const handleBreadcrumbClick = (breadcrumbId) => {
+    console.log("asdfasdf : " + breadcrumbId);
     if (breadcrumbId) {
       navigate(`/antwork/drive/folder/${breadcrumbId}`); // 클릭한 폴더로 이동
     } else {
@@ -433,12 +436,22 @@ export default function DriveSection({ refreshUsage }) {
 
   // 중요도 별표 상태 토글
   const toggleFolderStar = (index) => {
-    setFolderStates((prevStates) =>
-      prevStates.map((state, idx) =>
+    // 상태 업데이트
+    setFolderStates((prevStates) => {
+      const updatedStates = prevStates.map((state, idx) =>
         idx === index ? { ...state, isStarred: !state.isStarred } : state
-      )
-    );
+      );
+
+      // 업데이트된 상태에서 체크된 폴더 ID 추출
+      const updatedSelectedIds = updatedStates
+        .filter((folder) => folder.isStarred)
+        .map((folder) => folder.driveFolderId);
+
+      console.log("호오오오잉 : " + updatedSelectedIds);
+      return updatedStates; // 상태 반영
+    });
   };
+
   ////파일체크❤️❤️
   const toggleFileCheck = (index, forceExclusive = false) => {
     const updatedFiles = [...fileStates];
@@ -473,6 +486,47 @@ export default function DriveSection({ refreshUsage }) {
     // 최신 선택된 ID 반환
     return updatedSelectedIds;
   };
+
+  const handleSelectAll = (isChecked) => {
+    //폴더 상태 업데이트
+    const updatedFolders = folderStates.map((folder) => ({
+      ...folder,
+      isChecked: isChecked,
+    }));
+    // 파일 상태 업데이트
+    const updatedFiles = fileStates.map((file) => ({
+      ...file,
+      isChecked: isChecked,
+    }));
+    // 상태 업데이트
+    setFolderStates(updatedFolders);
+    setFileStates(updatedFiles);
+
+    // 선택된 ID와 이름을 업데이트
+    const updatedSelectedFolderIds = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderId); // ID 추출
+
+    const updatedSelectedFolderName = updatedFolders
+      .filter((folder) => folder.isChecked) // 체크된 폴더만
+      .map((folder) => folder.driveFolderName); // 이름 추출
+    const updatedSelectedFileIds = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileId); // ID 추출
+
+    const updatedSelectedFileName = updatedFiles
+      .filter((File) => File.isChecked) // 체크된 폴더만
+      .map((File) => File.driveFileSsName); // 이름 추출
+    setSelectedDriveIds(updatedSelectedFolderIds);
+    console.log("먀먀먀먀 : " + updatedSelectedFolderIds);
+    setSelectedDriveName(updatedSelectedFolderName);
+    setSelectedDriveFileIds(updatedSelectedFileIds);
+    console.log("모모모모 : " + updatedSelectedFileIds);
+    setSelectedDriveFileName(updatedSelectedFileName);
+  };
+  const isAllSelected =
+    folderStates.every((folder) => folder.isChecked) &&
+    fileStates.every((file) => file.isChecked);
 
   const toggleFileStar = (index) => {
     setFileStates((prevStates) =>
@@ -547,24 +601,12 @@ export default function DriveSection({ refreshUsage }) {
   return (
     <>
       {isLoading ? <LoadingAnimation /> : null}
-      <div className="bg-white p-[40px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
+      <div className="bg-white p-[20px] rounded-[8px] border-none h-[850px] flex flex-col overflow-hidden">
         <article className="drive_header flex-shrink-0">
           <div className="flex justify-between">
-            <div className="h-[30px] leading-[30px] text-center">
-              <h3>MY DRIVE</h3>
-              <div className="breadcrumbs text-gray-500 text-sm">
-                {breadcrumbs.map((breadcrumb, index) => (
-                  <span key={breadcrumb.id || index}>
-                    {index > 0 && " → "}
-                    <button
-                      onClick={() => handleBreadcrumbClick(breadcrumb.id)}
-                      className="text-blue-500 hover:underline"
-                    >
-                      {breadcrumb.name}
-                    </button>
-                  </span>
-                ))}
-              </div>
+            <div className="h-[45px] leading-[24px] text-center">
+              <h1 className="text-[21px] font-semibold !text-left">DRIVE</h1>
+              <p className="text-[15px] text-[#6b7280]">MY DRIVE입니다.</p>
             </div>
             <div className="border w-[250px] h-[30px] rounded-[4px] flex items-center">
               <input
@@ -585,9 +627,26 @@ export default function DriveSection({ refreshUsage }) {
               </button>
             </div>
           </div>
+          <div className="breadcrumbs text-gray-500 text-sm text-left h-[15px] mt-[7px] overflow-hidden whitespace-nowrap">
+            {breadcrumbs.map((breadcrumb, index) => (
+              <span key={breadcrumb.id || index}>
+                {index > 0 && " → "}
+                <button
+                  onClick={() => handleBreadcrumbClick(breadcrumb.id)}
+                  className={`${
+                    driveFolderId === breadcrumb.id
+                      ? "text-yellow-500"
+                      : "text-black-500"
+                  } hover:underline`}
+                >
+                  {breadcrumb.name}
+                </button>
+              </span>
+            ))}
+          </div>
         </article>
 
-        <article className="drive_update flex-shrink-0 my-[20px]">
+        <article className="drive_update flex-shrink-0 mt-[10px] mb-[20px]">
           <div className="flex justify-between">
             <div className="drive_active flex space-x-2">
               <button
@@ -702,7 +761,14 @@ export default function DriveSection({ refreshUsage }) {
                 <thead>
                   <tr className="h-14">
                     <th className="w-[3%]">
-                      <input type="checkbox" />
+                      <input
+                        checked={isAllSelected} // 모든 항목이 선택되었을 때 checked상태를 유지
+                        onChange={(e) => handleSelectAll(e.target.checked)} //전체 선택/해제처리
+                        disabled={
+                          folderStates.length === 0 && fileStates.length === 0
+                        }
+                        type="checkbox"
+                      />
                     </th>
                     <th className="w-[2%]">⭐</th>
                     <th className="w-[3%]">종류</th>
@@ -867,7 +933,7 @@ export default function DriveSection({ refreshUsage }) {
                           // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
                           if (folder.isChecked) {
                             e.preventDefault(); // 링크 이동 방지
-                            toggleFolderCheck(index); // 체크 해제
+                            // toggleFolderCheck(index); // 체크 해제
                           }
                         }}
                       >

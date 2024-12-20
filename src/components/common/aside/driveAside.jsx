@@ -325,37 +325,41 @@ export default function DriveAside({ asideVisible, refreshUsage }) {
           </li>
           <li className="lnb-item mt-[10px]">
             <div className="lnb-header !mb-[10px]">
-              <img
+              {/* <img
                 src="/images/ico/page_delete24_999999.svg"
                 className="cate-icon !w-[22px] !h-[22px]"
-              />
+              /> */}
+              <i className="fa-solid fa-trash-can text-[14px] text-[#A4CDD4] ml-[2.5px]"></i>
               <Link
                 to="/antwork/drive/recycle"
-                className="main-cate !text-[16px] text-[#757575]"
+                className="main-cate !text-[13px] text-[#757575]"
               >
                 휴지통
               </Link>
             </div>
             <div className="lnb-header !mb-[10px]">
-              <img
+              {/* <img
                 src="/images/Antwork/main/drive/kid_star.png"
                 className="cate-icon !w-[22px] !h-[22px]"
-              />
+              /> */}
+              <i className="fa-solid fa-star text-[14px] text-[#FFC558] ml-[1px]"></i>
               <Link
                 to="/antwork/drive"
-                className="main-cate !text-[16px] text-[#757575]"
+                className="main-cate !text-[13px] text-[#757575]"
               >
                 즐겨찾기
               </Link>
             </div>
             <div className="lnb-header !mb-[10px]">
-              <img
+              {/* <img
                 src="/images/ico/page_setting_22_999999.svg"
                 className="cate-icon !w-[22px] !h-[22px]"
-              />
+              /> */}
+              <i className="fa-solid fa-gear text-[14px] text-[#919191] ml-[2px]"></i>
+
               <Link
                 to="/antwork/drive"
-                className="main-cate !text-[16px] text-[#757575]"
+                className="main-cate !text-[13px] text-[#757575]"
               >
                 설정
               </Link>
