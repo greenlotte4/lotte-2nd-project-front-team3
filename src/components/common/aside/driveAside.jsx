@@ -4,7 +4,13 @@ import { Link } from "react-router-dom";
 import DriveModal from "../modal/driveModal";
 import useModalStore from "../../../store/modalStore";
 import useAuthStore from "@/store/AuthStore";
-import { MyDriveSelectView, MyDriveView, ShareDriveView } from "@/api/driveAPI";
+import {
+  MyDriveSelectView,
+  MyDriveView,
+  selectDriveAllSize,
+  ShareDriveView,
+} from "@/api/driveAPI";
+import { size } from "lodash";
 
 export default function DriveAside({ asideVisible }) {
   // 모달 상태 관리를 위한 useState 추가
@@ -13,6 +19,9 @@ export default function DriveAside({ asideVisible }) {
   const [folderStates, setFolderStates] = useState([]);
   const [shareFolderStates, setShareFolderStates] = useState([]);
   const [fileStates, setFileStates] = useState([]);
+
+  const [size, setSize] = useState(0); // 현재 사용량
+  const [limit, setLimit] = useState(0); // 총 용량
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
@@ -101,18 +110,53 @@ export default function DriveAside({ asideVisible }) {
       console.error("폴더 데이터를 가져오는 중 오류 발생:", err);
     }
   };
+  const fileAllSize = async () => {
+    console.log("여기로 들어와?");
+    const uid = user.uid;
+    try {
+      const response = await selectDriveAllSize(uid);
+      console.log("총 파일 크기:", response.data);
+
+      // 서버에서 받아온 데이터를 상태로 설정
+      const fileSize = response.data.driveFileSize; // 바이트로 전달
+      const fileLimitSize = response.data.driveFileLimitSize; // 바이트로 전달
+
+      // 상태 업데이트: 바이트 값 그대로 유지
+      setSize(fileSize); // 사용량 (bytes)
+      setLimit(fileLimitSize); // 총 용량 (bytes)
+    } catch (error) {
+      console.error("fileAllSize 중 오류 발생:", error);
+    }
+  };
 
   useEffect(() => {
-    fetchFolderData(); // driveFolderId가 변경될 때마다 데이터 로드
+    fetchFolderData();
+    fileAllSize(); // driveFolderId가 변경될 때마다 데이터 로드
   }, []);
 
   const HorizontalBar = ({ usedSpace, totalSpace }) => {
     const [percentage, setPercentage] = useState(0);
+    const [usedSpaceDisplay, setUsedSpaceDisplay] = useState(""); // 표시용 사용량
+    const [totalSpaceDisplay, setTotalSpaceDisplay] = useState(""); // 표시용 총 용량
 
-    // 데이터가 변경될 때마다 퍼센트 계산
     useEffect(() => {
+      // 단위 변환: 사용량 (usedSpace)
+      const usedSpaceInMB = usedSpace / 1024 ** 2;
+      const usedSpaceFormatted =
+        usedSpaceInMB >= 1024
+          ? `${(usedSpaceInMB / 1024).toFixed(2)} GB`
+          : `${usedSpaceInMB.toFixed(2)} MB`;
+      setUsedSpaceDisplay(usedSpaceFormatted);
+
+      // 단위 변환: 총 용량 (totalSpace)
+      const totalSpaceInGB = totalSpace / 1024 ** 3;
+      const totalSpaceFormatted = `${totalSpaceInGB.toFixed(2)} GB`;
+      setTotalSpaceDisplay(totalSpaceFormatted);
+
+      // 퍼센트 계산: 소수점 포함
       if (totalSpace > 0) {
-        setPercentage((usedSpace / totalSpace) * 100);
+        const percentageValue = (usedSpace / totalSpace) * 100;
+        setPercentage(percentageValue); // 정밀하게 계산된 값을 설정
       }
     }, [usedSpace, totalSpace]);
 
@@ -120,20 +164,22 @@ export default function DriveAside({ asideVisible }) {
       <div className="w-full max-w-xl mx-auto mt-6">
         {/* 배경 막대 */}
         <div className="flex mb-2 items-center justify-between">
-          <span className="text-sm text-gray-600">{usedSpace} GB</span>
-          <span className="text-sm text-gray-600">{totalSpace} GB</span>
+          <span className="text-sm text-gray-600">{usedSpaceDisplay}</span>
+          <span className="text-sm text-gray-600">{totalSpaceDisplay}</span>
         </div>
 
         <div className="w-full bg-gray-300 rounded-full h-4">
           {/* 실제 사용된 용량을 표시하는 막대 */}
           <div
-            className="bg-blue-500 h-4 rounded-full"
+            className="bg-blue-500 h-4 rounded-full transition-all duration-300"
             style={{ width: `${percentage}%` }}
           ></div>
         </div>
 
         {/* 퍼센트 표시 */}
-        <div className="text-center text-sm mt-2">{percentage.toFixed(2)}%</div>
+        <div className="text-center text-sm mt-2 font-semibold">
+          {percentage.toFixed(2)}% 사용 중
+        </div>
       </div>
     );
   };
@@ -310,7 +356,7 @@ export default function DriveAside({ asideVisible }) {
           </li>
           <li className="lnb-item">
             <div className="lnb-header !mb-[10px] w-[180px]">
-              <HorizontalBar usedSpace={120} totalSpace={150} />
+              <HorizontalBar usedSpace={size} totalSpace={limit} />
               <Link
                 to="/antwork/drive/recycle"
                 className="main-cate !text-[16px] text-[#757575]"
