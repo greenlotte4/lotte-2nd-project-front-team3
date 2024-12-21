@@ -246,7 +246,7 @@ export default function DriveShareSection() {
 
           return {
             isChecked: folder.isChecked || false,
-            isStarred: folder.isStarred || false,
+            isStared: folder.isStared || false,
             driveFolderName: folder.driveFolderName,
             driveFolderSize: folder.driveFolderSize,
             driveFolderCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
@@ -287,7 +287,7 @@ export default function DriveShareSection() {
 
           return {
             isChecked: file.isChecked || false,
-            isStarred: file.isStarred || false,
+            isStared: file.isStared || false,
             driveFolderId: file.driveFolderId,
             driveFileSsName: file.driveFileSName,
             driveFileSName: file.driveFileSName.includes("_")
@@ -448,7 +448,7 @@ export default function DriveShareSection() {
   const toggleFolderStar = (index) => {
     setFolderStates((prevStates) =>
       prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStarred: !state.isStarred } : state
+        idx === index ? { ...state, isStared: !state.isStared } : state
       )
     );
   };
@@ -530,7 +530,7 @@ export default function DriveShareSection() {
   const toggleFileStar = (index) => {
     setFileStates((prevStates) =>
       prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStarred: !state.isStarred } : state
+        idx === index ? { ...state, isStared: !state.isStared } : state
       )
     );
   };
@@ -778,7 +778,7 @@ export default function DriveShareSection() {
                               <button onClick={() => toggleFolderStar(index)}>
                                 <i
                                   className={`fa-star cursor-pointer text-xl ${
-                                    folder.isStarred
+                                    folder.isStared
                                       ? "fa-solid text-yellow-500"
                                       : "fa-regular text-gray-300"
                                   }`}
@@ -835,7 +835,7 @@ export default function DriveShareSection() {
                               <button onClick={() => toggleFileStar(index)}>
                                 <i
                                   className={`fa-star cursor-pointer text-xl ${
-                                    file.isStarred
+                                    file.isStared
                                       ? "fa-solid text-yellow-500"
                                       : "fa-regular text-gray-300"
                                   }`}
@@ -944,7 +944,7 @@ export default function DriveShareSection() {
                           </div>
                           <button
                             className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                              folder.isStarred
+                              folder.isStared
                                 ? "text-yellow-500"
                                 : "text-gray-300 group-hover:text-gray-500"
                             }`}
@@ -952,7 +952,7 @@ export default function DriveShareSection() {
                           >
                             <i
                               className={`fa-star ${
-                                folder.isStarred ? "fa-solid" : "fa-regular"
+                                folder.isStared ? "fa-solid" : "fa-regular"
                               }`}
                             ></i>
                           </button>
@@ -1029,7 +1029,7 @@ export default function DriveShareSection() {
                         </div>
                         <button
                           className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                            file.isStarred
+                            file.isStared
                               ? "text-yellow-500"
                               : "text-gray-300 group-hover:text-gray-500"
                           }`}
@@ -1037,7 +1037,7 @@ export default function DriveShareSection() {
                         >
                           <i
                             className={`fa-star ${
-                              file.isStarred ? "fa-solid" : "fa-regular"
+                              file.isStared ? "fa-solid" : "fa-regular"
                             }`}
                           ></i>
                         </button>
