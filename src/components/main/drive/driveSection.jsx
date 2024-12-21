@@ -213,7 +213,7 @@ export default function DriveSection({ refreshUsage }) {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
       if (driveFolderId) {
-        response = await MyDriveSelectView(driveFolderId); // 상세 정보 API 호출
+        response = await MyDriveSelectView(driveFolderId,uid); // 상세 정보 API 호출
         console.log("선택된 폴더:", response.data);
       } else {
         response = await MyDriveView(uid); // 목록 정보 API 호출
@@ -248,7 +248,7 @@ export default function DriveSection({ refreshUsage }) {
 
           return {
             isChecked: folder.isChecked || false,
-            isStared: folder.isStared || false,
+            isStared: folder.driveFolderIsStared || false,
             driveFolderName: folder.driveFolderName,
             driveFolderSize: folder.driveFolderSize,
             driveFolderCreatedAt: formattedDate, // 포맷된 날짜를 설정
@@ -277,7 +277,7 @@ export default function DriveSection({ refreshUsage }) {
 
           return {
             isChecked: file.isChecked || false,
-            isStared: file.isStared || false,
+            isStared: file.driveIsStarted || false,
             driveFolderId: file.driveFolderId,
             driveFileSsName: file.driveFileSName,
             driveFileSName: file.driveFileSName.includes("_")
@@ -461,6 +461,7 @@ export default function DriveSection({ refreshUsage }) {
         const response = await driveIsStared({
           driveFolderId: selectedFolder.driveFolderId, // JSON 형식으로 전달
           userId: uid,
+          driveFileId: null,
         });
 
         // driveFilesInsert가 response 형식을 반환하지 않으면 오류 발생
@@ -508,6 +509,43 @@ export default function DriveSection({ refreshUsage }) {
     // 최신 선택된 ID 반환
     return updatedSelectedIds;
   };
+  ////파일 별표❤️❤️
+  const toggleFileStar = async (index) => {
+    const uid = user.uid;
+    try {
+      let selectedFiles;
+
+      // 선택된 폴더 상태 업데이트
+      const updatedStates = fileStates.map((state, idx) => {
+        if (idx === index) {
+          selectedFiles = { ...state, isStared: !state.isStared }; // 선택된 폴더
+          return selectedFiles;
+        }
+        return state;
+      });
+
+      setFileStates(updatedStates); // 상태 업데이트
+
+      if (selectedFiles) {
+        console.log("선택된 폴더 ID:", selectedFiles.driveFileId);
+
+        // 선택된 폴더가 있는 경우 백엔드에 상태 업데이트
+        const response = await driveIsStared({
+          driveFolderId: null, // JSON 형식으로 전달
+          userId: uid,
+          driveFileId: selectedFiles.driveFileId,
+        });
+
+        // driveFilesInsert가 response 형식을 반환하지 않으면 오류 발생
+        if (response.status !== 200) {
+          throw new Error("백엔드 응답 실패");
+        }
+        console.log("백엔드 응답:", response.data.isStared);
+      }
+    } catch (error) {
+      console.error("백엔드 전송 에러:", error);
+    }
+  };
 
   const handleSelectAll = (isChecked) => {
     //폴더 상태 업데이트
@@ -549,14 +587,6 @@ export default function DriveSection({ refreshUsage }) {
   const isAllSelected =
     folderStates.every((folder) => folder.isChecked) &&
     fileStates.every((file) => file.isChecked);
-
-  const toggleFileStar = (index) => {
-    setFileStates((prevStates) =>
-      prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStared: !state.isStared } : state
-      )
-    );
-  };
 
   // 폴더에서 체크된 항목의 수
   const selectedFolderCount = folderStates.filter(
