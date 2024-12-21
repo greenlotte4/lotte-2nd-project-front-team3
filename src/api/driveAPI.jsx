@@ -9,6 +9,7 @@ import {
   DRIVE_FOLDER_INSERT_URI,
   DRIVE_FOLDER_NAME,
   DRIVE_FOLDER_TRASH,
+  DRIVE_IS_STARED,
   MY_DRIVE_FILE_DOWNLOAD,
   MY_DRIVE_SELECT_URI,
   MY_DRIVE_URI,
@@ -301,5 +302,19 @@ export const selectDriveAllSize = async (uid) => {
   } catch (error) {
     console.error("Error verifying email:", error);
     throw error; // 예외를 호출한 쪽으로 전달
+  }
+};
+//즐겨찾기 추가
+export const driveIsStared = async ({ driveFolderId, userId }) => {
+  try {
+    console.log("오에에에엥? : " + driveFolderId, userId);
+    const response = await axiosInstance.post(`${DRIVE_IS_STARED}`, {
+      driveFolderId: driveFolderId,
+      userId: userId,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
   }
 };

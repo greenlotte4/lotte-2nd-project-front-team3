@@ -7,6 +7,7 @@ import {
   driveFileDownload,
   driveFilesInsert,
   driveFolderInsert,
+  driveIsStared,
   MyDriveSelectView,
   MyDriveView,
   selectDriveAllSize,
@@ -49,6 +50,8 @@ export default function DriveSection({ refreshUsage }) {
 
   const [selectedDriveFileIds, setSelectedDriveFileIds] = useState([]); // 체크된 폴더들의 ID
   const [selectedDriveFileName, setSelectedDriveFileName] = useState([]); // 체크된 폴더들의 ID
+
+  const [selectStarId, setSelectStarId] = useState([]);
 
   const [activeBreadcrumb, setActiveBreadcrumb] = useState(null); //네비게이션 위치치
 
@@ -245,7 +248,7 @@ export default function DriveSection({ refreshUsage }) {
 
           return {
             isChecked: folder.isChecked || false,
-            isStarred: folder.isStarred || false,
+            isStared: folder.isStared || false,
             driveFolderName: folder.driveFolderName,
             driveFolderSize: folder.driveFolderSize,
             driveFolderCreatedAt: formattedDate, // 포맷된 날짜를 설정
@@ -274,7 +277,7 @@ export default function DriveSection({ refreshUsage }) {
 
           return {
             isChecked: file.isChecked || false,
-            isStarred: file.isStarred || false,
+            isStared: file.isStared || false,
             driveFolderId: file.driveFolderId,
             driveFileSsName: file.driveFileSName,
             driveFileSName: file.driveFileSName.includes("_")
@@ -434,22 +437,41 @@ export default function DriveSection({ refreshUsage }) {
     return updatedSelectedIds;
   };
 
-  // 중요도 별표 상태 토글
-  const toggleFolderStar = (index) => {
-    // 상태 업데이트
-    setFolderStates((prevStates) => {
-      const updatedStates = prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStarred: !state.isStarred } : state
-      );
+  // 중요도 별표 상태 토글⭐⭐
+  const toggleFolderStar = async (index) => {
+    const uid = user.uid;
+    try {
+      let selectedFolder;
 
-      // 업데이트된 상태에서 체크된 폴더 ID 추출
-      const updatedSelectedIds = updatedStates
-        .filter((folder) => folder.isStarred)
-        .map((folder) => folder.driveFolderId);
+      // 선택된 폴더 상태 업데이트
+      const updatedStates = folderStates.map((state, idx) => {
+        if (idx === index) {
+          selectedFolder = { ...state, isStared: !state.isStared }; // 선택된 폴더
+          return selectedFolder;
+        }
+        return state;
+      });
 
-      console.log("호오오오잉 : " + updatedSelectedIds);
-      return updatedStates; // 상태 반영
-    });
+      setFolderStates(updatedStates); // 상태 업데이트
+
+      if (selectedFolder) {
+        console.log("선택된 폴더 ID:", selectedFolder.driveFolderId);
+
+        // 선택된 폴더가 있는 경우 백엔드에 상태 업데이트
+        const response = await driveIsStared({
+          driveFolderId: selectedFolder.driveFolderId, // JSON 형식으로 전달
+          userId: uid,
+        });
+
+        // driveFilesInsert가 response 형식을 반환하지 않으면 오류 발생
+        if (response.status !== 200) {
+          throw new Error("백엔드 응답 실패");
+        }
+        console.log("백엔드 응답:", response.data.isStared);
+      }
+    } catch (error) {
+      console.error("백엔드 전송 에러:", error);
+    }
   };
 
   ////파일체크❤️❤️
@@ -531,7 +553,7 @@ export default function DriveSection({ refreshUsage }) {
   const toggleFileStar = (index) => {
     setFileStates((prevStates) =>
       prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStarred: !state.isStarred } : state
+        idx === index ? { ...state, isStared: !state.isStared } : state
       )
     );
   };
@@ -814,7 +836,7 @@ export default function DriveSection({ refreshUsage }) {
                               <button onClick={() => toggleFolderStar(index)}>
                                 <i
                                   className={`fa-star cursor-pointer text-xl ${
-                                    folder.isStarred
+                                    folder.isStared
                                       ? "fa-solid text-yellow-500"
                                       : "fa-regular text-gray-300"
                                   }`}
@@ -868,7 +890,7 @@ export default function DriveSection({ refreshUsage }) {
                               <button onClick={() => toggleFileStar(index)}>
                                 <i
                                   className={`fa-star cursor-pointer text-xl ${
-                                    file.isStarred
+                                    file.isStared
                                       ? "fa-solid text-yellow-500"
                                       : "fa-regular text-gray-300"
                                   }`}
@@ -972,7 +994,7 @@ export default function DriveSection({ refreshUsage }) {
                           </div>
                           <button
                             className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                              folder.isStarred
+                              folder.isStared
                                 ? "text-yellow-500"
                                 : "text-gray-300 group-hover:text-gray-500"
                             }`}
@@ -980,7 +1002,7 @@ export default function DriveSection({ refreshUsage }) {
                           >
                             <i
                               className={`fa-star ${
-                                folder.isStarred ? "fa-solid" : "fa-regular"
+                                folder.isStared ? "fa-solid" : "fa-regular"
                               }`}
                             ></i>
                           </button>
@@ -1057,7 +1079,7 @@ export default function DriveSection({ refreshUsage }) {
                         </div>
                         <button
                           className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center ${
-                            file.isStarred
+                            file.isStared
                               ? "text-yellow-500"
                               : "text-gray-300 group-hover:text-gray-500"
                           }`}
@@ -1065,7 +1087,7 @@ export default function DriveSection({ refreshUsage }) {
                         >
                           <i
                             className={`fa-star ${
-                              file.isStarred ? "fa-solid" : "fa-regular"
+                              file.isStared ? "fa-solid" : "fa-regular"
                             }`}
                           ></i>
                         </button>
