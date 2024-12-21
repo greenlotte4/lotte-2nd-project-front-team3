@@ -143,10 +143,10 @@ export const MyDriveView = async (uid) => {
 };
 
 // 마이 드라이브 선택보기
-export const MyDriveSelectView = async (driveFolderId) => {
+export const MyDriveSelectView = async (driveFolderId,uid) => {
   try {
     const response = await axiosInstance.get(
-      `${MY_DRIVE_SELECT_URI}/${driveFolderId}`
+      `${MY_DRIVE_SELECT_URI}/${driveFolderId}/${uid}`
     );
     console.log("마이 드라이브 선택보기:", response.data);
     return response;
@@ -305,12 +305,13 @@ export const selectDriveAllSize = async (uid) => {
   }
 };
 //즐겨찾기 추가
-export const driveIsStared = async ({ driveFolderId, userId }) => {
+export const driveIsStared = async ({ driveFolderId, userId, driveFileId }) => {
   try {
     console.log("오에에에엥? : " + driveFolderId, userId);
     const response = await axiosInstance.post(`${DRIVE_IS_STARED}`, {
       driveFolderId: driveFolderId,
       userId: userId,
+      driveFileId: driveFileId,
     });
     console.log(response.data);
     return response.data;
