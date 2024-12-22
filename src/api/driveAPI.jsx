@@ -268,9 +268,9 @@ export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
 };
 
 //공유 드라이브 전체보기
-export const ShareDriveView = async (userId) => {
+export const ShareDriveView = async (userId,uid) => {
   try {
-    const response = await axiosInstance.get(`${SHARE_DRIVE_URI}/${userId}`);
+    const response = await axiosInstance.get(`${SHARE_DRIVE_URI}/${userId}/${uid}`);
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -280,10 +280,10 @@ export const ShareDriveView = async (userId) => {
 };
 
 //공유유 드라이브 선택보기
-export const ShareDriveSelectView = async (driveFolderId, userId) => {
+export const ShareDriveSelectView = async (driveFolderId, uid) => {
   try {
     const response = await axiosInstance.get(
-      `${SHARE_DRIVE_SELECT_URI}/${driveFolderId}/${userId}`
+      `${SHARE_DRIVE_SELECT_URI}/${driveFolderId}/${uid}`
     );
     console.log("마이 드라이브 선택보기:", response.data);
     return response;
@@ -293,7 +293,7 @@ export const ShareDriveSelectView = async (driveFolderId, userId) => {
   }
 };
 
-//공유 드라이브 전체보기
+//드라이브 총용량구하기기
 export const selectDriveAllSize = async (uid) => {
   try {
     const response = await axiosInstance.get(`${DRIVE_ALL_SIZE}/${uid}`);

@@ -9,6 +9,7 @@ import {
   driveFileDownload,
   driveFilesInsert,
   driveFolderInsert,
+  driveIsStared,
   ShareDriveSelectView,
   ShareDriveView,
 } from "@/api/driveAPI";
@@ -193,14 +194,15 @@ export default function DriveShareSection() {
     setIsLoading(true); // 로딩 시작
     //로그인 한 사용자자
     const userId = user.id;
+    const uid = user.uid;
     try {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
       if (driveFolderId) {
-        response = await ShareDriveSelectView(driveFolderId, userId); // 상세 정보 API 호출
+        response = await ShareDriveSelectView(driveFolderId, userId, uid); // 상세 정보 API 호출
         console.log("선택된 폴더:", response.data);
       } else {
-        response = await ShareDriveView(userId); // 목록 정보 API 호출
+        response = await ShareDriveView(uid); // 목록 정보 API 호출
         console.log("폴더+파일 목록 데이터:", response.data);
       }
 
@@ -246,7 +248,7 @@ export default function DriveShareSection() {
 
           return {
             isChecked: folder.isChecked || false,
-            isStared: folder.isStared || false,
+            isStared: folder.driveFolderIsStared || false,
             driveFolderName: folder.driveFolderName,
             driveFolderSize: folder.driveFolderSize,
             driveFolderCreatedAt: formattedCreatedAt, // 포맷된 CreatedAt 날짜
@@ -444,13 +446,42 @@ export default function DriveShareSection() {
     return updatedSelectedIds;
   };
 
-  // 중요도 별표 상태 토글
-  const toggleFolderStar = (index) => {
-    setFolderStates((prevStates) =>
-      prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStared: !state.isStared } : state
-      )
-    );
+  // 중요도 별표 상태 토글⭐⭐
+  const toggleFolderStar = async (index) => {
+    const uid = user.uid;
+    try {
+      let selectedFolder;
+
+      // 선택된 폴더 상태 업데이트
+      const updatedStates = folderStates.map((state, idx) => {
+        if (idx === index) {
+          selectedFolder = { ...state, isStared: !state.isStared }; // 선택된 폴더
+          return selectedFolder;
+        }
+        return state;
+      });
+
+      setFolderStates(updatedStates); // 상태 업데이트
+
+      if (selectedFolder) {
+        console.log("선택된 폴더 ID:", selectedFolder.driveFolderId);
+
+        // 선택된 폴더가 있는 경우 백엔드에 상태 업데이트
+        const response = await driveIsStared({
+          driveFolderId: selectedFolder.driveFolderId, // JSON 형식으로 전달
+          userId: uid,
+          driveFileId: null,
+        });
+
+        // driveFilesInsert가 response 형식을 반환하지 않으면 오류 발생
+        if (response.status !== 200) {
+          throw new Error("백엔드 응답 실패");
+        }
+        console.log("백엔드 응답:", response.data.isStared);
+      }
+    } catch (error) {
+      console.error("백엔드 전송 에러:", error);
+    }
   };
   ////파일체크❤️❤️
   const toggleFileCheck = (index, forceExclusive = false) => {
@@ -486,6 +517,44 @@ export default function DriveShareSection() {
     // 최신 선택된 ID 반환
     return updatedSelectedIds;
   };
+  //파일 중요도 별표 토글❤️❤️
+  const toggleFileStar = async (index) => {
+    const uid = user.uid;
+    try {
+      let selectedFiles;
+
+      // 선택된 폴더 상태 업데이트
+      const updatedStates = fileStates.map((state, idx) => {
+        if (idx === index) {
+          selectedFiles = { ...state, isStared: !state.isStared }; // 선택된 폴더
+          return selectedFiles;
+        }
+        return state;
+      });
+
+      setFileStates(updatedStates); // 상태 업데이트
+
+      if (selectedFiles) {
+        console.log("선택된 폴더 ID:", selectedFiles.driveFileId);
+
+        // 선택된 폴더가 있는 경우 백엔드에 상태 업데이트
+        const response = await driveIsStared({
+          driveFolderId: null, // JSON 형식으로 전달
+          userId: uid,
+          driveFileId: selectedFiles.driveFileId,
+        });
+
+        // driveFilesInsert가 response 형식을 반환하지 않으면 오류 발생
+        if (response.status !== 200) {
+          throw new Error("백엔드 응답 실패");
+        }
+        console.log("백엔드 응답:", response.data.isStared);
+      }
+    } catch (error) {
+      console.error("백엔드 전송 에러:", error);
+    }
+  };
+
   const handleSelectAll = (isChecked) => {
     //폴더 상태 업데이트
     const updatedFolders = folderStates.map((folder) => ({
@@ -526,14 +595,6 @@ export default function DriveShareSection() {
   const isAllSelected =
     folderStates.every((folder) => folder.isChecked) &&
     fileStates.every((file) => file.isChecked);
-
-  const toggleFileStar = (index) => {
-    setFileStates((prevStates) =>
-      prevStates.map((state, idx) =>
-        idx === index ? { ...state, isStared: !state.isStared } : state
-      )
-    );
-  };
 
   // 폴더에서 체크된 항목의 수
   const selectedFolderCount = folderStates.filter(
