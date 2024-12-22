@@ -5,6 +5,8 @@ import {
   driveFolderInsert,
   driveFolderNewNameUpDate,
   driveFolderTrashUpDate,
+  MyDriveSelectView,
+  MyDriveView,
   removeDriveCollaborator,
   selectDriveCollaborators,
 } from "../../../api/driveAPI";
@@ -26,6 +28,8 @@ export default function DriveModal() {
   const [expandedDepartments, setExpandedDepartments] = useState({});
   const [collaborators, setCollaborators] = useState([]);
 
+  const [folderStates, setFolderStates] = useState([]);
+
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
   const driveFolderNameId = props.id;
@@ -34,9 +38,79 @@ export default function DriveModal() {
   const driveFolderId = props.driveFolderId;
   const driveFolderMaker = user?.uid;
 
-  // const [isCollaboratorsDropdownOpen, setIsCollaboratorsDropdownOpen] =
-  //   useState(false);
+  //폴더 이동시 작동되는 폴더 조회 메서드드
+  // 폴더 데이터 로드 함수
+  const fetchFolderData = async (driveFolderId = null) => {
+    try {
+      const response = driveFolderId
+        ? await MyDriveSelectView(driveFolderId)
+        : await MyDriveView(user.uid);
 
+      const folders = Array.isArray(response.data.folders)
+        ? response.data.folders.map((folder) => ({
+            driveFolderId: folder.driveFolderId,
+            driveFolderName: folder.driveFolderName,
+            driveParentFolderId: folder.driveParentFolderId,
+            isExpanded: false,
+            childrenLoaded: false,
+          }))
+        : [];
+
+      setFolderStates((prevState) => {
+        const existingIds = new Set(prevState.map((f) => f.driveFolderId));
+        const newFolders = folders.filter(
+          (folder) => !existingIds.has(folder.driveFolderId)
+        );
+
+        return [...prevState, ...newFolders];
+      });
+    } catch (error) {
+      console.error("폴더 데이터를 가져오는 중 오류 발생:", error);
+    }
+  };
+
+  const toggleFolder = async (folderId) => {
+    setFolderStates((prevState) =>
+      prevState.map((folder) =>
+        folder.driveFolderId === folderId
+          ? { ...folder, isExpanded: !folder.isExpanded }
+          : folder
+      )
+    );
+
+    const folder = folderStates.find((f) => f.driveFolderId === folderId);
+
+    if (folder && !folder.isExpanded && !folder.childrenLoaded) {
+      await fetchFolderData(folderId);
+      setFolderStates((prevState) =>
+        prevState.map((folder) =>
+          folder.driveFolderId === folderId
+            ? { ...folder, childrenLoaded: true }
+            : folder
+        )
+      );
+    }
+  };
+
+  const renderTree = (parentId = null) => {
+    // parentId를 기준으로 자식 폴더 필터링
+    const childFolders = folderStates.filter(
+      (folder) => folder.driveParentFolderId === parentId
+    );
+
+    return childFolders.map((folder) => (
+      <div key={folder.driveFolderId} style={{ marginLeft: "20px" }}>
+        <span
+          onClick={() => toggleFolder(folder.driveFolderId)}
+          style={{ cursor: "pointer" }}
+        >
+          {folder.isExpanded ? "▼" : "▶"} {folder.driveFolderName}
+        </span>
+        {/* 자식 폴더 렌더링 */}
+        {folder.isExpanded && renderTree(folder.driveFolderId)}
+      </div>
+    ));
+  };
   // 선택된 작업담당자 관리하기 위한 상태
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
   console.log(
@@ -185,6 +259,8 @@ export default function DriveModal() {
       setModfiyName(driveFolderNewName);
     } else if (type === "recycle") {
       console.log("오로오롱 : " + driveFolderNameId, selectedDriveFileId);
+    } else if (type === "move") {
+      fetchFolderData();
     }
   }, [type]);
 
@@ -387,32 +463,8 @@ export default function DriveModal() {
 
               <div className="px-6 py-4">
                 <div className="border p-[5px]">
-                  <ul>
-                    <li>
-                      <div>
-                        <button>
-                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
-                        </button>
-                        <a className="pl-[3px]">머시기 폴더</a>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <button>
-                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
-                        </button>
-                        <a className="pl-[3px]">머시기 폴더</a>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <button>
-                          <i className="fa-solid fa-angle-down  text-[10px]"></i>
-                        </button>
-                        <a className="pl-[3px]">머시기 폴더</a>
-                      </div>
-                    </li>
-                  </ul>
+                  {/* 최상위 폴더 렌더링 */}
+                  {renderTree(null)}
                 </div>
               </div>
 
@@ -429,63 +481,6 @@ export default function DriveModal() {
                 >
                   확인
                 </button>
-              </div>
-            </div>
-          </div>
-        );
-      case "share":
-        return (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg w-[350px]">
-              <div className="flex justify-between items-center px-7 py-2 border-gray-200 mt-[15px]">
-                <i className="fa-solid fa-folder text-[#5C9CE6] text-[20px]"></i>
-                <h2 className="text-lg font-semibold">머시기 폴더의 링크</h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="px-6 pt-4 pb-6">
-                <div className="px-6 py-4 bg-[#F0F7FF] rounded-lg">
-                  <h2 className="font-bold leading-[25px]">링크 공유</h2>
-                  <p>
-                    링크가 있는 사용자가
-                    <span
-                      className={isChecked ? "text-blue-500" : "text-gray-500 "}
-                    >
-                      {isChecked ? " 편집 " : " 읽기 "}
-                    </span>
-                    가능
-                  </p>
-                  <div className="flex mt-[10px]">
-                    <div className="flex grow shrink basis-auto bg-white border border-gray-300 rounded-lg h-[35px] focus:outline-none focus:ring focus:ring-blue-300">
-                      <a className="grow shrink basis-auto"></a>
-                      <button className="px-2 py-0 border-l">링크복사</button>
-                    </div>
-                    <div className="ml-2 ">
-                      <button className="border rounded-lg h-[35px] px-2 py-0 bg-white">
-                        보내기
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex grow shrink basis-auto mt-[10px]">
-                    <p>편집</p>
-                    <div className="ml-auto">
-                      <label className="relative inline-flex items-center cursor-pointer ">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => setIsChecked(e.target.checked)}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-500"></div>
-                        <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 peer-checked:translate-x-5"></div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
