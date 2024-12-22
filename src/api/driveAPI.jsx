@@ -143,7 +143,7 @@ export const MyDriveView = async (uid) => {
 };
 
 // 마이 드라이브 선택보기
-export const MyDriveSelectView = async (driveFolderId,uid) => {
+export const MyDriveSelectView = async (driveFolderId, uid) => {
   try {
     const response = await axiosInstance.get(
       `${MY_DRIVE_SELECT_URI}/${driveFolderId}/${uid}`
@@ -268,9 +268,11 @@ export const removeDriveCollaborator = async (driveFolderNameId, userId) => {
 };
 
 //공유 드라이브 전체보기
-export const ShareDriveView = async (userId,uid) => {
+export const ShareDriveView = async (userId, uid) => {
   try {
-    const response = await axiosInstance.get(`${SHARE_DRIVE_URI}/${userId}/${uid}`);
+    const response = await axiosInstance.get(
+      `${SHARE_DRIVE_URI}/${userId}/${uid}`
+    );
     console.log("Email verification response:", response.data);
     return response;
   } catch (error) {
@@ -279,7 +281,7 @@ export const ShareDriveView = async (userId,uid) => {
   }
 };
 
-//공유유 드라이브 선택보기
+//공유 드라이브 선택보기
 export const ShareDriveSelectView = async (driveFolderId, uid) => {
   try {
     const response = await axiosInstance.get(

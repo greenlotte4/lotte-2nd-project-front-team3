@@ -199,10 +199,10 @@ export default function DriveShareSection() {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
       if (driveFolderId) {
-        response = await ShareDriveSelectView(driveFolderId, userId, uid); // 상세 정보 API 호출
+        response = await ShareDriveSelectView(driveFolderId, uid); // 상세 정보 API 호출
         console.log("선택된 폴더:", response.data);
       } else {
-        response = await ShareDriveView(uid); // 목록 정보 API 호출
+        response = await ShareDriveView(userId, uid); // 목록 정보 API 호출
         console.log("폴더+파일 목록 데이터:", response.data);
       }
 
@@ -289,7 +289,7 @@ export default function DriveShareSection() {
 
           return {
             isChecked: file.isChecked || false,
-            isStared: file.isStared || false,
+            isStared: file.driveIsStarted || false,
             driveFolderId: file.driveFolderId,
             driveFileSsName: file.driveFileSName,
             driveFileSName: file.driveFileSName.includes("_")
