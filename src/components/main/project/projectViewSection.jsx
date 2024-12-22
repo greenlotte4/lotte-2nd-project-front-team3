@@ -49,6 +49,23 @@ export default function ProjectViewSection() {
   const [newProjectName, setNewProjectName] = useState(""); // 새로운 프로젝트 이름
 
   const [collaborators, setCollaborators] = useState([]);
+  const [priorities, setPriorities] = useState([]);
+  const [sizes, setSizes] = useState([]);
+
+  // 우선순위 및 크기 데이터 로드
+  useEffect(() => {
+    const loadAttributes = async () => {
+      try {
+        const priorityData = await fetchAttributes("PRIORITY");
+        const sizeData = await fetchAttributes("SIZE");
+        setPriorities(priorityData);
+        setSizes(sizeData);
+      } catch (error) {
+        console.error("Error loading attributes:", error);
+      }
+    };
+    loadAttributes();
+  }, []);
 
   const fetchCollaborators = async () => {
     try {
@@ -292,30 +309,34 @@ export default function ProjectViewSection() {
   const handleEditItem = async (stateId, updatedTask) => {
     try {
       console.log("수정 요청 taskId:", updatedTask.id);
-      console.log("수정 요청 데이터!!!!!!!:", updatedTask);
+      console.log("수정 요청 데이터:", updatedTask);
 
       // 백엔드로 수정 요청
       const updatedTaskFromServer = await updateTask(
         updatedTask.id,
         updatedTask
-      ); // taskId를 전달
+      );
       console.log("수정 완료된 작업:", updatedTaskFromServer);
 
       // 상태 업데이트
       setStates((prevStates) =>
         prevStates.map((state) =>
-          state.id === stateId
+          state.id === updatedTaskFromServer.stateId
             ? {
                 ...state,
                 items: state.items.map((item) =>
                   item.id === updatedTaskFromServer.id
-                    ? updatedTaskFromServer
+                    ? {
+                        ...updatedTaskFromServer,
+                      }
                     : item
                 ),
               }
             : state
         )
       );
+
+      console.log("상태 업데이트 완료");
     } catch (error) {
       console.error("작업 수정 중 오류 발생:", error.message || error);
       alert("작업 수정 중 문제가 발생했습니다.");
@@ -519,6 +540,8 @@ export default function ProjectViewSection() {
     fetchCollaborators,
     setProject,
     fetchStatesAndTasks,
+    priorities,
+    sizes,
   });
 
   // 모달이 닫힐 때마다 협업자 목록을 새로 불러옴
@@ -576,6 +599,8 @@ export default function ProjectViewSection() {
         currentState={currentState}
         fetchCollaborators={fetchCollaborators}
         fetchStatesAndTasks={fetchStatesAndTasks}
+        priorities={priorities} // 우선순위 데이터 전달
+        sizes={sizes} // 크기 데이터 전달
       />
       {project ? (
         <article className="page-list min-h-[850px]">
@@ -856,16 +881,10 @@ export default function ProjectViewSection() {
 
                                       <div className="flex gap-1">
                                         <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-700">
-                                          {item.priority === 0
-                                            ? "P0"
-                                            : item.priority === 1
-                                            ? "P1"
-                                            : item.priority === 2
-                                            ? "P2"
-                                            : "Unknown"}{" "}
+                                          {item.priorityName || "Unknown"}
                                         </span>
                                         <span className="px-2 py-1 text-xs rounded bg-purple-100 text-purple-700">
-                                          {item.size}
+                                          {item.sizeName || "Unknown"}
                                         </span>
                                       </div>
                                     </article>
