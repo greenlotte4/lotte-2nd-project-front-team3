@@ -10,6 +10,8 @@ import CalendarAside from "./calendarAside";
 import AdminAside from "./adminAside";
 import SettinngAside from "./settingAside";
 import ApprovalAside from "./approvalAside";
+import { WS_URL } from "@/api/_URI";
+import { StompProvider } from "@/provides/StompProvide";
 
 {
   /*
@@ -55,7 +57,9 @@ export default function Aside({ asideVisible, setListMonth, isDm }) {
       {mainPath === "board" && <BoardAside asideVisible={asideVisible} />}
       {mainPath === "drive" && <DriveAside asideVisible={asideVisible} />}
       {mainPath === "chatting" && (
-        <ChattingAside asideVisible={asideVisible} isDm={isDm} />
+        <StompProvider brokerURL={WS_URL}>
+          <ChattingAside asideVisible={asideVisible} isDm={isDm} />
+        </StompProvider>
       )}
       {(mainPath === "calendar" || mainPath === "schedule") && (
         <CalendarAside
