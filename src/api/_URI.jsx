@@ -94,6 +94,10 @@ export const PROJECT_DELETE_URI = `${API_SERVER_HOST}/project/delete`; // 프로
 export const PROJECT_STATUS_UPDATE_URI = `${API_SERVER_HOST}/project/update/status`; // 프로젝트 상태 수정(진행중/완료)
 export const PROJECT_COUNT_USER_SELECT_URI = `${API_SERVER_HOST}/project/count`; // 한 사용자가 추가한 프로젝트 갯수 조회
 export const PROJECT_COLLABORATOR_SELECT_COUNT_URI = `${API_SERVER_HOST}/project/collaborator/count`; // 해당 프로젝트의 협업자 조회
+export const PROJECT_TASK_ATTRIBUTE_INSERT_URI = `${API_SERVER_HOST}/project/task/attribute/insert`; // 프로젝트 작업 속성 추가
+export const PROJECT_TASK_ATTRIBUTE_SELECT_URI = `${API_SERVER_HOST}/project/task/attribute/select`; // 프로젝트 작업 속성 타입별 조회
+export const PROJECT_TASK_ATTRIBUTE_UPDATE_URI = `${API_SERVER_HOST}/project/task/attribute/update`; // 프로젝트 작업 속성 수정
+export const PROJECT_TASK_ATTRIBUTE_DELETE_URI = `${API_SERVER_HOST}/project/task/attribute/delete`; // 프로젝트 작업 속성 삭제
 
 // drive
 export const DRIVE_FOLDER_INSERT_URI = `${API_SERVER_HOST}/drive/folder/insert`; // 드라이브 폴더 넣기
@@ -115,7 +119,6 @@ export const SHARE_DRIVE_URI = `${API_SERVER_HOST}/drive/collaborator/ShareDrive
 export const SHARE_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/collaborator/ShareDriveSelectView`; // 마이드라이브 전체보기
 export const DRIVE_ALL_SIZE = `${API_SERVER_HOST}/drive/files/totalSize`; // 마이드라이브 전체보기
 export const DRIVE_IS_STARED = `${API_SERVER_HOST}/drive/isStared`; // 마이드라이브 전체보기
-
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회

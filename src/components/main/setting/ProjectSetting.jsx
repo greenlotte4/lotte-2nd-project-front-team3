@@ -1,216 +1,290 @@
+import {
+  addAttribute,
+  deleteAttribute,
+  fetchAttributes,
+  updateAttribute,
+} from "@/api/projectAPI";
 import React, { useState, useEffect } from "react";
 
 export default function ProjectSetting() {
-  const [priorityName, setPriorityName] = useState("");
-  const [taskSizeName, setTaskSizeName] = useState("");
   const [priorities, setPriorities] = useState([]);
-  const [taskSizes, setTaskSizes] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [newPriority, setNewPriority] = useState("");
+  const [newSize, setNewSize] = useState("");
+  const [editingPriority, setEditingPriority] = useState(null);
+  const [editingSize, setEditingSize] = useState(null);
 
+  // 우선순위와 크기 데이터 로드
   useEffect(() => {
-    async function fetchData() {
-      const priorityData = await getAllPriorities();
-      const taskSizeData = await getAllTaskSizes();
-      setPriorities(priorityData);
-      setTaskSizes(taskSizeData);
-    }
-    fetchData();
+    const loadAttributes = async () => {
+      try {
+        const priorityData = await fetchAttributes("PRIORITY");
+        const sizeData = await fetchAttributes("SIZE");
+
+        setPriorities(priorityData);
+        setSizes(sizeData);
+      } catch (error) {
+        console.error("Error loading attributes:", error);
+      }
+    };
+
+    loadAttributes();
   }, []);
 
-  // 우선순위 추가 핸들러
-  const handlePrioritySubmit = async (e) => {
-    e.preventDefault();
+  // 속성 등록 핸들러
+  const handleAddAttribute = async (name, type) => {
+    if (!name.trim()) return;
+
+    const isConfirmed = window.confirm(
+      `${type === "PRIORITY" ? "우선순위" : "크기"}를 등록하시겠습니까?`
+    );
+    if (!isConfirmed) return;
+
     try {
-      await postPriority({ name: priorityName });
-      setPriorityName(""); // 폼 초기화
-      alert("우선순위가 추가되었습니다.");
-      fetchData(); // 데이터 새로 고침
+      const newItem = await addAttribute({ name, type });
+
+      if (type === "PRIORITY") {
+        setPriorities((prev) => [...prev, newItem]);
+        setNewPriority("");
+      } else {
+        setSizes((prev) => [...prev, newItem]);
+        setNewSize("");
+      }
+
+      window.alert(
+        `${
+          type === "PRIORITY" ? "우선순위" : "크기"
+        }가 성공적으로 등록되었습니다.`
+      );
     } catch (error) {
-      console.error("우선순위 추가 오류:", error);
+      console.error("Error adding attribute:", error);
     }
   };
 
-  // 작업 크기 추가 핸들러
-  const handleTaskSizeSubmit = async (e) => {
-    e.preventDefault();
+  // 속성 수정 핸들러
+  const handleUpdateAttribute = async (id, name, type) => {
+    if (!name.trim()) return;
+
     try {
-      await postTaskSize({ name: taskSizeName });
-      setTaskSizeName(""); // 폼 초기화
-      alert("작업 크기가 추가되었습니다.");
-      fetchData(); // 데이터 새로 고침
+      const updatedData = await updateAttribute(id, { name, type });
+
+      if (type === "PRIORITY") {
+        setPriorities((prev) =>
+          prev.map((item) => (item.id === id ? updatedData : item))
+        );
+        setEditingPriority(null);
+      } else {
+        setSizes((prev) =>
+          prev.map((item) => (item.id === id ? updatedData : item))
+        );
+        setEditingSize(null);
+      }
+
+      window.alert(
+        `${
+          type === "PRIORITY" ? "우선순위" : "크기"
+        }가 성공적으로 수정되었습니다.`
+      );
     } catch (error) {
-      console.error("작업 크기 추가 오류:", error);
+      console.error("Error updating attribute:", error);
     }
   };
 
-  // 우선순위 수정 핸들러
-  const handlePriorityUpdate = async (id, name) => {
-    try {
-      await updatePriority(id, { name });
-      alert("우선순위가 수정되었습니다.");
-      fetchData(); // 데이터 새로 고침
-    } catch (error) {
-      console.error("우선순위 수정 오류:", error);
-    }
-  };
+  // 속성 삭제 핸들러
+  const handleDeleteAttribute = async (id, type) => {
+    const isConfirmed = window.confirm(
+      `${type === "PRIORITY" ? "우선순위" : "크기"}를 삭제하시겠습니까?`
+    );
+    if (!isConfirmed) return;
 
-  // 작업 크기 수정 핸들러
-  const handleTaskSizeUpdate = async (id, name) => {
     try {
-      await updateTaskSize(id, { name });
-      alert("작업 크기가 수정되었습니다.");
-      fetchData(); // 데이터 새로 고침
-    } catch (error) {
-      console.error("작업 크기 수정 오류:", error);
-    }
-  };
+      await deleteAttribute(id);
 
-  // 우선순위 삭제 핸들러
-  const handlePriorityDelete = async (id) => {
-    try {
-      await deletePriority(id);
-      alert("우선순위가 삭제되었습니다.");
-      fetchData(); // 데이터 새로 고침
-    } catch (error) {
-      console.error("우선순위 삭제 오류:", error);
-    }
-  };
+      // 상태에서 삭제된 항목 제거
+      if (type === "PRIORITY") {
+        setPriorities((prev) => prev.filter((p) => p.id !== id));
+      } else {
+        setSizes((prev) => prev.filter((s) => s.id !== id));
+      }
 
-  // 작업 크기 삭제 핸들러
-  const handleTaskSizeDelete = async (id) => {
-    try {
-      await deleteTaskSize(id);
-      alert("작업 크기가 삭제되었습니다.");
-      fetchData(); // 데이터 새로 고침
+      window.alert(
+        `${type === "PRIORITY" ? "우선순위" : "크기"}가 삭제되었습니다.`
+      );
     } catch (error) {
-      console.error("작업 크기 삭제 오류:", error);
+      console.error("Error deleting attribute:", error);
+      window.alert("삭제에 실패했습니다.");
     }
   };
 
   return (
-    <article className="w-[1100px] mx-auto my-10">
-      <div className="content-header text-center mb-10">
-        <h1 className="text-3xl font-semibold text-gray-800">프로젝트 설정</h1>
-        <p className="text-gray-600 text-lg">우선순위 및 작업 크기 관리</p>
+    <article className="page-list w-[1100px] mx-auto">
+      <div className="content-header">
+        <h1>프로젝트 설정</h1>
+        <p className="!mb-5">우선순위와 크기 데이터를 관리할 수 있습니다.</p>
       </div>
 
-      {/* 우선순위 추가 섹션 */}
-      <div className="p-6 mb-8 bg-white rounded-xl shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          우선순위 추가
-        </h2>
-        <form onSubmit={handlePrioritySubmit} className="flex gap-4 mb-4">
-          <input
-            type="text"
-            value={priorityName}
-            onChange={(e) => setPriorityName(e.target.value)}
-            className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            placeholder="우선순위 이름을 입력하세요"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200"
-          >
-            추가
-          </button>
-        </form>
-        <div>
-          <h3 className="text-lg font-medium text-gray-700">
-            현재 우선순위 목록
-          </h3>
-          <ul className="list-disc pl-6 space-y-2">
+      <div className="bg-white p-6 rounded shadow">
+        {/* 우선순위 설정 */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">우선순위 설정</h2>
+          <div className="mb-6 flex gap-2">
+            <input
+              type="text"
+              placeholder="새 우선순위 추가 (예: P0 - 긴급)"
+              value={newPriority}
+              onChange={(e) => setNewPriority(e.target.value)}
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              onClick={() => handleAddAttribute(newPriority, "PRIORITY")}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              추가
+            </button>
+          </div>
+          <ul className="space-y-2">
             {priorities.map((priority) => (
               <li
                 key={priority.id}
-                className="text-gray-800 flex justify-between items-center"
+                className="flex justify-between items-center p-3 bg-white border rounded"
               >
-                {priority.name}
-                <div>
-                  <button
-                    onClick={() =>
-                      handlePriorityUpdate(
-                        priority.id,
-                        prompt(
-                          "수정할 우선순위 이름을 입력하세요:",
-                          priority.name
+                {editingPriority?.id === priority.id ? (
+                  <div className="flex w-full gap-2">
+                    <input
+                      type="text"
+                      value={editingPriority.name}
+                      onChange={(e) =>
+                        setEditingPriority({
+                          ...editingPriority,
+                          name: e.target.value,
+                        })
+                      }
+                      className="flex-1 p-2 border rounded"
+                    />
+                    <button
+                      onClick={() =>
+                        handleUpdateAttribute(
+                          editingPriority.id,
+                          editingPriority.name,
+                          "PRIORITY"
                         )
-                      )
-                    }
-                    className="text-blue-500 hover:text-blue-700 px-2"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => handlePriorityDelete(priority.id)}
-                    className="text-red-500 hover:text-red-700 px-2"
-                  >
-                    삭제
-                  </button>
-                </div>
+                      }
+                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      저장
+                    </button>
+                    <button
+                      onClick={() => setEditingPriority(null)}
+                      className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    >
+                      취소
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <span>{priority.name}</span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingPriority(priority)}
+                        className="px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleDeleteAttribute(priority.id, "PRIORITY")
+                        }
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+        </section>
 
-      {/* 작업 크기 추가 섹션 */}
-      <div className="p-6 mb-8 bg-white rounded-xl shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          작업 크기 추가
-        </h2>
-        <form onSubmit={handleTaskSizeSubmit} className="flex gap-4 mb-4">
-          <input
-            type="text"
-            value={taskSizeName}
-            onChange={(e) => setTaskSizeName(e.target.value)}
-            className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            placeholder="작업 크기 이름을 입력하세요"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200"
-          >
-            추가
-          </button>
-        </form>
-        <div>
-          <h3 className="text-lg font-medium text-gray-700">
-            현재 작업 크기 목록
-          </h3>
-          <ul className="list-disc pl-6 space-y-2">
-            {taskSizes.map((taskSize) => (
+        {/* 크기 설정 */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">크기 설정</h2>
+          <div className="mb-6 flex gap-2">
+            <input
+              type="text"
+              placeholder="새 크기 추가 (예: S - 소형)"
+              value={newSize}
+              onChange={(e) => setNewSize(e.target.value)}
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              onClick={() => handleAddAttribute(newSize, "SIZE")}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              추가
+            </button>
+          </div>
+          <ul className="space-y-2">
+            {sizes.map((size) => (
               <li
-                key={taskSize.id}
-                className="text-gray-800 flex justify-between items-center"
+                key={size.id}
+                className="flex justify-between items-center p-3 bg-white border rounded"
               >
-                {taskSize.name}
-                <div>
-                  <button
-                    onClick={() =>
-                      handleTaskSizeUpdate(
-                        taskSize.id,
-                        prompt(
-                          "수정할 작업 크기 이름을 입력하세요:",
-                          taskSize.name
+                {editingSize?.id === size.id ? (
+                  <div className="flex w-full gap-2">
+                    <input
+                      type="text"
+                      value={editingSize.name}
+                      onChange={(e) =>
+                        setEditingSize({
+                          ...editingSize,
+                          name: e.target.value,
+                        })
+                      }
+                      className="flex-1 p-2 border rounded"
+                    />
+                    <button
+                      onClick={() =>
+                        handleUpdateAttribute(
+                          editingSize.id,
+                          editingSize.name,
+                          "SIZE"
                         )
-                      )
-                    }
-                    className="text-blue-500 hover:text-blue-700 px-2"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => handleTaskSizeDelete(taskSize.id)}
-                    className="text-red-500 hover:text-red-700 px-2"
-                  >
-                    삭제
-                  </button>
-                </div>
+                      }
+                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      저장
+                    </button>
+                    <button
+                      onClick={() => setEditingSize(null)}
+                      className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    >
+                      취소
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <span>{size.name}</span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingSize(size)}
+                        className="px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => handleDeleteAttribute(size.id, "SIZE")}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       </div>
     </article>
   );

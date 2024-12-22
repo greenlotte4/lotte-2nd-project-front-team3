@@ -14,6 +14,8 @@ const useProjectWebSocket = ({
   fetchCollaborators,
   setProject,
   fetchStatesAndTasks,
+  priorities,
+  sizes,
 }) => {
   const stompClientRef = useRef(null);
 
@@ -196,6 +198,8 @@ const useProjectWebSocket = ({
                       ...data, // 새 데이터 병합
                       assignedUserDetails:
                         originalTask.assignedUserDetails || [], // 작업담당자 유지
+                      priorityName: data.priorityName || "Unknown",
+                      sizeName: data.sizeName || "Unknown",
                     };
 
                     // 새로운 stateId에 맞는 상태에 작업 추가

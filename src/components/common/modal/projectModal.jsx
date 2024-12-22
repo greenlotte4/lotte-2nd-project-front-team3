@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import useModalStore from "../../../store/modalStore";
 import {
   addProjectCollaborators,
+  fetchAttributes,
   getCurrentCollaboratorCount,
   getProjectCollaborators,
   getUserProjectCount,
@@ -41,6 +42,25 @@ export default function ProjectModal({
 
   const [isCollaboratorsDropdownOpen, setIsCollaboratorsDropdownOpen] =
     useState(false);
+  // 컴포넌트 내 state 추가
+  const [priorities, setPriorities] = useState([]);
+  const [sizes, setSizes] = useState([]);
+
+  // 우선순위와 크기 데이터 로드
+  useEffect(() => {
+    const loadAttributes = async () => {
+      try {
+        const priorityData = await fetchAttributes("PRIORITY");
+        const sizeData = await fetchAttributes("SIZE");
+        setPriorities(priorityData);
+        setSizes(sizeData);
+      } catch (error) {
+        console.error("Error loading attributes:", error);
+      }
+    };
+
+    loadAttributes();
+  }, []);
 
   // 선택된 작업담당자 관리하기 위한 상태
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
@@ -231,11 +251,8 @@ export default function ProjectModal({
       setTaskData({
         title: currentTask.title || "",
         content: currentTask.content || "",
-        priority:
-          currentTask.priority !== undefined && currentTask.priority !== null
-            ? String(currentTask.priority)
-            : "2", // 숫자를 문자열로 변환
-        size: currentTask.size || "M",
+        priorityId: currentTask.priorityId || "",
+        sizeId: currentTask.sizeId || "",
         assignedUserIds: currentTask.assignedUserIds || [], // 수정된 작업의 담당자 ID 배열
       });
 
@@ -397,8 +414,8 @@ export default function ProjectModal({
   const [taskData, setTaskData] = useState({
     title: "",
     content: "",
-    priority: "2",
-    size: "M",
+    priorityId: "",
+    sizeId: "",
   });
 
   // 작업 changeHandler(사용자가 입력한 데이터를 taskData에 업데이트)
@@ -422,8 +439,8 @@ export default function ProjectModal({
     const newTask = {
       title: taskData.title,
       content: taskData.content,
-      priority: taskData.priority,
-      size: taskData.size,
+      priorityId: taskData.priorityId,
+      sizeId: taskData.sizeId,
       stateId: currentStateId,
       status: 0,
       assignedUser: selectedCollaborators.map(
@@ -467,8 +484,8 @@ export default function ProjectModal({
       id: currentTask?.id || null, // 기존 작업의 ID 유지
       title: taskData.title,
       content: taskData.content,
-      priority: taskData.priority,
-      size: taskData.size,
+      priorityId: taskData.priorityId,
+      sizeId: taskData.sizeId,
       stateId: currentStateId,
       status: currentTask?.status || 0, // 기존 상태 유지
       assignedUser: selectedCollaborators.map(
@@ -483,7 +500,7 @@ export default function ProjectModal({
       onEditItem(currentStateId, updatedTask);
 
       alert("작업이 수정되었습니다!");
-      setTaskData({ title: "", content: "", priority: "2", size: "M" }); // 초기화
+      setTaskData({ title: "", content: "", priorityId: "", sizeId: "" });
       setSelectedCollaborators([]); // 선택된 담당자 초기화
       closeModal();
     } catch (error) {
@@ -503,7 +520,7 @@ export default function ProjectModal({
       case "task-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] h-[79vh] p-6">
+            <div className="bg-white rounded-lg w-[500px] h-auto p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">
                   {type === "task-create" ? "새 작업 추가" : "작업 수정"}
@@ -546,32 +563,40 @@ export default function ProjectModal({
                     placeholder="작업 내용을 설명해주세요"
                   />
                 </div>
-
                 <div>
                   <label className="block mb-2 font-medium">우선순위</label>
                   <select
-                    name="priority"
-                    value={taskData.priority || currentTask?.priority || "2"}
+                    name="priorityId"
+                    value={taskData.priorityId || ""}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
-                    <option value="0">P0 - 최우선</option>
-                    <option value="1">P1 - 높음</option>
-                    <option value="2">P2 - 보통</option>
+                    <option value="" disabled>
+                      우선순위 선택
+                    </option>
+                    {priorities.map((priority) => (
+                      <option key={priority.id} value={priority.id}>
+                        {priority.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <label className="block mb-2 font-medium">작업 크기</label>
                   <select
-                    name="size"
-                    value={taskData.size || currentTask?.size || "M"}
+                    name="sizeId"
+                    value={taskData.sizeId || ""}
                     onChange={handleTaskChange}
                     className="w-full border rounded p-2"
                   >
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
+                    <option value="" disabled>
+                      크기 선택
+                    </option>
+                    {sizes.map((size) => (
+                      <option key={size.id} value={size.id}>
+                        {size.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1001,7 +1026,7 @@ export default function ProjectModal({
       case "state-edit":
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[101]">
-            <div className="bg-white rounded-lg w-[500px] h-[39vh] p-6">
+            <div className="bg-white rounded-lg w-[500px] h-auto p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">
                   {" "}

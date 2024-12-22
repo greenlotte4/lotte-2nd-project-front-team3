@@ -19,6 +19,10 @@ import {
   PROJECT_STATUS_UPDATE_URI,
   PROJECT_COUNT_USER_SELECT_URI,
   PROJECT_COLLABORATOR_SELECT_COUNT_URI,
+  PROJECT_TASK_ATTRIBUTE_INSERT_URI,
+  PROJECT_TASK_ATTRIBUTE_SELECT_URI,
+  PROJECT_TASK_ATTRIBUTE_UPDATE_URI,
+  PROJECT_TASK_ATTRIBUTE_DELETE_URI,
 } from "./_URI";
 import axiosInstance from "@/utils/axiosInstance";
 
@@ -404,6 +408,72 @@ export const getCurrentCollaboratorCount = async (projectId) => {
     return response.data;
   } catch (error) {
     console.error("협업자 수를 가져오는 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 속성 추가 함수
+export const addAttribute = async (attribute) => {
+  console.log("속성추가 백엔드로 가는 attribute 정보 : " + attribute);
+
+  try {
+    const response = await axiosInstance.post(
+      `${PROJECT_TASK_ATTRIBUTE_INSERT_URI}`,
+      attribute
+    );
+
+    console.log("response.data : " + response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("협업자 추가 실패:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 속성 조회 함수
+export const fetchAttributes = async (type) => {
+  console.log("속성추가 백엔드로 가는 type 정보 : " + type);
+
+  try {
+    const response = await axiosInstance.get(
+      `${PROJECT_TASK_ATTRIBUTE_SELECT_URI}/${type}`
+    );
+    return response.data; // type에 따른 데이터 반환
+  } catch (error) {
+    console.error("작업속성 조회 실패:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 속성 수정 함수
+export const updateAttribute = async (id, updatedData) => {
+  console.log(
+    "작업속성 수정 백엔드로 들어오는 id, updatedData : " + id,
+    updatedData
+  );
+  try {
+    const response = await axiosInstance.put(
+      `${PROJECT_TASK_ATTRIBUTE_UPDATE_URI}/${id}`,
+      updatedData
+    );
+    return response.data; // 수정된 데이터 반환
+  } catch (error) {
+    console.error("Error updating attribute:", error);
+    throw error;
+  }
+};
+
+// 프로젝트 작업 속성 삭제 함수
+export const deleteAttribute = async (id) => {
+  console.log("작업 속성 삭제 백엔드로 들어오는 id : " + id);
+  try {
+    const response = await axiosInstance.delete(
+      `${PROJECT_TASK_ATTRIBUTE_DELETE_URI}/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting attribute:", error);
     throw error;
   }
 };
