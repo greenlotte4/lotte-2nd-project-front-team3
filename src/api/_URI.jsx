@@ -169,6 +169,9 @@ export const CHANNEL_GET_UNREAD_COUNT_URI = ({ channelId, messageId }) =>
 export const CHANNEL_VISIT_URI = ({ channelId, memberId }) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/members/${memberId}/visit`;
 
+export const CHANNEL_GET_C_UNREAD_COUNT_URI = ({ channelId, userId }) =>
+  `${API_SERVER_HOST}/chatting/channel/${channelId}/unreadCount?userId=${userId}`;
+
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
 export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회

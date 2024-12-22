@@ -19,6 +19,7 @@ import {
   CHANNEL_FILE_URI,
   CHANNEL_GET_UNREAD_COUNT_URI,
   CHANNEL_VISIT_URI,
+  CHANNEL_GET_C_UNREAD_COUNT_URI,
 } from "./_URI";
 
 import axios from "axios";
@@ -153,6 +154,21 @@ export const getChannelUnreadCount = async ({ channelId, messageId }) => {
     return response.data; // 성공 응답 반환
   } catch (error) {
     console.error(`[JS] 채널 안읽은 멤버수 조회 실패:`, error.message || error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+}
+export const getChannelCUnreadCount = async ({ channelId, userId }) => {
+  try {
+    console.log(`[JS] 채널 안읽은 메시지수 조회 요청: 채널 ID ${channelId}, userId ${userId}`);
+
+    const response = await axios.get(CHANNEL_GET_C_UNREAD_COUNT_URI({ channelId, userId }), {
+      name,
+    });
+
+    console.log(`[JS] 채널 안읽은 메시지수 조회 성공:`, response.data);
+    return response.data; // 성공 응답 반환
+  } catch (error) {
+    console.error(`[JS] 채널 안읽은 메시지수 조회 실패:`, error.message || error);
     throw error; // 에러를 호출한 곳으로 전달
   }
 }

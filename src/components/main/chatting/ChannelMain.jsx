@@ -22,9 +22,13 @@ import useToggle from "./../../../hooks/useToggle";
 import useModalStore from "./../../../store/modalStore";
 import { useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
-import { Client } from "@stomp/stompjs";
-import { WS_URL } from "@/api/_URI";
+// import { Client } from "@stomp/stompjs"; // 제거
+// import { WS_URL } from "@/api/_URI"; // 제거
 import formatChatTime from "@/utils/chatTime";
+import MessageItem from "./MessageItem";
+
+// ---- 추가: useStomp 훅 불러오기
+import { useStomp } from "@/provides/StompProvide";
 
 export default function ChannelMain() {
   const [zoomLevel, setZoomLevel] = useState(1); // 초기 확대 비율은 1 (100%)
@@ -33,10 +37,13 @@ export default function ChannelMain() {
   const [messages, setMessages] = useState([]); // 메시지 상태
   const user = useAuthStore((state) => state.user);
   const chatBoxRef = useRef(null); // 채팅창 Ref
-  const stompClientRef = useRef(null);
+
+  // ---- stompClientRef 제거
+  // const stompClientRef = useRef(null);
+  // ---- useStomp 훅 사용
+  const { isConnected, subscribe, sendMessage } = useStomp();
   const [members, setMembers] = useState([]);
   const [isMyChannel, setIsMyChannel] = useState(false);
-
   const [messageInput, setMessageInput] = useState("");
 
   const [searchText, setSearchText] = useState("");
@@ -50,10 +57,66 @@ export default function ChannelMain() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+
   // 현재 채널의 이미지 메시지 필터링
   const imageMessages = messages.filter((message) =>
     message.fileType?.startsWith("image")
   );
+
+
+
+  // WebSocket 연결 설정
+  useEffect(() => {
+    if (!user?.id || !channelId || !isConnected) {
+      console.error("❌ User ID 또는 Channel ID가 없어요.");
+      return;
+    }
+
+    const unsubscribe = subscribe(`/topic/chatting/channel/${channelId}/messages`,
+      async (message) => {
+        try {
+          const newMessage = JSON.parse(message.body);
+          if (newMessage.senderId === user?.id) {
+            return;
+          }
+          console.log("📩 새 메시지 수신:", newMessage); // 메시지 수신 확인
+          setMessages((prevMessages) => {
+            return [...prevMessages, newMessage];
+          });
+          await visitChannel({ channelId, memberId: user.id });
+          sendMessage(`/app/chatting/channel/${channelId}/visit`)
+        } catch (error) {
+          console.error("❌ 메시지 처리 중 에러:", error);
+        }
+      }
+    )
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.id, channelId, isConnected]); // 의존성 배열
+
+  useEffect(() => {
+    // (1) define within effect callback scope
+    if (!isConnected) {
+      return;
+    }
+    const visitChannelAsync = async () => {
+      if (!channelId || !user?.id) return;
+
+      try {
+        await visitChannel({ channelId, memberId: user?.id });
+        console.log("[ChannelMain] : 방문 소켓 날리기 전")
+        sendMessage(`/app/chatting/channel/${channelId}/visit`)
+        // TODO: 소켓 날림 : channelId
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    visitChannelAsync();
+    // TODO: 소켓 날림 : channelId
+  }, [channelId, isConnected]);
 
   // 이미지 모달
   useEffect(() => {
@@ -128,8 +191,13 @@ export default function ChannelMain() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
+  const [loading, setLoading] = useState(true); // 로딩 상태
+
+
+
+  // 최초 데이터 로딩
   useEffect(() => {
     const fetchChannel = async () => {
       try {
@@ -143,9 +211,9 @@ export default function ChannelMain() {
     const fetchMessages = async () => {
       try {
         setLoading(true);
-        const messages = await getChannelMessages(channelId);
-        setMessages(messages);
-        console.log(messages);
+        const msgs = await getChannelMessages(channelId);
+        setMessages(msgs);
+        console.log(msgs);
       } catch (err) {
         console.error(err);
       } finally {
@@ -155,9 +223,9 @@ export default function ChannelMain() {
 
     const fetchChannelMembers = async () => {
       try {
-        const members = await getChannelMembers(channelId);
-        console.log(`members : `, members);
-        setMembers(members);
+        const mem = await getChannelMembers(channelId);
+        console.log(`members : `, mem);
+        setMembers(mem);
       } catch (err) {
         console.error(err);
       }
@@ -170,7 +238,6 @@ export default function ChannelMain() {
 
   const { openModal } = useModalStore(); // 모달 열기 함수 가져오기
 
-  const [loading, setLoading] = useState(true); // 로딩 상태
 
   // 파일 전송 핸들러
   const handleFileChange = async (e) => {
@@ -185,25 +252,26 @@ export default function ChannelMain() {
           senderId: user?.id,
         });
 
+        // 서버에서 반환된 메시지 데이터 활용
         const fileMessage = {
-          ...response.data, // 서버에서 반환된 메시지 데이터 활용
+          ...response.data,
           createdAt: new Date(response.data.createdAt),
         };
 
-        stompClientRef.current.publish({
-          destination: `/app/chatting/channel/${channelId}/send`,
-          body: JSON.stringify({
-            id: fileMessage.id,
-            senderId: fileMessage.senderId,
-            userName: fileMessage.userName,
-            content: fileMessage.content,
-            createdAt: fileMessage.createdAt.toISOString(),
-            fileUrl: fileMessage.fileUrl, // URL 포함 확인
-            fileType: selectedFile.type, // MIME 타입
-          }),
+        // ---- 로컬에서도 메시지 목록에 추가
+        setMessages((prev) => [...prev, fileMessage]);
+
+        // ---- STOMP 메시지 전송 (sendMessage 사용)
+        sendMessage(`/app/chatting/channel/${channelId}/send`, {
+          id: fileMessage.id,
+          senderId: fileMessage.senderId,
+          userName: fileMessage.userName,
+          content: fileMessage.content,
+          createdAt: fileMessage.createdAt.toISOString(),
+          fileUrl: fileMessage.fileUrl,
+          fileType: selectedFile.type,
         });
 
-        setMessages((prevMessages) => [...prevMessages, fileMessage]);
         fileInputRef.current.value = "";
       } catch (error) {
         console.error("파일 전송 실패:", error);
@@ -228,6 +296,7 @@ export default function ChannelMain() {
     try {
       const result = await sendChannelMessage(newMessage); // 서버 전송
       console.log(`메시지 보내기 성공 : ${result.data}`);
+
       const msg = {
         id: result.data,
         senderId: user?.id,
@@ -236,13 +305,13 @@ export default function ChannelMain() {
         content: messageInput.trim(),
         createdAt: new Date(),
       };
-      console.log(`소켓 보낸 메시지 : `, msg);
-      stompClientRef.current.publish({
-        destination: `/app/chatting/channel/${channelId}/send`,
-        body: JSON.stringify(msg),
-      });
 
-      setMessages((prevMessages) => [...prevMessages, msg]); // 즉시 상태 업데이트
+      // ---- 로컬 메시지 목록에 즉시 반영
+      setMessages((prevMessages) => [...prevMessages, msg]);
+
+      // ---- STOMP 메시지 전송
+      sendMessage(`/app/chatting/channel/${channelId}/send`, msg);
+
       setMessageInput(""); // 입력 초기화
     } catch (error) {
       console.error("메시지 전송 실패:", error);
@@ -250,7 +319,7 @@ export default function ChannelMain() {
   };
 
   const handleJoin = async () => {
-    if (confirm("해당 방에 참여하시겠습니까") == false) {
+    if (!confirm("해당 방에 참여하시겠습니까")) {
       return;
     }
 
@@ -273,100 +342,31 @@ export default function ChannelMain() {
     }
   };
 
-  const fetchMessages = async () => {
-    try {
-      setLoading(true);
 
-      const response = await getDmMessages(1);
+  function onClickLeaveButton() {
+    return async () => {
+      if (user === null) return;
 
-      // 응답이 HTML인 경우 처리
-      if (response.data.includes("<html")) {
-        console.error("HTML 응답을 받았습니다. 서버 응답을 확인하세요.");
-        setMessages([]); // HTML 응답이면 메시지 비우기
-        return;
-      }
-
-      // 응답 데이터가 배열인지 확인
-      if (Array.isArray(response.data)) {
-        setMessages(response.data); // 메시지 상태에 저장
-      } else {
-        console.error("응답 데이터가 배열이 아닙니다:", response.data);
-        setMessages([]); // 배열이 아니면 빈 배열 설정
-      }
-    } catch (error) {
-      console.error("메시지 조회 오류:", error);
-      setMessages([]); // 오류 발생 시 빈 배열로 설정
-    } finally {
-      setLoading(false); // 로딩 종료
-    }
-  };
-
-  // WebSocket 연결 설정
-  useEffect(() => {
-    if (!user?.id || !channelId) {
-      console.error("❌ User ID 또는 Channel ID가 없어요.");
-      return;
-    }
-
-    const client = new Client({
-      // brokerURL: "ws://localhost:8080/ws", // 로컬
-      brokerURL: WS_URL, // WebSocket 서버 URL
-      reconnectDelay: 5000, // 재연결 딜레이
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      debug: (msg) => console.log("🔌 [ChannelMain.jsx] WebSocket Debug:", msg),
-    });
-
-    client.onConnect = () => {
-      console.log("✅ [channel] WebSocket 연결 성공");
-      stompClientRef.current = client;
-
-      client.subscribe(
-        `/topic/chatting/channel/${channelId}/messages`,
-        async (message) => {
-          try {
-            const newMessage = JSON.parse(message.body);
-            if (newMessage.senderId === user?.id) {
-              return;
-            }
-            console.log("📩 새 메시지 수신:", newMessage); // 메시지 수신 확인
-            setMessages((prevMessages) => {
-              return [...prevMessages, newMessage];
-            });
-            await visitChannel({ channelId, memberId: user.id });
-          } catch (error) {
-            console.error("❌ 메시지 처리 중 에러:", error);
-          }
-        }
-      );
-    };
-
-    client.activate();
-
-    return () => {
-      if (client.active) {
-        client.deactivate();
+      const proceed = confirm("정말 방에서 나가시겠습니까?");
+      if (proceed) {
+        console.log(user?.id);
+        await leaveChannel({ channelId, userId: user?.id });
+        console.log("나가기 성공");
       }
     };
-  }, [user?.id, channelId]); // 의존성 배열
+  }
 
   return (
     <div className="w-[100%] rounded-3xl shadow-md z-20 overflow-hidden max-w-9xl">
       <div className="flex h-full">
         {/* 메인 채팅 영역 */}
         <div
-          // TODO: 스크롤 height 길이
           className={`flex flex-col h-full transition-all duration-300 w-full min-w-[300px] max-h-[670px]`}
         >
           {/* 채팅 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
             {/* 프로필 섹션 */}
             <div className="flex items-stretch">
-              {/* <img
-                src="https://via.placeholder.com/40"
-                alt="Profile"
-                className="w-16 h-16 rounded-full border border-gray-300 shadow-sm"
-              /> */}
               {isChangeTitleMode ? (
                 <div className="flex items-stretch ml-4 text-[22.5px]">
                   <input
@@ -531,7 +531,7 @@ export default function ChannelMain() {
                   isModalOpen={isModalOpen}
                   formatChatTime={formatChatTime}
                   channelId={channelId}
-                  stompClientRef={stompClientRef.current}
+                  // stompClientRef 제거
                   currentImageIndex={currentImageIndex}
                 />
               ))
@@ -592,9 +592,8 @@ export default function ChannelMain() {
 
         {/* 오른쪽 토글 패널 */}
         <div
-          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${
-            toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
-          } duration-300`}
+          className={`fixed top-30 right-0 h-full bg-white w-[20%] rounded-3xl p-6 shadow-lg border-l transition-transform transform ${toggleStates.isSidebarOpen ? "translate-x-0" : "translate-x-full"
+            } duration-300`}
         >
           {/* 상단 영역 */}
           <div className="flex items-center justify-between mb-6">
@@ -639,9 +638,8 @@ export default function ChannelMain() {
               <button>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${
-                    toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`h-5 w-5 transform transition-transform ${toggleStates.isContactOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -658,16 +656,17 @@ export default function ChannelMain() {
             {toggleStates.isContactOpen && (
               <ul className="space-y-4 mt-4">
                 {members.map((member) => (
-                  <li className="flex items-center" key={member.userId}>
+                  <li className={`flex items-center  ${channelData?.ownerId === member.userId ? 'text-blue-700 font-bold' : ''}`} key={member.userId}>
                     <img
                       src={
                         member.profileImageUrl ||
                         "https://via.placeholder.com/50"
                       }
                       alt="Profile"
-                      className="w-8 h-8 mr-4 rounded-full"
+                      className={`w-8 h-8 mr-4 rounded-full`}
                     />
                     {member.userName}
+                    {channelData?.ownerId === member.userId ? '👑' : null}
                   </li>
                 ))}
               </ul>
@@ -853,6 +852,9 @@ export default function ChannelMain() {
               </div>
             )}
           </div>
+          {/* 이하 사이드바 내용(사진/파일 섹션, 모달 등)은 그대로 유지 */}
+          {/* ... 생략 ... */}
+
           {/* 사용자 초대 버튼 */}
           <div className=" pt-6 mt-6">
             <button
@@ -878,6 +880,8 @@ export default function ChannelMain() {
           </div>
         </div>
       </div>
+
+
     </div>
   );
 
