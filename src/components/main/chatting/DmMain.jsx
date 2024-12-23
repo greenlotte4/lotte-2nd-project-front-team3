@@ -9,7 +9,7 @@ import { WS_URL } from "@/api/_URI";
 
 export default function DmMain() {
   const { id: dmId } = useParams();
-  const [dmData, setDmData] = useState(null);
+  const [dmData, setDmData] = useState();
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(true);
@@ -86,12 +86,13 @@ export default function DmMain() {
   
     const fetchDm = async () => {
       try {
-        const dm = await getDmById(dmId); // 단일 디엠방 조회 API 호출
+        const dm = await getDmById(dmId);
+        console.log("DM 데이터:", dm); // 응답 데이터 확인
         setDmData(dm);
       } catch (error) {
-        console.error("Failed to fetch DM data:", error);
+        console.error("DM 데이터를 가져오는 중 오류 발생:", error);
       }
-    };
+    };    
   
     const fetchMessages = async () => {
       try {
@@ -278,9 +279,9 @@ export default function DmMain() {
 
           {/* DM 이름 */}
               <div className="flex items-center ml-4">
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900">
-                  {dmData?.dmName}
-                </h1>
+              <h1 className="text-xl md:text-2xl lg:text-2xl font-semibold text-gray-900">
+  {dmData?.dmName || dmData?.name || "Direct Message"}
+</h1>
               </div>
             </div>
 
@@ -525,7 +526,10 @@ export default function DmMain() {
             </button>
 
             {/* 채팅방 이름 */}
-            <h3 className="text-lg font-semibold text-gray-900">{dmData?.dmName}</h3>
+            {/* <h3 className="text-lg font-semibold text-gray-900">{dmData?.dmName}</h3> */}
+            <h3 className="text-lg fonDMt-semibold text-gray-900">
+  {dmData?.dmName || dmData?.name || "DM"}
+</h3>
 
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
@@ -589,100 +593,23 @@ export default function DmMain() {
           </div>
 
 
-          {/* 사진 파일 */}
-          <div className="my-5">
-            <div
-              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => toggleState("isPhotoOpen")}
-            >
-              <h3 className="text-lg font-semibold mb-2">사진 파일</h3>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-            {toggleStates.isPhotoOpen && (
-              <div className="space-y-4 mt-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="파일"
-                      className="w-10 h-10 rounded-md shadow-md"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        사진 {i + 1}
-                      </p>
-                      <p className="text-sm text-gray-400">어제</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+<div className="my-5">
+  <div
+    className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+  >
+    <h3 className="text-lg font-semibold mb-2">DM 안내</h3>
+  </div>
+  <div className="mt-4">
 
-          {/* 첨부 파일 */}
-          <div className="my-5">
-            <div
-              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-              onClick={() => toggleState("isFileOpen")}
-            >
-              <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-            {toggleStates.isFileOpen && (
-              <div className="space-y-4 mt-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="파일"
-                      className="w-10 h-10"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        11월 회의록.pptx
-                      </p>
-                      <p className="text-sm text-gray-400">어제</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      </div>
+<p className="text-gray-600 text-m">
+  📢 초대와 파일 전송은 채널에서만 가능합니다.<br />
+  🗑️ 내 메시지는 우 클릭으로 삭제할 수 있습니다.
+</p>
+  </div>
+</div>
+</div>
+</div>
+</div>
 
   );
 }

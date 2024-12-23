@@ -235,7 +235,6 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
                             {dm.lastMessage ?? "새로운 메시지가 없습니다."}
                           </p>
                         </div>
-                        <span className="text-xs text-gray-400">11:30</span>
                       </NavLink>
                     </li>
                   ))
@@ -293,8 +292,26 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
               </ul>
             </div>
           </div>
+
+        
         </li>
       </ul>
+
+      {/* 설정 섹션 */}
+      <div
+        className="absolute bottom-0 left-0 w-full px-[20px] py-[10px] bg-white"
+      >
+        <div className="lnb-header">
+          <img
+            src="/images/ico/page_setting_22_999999.svg"
+            className="cate-icon !w-[22px] !h-[22px]"
+            alt="Settings Icon"
+          />
+          <Link to="/antwork/setting/chatting" className="main-cate !text-[16px] text-[#757575]">
+            설정
+          </Link>
+        </div>
+      </div>
     </aside>
 
 

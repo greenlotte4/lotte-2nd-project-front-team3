@@ -147,7 +147,7 @@ export default function SettinngAside({ asideVisible }) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin/member-integration">
+                  <Link to="/antwork/setting/chatting">
                     📮&nbsp;&nbsp;채팅 설정
                   </Link>
                 </li>

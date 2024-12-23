@@ -63,7 +63,7 @@ export default function ChattingMain() {
                     Direct Message
                   </h2>
                   <p className="text-gray-600 mb-4 leading-relaxed">
-                    개인 메시지로 중요한 대화를 이어가보세요.
+                  개인적인 대화로 소통해보세요. 내가 보낸 메시지는 삭제가 가능합니다.
                   </p>
                   <button
                     className="w-full text-center block bg-green-500 text-white 
@@ -103,11 +103,10 @@ export default function ChattingMain() {
                     </span>
                   </div>
                   <h2 className="text-xl font-semibold mb-3 text-gray-800">
-                    채널
+                    Channel
                   </h2>
                   <p className="text-gray-600 mb-4 leading-relaxed">
-                    팀원들과 실시간으로 소통할 수 있는 채널에 참여해보세요.
-                  </p>
+                  채널 소유자는 방 이름을 자유롭게 변경할 수 있으며, 채널을 통해 파일을 주고받는 협업이 가능합니다.                  </p>
                   <button
                     className="w-full text-center block bg-blue-500 text-white 
                          py-3 rounded-xl hover:bg-blue-600 
@@ -142,14 +141,15 @@ export default function ChattingMain() {
                       </svg>
                     </div>
                     <span className="text-gray-400 group-hover:text-yellow-500 transition-colors">
-                      • 도움말
+                      • 추가 안내
                     </span>
                   </div>
                   <h2 className="text-xl font-semibold mb-3 text-gray-800">
-                    도움말
+                    Tip
                   </h2>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    채널을 생성한 채널 소유자는 채널 이름을 변경 할 수 있어요.
+                  <p className="text-gray-600 mb-4 leading-relaxed text-base">
+                  <span className="text-yellow-500 text-lg">채팅 내 오른쪽 상단 메뉴 버튼</span><br />
+                  📋 멤버를 조회하고, <span className="font-bold text-lg">채팅 안내 </span>를 확인하세요.
                   </p>
                   <a
                     className="w-full text-center block bg-yellow-500 text-white 
