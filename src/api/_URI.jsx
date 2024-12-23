@@ -117,7 +117,10 @@ export const DRIVE_COLLABORATOR_DELETE = `${API_SERVER_HOST}/drive/collaborator/
 export const SHARE_DRIVE_URI = `${API_SERVER_HOST}/drive/collaborator/ShareDriveView`; // 마이드라이브 전체보기
 export const SHARE_DRIVE_SELECT_URI = `${API_SERVER_HOST}/drive/collaborator/ShareDriveSelectView`; // 마이드라이브 전체보기
 export const DRIVE_ALL_SIZE = `${API_SERVER_HOST}/drive/files/totalSize`; // 마이드라이브 전체보기
-export const DRIVE_IS_STARED = `${API_SERVER_HOST}/drive/isStared`; // 마이드라이브 전체보기
+export const DRIVE_IS_STARED = `${API_SERVER_HOST}/drive/isStared`; // 즐겨찾기
+export const DRIVE_MOVE_TO_FOLDER = `${API_SERVER_HOST}/drive/move`; // 즐겨찾기
+
+
 
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
