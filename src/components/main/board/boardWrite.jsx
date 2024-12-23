@@ -15,6 +15,7 @@ import useAuthStore from "../../../store/AuthStore";
       수정 내역 : 
       - 2024/12/03(화) 김민희 - 1차 개발 글쓰기 완료
       - 2024/12/10(화) 김민희 - submitHandler 수정 : 파일 업로드를 위해 FormData 생성
+      - 2024/12/23(월) 김민희 - 카테고리 삭제
     */
 }
 
@@ -26,8 +27,6 @@ export default function BoardWrite() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [board, setBoard] = useState({
-    cate1: "",
-    cate2: "",
     writerId: "",
     title: "",
     file: null,
@@ -43,140 +42,11 @@ export default function BoardWrite() {
     }
   }, [user, navigate]);
 
-  // 1차 카테고리 배열
-  const mainCategories = [
-    { value: "community", label: "커뮤니티" },
-    { value: "notice", label: "공지사항" },
-    { value: "resources", label: "자료실" },
-    { value: "company-wide", label: "전사게시판" },
-  ];
-
-  // 2차 카테고리 배열 - 1차 카테고리의 value를 key로 사용
-  const subCategoriesMap = {
-    community: [
-      { value: "free", label: "자유게시판" },
-      { value: "anonymous", label: "익명게시판" },
-      { value: "all", label: "전체게시판" },
-    ],
-    notice: [
-      { value: "important", label: "중요공지" },
-      { value: "general", label: "일반공지" },
-    ],
-    resources: [
-      { value: "document", label: "문서자료" },
-      { value: "form", label: "양식자료" },
-    ],
-    "company-wide": [
-      { value: "announcement", label: "회사공지" },
-      { value: "news", label: "회사소식" },
-    ],
-  };
-
-  const [availableSubCategories, setAvailableSubCategories] = useState([]);
-  const handleMainCategoryChange = (e) => {
-    const mainCategory = e.target.value;
-
-    // board 상태 업데이트
-    setBoard((prev) => ({
-      ...prev,
-      cate1: mainCategory,
-      cate2: "", // 1차 카테고리가 변경되면 2차 카테고리 초기화
-    }));
-
-    // 선택된 1차 카테고리에 해당하는 2차 카테고리 설정
-    setAvailableSubCategories(subCategoriesMap[mainCategory] || []);
-  };
-
-  const handleSubCategoryChange = (e) => {
-    const subCategory = e.target.value;
-    setBoard((prev) => ({
-      ...prev,
-      cate2: subCategory,
-    }));
-  };
 
   const changeHandler = (e) => {
     e.preventDefault();
     setBoard({ ...board, [e.target.name]: e.target.value });
   };
-
-  // // 새 글 작성 -> 작성하기 클릭 시 실행 *********
-  // const submitHandler = async (e) => {
-  //   e.preventDefault();
-  //   if (isSubmitting) return;
-
-  //   setIsSubmitting(true);
-  //   try {
-  //     // 유효성 검사
-  //     if (!board.cate1 || !board.cate2) {
-  //       alert("카테고리를 선택해주세요.");
-  //       return;
-  //     }
-  //     if (!board.title.trim()) {
-  //       alert("제목을 입력해주세요.");
-  //       return;
-  //     }
-  //     if (!board.content.trim()) {
-  //       alert("내용을 입력해주세요.");
-  //       return;
-  //     }
-
-  //     // FormData 생성하여 한번에 전송
-  //     const formData = new FormData();
-  //     console.log("게시글 데이터 전체 (boardWrite):", board);
-
-  //     // 게시글 정보를 JSON으로 변환하여 추가
-  //     const boardInfo = {
-  //       //boardId: 0, // 새글이므로 null
-  //       cate1: String(board.cate1),
-  //       cate2: String(board.cate2),
-  //       writerId: user?.id || "guest", // user 객체에 id가 없으면 'guest'로 처리
-  //       title: board.title.trim(),
-  //       content: board.content.trim(),
-  //     };
-
-  //     console.log("게시글 정보를 JSON으로 변환 (boardWrite)", boardInfo);
-
-
-  //     // formData.append('boardInfo', new Blob([JSON.stringify(boardInfo)], {
-  //     //   type: 'application/json'
-  //     // }));
-
-  //     // 지금 여기서 안됨 ********************
-
-
-
-  //     // 게시글 전송
-  //     const savedBoardId = await postBoard(boardInfo);
-  //     console.log("게시글 전송 postBoard ", postBoard);
-  //     // 파일이 있으면 추가
-  //     if (board.file) {
-  //       formData.append("boardId (boardWrite)", savedBoardId);
-  //       formData.append("writerId (boardWrite)", boardInfo.writerId);
-  //       formData.append("boardFile (boardWrite) ", board.file);
-  //       await uploadBoardFile(formData); // 파일 업로드 함수 호출
-  //     }
-
-  //     console.log("boardId 보드아이디 -> ", savedBoardId);
-  //     console.log("writerId 작성자 아이디 -> ", boardInfo.writerId);
-  //     console.log("board.file 파일 있으면 -> ", board.file);
-
-
-  //     alert("글 작성이 완료되었습니다.");
-  //     navigate("/antwork/board/list");
-
-  //   } catch (error) {
-  //     console.error("게시글 작성 실패 ------:", error);
-  //     alert("게시글 작성에 실패했습니다. 다시 시도해주세요.");
-
-
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-  // // 새 글 작성 -> 작성하기 끝 *********
-
 
   // 글 쓰기 
   const submitHandler = async (e) => {
@@ -187,10 +57,6 @@ export default function BoardWrite() {
 
     try {
       // 유효성 검사
-      if (!board.cate1 || !board.cate2) {
-        alert("카테고리를 선택해주세요.");
-        return;
-      }
       if (!board.title.trim()) {
         alert("제목을 입력해주세요.");
         return;
@@ -204,13 +70,14 @@ export default function BoardWrite() {
 
       // **1. 게시글 데이터 전송 (JSON)**
       const boardInfo = {
-        cate1: String(board.cate1),
-        cate2: String(board.cate2),
+
         writerId: user?.id || "guest",
+        writerName: user?.name,
         title: board.title.trim(),
         content: board.content.trim(),
-      };
 
+      };
+      console.log("***boardInfo :", boardInfo);
       const savedBoardId = await postBoard(boardInfo); // `/write` 엔드포인트 호출
       console.log("게시글 저장 완료 -> savedBoardId:", savedBoardId);
 
@@ -259,47 +126,10 @@ export default function BoardWrite() {
         <form onSubmit={submitHandler} id="myForm" className="space-y-4">
           <table className="w-full h-56 min-h-[300px] border-t-2 border-gray-300 border-collapse">
             <tbody>
+
               <tr className="border-b border-gray-300">
-                <td className="w-20 p-3 text-lg font-bold text-left">
-                  카테고리
-                </td>
+                <td className="w-20 p-3 text-lg font-bold text-left">작성자</td>
                 <td className="w-[780px]">
-                  <select
-                    id="category1"
-                    className="border border-gray-300 rounded w-32 h-9"
-                    name="cate1"
-                    value={board.cate1}
-                    onChange={handleMainCategoryChange}
-                  >
-                    <option value="">1차 카테고리</option>
-                    {mainCategories.map((category) => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    id="category2"
-                    className="ml-4 border border-gray-300 rounded w-32 h-9"
-                    name="cate2"
-                    value={board.cate2}
-                    onChange={handleSubCategoryChange}
-                    disabled={!board.cate1}
-                  >
-                    <option value="">2차 카테고리</option>
-                    {availableSubCategories.map((category) => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-              </tr>
-
-              <tr className="border-b border-gray-300">
-                <td className="p-3 text-lg font-bold text-left w-10">작성자</td>
-                <td className="">
                   <div className="">{user?.name || ""}</div>
                 </td>
               </tr>

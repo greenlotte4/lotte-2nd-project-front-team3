@@ -23,6 +23,36 @@ export default function BoardView() {
   console.log("사용자 정보 (user.uid) :", user.uid);
   console.log("사용자 정보 (user) :", user);
 
+
+  const formatDate = (dateValue) => {
+    // dateValue가 없으면 빈 문자열 반환
+    if (!dateValue) return '';
+
+    try {
+      // 날짜 문자열이면 new Date()로 변환
+      if (typeof dateValue === 'string') {
+        return new Date(dateValue).toLocaleDateString('ko-KR');
+      }
+
+      // 배열이면 배열 요소 사용
+      if (Array.isArray(dateValue)) {
+        const [year, month, day] = dateValue;
+        return `${year}년 ${month}월 ${day}일`;
+      }
+
+      // Date 객체면 바로 변환
+      if (dateValue instanceof Date) {
+        return dateValue.toLocaleDateString('ko-KR');
+      }
+
+      return '날짜 형식 오류';
+
+    } catch (error) {
+      console.error('날짜 변환 오류:', error);
+      return '날짜 형식 오류';
+    }
+  };
+
   // 업로드된 파일 목록 상태 초기화
   const [fileList, setFileList] = useState([]);
   console.log("업로드된 파일 목록:", fileList);
@@ -37,6 +67,7 @@ export default function BoardView() {
     title: "",
     content: "",
     attachedFiles: null,
+    regDate: "",
   });
 
   // 게시글 기본 데이터 상태 관리
@@ -66,7 +97,7 @@ export default function BoardView() {
       console.log("게시글 Writer : ", board.writer);
 
       console.log("게시글 writerName :", board.writerName);  // writerName이 무엇인지 확인
-
+      // fetchBoardData 함수 내부에 추가
 
       if (!id) {
         console.warn("게시글 ID가 없습니다.");
@@ -78,8 +109,20 @@ export default function BoardView() {
         const response = await axiosInstance.get(`${BOARD_VIEW_URI}/${id}`);
         console.log("서버 응답 데이터:", response.data);
 
+        // 날짜 데이터 확인
+        if (response.data.regDate) {
+          console.log("날짜 형식:", response.data.regDate);
+        }
+
+        // 게시글 데이터 설정 전에 날짜 형식 변환
+        // const formattedData = {
+        //   ...response.data,
+        //   regDate: response.data.regDate ? new Date(response.data.regDate) : new Date()
+        // };
+
         // 게시글 데이터 설정
         setBoard(response.data);
+        // setBoard(formattedData);
 
         // 수정 폼 초기값 설정
         setUpdateBoard({
@@ -87,7 +130,14 @@ export default function BoardView() {
           title: response.data.title,
           content: response.data.content,
           attachedFiles: response.data.attachedFiles,
+          regDate: response.data.regDate,
         });
+
+        console.log("수정 폼 초기값 전체", response.data);
+        console.log("날짜 > ", response.data.regDate);
+
+
+
 
         // 좋아요 상태 설정
         setLikes(response.data.likes || 0);
@@ -268,11 +318,17 @@ export default function BoardView() {
                 }
                 <span className="mx-2 text-slate-300 !text-[10px]">&#124;</span>
               </div>
+
+              {/* 작성일: 날짜 yyyy-mm-dd */}
               <div className="date">
                 <strong>작성일&nbsp;:&nbsp;&nbsp;</strong>
-                {new Date(board.regDate).toLocaleDateString()}
+                {board.regDate ? 
+                  `${board.regDate[0]}-${board.regDate[1]}-${board.regDate[2]}` : 
+                  ''}
                 <span className="mx-2 text-slate-300 !text-[10px]">&#124;</span>
               </div>
+
+              {/* 조회수 */}
               <div className="hit">
                 <strong>조회수&nbsp;:&nbsp;&nbsp;</strong>
                 {board.hit}

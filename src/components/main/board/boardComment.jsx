@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import axiosInstance from "../../../utils/axiosInstance";
 // import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuthStore from "../../../store/AuthStore";
 import { Lock, Reply, User, Send } from "lucide-react";
 import { BOARD_COMMENT_URI } from "../../../api/_URI";
@@ -17,10 +17,13 @@ export default function BoardComment({ boardId }) {
     const [replyTo, setReplyTo] = useState(null);
     const [isSecretComment, setIsSecretComment] = useState(false);
 
+
     // 댓글 수정 상태
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedContent, setEditedContent] = useState("");
 
+    // 댓글 입력 작성 버튼 (버튼 높이)
+    const textareaRef = useRef(null);
     // 댓글 입력창 상태
     const handleKeyPress = (e) => {
         if (e.key === "Enter") {
@@ -31,6 +34,15 @@ export default function BoardComment({ boardId }) {
     };
 
     // -----------------------------------------------------------------------------------------------------------
+
+    // 댓글 작성 버튼 （버튼 높이）
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [newComment]);
+
 
     // 댓글 목록 불러오기
     useEffect(() => {
@@ -360,21 +372,24 @@ export default function BoardComment({ boardId }) {
                     </div>
 
                     {/* 댓글 입력 버튼 */}
-                    <button
-                        onClick={handleAddComment}
-                        onKeyDown={handleKeyPress} // enter 했을 때 바로 입력됨 
-                        disabled={isLoading || !newComment.trim()}
-                        className={`
-                                bg-slate-700 text-white p-2 rounded-full hover:bg-blue-600
-                                disabled:opacity-50 disabled:cursor-not-allowed
-                                transition-all duration-200
-                                `}
+                    <div className="cursor-pointer">
+                        <button
+                            onClick={handleAddComment}
+                            onKeyDown={handleKeyPress} // enter 했을 때 바로 입력됨 
+                            disabled={isLoading || !newComment.trim()}
+                            className={`cursor-pointer
+                                bg-slate-600 text-white p-2 rounded-lg hover:bg-slate-700
+                                transition-all duration-200 px-6 py-2 flex items-center justify-center
+                                h-24
+                            `}
 
-                        onChange={(e) => handleAddComment(e.target.value)}
-                    >
-                        {/* <Send size={20} /> */}
-                        작성
-                    </button>
+                            onChange={(e) => handleAddComment(e.target.value)}
+                        >
+                            댓글 <br/>
+                            작성
+                        </button>
+                    </div>
+                    
 
 
                 </div>
