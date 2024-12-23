@@ -6,6 +6,7 @@ import axios from "axios";
 import useAuthStore from "../../../store/AuthStore";
 import { getSharedPages } from "../../../api/pageAPI";
 import { useAsideWebSocket } from "../../../hooks/paging/useAsideWebSocket";
+import axiosInstance from "@/utils/axiosInstance";
 
 export default function PageAside({ asideVisible }) {
   const [toggles, toggleSection] = useToggle({
@@ -31,7 +32,9 @@ export default function PageAside({ asideVisible }) {
     if (uid) {
       const fetchPersonalPages = async () => {
         try {
-          const response = await axios.get(`${PAGE_LIST_UID_URI}/${uid}`);
+          const response = await axiosInstance.get(
+            `${PAGE_LIST_UID_URI}/${uid}`
+          );
           setPersonalPageList(response.data);
           console.log("Fetched personal pages:", response.data);
           const titles = response.data.reduce((acc, page) => {

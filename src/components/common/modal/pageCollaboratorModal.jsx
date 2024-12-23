@@ -8,6 +8,7 @@ import {
   addPageCollaborators,
   removePageCollaborator,
   getPageDetails,
+  updateCollaboratorPermission,
 } from "../../../api/pageAPI";
 import { sendNotification } from "../../../api/notificationAPI";
 
@@ -24,6 +25,8 @@ export default function PageCollaboratorModal({
   const [isLoading, setIsLoading] = useState(true);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [pageOwner, setPageOwner] = useState(null);
+  const [userPermissions, setUserPermissions] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchCollaborators = async () => {
     try {
@@ -32,6 +35,13 @@ export default function PageCollaboratorModal({
         const collaboratorsData = await getPageCollaborators(pageId);
         console.log("Collaborators data received:", collaboratorsData);
         setCollaborators(collaboratorsData);
+
+        // 권한 정보를 userPermissions 상태에 설정
+        const permissions = {};
+        collaboratorsData.forEach((collaborator) => {
+          permissions[collaborator.user_id] = collaborator.type;
+        });
+        setUserPermissions(permissions);
       }
     } catch (error) {
       console.error("Failed to fetch collaborators:", error);
@@ -100,33 +110,89 @@ export default function PageCollaboratorModal({
 
   const handleRemoveCollaborator = async (userId) => {
     try {
-      confirm("기존 협업자를 삭제하시겠습니까?");
+      const confirmed = confirm("기존 협업자를 삭제하시겠습니까?");
+      if (!confirmed) return;
+
+      // 생성자나 특정 조건�� 맞는 협업자를 삭제하지 않도록 필터링
+      const collaborator = collaborators.find(
+        (collaborator) => collaborator.user_id === userId
+      );
+
+      if (collaborator && collaborator.isOwner) {
+        alert("생성자는 삭제할 수 없습니다.");
+        return;
+      }
 
       await removePageCollaborator(pageId, userId);
+      console.log(`Removed collaborator ${userId}`);
+
+      // 협업자 목록 업데이트
       const updatedCollaborators = await getPageCollaborators(pageId);
-      alert("협업자가 삭제되었습니다.");
       setCollaborators(updatedCollaborators);
       onCollaboratorsUpdate?.(updatedCollaborators);
+
+      alert("협업자가 삭제되었습니다.");
     } catch (error) {
       console.error("협업자 삭제 실패:", error);
       alert("협업자 삭제에 실패했습니다.");
     }
   };
 
+  const handlePermissionChange = async (userId, permissionType) => {
+    console.log(`Changing permission for user ${userId} to ${permissionType}`);
+    setUserPermissions((prev) => ({
+      ...prev,
+      [userId]: permissionType,
+    }));
+
+    try {
+      // API 호출로 변경된 권한 저장
+      await updateCollaboratorPermission(pageId, userId, permissionType);
+      console.log(`Permission updated for user ${userId}`);
+    } catch (error) {
+      console.error("Failed to update permission:", error);
+      alert("권한 변경에 실패했습니다.");
+    }
+  };
+
   // 협업자 추가
   async function handleConfirm() {
+    if (isSubmitting) return; // 이미 제출 중이면 중단
+    setIsSubmitting(true);
+
     try {
       if (!pageId) {
         alert("페이지 ID가 없습니다.");
         return;
       }
 
-      if (selectedUsers.length === 0) {
-        alert("초대할 협업자를 선택하세요.");
-        return;
+      let permissionsUpdated = false;
+      let collaboratorsAdded = false;
+
+      // 기존 협업자 권한 업데이트
+      for (const collaborator of collaborators) {
+        const currentPermission = userPermissions[collaborator.user_id];
+        if (collaborator.type !== currentPermission) {
+          await updateCollaboratorPermission(
+            pageId,
+            collaborator.user_id,
+            currentPermission
+          );
+          console.log(`Updated permission for user ${collaborator.user_id}`);
+          permissionsUpdated = true;
+        }
       }
 
-      await addPageCollaborators(pageId, selectedUsers);
+      // 선택된 멤버 추가
+      if (selectedUsers.length > 0) {
+        const collaboratorsWithPermissions = selectedUsers.map((user) => ({
+          ...user,
+          type: userPermissions[user.id] ?? 2, // 기본값은 읽기 권한 (2)
+        }));
+
+        await addPageCollaborators(pageId, collaboratorsWithPermissions);
+        collaboratorsAdded = true;
+      }
 
       const updatedCollaborators = await getPageCollaborators(pageId);
       setCollaborators(updatedCollaborators);
@@ -150,13 +216,22 @@ export default function PageCollaboratorModal({
       }
 
       console.log("모든 알림 전송 완료");
-      alert("협업자가 성공적으로 추가되었습니다!");
+
+      // 메시지 표시
+      if (permissionsUpdated || collaboratorsAdded) {
+        alert("변경 사항이 적용되었습니다!");
+      } else {
+        alert("변경 사항이 없습니다.");
+      }
+
       setSelectedUsers([]);
       setNotificationMessage("");
       closeModal();
     } catch (error) {
       console.error("협업자 추가 실패:", error);
       alert("협업자 추가에 실패했습니다.");
+    } finally {
+      setIsSubmitting(false); // 요청 완료 후 제출 상태 해제
     }
   }
 
@@ -215,16 +290,32 @@ export default function PageCollaboratorModal({
             </span>
             <span>{matchedUser?.name || "사용자 정보 없음"}</span>
           </div>
-          <span className="text-gray-500">
+          <span className="flex gap-2">
             {isOwner ? (
               <span className="text-green-500 text-sm font-medium">생성자</span>
             ) : (
-              <button
-                onClick={() => handleRemoveCollaborator(collaborator.user_id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                삭제
-              </button>
+              <>
+                <select
+                  className="border border-gray-300 rounded-md p-1"
+                  value={userPermissions[collaborator.user_id] ?? 2}
+                  onChange={(e) =>
+                    handlePermissionChange(
+                      collaborator.user_id,
+                      parseInt(e.target.value)
+                    )
+                  }
+                >
+                  <option value="0">관리자 권한</option>
+                  <option value="1">읽기/쓰기</option>
+                  <option value="2">읽기</option>
+                </select>
+                <button
+                  onClick={() => handleRemoveCollaborator(collaborator.user_id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  삭제
+                </button>
+              </>
             )}
           </span>
         </div>
@@ -257,11 +348,6 @@ export default function PageCollaboratorModal({
         (collaborator) =>
           collaborator.user_id === user.id && collaborator.isOwner
       );
-      const isDisabled = isCollaborator || isSelected;
-
-      console.log(
-        `User: ${user.name}, Position: ${user.position}, Is Owner: ${isOwner}`
-      );
 
       return (
         <div
@@ -278,7 +364,7 @@ export default function PageCollaboratorModal({
             ) : isCollaborator ? (
               <span className="text-gray-400 text-sm">협업자</span>
             ) : isSelected ? (
-              <span></span>
+              <span className="text-blue-500 text-sm font-medium">선택됨</span>
             ) : (
               <button
                 onClick={() => handleInvite(user)}
@@ -354,8 +440,23 @@ export default function PageCollaboratorModal({
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-gray-600">{user.position}</span>
-                        <span>{user.name}</span>
+                        <span className="w-[100px]">{user.name}</span>
+                        <select
+                          className="border border-gray-300 rounded-md p-1 float-right"
+                          defaultValue={2}
+                          onChange={(e) =>
+                            setUserPermissions((prev) => ({
+                              ...prev,
+                              [user.id]: parseInt(e.target.value),
+                            }))
+                          }
+                        >
+                          <option value="0">관리자 권한</option>
+                          <option value="1">읽기/쓰기</option>
+                          <option value="2">읽기</option>
+                        </select>
                       </div>
+
                       <button
                         onClick={() => handleRemove(user)}
                         className="text-red-500 hover:text-red-700"
@@ -389,8 +490,9 @@ export default function PageCollaboratorModal({
           <button
             onClick={handleConfirm}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            disabled={isSubmitting} // 제출 중일 때 버튼 비활성화
           >
-            확인
+            {isSubmitting ? "처리 중..." : "확인"}
           </button>
         </div>
       </div>

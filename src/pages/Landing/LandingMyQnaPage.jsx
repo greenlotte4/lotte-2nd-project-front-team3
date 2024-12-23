@@ -289,7 +289,7 @@ export default function LandingMyQnaPage() {
               </div>
               {!isEditing && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">문의 내��</h3>
+                  <h3 className="text-xl font-semibold mb-4">문의 내역</h3>
                   <div className="bg-gray-50 p-6 rounded-lg">
                     <div className="flex justify-between items-center mb-3">
                       <p className="text-sm text-gray-500">

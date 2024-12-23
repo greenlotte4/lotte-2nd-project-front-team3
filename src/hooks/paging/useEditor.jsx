@@ -26,7 +26,7 @@ export const useEditor = (
   );
 
   const createEditor = useCallback(
-    async (initialData = null) => {
+    async (initialData = null, editorOptions = {}) => {
       console.log("createEditor - 에디터 생성 시작");
 
       const editorElement = document.getElementById("editorjs");
@@ -36,6 +36,7 @@ export const useEditor = (
 
       const editor = new EditorJS({
         holder: "editorjs",
+        readOnly: editorOptions.readOnly,
         tools: {
           header: {
             class: Header,
