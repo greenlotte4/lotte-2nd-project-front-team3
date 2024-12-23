@@ -73,6 +73,7 @@ import LandingMyQnaPage from "@/pages/Landing/LandingMyQnaPage";
 import SettingProjectPage from "@/pages/Main/setting/settingProjectPage";
 
 import AdminServicePage from "@/pages/Main/Admin/adminServicePage";
+import SettingChattingPage from "@/pages/Main/setting/settingChattingPage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -128,6 +129,8 @@ const router = createBrowserRouter([
       { path: "setting", element: <SettingMainPage /> }, // Antwork 설정
       { path: "setting/myinfo", element: <SettingMyinfoPage /> }, // Antwork 나의정보설정
       { path: "setting/calendar", element: <SettingCalendarPage /> }, // Antwork 캘린더설정
+      { path: "setting/chatting", element: <SettingChattingPage /> }, // Antwork 채팅 설정
+
 
       { path: "board", element: <BoardPage /> },
       { path: "board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가

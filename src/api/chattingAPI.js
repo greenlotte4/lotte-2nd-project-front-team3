@@ -20,6 +20,9 @@ import {
   CHANNEL_GET_UNREAD_COUNT_URI,
   CHANNEL_VISIT_URI,
   CHANNEL_GET_C_UNREAD_COUNT_URI,
+  ADD_FORBIDDEN_WORD_URI,
+  DELETE_FORBIDDEN_WORD_URI,
+  FORBIDDEN_WORDS_URI,
 } from "./_URI";
 
 import axiosInstance from "./../utils/axiosInstance";
@@ -348,4 +351,41 @@ export const uploadFileToChannel = async ({
       },
     }
   );
+};
+
+// 금칙어 추가
+export const addForbiddenWord = async (word) => {
+  try {
+    console.log("[JS] 금칙어 추가 요청:", word);
+    const response = await axiosInstance.post(ADD_FORBIDDEN_WORD_URI, { word });
+    console.log("[JS] 금칙어 추가 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("[JS] 금칙어 추가 실패:", error.message || error);
+    throw error;
+  }
+};
+
+// 금칙어 삭제
+export const deleteForbiddenWord = async (id) => {
+  try {
+    console.log(`[JS] 금칙어 삭제 요청: ID ${id}`);
+    const response = await axiosInstance.delete(DELETE_FORBIDDEN_WORD_URI(id));
+    console.log("[JS] 금칙어 삭제 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("[JS] 금칙어 삭제 실패:", error.message || error);
+    throw error;
+  }
+};
+
+// 금칙어 목록 조회
+export const getForbiddenWords = async () => {
+  try {
+    const response = await axiosInstance.get(FORBIDDEN_WORDS_URI);
+    return response.data;
+  } catch (error) {
+    console.error("[API] 금칙어 목록 조회 실패:", error);
+    throw error;
+  }
 };
