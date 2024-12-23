@@ -5,6 +5,7 @@ import {
   driveFolderInsert,
   driveFolderNewNameUpDate,
   driveFolderTrashUpDate,
+  MoveToFolder,
   MyDriveSelectView,
   MyDriveView,
   removeDriveCollaborator,
@@ -99,17 +100,55 @@ export default function DriveModal() {
     );
 
     return childFolders.map((folder) => (
-      <div key={folder.driveFolderId} style={{ marginLeft: "20px" }}>
+      <div key={folder.driveFolderId} style={{ marginLeft: "10px" }}>
         <span
           onClick={() => toggleFolder(folder.driveFolderId)}
           style={{ cursor: "pointer" }}
         >
-          {folder.isExpanded ? "▼" : "▶"} {folder.driveFolderName}
+          {folder.isExpanded ? "▼" : "▶"}
+        </span>
+        {/* 폴더 이름 클릭 시 폴더 이동 */}
+        <span
+          onClick={() => onFolderClick(folder.driveFolderId)}
+          style={{ cursor: "pointer", color: "blue" }} // 클릭 가능하도록 스타일 추가
+        >
+          {folder.driveFolderName}
         </span>
         {/* 자식 폴더 렌더링 */}
         {folder.isExpanded && renderTree(folder.driveFolderId)}
       </div>
     ));
+  };
+
+  const onFolderClick = async (folderId) => {
+    const  uid = user.uid;
+    const driveFolderId = driveFolderNameId; //이동할 폴더
+    const driveFileId = selectedDriveFileId; // 이동할 파일일
+    const selectDriveFolderId = folderId; //이동 될 폴더
+    try {
+      if (driveFolderId == selectDriveFolderId) {
+        alert("선택된 폴더가 동일합니다.");
+        return;
+      }
+      // 선택된 폴더 ID를 백엔드로 전송
+      const response = await MoveToFolder({
+        driveFolderId,
+        selectDriveFolderId,
+        uid,
+        driveFileId,
+      });
+
+      if (!response.ok) {
+        throw new Error("폴더 이동에 실패했습니다.");
+      }
+      const result = await response.json();
+      console.log("폴더 이동 성공:", result);
+
+      // 필요하면 상태 업데이트
+      // setCurrentFolderId(folderId); // 상태로 현재 폴더 ID 관리
+    } catch (error) {
+      console.error("폴더 이동 오류:", error);
+    }
   };
   // 선택된 작업담당자 관리하기 위한 상태
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
@@ -261,6 +300,7 @@ export default function DriveModal() {
       console.log("오로오롱 : " + driveFolderNameId, selectedDriveFileId);
     } else if (type === "move") {
       fetchFolderData();
+      console.log("이거 아이디 머임? : " + driveFolderNameId);
     }
   }, [type]);
 

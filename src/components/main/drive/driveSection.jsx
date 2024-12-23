@@ -1190,7 +1190,10 @@ export default function DriveSection({ refreshUsage }) {
               onClick={() => {
                 console.log("asdf");
                 setMenuVisible(false);
-                openModal("move");
+                openModal("move",{
+                  id: selectedDriveIds[0],
+                  fileid: selectedDriveFileIds[0],
+                });
               }}
               className="py-1 px-3 hover:bg-gray-100 cursor-pointer border-t"
             >

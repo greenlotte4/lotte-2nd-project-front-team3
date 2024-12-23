@@ -10,6 +10,7 @@ import {
   DRIVE_FOLDER_NAME,
   DRIVE_FOLDER_TRASH,
   DRIVE_IS_STARED,
+  DRIVE_MOVE_TO_FOLDER,
   MY_DRIVE_FILE_DOWNLOAD,
   MY_DRIVE_SELECT_URI,
   MY_DRIVE_URI,
@@ -313,6 +314,24 @@ export const driveIsStared = async ({ driveFolderId, userId, driveFileId }) => {
     const response = await axiosInstance.post(`${DRIVE_IS_STARED}`, {
       driveFolderId: driveFolderId,
       userId: userId,
+      driveFileId: driveFileId,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+//폴더이동동
+export const MoveToFolder = async ({driveFolderId,selectDriveFolderId,uid,driveFileId}) => {
+  //이동 될 폴더
+  //이동 할 폴더더
+  try {
+    console.log("오에에에엥? : " + driveFolderId, selectDriveFolderId);
+    const response = await axiosInstance.post(`${DRIVE_MOVE_TO_FOLDER}`, {
+      driveFolderId: driveFolderId,
+      selectDriveFolderId: selectDriveFolderId,
+      userId : uid,
       driveFileId: driveFileId,
     });
     console.log(response.data);
