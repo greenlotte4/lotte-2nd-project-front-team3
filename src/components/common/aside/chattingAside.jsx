@@ -7,6 +7,7 @@ import { Link, NavLink } from "react-router-dom";
 import { channelStore } from "../../../store/chattingStore";
 import useAuthStore from "../../../store/AuthStore"; // userId 가져오기 위한 import
 import ChannelListItem from "./chatting/ChannelListItem";
+import DmListItem from "./chatting/DmListItem";
 
 export default function ChattingAside({ asideVisible, channelId, isDm }) {
   const [toggleStates, toggleState] = useToggle({
@@ -183,135 +184,125 @@ export default function ChattingAside({ asideVisible, channelId, isDm }) {
               </div>
             </div>
           </li>
-          {/* 개인 채팅 섹션 */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
+          <div className="min-h-[500px]">
+            {/* 개인 채팅 섹션 */}
+            <div className="mt-6">
+              <div className="flex items-center justify-between">
 
 
 
-              <div
-                className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
-                onClick={() => toggleState("isPersonalOpen")}
-              >
-                <span
-                  className={`w-6 h-6 flex items-center justify-center rounded-full text-lg transition-transform ${toggleStates.isPersonalOpen ? "rotate-180" : ""
-                    }`}
+                <div
+                  className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
+                  onClick={() => toggleState("isPersonalOpen")}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-700"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
+                  <span
+                    className={`w-6 h-6 flex items-center justify-center rounded-full text-lg transition-transform ${toggleStates.isPersonalOpen ? "rotate-180" : ""
+                      }`}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-                <span className="text-[14px] font-semibold text-gray-700">✉️ 나의 채팅</span>
-              </div>
-              <button
-                className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block 0 hover:bg-blue-200 w-8 h-8 rounded-full"
-                onClick={() => openModal("createDm", {})}
-              >
-              </button>
-            </div>
-            <div
-              className={`overflow-hidden transition-all duration-300 ${toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
-                }`}
-            >
-              <ul className="ml-1 mt-2 space-y-2">
-                {dms.length > 0 ? (
-                  dms.map((dm) => (
-                    <li key={dm.dmId} >
-                      <NavLink
-                        to={`/antwork/chatting/dm/${dm.dmId}`}
-                        className="flex items-center p-2 rounded-md hover:bg-gray-100 transition pl-0"
-                      >
-                        <span className="text-lg">🗨️</span>
-                        <div className="flex-1 ml-2">
-                          <p className="font-medium text-gray-800 text-[14px] truncate w-[150px]">{dm.dmName}</p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {dm.lastMessage ?? "새로운 메시지가 없습니다."}
-                          </p>
-                        </div>
-                      </NavLink>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-gray-500 p-2 text-[14px]">디엠방이 없습니다.</li>
-                )}
-              </ul>
-            </div>
-          </div>
-
-          {/* 채널 섹션 */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
-              <div
-                className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
-                onClick={() => toggleState("isChannelOpen")}
-              >
-                <span
-                  className={`w-6 h-6 flex items-center justify-center rounded-full text-lg transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : ""
-                    }`}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-700"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                  <span className="text-[14px] font-semibold text-gray-700">✉️ 나의 채팅</span>
+                </div>
+                <button
+                  className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block 0 hover:bg-blue-200 w-8 h-8 rounded-full"
+                  onClick={() => openModal("createDm", {})}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-700"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-                <span className="text-[14px] font-semibold text-gray-700">👥 채널 (단체 채팅) </span>
+                </button>
               </div>
-              <button
-                className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block
+              <div
+                className={`overflow-hidden transition-all duration-300 ${toggleStates.isPersonalOpen ? "max-h-screen" : "max-h-0"
+                  }`}
+              >
+                <ul className="ml-1 mt-2 space-y-2">
+                  {dms.length > 0 ? (
+                    dms.map((dm) => (
+                      <DmListItem dm={dm} user={user} />
+                    ))
+                  ) : (
+                    <li className="text-gray-500 p-2 text-[14px]">디엠방이 없습니다.</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+
+            {/* 채널 섹션 */}
+            <div className="mt-6">
+              <div className="flex items-center justify-between">
+                <div
+                  className="flex items-center gap-2 cursor-pointer px-2 py-2 hover:bg-gray-100 rounded-md"
+                  onClick={() => toggleState("isChannelOpen")}
+                >
+                  <span
+                    className={`w-6 h-6 flex items-center justify-center rounded-full text-lg transition-transform ${toggleStates.isChannelOpen ? "rotate-180" : ""
+                      }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-700"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                  <span className="text-[14px] font-semibold text-gray-700">👥 채널 (단체 채팅) </span>
+                </div>
+                <button
+                  className="image-button-css !bg-[url('/images/ico/page_write_22_999999.svg')] cursor-pointer display-block
             cursor-pointer text-blue-500 hover:bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center text-xl"
-                onClick={() => openModal("createChannel", {})}
-              >
+                  onClick={() => openModal("createChannel", {})}
+                >
 
-              </button>
+                </button>
+              </div>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"
+                  }`}
+              >
+                <ul className="ml-1 mt-2 space-y-2">
+                  {channels.length > 0 ? (
+                    channels.map((channel) => (
+                      <ChannelListItem channel={channel} user={user} />
+                    ))
+                  ) : (
+                    <li className="text-gray-500 p-2 text-[14px]">채널이 없습니다.</li>
+                  )}
+                </ul>
+              </div>
             </div>
-            <div
-              className={`overflow-hidden transition-all duration-300 ${toggleStates.isChannelOpen ? "max-h-screen" : "max-h-0"
-                }`}
-            >
-              <ul className="ml-1 mt-2 space-y-2">
-                {channels.length > 0 ? (
-                  channels.map((channel) => (
-                    <ChannelListItem channel={channel} user={user} />
-                  ))
-                ) : (
-                  <li className="text-gray-500 p-2 text-[14px]">채널이 없습니다.</li>
-                )}
-              </ul>
+          </div>
+          {/* 설정 섹션 */}
+          <div
+            className="w-full px-[20px] py-[10px] bg-white"
+          >
+            <div className="lnb-header">
+              <img
+                src="/images/ico/page_setting_22_999999.svg"
+                className="cate-icon !w-[22px] !h-[22px]"
+                alt="Settings Icon"
+              />
+              <Link to="/antwork/setting/chatting" className="main-cate !text-[16px] text-[#757575]">
+                설정
+              </Link>
             </div>
           </div>
 
-        
         </li>
+
       </ul>
 
-      {/* 설정 섹션 */}
-      <div
-        className="absolute bottom-0 left-0 w-full px-[20px] py-[10px] bg-white"
-      >
-        <div className="lnb-header">
-          <img
-            src="/images/ico/page_setting_22_999999.svg"
-            className="cate-icon !w-[22px] !h-[22px]"
-            alt="Settings Icon"
-          />
-          <Link to="/antwork/setting/chatting" className="main-cate !text-[16px] text-[#757575]">
-            설정
-          </Link>
-        </div>
-      </div>
+
     </aside>
 
 

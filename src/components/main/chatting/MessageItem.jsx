@@ -40,11 +40,11 @@ function MessageItem({
     const previousDate =
         index > 0
             ? new Date(messages[index - 1]?.createdAt).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  weekday: "long",
-              })
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                weekday: "long",
+            })
             : null;
 
     // 필터링된 메시지 내용
@@ -82,6 +82,33 @@ function MessageItem({
             observer.disconnect();
         };
     }, [channelId, message?.id]);
+
+    // (2) 채널 방문 시 unreadCount 실시간 갱신을 위한 구독
+    useEffect(() => {
+        // 구독 전에 조건 체크
+        if (!channelId || !message?.id) return;
+        if (!isConnected) return;
+
+        // '/topic/chatting/channel/123/visit' 등으로 방문 이벤트를 받아서 unreadCount를 다시 로딩
+        const unsubscribe = subscribe(
+            `/topic/chatting/channel/${channelId}/visit`,
+            async (msg) => {
+                try {
+                    // unreadCount가 아직 null(=관심 없음)이면 굳이 다시 fetch하지 않음
+                    if (unreadCount === null) return;
+
+                    console.log("방문 이벤트 감지, unreadCount 다시 로딩");
+                    await fetchChannelUnreadCount();
+                } catch (error) {
+                    console.error("fetchChannelUnreadCount 에러:", error);
+                }
+            }
+        );
+
+        return () => {
+            unsubscribe?.();
+        };
+    }, [channelId, message?.id, unreadCount, isConnected, subscribe]);
 
     return (
         <div
@@ -124,9 +151,8 @@ function MessageItem({
 
                     <div className="relative">
                         <div
-                            className={`p-3 rounded-lg shadow-md text-lg ${
-                                isMyMessage ? "bg-blue-100" : "bg-gray-100"
-                            } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
+                            className={`p-3 rounded-lg shadow-md text-lg ${isMyMessage ? "bg-blue-100" : "bg-gray-100"
+                                } ${!isMyMessage && isFirstMessageFromUser ? "ml-0" : "ml-12"}`}
                         >
                             {message.fileUrl ? (
                                 message.fileType?.startsWith("image") ? (
@@ -159,13 +185,91 @@ function MessageItem({
                                 </p>
                             )}
                         </div>
+                        {/* 이미지 모달 */}
+                        {isModalOpen && message.fileType?.startsWith("image") && (
+                            <div className="fixed inset-0 flex items-center justify-center z-50">
+                                <div className="relative w-[80vw] max-w-4xl max-h-[80vh] bg-white rounded-lg border border-gray-300 p-4 flex flex-col items-center justify-center">
+                                    <button
+                                        onClick={() => setIsModalOpen(false)} // 모달 닫기
+                                        className="absolute top-4 right-4 text-gray-800 bg-gray-200 rounded-full p-2 hover:bg-gray-300 focus:outline-none"
+                                    >
+                                        ❌
+                                    </button>
+                                    {/* 확대/축소 가능한 이미지 */}
+                                    <div
+                                        className="flex items-center justify-center overflow-hidden"
+                                        style={{
+                                            width: "100%",
+                                            height: "80vh",
+                                        }}
+                                    >
+                                        <img
+                                            src={imageMessages[currentImageIndex].fileUrl}
+                                            alt={`이미지 ${currentImageIndex + 1}`}
+                                            className={`rounded-md transform transition-transform duration-300 cursor-pointer ${zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
+                                                }`}
+                                            style={{
+                                                maxWidth: "100%",
+                                                maxHeight: "100%",
+                                                transform: `scale(${zoomLevel})`,
+                                                objectFit: "contain",
+                                            }}
+                                            onClick={() =>
+                                                setZoomLevel((prev) => (prev === 1 ? 1.5 : 1))
+                                            }
+                                        />
+                                    </div>
 
+                                    {/* 왼쪽 네비게이션 버튼 */}
+                                    {currentImageIndex > 0 && (
+                                        <button
+                                            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black bg-gray-200 p-3 rounded-full shadow-lg hover:bg-gray-300"
+                                            onClick={() =>
+                                                setCurrentImageIndex((prev) => Math.max(0, prev - 1))
+                                            }
+                                        >
+                                            ◀
+                                        </button>
+                                    )}
+
+                                    {/* 오른쪽 네비게이션 버튼 */}
+                                    {currentImageIndex < imageMessages.length - 1 && (
+                                        <button
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black bg-gray-200 p-3 rounded-full shadow-lg hover:bg-gray-300"
+                                            onClick={() =>
+                                                setCurrentImageIndex((prev) =>
+                                                    Math.min(imageMessages.length - 1, prev + 1)
+                                                )
+                                            }
+                                        >
+                                            ▶
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        <div
+                            className={`absolute text-m text-gray-700 ${isMyMessage ? "left-5 bottom-4" : "right-[-30px] bottom-4"
+                                }`}
+                        >
+                            {unreadCount !== null && unreadCount > 0 && unreadCount}
+                        </div>
+                        {/* 시간 표시 */}
+                        {isLastMessageFromSameUser && (
+                            <span
+                                className={`absolute text-m text-gray-400 ${isMyMessage ? "-left-6 bottom-0" : "right-[-65px] bottom-0"
+                                    }`}
+                            >
+                                {formatChatTime(message.createdAt)}
+                            </span>
+                        )}
                         {isMessageFiltered(filteredContent) && (
                             <p
                                 style={{
                                     color: "#F87171",
                                     fontSize: "12px",
                                     marginTop: "4px",
+                                    position: 'absolute'
                                 }}
                             >
                                 ⚠️ 필터링된 메시지
@@ -173,14 +277,11 @@ function MessageItem({
                         )}
                     </div>
                 </div>
+
             </div>
 
-            <div
-                className={`text-sm text-gray-500 ${isMyMessage ? "text-right" : "text-left"}`}
-            >
-                {unreadCount !== null && unreadCount > 0 && `Unread: ${unreadCount}`}
-            </div>
-        </div>
+
+        </div >
     );
 }
 
