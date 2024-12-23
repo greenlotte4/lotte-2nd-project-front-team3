@@ -33,7 +33,6 @@ const PagingWrite = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [collaborators, setCollaborators] = useState([]);
   const [showAllCollaborators, setShowAllCollaborators] = useState(false);
-  const [departments, setDepartments] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [userType, setUserType] = useState("");
 
@@ -353,7 +352,7 @@ const PagingWrite = () => {
 
   // 이모지 선택 핸들러 수정
   const onEmojiClick = (emojiObject) => {
-    // 기존 제목에��� 첫 번째 이모지와 공백을 제거
+    // 기존 제목에서 첫 번째 이모지와 공백을 제거
     const titleWithoutEmoji = title.replace(/^\p{Emoji}\s*/u, "");
     const newTitle = `${emojiObject.emoji} ${titleWithoutEmoji}`;
 
@@ -377,21 +376,6 @@ const PagingWrite = () => {
 
     fetchCollaborators();
   }, [id]);
-  // departments 데이터 가져오기t
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        if (user?.company) {
-          const data = await fetchDepartmentsByCompanyId(user.company);
-          setDepartments(data);
-        }
-      } catch (error) {
-        console.error("부서 데이터를 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchDepartments();
-  }, [user]);
 
   // 모달 관련 상태와 함수
   const openModal = useModalStore((state) => state.openModal);
@@ -445,13 +429,13 @@ const PagingWrite = () => {
                 ? collaborators
                 : collaborators.slice(0, 3)
               ).map((collaborator) => {
-                // departments에서 사용자와 해당 부서 정보 가져오기
-                const matchedDepartment = departments?.find((dept) =>
-                  dept.users.some((u) => u.id === collaborator.user_id)
-                );
-                const matchedUser = matchedDepartment?.users.find(
-                  (u) => u.id === collaborator.user_id
-                );
+                // 사용자 타입에 따라 권한 표시
+                const userTypeLabel =
+                  collaborator.type === "owner"
+                    ? "관리자 권한"
+                    : collaborator.type === "1"
+                    ? "읽기/쓰기"
+                    : "읽기";
 
                 return (
                   <div key={collaborator.id} className="relative group">
@@ -468,10 +452,10 @@ const PagingWrite = () => {
                     />
                     <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900/90 backdrop-blur-sm text-white text-sm px-4 py-2.5 rounded-xl whitespace-nowrap z-10 shadow-xl transition-all duration-200">
                       <div className="font-medium">
-                        {matchedUser?.name || "Unknown User"}
+                        {collaborator.name || "Unknown User"}
                       </div>
                       <div className="text-xs text-gray-300 mt-0.5">
-                        {matchedDepartment?.name || ""}
+                        {userTypeLabel}
                       </div>
                     </div>
                   </div>
@@ -519,7 +503,7 @@ const PagingWrite = () => {
                 <div className="absolute right-0 mt-2 p-4 !pb-0 w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <div className="py-1">
                     <div className="border-t border-gray-300 border-b border-gray-300 p-3">
-                      {isOwner && ( // 소유자 경우에만 삭제 버튼 표시
+                      {isOwner && ( // 소유자 경우���만 삭제 버튼 표시
                         <button
                           onClick={() => {
                             handleDelete();
