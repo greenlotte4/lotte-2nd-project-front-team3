@@ -39,7 +39,7 @@ export default function DmMain() {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatBoxRef]);
-  
+
   const handleContextMenu = (e, messageId) => {
     e.preventDefault(); // 기본 브라우저 메뉴 방지
     setContextMenu({
@@ -48,23 +48,23 @@ export default function DmMain() {
       messageId,
     });
   };
-  
+
 
   const closeContextMenu = () => setContextMenu(null);
 
   const handleDeleteMessage = async (messageId) => {
     closeContextMenu();
     if (!window.confirm("메시지를 삭제하시겠습니까?")) return;
-  
+
     try {
       // 실제 서버 요청으로 메시지 삭제
       await deleteDmMessage(messageId, user?.id); // user.id와 messageId를 전달
-  
+
       // 프론트엔드에서 상태 업데이트
       setMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.id !== messageId)
       );
-  
+
       alert("메시지가 삭제되었습니다.");
     } catch (error) {
       console.error("메시지 삭제 중 오류 발생:", error.message || error);
@@ -82,8 +82,8 @@ export default function DmMain() {
         console.error(err);
       }
     };
-  
-  
+
+
     const fetchDm = async () => {
       try {
         const dm = await getDmById(dmId);
@@ -92,8 +92,8 @@ export default function DmMain() {
       } catch (error) {
         console.error("DM 데이터를 가져오는 중 오류 발생:", error);
       }
-    };    
-  
+    };
+
     const fetchMessages = async () => {
       try {
         const messages = await getDmMessages(dmId); // 메시지 조회 API 호출
@@ -102,18 +102,18 @@ export default function DmMain() {
         console.error("Failed to fetch messages:", error);
       }
     };
-  
+
     if (dmId) {
       fetchDmMembers();
       fetchDm();
       fetchMessages();
     }
   }, [dmId]);
-  
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   useEffect(() => {
     const fetchDm = async () => {
       try {
@@ -252,36 +252,35 @@ export default function DmMain() {
           {/* DM 헤더 */}
           <div className="flex-none px-6 py-4 bg-white border-b border-white-200 rounded-t-3xl shadow flex items-center justify-between">
             <div className="flex items-center">
-               
-                   {/* DM 멤버 프로필 */}
-    <div className="flex items-center">
-      {members && members.length > 0 ? (
-        members.slice(0, 3).map((user, index) => (
-          <img
-            key={user.id}
-            src={user.profileImageUrl || "/images/default_profile.png"}
-            alt={`Profile of ${user.name}`}
-            className={`w-10 h-10 rounded-full border-2 border-white -ml-2 ${
-              index === 0 ? "ml-0" : ""
-            }`} // 첫 번째 이미지는 좌측 마진 제거
-          />
-        ))
-      ) : (
-        <span className="text-gray-500 text-xs">No Members</span>
-      )}
-      {/* 3명을 초과한 멤버 수 표시 */}
-      {members && members.length > 3 && (
-        <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
-          +{members.length - 3}
-        </div>
-      )}
-    </div>
 
-          {/* DM 이름 */}
+              {/* DM 멤버 프로필 */}
+              <div className="flex items-center">
+                {members && members.length > 0 ? (
+                  members.slice(0, 3).map((user, index) => (
+                    <img
+                      key={user.id}
+                      src={user.profileImageUrl || "/images/default_profile.png"}
+                      alt={`Profile of ${user.name}`}
+                      className={`w-10 h-10 rounded-full border-2 border-white -ml-2 ${index === 0 ? "ml-0" : ""
+                        }`} // 첫 번째 이미지는 좌측 마진 제거
+                    />
+                  ))
+                ) : (
+                  <span className="text-gray-500 text-xs">No Members</span>
+                )}
+                {/* 3명을 초과한 멤버 수 표시 */}
+                {members && members.length > 3 && (
+                  <div className="w-10 h-10 bg-gray-200 text-gray-600 font-bold flex items-center justify-center rounded-full border-2 border-white -ml-2">
+                    +{members.length - 3}
+                  </div>
+                )}
+              </div>
+
+              {/* DM 이름 */}
               <div className="flex items-center ml-4">
-              <h1 className="text-xl md:text-2xl lg:text-2xl font-semibold text-gray-900">
-  {dmData?.dmName || dmData?.name || "Direct Message"}
-</h1>
+                <h1 className="text-xl md:text-2xl lg:text-2xl font-semibold text-gray-900">
+                  {dmData?.dmName || dmData?.name || "Direct Message"}
+                </h1>
               </div>
             </div>
 
@@ -399,16 +398,16 @@ export default function DmMain() {
                     })
                     : null;
 
-                    return (
-                      <div
-                        key={message.id}
-                        onContextMenu={(e) => isMyMessage && handleContextMenu(e, message.id)} // 내 메시지일 때만 컨텍스트 메뉴 표시
-                        style={{
-                          backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
-                        }}
-                        className="flex flex-col mb-2"
-                        ref={(el) => (chatRefs.current[message.id] = el)}
-                      >
+                return (
+                  <div
+                    key={message.id}
+                    onContextMenu={(e) => isMyMessage && handleContextMenu(e, message.id)} // 내 메시지일 때만 컨텍스트 메뉴 표시
+                    style={{
+                      backgroundColor: message.id === highlightedId ? "#e0f7fa" : "rgb(249, 250, 251)",
+                    }}
+                    className="flex flex-col mb-2"
+                    ref={(el) => (chatRefs.current[message.id] = el)}
+                  >
 
 
                     {/* 날짜 표시 */}
@@ -468,26 +467,26 @@ export default function DmMain() {
               })
             )}
 
-          {/* 컨텍스트 메뉴 */}
-          {contextMenu && (
-  <div
-    className="absolute bg-white border shadow-lg rounded-md"
-    style={{
-      top: `${contextMenu.y}px`,
-      left: `${contextMenu.x}px`,
-      zIndex: 1000,
-    }}
-    onClick={() => setContextMenu(null)} // 메뉴 닫기
-  >
-    <button
-      className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
-      onClick={() => handleDeleteMessage(contextMenu.messageId)}
-    >
-      삭제
-    </button>
-  </div>
-)}
-</div>
+            {/* 컨텍스트 메뉴 */}
+            {contextMenu && (
+              <div
+                className="absolute bg-white border shadow-lg rounded-md"
+                style={{
+                  top: `${contextMenu.y}px`,
+                  left: `${contextMenu.x}px`,
+                  zIndex: 1000,
+                }}
+                onClick={() => setContextMenu(null)} // 메뉴 닫기
+              >
+                <button
+                  className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
+                  onClick={() => handleDeleteMessage(contextMenu.messageId)}
+                >
+                  삭제
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* 입력창 */}
           <div className="flex-none px-6 py-4 bg-white border-t border-gray-200">
@@ -528,8 +527,8 @@ export default function DmMain() {
             {/* 채팅방 이름 */}
             {/* <h3 className="text-lg font-semibold text-gray-900">{dmData?.dmName}</h3> */}
             <h3 className="text-lg fonDMt-semibold text-gray-900">
-  {dmData?.dmName || dmData?.name || "DM"}
-</h3>
+              {dmData?.dmName || dmData?.name || "DM"}
+            </h3>
 
             {/* 오른쪽 아이콘들 */}
             <div className="flex items-center space-x-4">
@@ -546,12 +545,12 @@ export default function DmMain() {
                   }
                   alt="알림 아이콘"
                 />
-              </button>      
+              </button>
             </div>
           </div>
-         
-            {/* 대화 상대 */}
-            <div className="my-5">
+
+          {/* 대화 상대 */}
+          <div className="my-5">
             <div
               className="flex items-center justify-between cursor-pointer border-b border-gray-200"
               onClick={() => toggleState("isContactOpen")}
@@ -593,23 +592,23 @@ export default function DmMain() {
           </div>
 
 
-<div className="my-5">
-  <div
-    className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-  >
-    <h3 className="text-lg font-semibold mb-2">DM 안내</h3>
-  </div>
-  <div className="mt-4">
+          <div className="my-5">
+            <div
+              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+            >
+              <h3 className="text-lg font-semibold mb-2">DM 안내</h3>
+            </div>
+            <div className="mt-4">
 
-<p className="text-gray-600 text-m">
-  📢 초대와 파일 전송은 채널에서만 가능합니다.<br />
-  🗑️ 내 메시지는 우 클릭으로 삭제할 수 있습니다.
-</p>
-  </div>
-</div>
-</div>
-</div>
-</div>
+              <p className="text-gray-600 text-m">
+                📢 초대와 파일 전송은 채널에서만 가능합니다.<br />
+                🗑️ 내 메시지는 우 클릭으로 삭제할 수 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   );
 }

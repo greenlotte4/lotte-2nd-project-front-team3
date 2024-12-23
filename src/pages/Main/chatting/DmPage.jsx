@@ -5,6 +5,8 @@ import ChattingModal from "../../../components/common/modal/chattingModal"; // �
 import ChattingModalController from "../../../components/common/modal/chatting/ChattingModalController"; // 모달 컨트롤러
 import { useParams } from "react-router-dom"; // URL 파라미터를 사용해 DM ID를 가져옴
 import { getDmMessages } from "../../../api/chattingAPI"; // 디엠 메시지를 가져오는 API 함수
+import { StompProvider } from "@/provides/StompProvide";
+import { WS_URL } from "@/api/_URI";
 
 export default function DmChattingPage() {
   const { id: dmId } = useParams(); // URL에서 디엠 채팅방 ID를 가져옴
@@ -30,10 +32,15 @@ export default function DmChattingPage() {
 
   return (
     <AntWorkLayout>
+      {/* <StompProvider brokerURL={WS_URL}
+        onConnectCallback={() => { console.log("CONNECT") }}
+        onCloseCallback={() => { console.log("CLOSE") }}
+      > */}
       <DmMain
         messages={messages} // 가져온 디엠 메시지
         loading={loading} // 로딩 상태
       />
+      {/* </StompProvider> */}
       <ChattingModalController /> {/* 모달 컨트롤러 */}
     </AntWorkLayout>
   );

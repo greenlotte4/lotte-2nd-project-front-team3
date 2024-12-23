@@ -285,7 +285,7 @@ export default function ChannelMain() {
       return;
     }
 
-   const filteredContent = filterMessage(messageInput.trim()); // 금칙어 필터링 적용
+    const filteredContent = filterMessage(messageInput.trim()); // 금칙어 필터링 적용
 
 
     const newMessage = {
@@ -298,15 +298,15 @@ export default function ChannelMain() {
 
     try {
       const result = await sendChannelMessage(newMessage); // 서버 전송
-      console.log(`메시지 보내기 성공 : ${result.data}`);
+      console.log(`메시지 보내기 성공 : `, result);
 
       const msg = {
-        id: result.data,
-        senderId: user?.id,
-        userName: user?.name,
-        channelId,
-        content: filteredContent, // 필터링된 내용 저장
-        createdAt: new Date(),
+        id: result.id,
+        senderId: result.senderId,
+        userName: result.userName,
+        channelId: result.channelId,
+        content: result.content, // 필터링된 내용 저장
+        createdAt: result.createdAt,
       };
 
       // ---- 로컬 메시지 목록에 즉시 반영
@@ -676,99 +676,97 @@ export default function ChannelMain() {
             )}
           </div>
           <div>
-{/* 사진 파일 */}
-<div className="my-5">
-  <div
-    className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-    onClick={() => toggleState("isPhotoOpen")}
-  >
-    <h3 className="text-lg font-semibold mb-2">최근 사진</h3>
-    <button>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={`h-5 w-5 transform transition-transform ${
-          toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
-        }`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-  </div>
-  {toggleStates.isPhotoOpen && (
-    <div className="flex gap-4 mt-4 overflow-x-auto">
-      {messages
-        .filter((message) => message.fileType?.startsWith("image"))
-        .slice(-3) // 최근 3개의 이미지
-        .map((image, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <img
-              src={image.fileUrl}
-              alt={`사진 ${index + 1}`}
-              className="w-24 h-24 rounded-md shadow-md"
-            />
-            <p className="text-sm text-gray-400 mt-2">
-              {new Date(image.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
-    </div>
-  )}
-</div>
+            {/* 사진 파일 */}
+            <div className="my-5">
+              <div
+                className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+                onClick={() => toggleState("isPhotoOpen")}
+              >
+                <h3 className="text-lg font-semibold mb-2">최근 사진</h3>
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-5 w-5 transform transition-transform ${toggleStates.isPhotoOpen ? "rotate-180" : "rotate-0"
+                      }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {toggleStates.isPhotoOpen && (
+                <div className="flex gap-4 mt-4 overflow-x-auto">
+                  {messages
+                    .filter((message) => message.fileType?.startsWith("image"))
+                    .slice(-3) // 최근 3개의 이미지
+                    .map((image, index) => (
+                      <div key={index} className="flex flex-col items-center">
+                        <img
+                          src={image.fileUrl}
+                          alt={`사진 ${index + 1}`}
+                          className="w-24 h-24 rounded-md shadow-md"
+                        />
+                        <p className="text-sm text-gray-400 mt-2">
+                          {new Date(image.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
 
-{/* 첨부 파일 */}
-<div className="my-5">
-  <div
-    className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-    onClick={() => toggleState("isFileOpen")}
-  >
-    <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
-    <button>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={`h-5 w-5 transform transition-transform ${
-          toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
-        }`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-  </div>
-  {toggleStates.isFileOpen && (
-    <div className="space-y-2 mt-4">
-      {messages
-        .filter(
-          (message) =>
-            message.fileType && // 파일 메시지인지 확인
-            !message.fileType.startsWith("image") // 이미지 제외
-        )
-        .slice(-3) // 최근 3개의 파일
-        .map((file, index) => (
-          <div key={index} className="flex items-center space-x-4">
-            <span className="text-lg">📁</span>
-            <p className="text-sm font-medium text-gray-800">
-              {file.fileName || `파일 ${index + 1}`}
-            </p>
-          </div>
-        ))}
-    </div>
-  )}
-</div>
+            {/* 첨부 파일 */}
+            <div className="my-5">
+              <div
+                className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+                onClick={() => toggleState("isFileOpen")}
+              >
+                <h3 className="text-lg font-semibold mb-2">첨부 파일</h3>
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-5 w-5 transform transition-transform ${toggleStates.isFileOpen ? "rotate-180" : "rotate-0"
+                      }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {toggleStates.isFileOpen && (
+                <div className="space-y-2 mt-4">
+                  {messages
+                    .filter(
+                      (message) =>
+                        message.fileType && // 파일 메시지인지 확인
+                        !message.fileType.startsWith("image") // 이미지 제외
+                    )
+                    .slice(-3) // 최근 3개의 파일
+                    .map((file, index) => (
+                      <div key={index} className="flex items-center space-x-4">
+                        <span className="text-lg">📁</span>
+                        <p className="text-sm font-medium text-gray-800">
+                          {file.fileName || `파일 ${index + 1}`}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
 
             {/* 사진 파일 모달 */}
             {isPhotoModalOpen && (
@@ -835,22 +833,22 @@ export default function ChannelMain() {
             )}
           </div>
           <div className="my-5">
-  <div
-    className="flex items-center justify-between cursor-pointer border-b border-gray-200"
-  >
-    <h3 className="text-lg font-semibold mb-2">채널 안내</h3>
-  </div>
-  <div className="mt-4">
- <p className="text-gray-600 text-m">
-  📢 초대와 파일 전송이 가능합니다. 사용자를 초대하여 멤버를 추가할 수 있습니다.<br />
-  👑 소유자만 채널 이름을 변경할 수 있으며, 나갈 경우 소유권이 자동 이임됩니다.<br />
-  🚨 채팅 보호를 위해 관리자가 금칙어를 설정합니다.
-</p>
+            <div
+              className="flex items-center justify-between cursor-pointer border-b border-gray-200"
+            >
+              <h3 className="text-lg font-semibold mb-2">채널 안내</h3>
+            </div>
+            <div className="mt-4">
+              <p className="text-gray-600 text-m">
+                📢 초대와 파일 전송이 가능합니다. 사용자를 초대하여 멤버를 추가할 수 있습니다.<br />
+                👑 소유자만 채널 이름을 변경할 수 있으며, 나갈 경우 소유권이 자동 이임됩니다.<br />
+                🚨 채팅 보호를 위해 관리자가 금칙어를 설정합니다.
+              </p>
 
 
 
-  </div>
-</div>
+            </div>
+          </div>
 
           {/* 사용자 초대 버튼 */}
           <div className=" pt-6 mt-6">
