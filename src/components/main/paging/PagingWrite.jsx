@@ -35,6 +35,7 @@ const PagingWrite = () => {
   const [showAllCollaborators, setShowAllCollaborators] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
+  const [userType, setUserType] = useState("");
 
   const { handleSoftDeletePage } = usePageActions();
 
@@ -75,6 +76,55 @@ const PagingWrite = () => {
     }
   }, []);
 
+  // 페이지 접근 권한 확인
+  const checkPageAccess = useCallback(
+    async (pageId) => {
+      try {
+        if (!pageId || !uid) return false;
+
+        // 페이지 정보 가져오기
+        const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${pageId}`);
+        const pageData = response.data;
+
+        // owner인 경우 접근 허용
+        if (pageData.owner === uid) {
+          console.log("사용자가 소유자입니다.");
+          setUserType("owner");
+          return true;
+        }
+
+        // collaborators 정보 가져오기
+        const collaboratorsData = await getPageCollaborators(pageId);
+        console.log("Collaborators:", collaboratorsData);
+
+        // collaborators 배열에서 현재 사용자가 있는지 확인
+        const hasAccess = collaboratorsData?.some(
+          (collaborator) => collaborator.user_id === user.id
+        );
+
+        if (hasAccess) {
+          const currentUser = collaboratorsData.find(
+            (collaborator) => collaborator.user_id === user.id
+          );
+          setUserType(currentUser.type); // 사용자 타입 설정
+          console.log("🔍 현재 사용자 타입:", currentUser.type);
+          return true;
+        } else {
+          alert("해당 페이지에 접근 권한이 없습니다.");
+          navigate("/antwork/page");
+          return false;
+        }
+      } catch (error) {
+        console.error("페이지 접근 권한 확인 중 오류:", error);
+        console.error("상 에러:", error.response?.data);
+        alert("해당 페이지에 접근 권한이 없습니다.");
+        navigate("/antwork/page");
+        return false;
+      }
+    },
+    [uid, navigate]
+  );
+
   // throttledBroadcast 생성 - componentId가 undefined일 수 있음
   const throttledBroadcast = useThrottle(async (savedData) => {
     console.log("throttledBroadcast - throttle된 브로드캐스트 함수 실행");
@@ -110,15 +160,20 @@ const PagingWrite = () => {
           await editorRef.current.destroy();
           editorRef.current = null;
         }
-
-        const editor = await createEditor(initialContent);
+        console.log("🔍 userType", userType);
+        const editorOptions = {
+          readOnly: userType.toString() === "2", // 사용자 타입이 2인 경우 읽기 전용
+        };
+        console.log("🔍 editorOptions", editorOptions);
+        const editor = await createEditor(initialContent, editorOptions);
         editorRef.current = editor;
+
         return editor;
       } catch (error) {
         console.error("Error initializing editor:", error);
       }
     },
-    [createEditor]
+    [createEditor, userType]
   );
 
   // 페이지 데이터 가져오기
@@ -138,51 +193,6 @@ const PagingWrite = () => {
       console.error("Error fetching page data:", error);
     }
   };
-
-  // 페이지 접�� 권한 확인
-  const checkPageAccess = useCallback(
-    async (pageId) => {
-      try {
-        if (!pageId || !uid) return false;
-
-        // 페이지 정보 가져오기
-        const response = await axiosInstance.get(`${PAGE_FETCH_URI}/${pageId}`);
-        const pageData = response.data;
-
-        // owner인 경우 접근 허용
-        if (pageData.owner === uid) {
-          console.log("사용자가 소유자입니다.");
-          return true;
-        }
-
-        // collaborators 정보 가져오기
-        const collaboratorsData = await getPageCollaborators(pageId);
-        console.log("Collaborators:", collaboratorsData);
-
-        // collaborators 배열에서 현재 사용자가 있는지 확인
-        const hasAccess = collaboratorsData?.some(
-          (collaborator) => collaborator.user_id === user.id
-        );
-
-        console.log("접근 권한:", hasAccess);
-
-        if (!hasAccess) {
-          alert("해당 페이지에 접근 권한이 없습니다.");
-          navigate("/antwork/page");
-          return false;
-        }
-
-        return true;
-      } catch (error) {
-        console.error("페이지 접근 권한 확인 중 오류:", error);
-        console.error("상 에러:", error.response?.data);
-        alert("해당 페이지에 접근 권한이 없습니다.");
-        navigate("/antwork/page");
-        return false;
-      }
-    },
-    [uid, navigate]
-  );
 
   // 페이지 초기화 useEffect 수정
   useEffect(() => {
@@ -232,8 +242,40 @@ const PagingWrite = () => {
       }
     };
 
-    initializePage();
+    // 사용자 권한 확인 후 페이지 초기화
+    const checkAndInitialize = async () => {
+      const params = new URLSearchParams(location.search);
+      const pageId = params.get("id");
+
+      if (pageId) {
+        const hasAccess = await checkPageAccess(pageId);
+        if (hasAccess) {
+          setId(pageId);
+          await fetchPageData(pageId);
+        }
+      } else {
+        await initializePage();
+      }
+    };
+
+    checkAndInitialize();
   }, [uid, location.search, checkPageAccess]);
+
+  // 에디터 초기화 useEffect
+  useEffect(() => {
+    if (userType === "") return; // userType이 설정된 후에만 실행
+
+    const initializeEditorWithUserType = async () => {
+      const params = new URLSearchParams(location.search);
+      const pageId = params.get("id");
+
+      if (pageId) {
+        await fetchPageData(pageId);
+      }
+    };
+
+    initializeEditorWithUserType();
+  }, [userType]); // userType을 의존성에 추가
 
   // WebSocket 훅 사용
   useWebSocket({
@@ -311,11 +353,11 @@ const PagingWrite = () => {
 
   // 이모지 선택 핸들러 수정
   const onEmojiClick = (emojiObject) => {
-    // 기존 제목에서 첫 번째 이모지와 공백을 제거
+    // 기존 제목에��� 첫 번째 이모지와 공백을 제거
     const titleWithoutEmoji = title.replace(/^\p{Emoji}\s*/u, "");
     const newTitle = `${emojiObject.emoji} ${titleWithoutEmoji}`;
 
-    // handleTitleChange를 호출하여 제목 변경 및 브로드캐스트 처리
+    // handleTitleChange를 호출하여 제목 변경 후 브로드캐스트 처리
     handleTitleChange({ target: { value: newTitle } });
     setShowEmojiPicker(false);
   };
@@ -403,7 +445,7 @@ const PagingWrite = () => {
                 ? collaborators
                 : collaborators.slice(0, 3)
               ).map((collaborator) => {
-                // departments에서 사용자와 해당 부서 정보 ��기
+                // departments에서 사용자와 해당 부서 정보 가져오기
                 const matchedDepartment = departments?.find((dept) =>
                   dept.users.some((u) => u.id === collaborator.user_id)
                 );
@@ -444,7 +486,7 @@ const PagingWrite = () => {
                   <div className="w-12 h-12 bg-gray-100 text-gray-500 font-medium flex items-center justify-center rounded-full border-[3px] border-white -ml-3 hover:bg-gray-200 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                     +{collaborators.length - 3}
                   </div>
-                  <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900/90 backdrop-blur-sm text-white text-sm px-4 py-2.5 rounded-xl whitespace-nowrap z-10 shadow-xl">
+                  <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900/90 backdrop-blur-sm text-white text-sm px-4 py-2.5 rounded-xl">
                     클릭하여 모든 협업자 보기
                   </div>
                 </div>
@@ -458,7 +500,7 @@ const PagingWrite = () => {
                   <div className="w-12 h-12 bg-gray-100 text-gray-500 font-medium flex items-center justify-center rounded-full border-[3px] border-white -ml-3 hover:bg-gray-200 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                     <span className="transform -translate-y-0.5">−</span>
                   </div>
-                  <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900/90 backdrop-blur-sm text-white text-sm px-4 py-2.5 rounded-xl whitespace-nowrap z-10 shadow-xl">
+                  <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900/90 backdrop-blur-sm text-white text-sm px-4 py-2.5 rounded-xl">
                     접기
                   </div>
                 </div>
@@ -490,15 +532,22 @@ const PagingWrite = () => {
                       )}
                       <button
                         onClick={() => {
-                          openModal("page-collaborator");
+                          if (
+                            userType === "owner" ||
+                            userType.toString() === "0"
+                          ) {
+                            openModal("page-collaborator");
+                          } else {
+                            alert(
+                              "관리자 권한 혹은 생성자만 수정할 수 있습니다."
+                            );
+                          }
                           setShowMenu(false);
                         }}
                         className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left bt-black-200"
                       >
                         공유 멤버 관리
                       </button>
-                    </div>
-                    <div className="p-3">
                       <button className="w-full px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-100 hover:rounded-[10px] text-left">
                         페이지 설정
                         <p className="!text-[11px] !text-slate-400 mt-[2px]">

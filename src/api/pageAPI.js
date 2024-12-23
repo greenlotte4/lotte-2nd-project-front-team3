@@ -23,6 +23,7 @@ export const getPageCollaborators = async (pageId) => {
 // 페이지 협업자 추가
 export const addPageCollaborators = async (pageId, collaborators) => {
   try {
+    console.log("Collaborators 추가 :", collaborators);
     const response = await axiosInstance.post(
       `${PAGE_FETCH_URI}/${pageId}/collaborators`,
       {
@@ -33,7 +34,7 @@ export const addPageCollaborators = async (pageId, collaborators) => {
           uidImage: null,
           invitedAt: null,
           isOwner: false,
-          type: 0,
+          type: user.type,
           companyRate: user.companyRate,
         })),
       }
@@ -44,7 +45,23 @@ export const addPageCollaborators = async (pageId, collaborators) => {
     throw error;
   }
 };
-
+// 페이지 협업자 권한 수정
+export const updateCollaboratorPermission = async (
+  pageId,
+  userId,
+  permissionType
+) => {
+  try {
+    const response = await axiosInstance.put(
+      `${PAGE_FETCH_URI}/${pageId}/collaborators/${userId}`,
+      { type: permissionType }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update collaborator permission:", error);
+    throw error;
+  }
+};
 // 페이지 협업자 제거
 export const removePageCollaborator = async (pageId, userId) => {
   try {
@@ -100,3 +117,5 @@ export const getTemplates = async () => {
     throw error;
   }
 };
+
+// 협업자 권한 업데이트

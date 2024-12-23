@@ -3,7 +3,6 @@ const API_SERVER_HOST = import.meta.env.VITE_API_SERVER_HOST;
 export const API_SERVER_URI = `${API_SERVER_HOST}`;
 
 // department
-// department
 export const DEPARTMENT_INSERT_URI = `${API_SERVER_HOST}/department/insert`; // 부서 생성
 export const DEPARTMENT_SELECT_URI = `${API_SERVER_HOST}/department/byCompany`; // 회사별 부서 조회
 export const DEPARTMENT_UPDATE_URI = `${API_SERVER_HOST}/department`; // 부서 이름 수정
