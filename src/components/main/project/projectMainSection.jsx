@@ -13,6 +13,9 @@ export default function ProjectMainSection() {
         console.log("사용자 정보:", user);
         const projectData = await getProjects(user?.uid); // API 호출
         console.log("Fetched project data:", projectData); // 데이터 확인
+        if (projectData == null) {
+          return;
+        }
         setProjects(projectData); // 상태에 데이터 저장
       } catch (error) {
         console.error("Error fetching projects:", error);
