@@ -170,22 +170,22 @@ const AttendanceCard = ({ userId }) => {
   const isCheckOutDisabled = !!checkOutTime || !checkInTime;
 
   return (
-    <div className="w-[260px] bg-white rounded-lg shadow-md p-5 mt-5">
-      <div className="text-center mb-4">
-        <h1 className="text-xl font-semibold text-gray-800">근태관리</h1>
-        <p className="text-sm text-gray-500 mt-2">
+    <div className="w-[260px] bg-white p-7 mt-[18px] border border-[#ddd] box-border rounded-[10px] h-[440px]">
+      <div className="text-center mt-4 mb-10">
+        <h1 className="text-[18px] font-semibold text-gray-800">근태관리</h1>
+        <p className="text-[12.5px] text-gray-500 mt-3">
           {currentTime.toLocaleString()}
         </p>
       </div>
 
-      <section className="mb-6">
+      <section className="mb-7">
         <div className="flex justify-between items-end">
           <span className="text-3xl font-bold text-blue-600">{workHours}</span>
           <span className="text-sm text-gray-500">
             최대 {MAX_WORK_HOURS}시간
           </span>
         </div>
-        <div className="relative w-full h-4 bg-gray-200 rounded-full mt-4">
+        <div className="relative w-full h-4 bg-gray-200 rounded-full mt-7">
           <div
             className="absolute h-4 bg-blue-500 rounded-full"
             style={{ width: progressWidth }}
@@ -214,7 +214,7 @@ const AttendanceCard = ({ userId }) => {
 
       <hr className="border-t border-dashed border-gray-300 my-6" />
 
-      <section className="flex justify-between">
+      <section className="flex justify-between mt-[30px] mb-[20px]">
         <button
           className={`w-[100px] h-[36px] font-medium rounded-3xl transition ${
             isCheckInDisabled
