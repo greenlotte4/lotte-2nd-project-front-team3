@@ -71,6 +71,7 @@ export default function BoardWrite() {
       // **1. 게시글 데이터 전송 (JSON)**
       const boardInfo = {
 
+        categoryId: 1,
         writerId: user?.id || "guest",
         writerName: user?.name,
         title: board.title.trim(),

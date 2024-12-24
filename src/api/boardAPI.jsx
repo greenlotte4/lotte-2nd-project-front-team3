@@ -6,7 +6,8 @@ import {
     BOARD_VIEW_URI, // 게시판 뷰 (글보기)
     BOARD_UPDATE_URI,
     BOARD_DELETE_URI,
-    BOARD_COMMENT_URI
+    BOARD_COMMENT_URI,
+    BOARD_SEARCH_URI
     //BOARD_MAIN_URI, // 게시판 메인
 
 } from "./_URI";
@@ -220,24 +221,6 @@ export const createComment = async (boardId, commentData, user) => {
 };
 
 
-// 댓글 작성
-// export const createComment = async (boardId, commentData) => {
-//     try {
-//         const response = await axiosInstance.post(
-//             `${BOARD_COMMENT_URI}/${boardId}`,
-//             commentData
-//         );
-//         return response.data;
-//     } catch (error) {
-//         console.error('댓글 작성 실패:', error);
-//         throw error;
-//     }
-// };
-
-
-
-
-
 // 댓글 수정
 export const updateComment = async (commentId, updateData) => {
     try {
@@ -252,11 +235,6 @@ export const updateComment = async (commentId, updateData) => {
         throw error;
     }
 };
-
-
-
-
-
 
 
 // 댓글 삭제
@@ -285,3 +263,36 @@ export const getCommentList = async (boardId, userId, isAdmin = false) => {
         throw error;
     }
 };
+
+
+// 게시글 검색 
+// export const getBoardSearchResults = async (searchType, searchKeyword, pageSize) => {
+//     try {
+        
+//         // 요청 직전
+//         console.log("글 검색 API 호출 URL:", BOARD_LIST_URI);
+//         console.log("글 검색 API 호출 params:", {
+//             type: searchType,
+//             keyword: searchKeyword,
+//             size: pageSize,
+//         });
+        
+//         const response = await axiosInstance.get(BOARD_SEARCH_URI, {
+//             params: {
+//                 keyword: searchKeyword,
+//                 type: searchType,  // 검색 타입 (title, content, writerName 등)
+//                 size: pageSize,
+//             },
+//             timeout: 5000,
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-Request-For': 'board-list-search',
+//             }
+//         });
+//         console.log("API 응답 데이터: ", response.data);
+//         return response.data; // 검색 결과 반환
+//     } catch (error) {
+//         console.error("게시글 검색 에러:", error);
+//         throw error; // 에러를 호출하는 쪽에서 처리하도록 전달
+//     }
+// };
