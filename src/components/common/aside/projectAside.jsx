@@ -31,6 +31,9 @@ export default function ProjectAside({ asideVisible }) {
       console.log("사용자 정보:", user);
       const response = await getProjects(user?.uid);
       console.log("response : " + response);
+      if (response == null) {
+        return;
+      }
 
       // 상태(진행, 완료)에 따라 데이터 분리
       const ongoing = response.filter((project) => project.status === 0);
@@ -165,7 +168,7 @@ export default function ProjectAside({ asideVisible }) {
                 className="cate-icon !w-[22px] !h-[22px]"
               />
               <Link
-                to="/antwork/project"
+                to="/antwork/setting/project"
                 className="main-cate !text-[16px] text-[#757575]"
               >
                 설정
