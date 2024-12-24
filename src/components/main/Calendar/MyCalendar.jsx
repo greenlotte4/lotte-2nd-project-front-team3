@@ -17,8 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { useCalendarStore } from "../../../store/CalendarStore";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import CalendarModal from "@/components/common/modal/calendarModal";
-import { Client } from "@stomp/stompjs";
 import useCalendarWebSocket from "@/hooks/calendar/useCalendarWebSocket";
+import { getUserByUid } from "@/api/userAPI";
 
 function MyCalendar({ listMonth, setListMonth }) {
   const navigate = useNavigate();
@@ -34,6 +34,7 @@ function MyCalendar({ listMonth, setListMonth }) {
   const [editMode, setEditMode] = useState(false); // 수정 모드
   const [currentEventId, setCurrentEventId] = useState(null); // 수정 중인 이벤트의 ID 저장
   const [option, setOption] = useState([]);
+  const [language, setLanguage] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -46,7 +47,6 @@ function MyCalendar({ listMonth, setListMonth }) {
     content: "",
   });
   //
-
   useEffect(() => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi(); // FullCalendar API 참조
@@ -128,6 +128,13 @@ function MyCalendar({ listMonth, setListMonth }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      const calendarLanguage = await getUserByUid(uid);
+      console.log("settingggggggggg" + JSON.stringify(calendarLanguage));
+      if (calendarLanguage.calendarLanguage == null) {
+        setLanguage("ko");
+      } else {
+        setLanguage(calendarLanguage.calendarLanguage);
+      }
       const data2 = await getSchedule(id);
       setEvents(data2);
     };
@@ -363,7 +370,7 @@ function MyCalendar({ listMonth, setListMonth }) {
           dayMaxEvents={dayMaxEvents} // 일정 개수가 일정 한계를 초과할 때 + 더 보기 링크 표시
           datesSet={handleDatesSet} // 뷰 변경시마다 호출되는 이벤트
           moreLinkText={(n) => `+${n}개의 일정 더보기`} // 3개 이상일 때 나타날 + 텍스트
-          locale="ko" // 언어를 한국어로 설정
+          locale={language} // 언어를 한국어로 설정
           eventContent={renderEventContent} // 커스터마이징 렌더링
           dateClick={handleDateClick} // 날짜 클릭 시 새 일정 추가
           eventClick={handleEventClick} // 일정 클릭 시 수정

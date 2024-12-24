@@ -23,13 +23,7 @@ export default function AdminAside({ asideVisible }) {
       JSON.parse(sessionStorage.getItem("clickedLinks")) || [];
     console.log("Clicked links:", clickedLinks);
     const log = clickedLinks.map((item) => {
-      if (item === "서비스정보") {
-        return {
-          path: "/antwork/admin/service",
-          label: "서비스 정보",
-          icon: "🌐",
-        };
-      } else if (item === "멤버관리") {
+      if (item === "멤버관리") {
         return {
           path: "/antwork/admin/member",
           label: "멤버관리",
@@ -150,14 +144,6 @@ export default function AdminAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/admin/service"
-                    onClick={() => handleLinkClick("서비스정보")}
-                  >
-                    🌐&nbsp;&nbsp;서비스 정보
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/antwork/admin/popup"
                     onClick={() => handleLinkClick("팝업관리")}
                   >
@@ -258,14 +244,6 @@ export default function AdminAside({ asideVisible }) {
               <ol>
                 <li>
                   <Link
-                    to="/antwork/admin/member"
-                    onClick={() => handleLinkClick("접근 제한")}
-                  >
-                    🚫&nbsp;&nbsp;접근 제한
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/antwork/admin/access"
                     onClick={() => handleLinkClick("멤버접근로그")}
                   >
@@ -307,18 +285,6 @@ export default function AdminAside({ asideVisible }) {
                     ))}
                 </ol>
               )}
-            <div className="lnb-header !mb-[10px]">
-              <img
-                src="/images/ico/page_setting_22_999999.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <Link
-                to="/antwork/page"
-                className="main-cate !text-[16px] text-[#757575]"
-              >
-                관리자 설정
-              </Link>
-            </div>
           </li>
         </ul>
       </aside>
