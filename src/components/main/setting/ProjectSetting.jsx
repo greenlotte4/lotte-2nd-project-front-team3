@@ -36,7 +36,7 @@ export default function ProjectSetting() {
     if (!name.trim()) return;
 
     const isConfirmed = window.confirm(
-      `${type === "PRIORITY" ? "우선순위" : "크기"}를 등록하시겠습니까?`
+      `해당 ${type === "PRIORITY" ? "우선순위" : "크기"}를 등록하시겠습니까?`
     );
     if (!isConfirmed) return;
 
@@ -51,11 +51,7 @@ export default function ProjectSetting() {
         setNewSize("");
       }
 
-      window.alert(
-        `${
-          type === "PRIORITY" ? "우선순위" : "크기"
-        }가 성공적으로 등록되었습니다.`
-      );
+      window.alert(`성공적으로 등록되었습니다.`);
     } catch (error) {
       console.error("Error adding attribute:", error);
     }
@@ -80,11 +76,7 @@ export default function ProjectSetting() {
         setEditingSize(null);
       }
 
-      window.alert(
-        `${
-          type === "PRIORITY" ? "우선순위" : "크기"
-        }가 성공적으로 수정되었습니다.`
-      );
+      window.alert(`성공적으로 수정되었습니다.`);
     } catch (error) {
       console.error("Error updating attribute:", error);
     }
@@ -93,7 +85,7 @@ export default function ProjectSetting() {
   // 속성 삭제 핸들러
   const handleDeleteAttribute = async (id, type) => {
     const isConfirmed = window.confirm(
-      `${type === "PRIORITY" ? "우선순위" : "크기"}를 삭제하시겠습니까?`
+      `해당 ${type === "PRIORITY" ? "우선순위" : "크기"}를 삭제하시겠습니까?`
     );
     if (!isConfirmed) return;
 
@@ -107,9 +99,7 @@ export default function ProjectSetting() {
         setSizes((prev) => prev.filter((s) => s.id !== id));
       }
 
-      window.alert(
-        `${type === "PRIORITY" ? "우선순위" : "크기"}가 삭제되었습니다.`
-      );
+      window.alert(`정상적으로 삭제되었습니다.`);
     } catch (error) {
       console.error("Error deleting attribute:", error);
       window.alert("삭제에 실패했습니다.");
@@ -120,17 +110,19 @@ export default function ProjectSetting() {
     <article className="page-list w-[1100px] mx-auto">
       <div className="content-header">
         <h1>프로젝트 설정</h1>
-        <p className="!mb-5">우선순위와 크기 데이터를 관리할 수 있습니다.</p>
+        <p className="!mb-5 mt-[9px]">
+          작업 우선순위와 작업 크기 데이터를 관리할 수 있습니다.
+        </p>
       </div>
 
       <div className="bg-white p-6 rounded shadow">
         {/* 우선순위 설정 */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">우선순위 설정</h2>
+          <h2 className="text-2xl font-semibold mb-4">작업 우선순위 설정</h2>
           <div className="mb-6 flex gap-2">
             <input
               type="text"
-              placeholder="새 우선순위 추가 (예: P0 - 긴급)"
+              placeholder="새 작업 우선순위 추가 (예: P0 - 긴급)"
               value={newPriority}
               onChange={(e) => setNewPriority(e.target.value)}
               className="flex-1 p-2 border rounded"
@@ -208,11 +200,11 @@ export default function ProjectSetting() {
 
         {/* 크기 설정 */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">크기 설정</h2>
+          <h2 className="text-2xl font-semibold mb-4">작업 크기 설정</h2>
           <div className="mb-6 flex gap-2">
             <input
               type="text"
-              placeholder="새 크기 추가 (예: S - 소형)"
+              placeholder="새 작업 크기 추가 (예: S - 소형)"
               value={newSize}
               onChange={(e) => setNewSize(e.target.value)}
               className="flex-1 p-2 border rounded"
