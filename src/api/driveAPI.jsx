@@ -135,7 +135,7 @@ export const driveFileDownload = async (driveFileId) => {
 export const MyDriveView = async (uid) => {
   try {
     const response = await axiosInstance.get(`${MY_DRIVE_URI}/${uid}`);
-    console.log("Email verification response:", response.data);
+    console.log("내 드라이브 전체보기기:", response.data);
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
@@ -161,7 +161,7 @@ export const MyDriveSelectView = async (driveFolderId, uid) => {
 export const MyTrashView = async (uid) => {
   try {
     const response = await axiosInstance.get(`${MY_TRASH_URI}/${uid}`);
-    console.log("Email verification response:", response.data);
+    console.log("내 휴지통 전체보기기:", response.data);
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
@@ -274,7 +274,7 @@ export const ShareDriveView = async (userId, uid) => {
     const response = await axiosInstance.get(
       `${SHARE_DRIVE_URI}/${userId}/${uid}`
     );
-    console.log("Email verification response:", response.data);
+    console.log("API의 공유드라이브:", response.data);
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
@@ -297,10 +297,10 @@ export const ShareDriveSelectView = async (driveFolderId, uid) => {
 };
 
 //드라이브 총용량구하기기
-export const selectDriveAllSize = async (uid) => {
+export const selectDriveAllSize = async (uid,rate) => {
   try {
-    const response = await axiosInstance.get(`${DRIVE_ALL_SIZE}/${uid}`);
-    console.log("Email verification response:", response.data);
+    const response = await axiosInstance.get(`${DRIVE_ALL_SIZE}/${uid}/${rate}`);
+    console.log("드라이브 총용량량:", response.data);
     return response;
   } catch (error) {
     console.error("Error verifying email:", error);
@@ -323,7 +323,12 @@ export const driveIsStared = async ({ driveFolderId, userId, driveFileId }) => {
   }
 };
 //폴더이동동
-export const MoveToFolder = async ({driveFolderId,selectDriveFolderId,uid,driveFileId}) => {
+export const MoveToFolder = async ({
+  driveFolderId,
+  selectDriveFolderId,
+  uid,
+  driveFileId,
+}) => {
   //이동 될 폴더
   //이동 할 폴더더
   try {
@@ -331,7 +336,7 @@ export const MoveToFolder = async ({driveFolderId,selectDriveFolderId,uid,driveF
     const response = await axiosInstance.post(`${DRIVE_MOVE_TO_FOLDER}`, {
       driveFolderId: driveFolderId,
       selectDriveFolderId: selectDriveFolderId,
-      userId : uid,
+      userId: uid,
       driveFileId: driveFileId,
     });
     console.log(response.data);

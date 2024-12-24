@@ -16,6 +16,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../../../store/AuthStore";
 
+
 export default function DriveSection({ refreshUsage }) {
   const { driveFolderId } = useParams(); // URL 파라미터에서 폴더 ID 추출
 
@@ -23,6 +24,7 @@ export default function DriveSection({ refreshUsage }) {
   const openModal = useModalStore((state) => state.openModal);
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
+
   const driveFileMaker = user?.uid;
   const driveFolderMaker = user?.uid;
 
@@ -213,7 +215,7 @@ export default function DriveSection({ refreshUsage }) {
       let response;
       // driveFolderId가 있으면 상세 정보 요청, 없으면 목록 정보 요청
       if (driveFolderId) {
-        response = await MyDriveSelectView(driveFolderId,uid); // 상세 정보 API 호출
+        response = await MyDriveSelectView(driveFolderId, uid); // 상세 정보 API 호출
         console.log("선택된 폴더:", response.data);
       } else {
         response = await MyDriveView(uid); // 목록 정보 API 호출
@@ -1028,7 +1030,10 @@ export default function DriveSection({ refreshUsage }) {
                                 ? "text-yellow-500"
                                 : "text-gray-300 group-hover:text-gray-500"
                             }`}
-                            onClick={() => toggleFolderStar(index)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFolderStar(index);
+                            }}
                           >
                             <i
                               className={`fa-star ${
@@ -1047,7 +1052,7 @@ export default function DriveSection({ refreshUsage }) {
                           // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
                           if (file.isChecked) {
                             e.preventDefault(); // 링크 이동 방지
-                            toggleFileCheck(index); // 체크 해제
+                            // toggleFileCheck(index); // 체크 해제
                           }
                         }}
                         className={`relative border p-4 group rounded-md ${
@@ -1113,7 +1118,9 @@ export default function DriveSection({ refreshUsage }) {
                               ? "text-yellow-500"
                               : "text-gray-300 group-hover:text-gray-500"
                           }`}
-                          onClick={() => toggleFileStar(index)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFileStar(index)}}
                         >
                           <i
                             className={`fa-star ${
@@ -1190,7 +1197,7 @@ export default function DriveSection({ refreshUsage }) {
               onClick={() => {
                 console.log("asdf");
                 setMenuVisible(false);
-                openModal("move",{
+                openModal("move", {
                   id: selectedDriveIds[0],
                   fileid: selectedDriveFileIds[0],
                 });

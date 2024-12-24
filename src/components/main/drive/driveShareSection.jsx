@@ -1009,7 +1009,9 @@ export default function DriveShareSection() {
                                 ? "text-yellow-500"
                                 : "text-gray-300 group-hover:text-gray-500"
                             }`}
-                            onClick={() => toggleFolderStar(index)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFolderStar(index)}}
                           >
                             <i
                               className={`fa-star ${
@@ -1028,7 +1030,7 @@ export default function DriveShareSection() {
                           // 체크된 상태에서 클릭 시 링크 이동 방지 및 체크박스 해제
                           if (file.isChecked) {
                             e.preventDefault(); // 링크 이동 방지
-                            toggleFileCheck(index); // 체크 해제
+                            // toggleFileCheck(index); // 체크 해제
                           }
                         }}
                         className={`relative border p-4 group rounded-md ${
@@ -1094,7 +1096,9 @@ export default function DriveShareSection() {
                               ? "text-yellow-500"
                               : "text-gray-300 group-hover:text-gray-500"
                           }`}
-                          onClick={() => toggleFileStar(index)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFileStar(index)}}
                         >
                           <i
                             className={`fa-star ${
