@@ -223,7 +223,11 @@ export const BOARD_LIST_URI = `${API_SERVER_HOST}/board/list`; // 게시판 리�
 export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 (글보기)
 export const BOARD_UPDATE_URI = `${API_SERVER_HOST}/board/update`; // 게시판 글 수정
 export const BOARD_DELETE_URI = `${API_SERVER_HOST}/board/delete`; // 게시판 글 삭제
-export const BOARD_COMMENT_URI = `${API_SERVER_HOST}/board/comment`; // 게시판 글 삭제
+
+export const BOARD_COMMENT_URI = `${API_SERVER_HOST}/board/comment`; // 게시판 댓글 작성
+export const BOARD_SEARCH_URI = `${API_SERVER_HOST}/board/list/search`; // 게시판 글 검색
+
+
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
 
 // board category URI 추가
