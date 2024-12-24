@@ -25,6 +25,7 @@ export default function DriveAside({ asideVisible, refreshUsage }) {
 
   const user = useAuthStore((state) => state.user); // Zustand에서 사용자 정보 가져오기
 
+
   const [isMyOpen, setIsMyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
 
@@ -112,9 +113,11 @@ export default function DriveAside({ asideVisible, refreshUsage }) {
   };
   const fileAllSize = async () => {
     console.log("여기로 들어와?");
+    const rate = user?.companyRate; // 무료/유료
+    console.log("rate 값이 얼마임? : " + rate);
     const uid = user.uid;
     try {
-      const response = await selectDriveAllSize(uid);
+      const response = await selectDriveAllSize(uid,rate);
       console.log("총 파일 크기:", response.data);
 
       // 서버에서 받아온 데이터를 상태로 설정
@@ -344,7 +347,7 @@ export default function DriveAside({ asideVisible, refreshUsage }) {
               /> */}
               <i className="fa-solid fa-star text-[14px] text-[#FFC558] ml-[1px]"></i>
               <Link
-                to="/antwork/drive"
+                to="/antwork/drive/asdf"
                 className="main-cate !text-[13px] text-[#757575]"
               >
                 즐겨찾기
@@ -358,7 +361,7 @@ export default function DriveAside({ asideVisible, refreshUsage }) {
               <i className="fa-solid fa-gear text-[14px] text-[#919191] ml-[2px]"></i>
 
               <Link
-                to="/antwork/drive"
+                to="/antwork/setting/drive"
                 className="main-cate !text-[13px] text-[#757575]"
               >
                 설정

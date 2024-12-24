@@ -120,8 +120,6 @@ export const DRIVE_ALL_SIZE = `${API_SERVER_HOST}/drive/files/totalSize`; // 마
 export const DRIVE_IS_STARED = `${API_SERVER_HOST}/drive/isStared`; // 즐겨찾기
 export const DRIVE_MOVE_TO_FOLDER = `${API_SERVER_HOST}/drive/move`; // 즐겨찾기
 
-
-
 // page
 export const PAGE_FETCH_URI = `${API_SERVER_HOST}/page`; // 페이지 조회
 export const PAGE_SAVE_URI = `${API_SERVER_HOST}/page/save`; // 페이지 저장

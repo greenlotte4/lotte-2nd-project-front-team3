@@ -74,6 +74,8 @@ import SettingProjectPage from "@/pages/Main/setting/settingProjectPage";
 
 import AdminServicePage from "@/pages/Main/Admin/adminServicePage";
 import SettingChattingPage from "@/pages/Main/setting/settingChattingPage";
+import DriveSetting from "@/components/main/setting/DriveSetting";
+import SettingDrivePage from "@/pages/Main/setting/settingDrivePage";
 
 // prettier-ignore
 const router = createBrowserRouter([
@@ -123,6 +125,8 @@ const router = createBrowserRouter([
       { path: "drive/share", element: <DriveSharePage /> }, // antwork 페이지
       { path: "drive/share/folder/:driveFolderId", element: <DriveSharePage /> }, // antwork 페이지
       { path: "drive/recycle", element: <DriveRecylcePage /> }, // antwork 페이지
+      { path: "setting/drive", element: <SettingDrivePage /> }, // antwork 페이지
+
 
       { path: "calendar", element: <CalendarPage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가
       { path: "schedule", element: <SchedulePage /> }, // Antwork 캘린더 페이지 2024/11/26(화) 하정훈 - calendar 추가

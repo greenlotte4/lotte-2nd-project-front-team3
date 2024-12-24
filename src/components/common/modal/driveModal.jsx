@@ -121,7 +121,7 @@ export default function DriveModal() {
   };
 
   const onFolderClick = async (folderId) => {
-    const  uid = user.uid;
+    const uid = user.uid;
     const driveFolderId = driveFolderNameId; //이동할 폴더
     const driveFileId = selectedDriveFileId; // 이동할 파일일
     const selectDriveFolderId = folderId; //이동 될 폴더
@@ -202,7 +202,7 @@ export default function DriveModal() {
     };
 
     fetchDepartments();
-  }, [user]);
+  }, [user?.id]);
 
   // 초대 가능한 사용자와 선택된 사용자 상태
   const [selectedUsers, setSelectedUsers] = useState([]); // 선택된 사용자

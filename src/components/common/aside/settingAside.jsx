@@ -185,7 +185,7 @@ export default function SettinngAside({ asideVisible }) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin/member-integration">
+                  <Link to="/antwork/setting/drive">
                     ☁️&nbsp;&nbsp;드라이브 설정
                   </Link>
                 </li>
