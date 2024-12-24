@@ -34,10 +34,13 @@ export default function Aside({ asideVisible, setListMonth, isDm }) {
   const relativePath = location.pathname.replace(basePath, "");
   const mainPath = relativePath.split("/")[1] || "";
 
+  // mainPath가 빈 문자열이면 asideVisible을 false로 설정
+  const isAsideVisible = mainPath !== "" && asideVisible;
+
   return (
     <>
       {mainPath === "" && (
-        <aside className={`sidebar ${!asideVisible ? "hidden" : ""}`}>
+        <aside className={`sidebar ${!isAsideVisible ? "hidden" : ""}`}>
           <div className="logo">
             <span className="sub-title">antwork Home</span>
             <button className="image-button-css" aria-label="등록"></button>

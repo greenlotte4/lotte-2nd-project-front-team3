@@ -48,7 +48,7 @@ export const USER_CHECK_IN_URI = `${API_SERVER_HOST}/attendance/check-in`; // �
 export const USER_CHECK_OUT_URI = `${API_SERVER_HOST}/attendance/check-out`; // 퇴근 처리
 export const USER_CHECK_STATUS_URI = `${API_SERVER_HOST}/attendance/status`; // 출퇴근 상태확인
 export const USER_CHANGE_STATUS_URI = `${API_SERVER_HOST}/attendance/update-status`; // 상태업데이트 처리
-export const ATTENDACNE_ADMIN_SELECT_URI = `${API_SERVER_HOST}/attendance/summary`; // 관리자 출퇴근 기록 조회
+export const ATTENDACNE_ADMIN_SELECT_URI = `${API_SERVER_HOST}/attendance/summary`; // 관리자 출���근 기록 조회
 
 // email
 export const USER_SEND_EMAIL_URI = `${API_SERVER_HOST}/email/send`; // 이메일 발송
@@ -206,7 +206,7 @@ export const CALENDAR_SELECT_URI = `${API_SERVER_HOST}/calendar/select`; // 캘�
 export const CALENDAR_SELECTMODAL_URI = `${API_SERVER_HOST}/calendar/select/modal`; // 캘린더 모달 조회하기
 export const CALENDAR_SELECTSHARE_URI = `${API_SERVER_HOST}/calendar/select/share`; // 캘린더 모달 공유인원 조회하기
 export const CALENDAR_DELETESHARE_URI = `${API_SERVER_HOST}/calendar/delete/share`; // 캘린더 모달 공유인원 조회하기
-export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 캘린더 수정하기
+export const CALENDAR_UPDATE_URI = `${API_SERVER_HOST}/calendar/update`; // 캘린��� 수정하기
 export const CALENDAR_DELETE_URI = `${API_SERVER_HOST}/calendar/delete`; // 캘린더 삭제하기
 export const CALENDAR_SHARE_URI = `${API_SERVER_HOST}/calendar/share`; // 부서원 공유캘린더 초대
 export const SCHEDULE_INSERT_URI = `${API_SERVER_HOST}/schedule/insert`; // 새 일정 추가하기
@@ -227,9 +227,14 @@ export const BOARD_VIEW_URI = `${API_SERVER_HOST}/board/view`; // 게시판 뷰 
 export const BOARD_UPDATE_URI = `${API_SERVER_HOST}/board/update`; // 게시판 글 수정
 export const BOARD_DELETE_URI = `${API_SERVER_HOST}/board/delete`; // 게시판 글 삭제
 export const BOARD_COMMENT_URI = `${API_SERVER_HOST}/board/comment`; // 게시판 글 삭제
-
 export const BOARD_MAIN_URI = `${API_SERVER_HOST}/board`; // 게시판 메인
-console.log("API_SERVER_HOST:", import.meta.env.VITE_API_SERVER_HOST);
+
+// board category URI 추가
+export const BOARD_CATEGORY_INSERT_URI = `${API_SERVER_HOST}/board/category/insert`; // 카테고리 추가
+export const BOARD_CATEGORY_ALL_URI = `${API_SERVER_HOST}/board/category/all`; // 전체 카테고리 조회
+export const BOARD_CATEGORY_GET_URI = `${API_SERVER_HOST}/board/category`; // 특정 카테고리 조회
+export const BOARD_CATEGORY_UPDATE_URI = `${API_SERVER_HOST}/board/category/update`; // 카테고리 수정
+export const BOARD_CATEGORY_DELETE_URI = `${API_SERVER_HOST}/board/category/delete`; // 카테고리 삭제
 
 // landing
 export const LANDING_QNA_URI = `${API_SERVER_HOST}/qna/save`; // 랜딩 문의하기

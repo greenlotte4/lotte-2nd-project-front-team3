@@ -18,7 +18,11 @@ const AntWorkLayout = ({ children, setListMonth, isDm }) => {
       <Header onToggleAside={toggleAside} />
       <main>
         <Navigator />
-        <Aside asideVisible={isAsideVisible} setListMonth={setListMonth} isDm={isDm} />
+        <Aside
+          asideVisible={isAsideVisible}
+          setListMonth={setListMonth}
+          isDm={isDm}
+        />
 
         <section className="main-content">{children}</section>
       </main>
