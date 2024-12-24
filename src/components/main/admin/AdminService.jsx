@@ -15,7 +15,9 @@ export default function AdminService() {
   const [start, setStart] = useState();
   const [expired, setExpired] = useState();
   const [deleted, setDeleted] = useState();
-  const [vacation, setVacation] = useState();
+  const [trip, setTrip] = useState();
+  const [full, setFull] = useState();
+  const [half, setHalf] = useState();
   useEffect(() => {
     const fetchData = async () => {
       const response = await selectCompany(user?.company);
@@ -44,6 +46,9 @@ export default function AdminService() {
       const response3 = await selectVersion();
       setVersion(response3.version);
       const response4 = await findVacationUser();
+      setTrip(response4[0]);
+      setFull(response4[1]);
+      setHalf(response4[2]);
     };
     const currentUrl = window.location.href;
     const basePath = currentUrl.substring(
@@ -89,7 +94,7 @@ export default function AdminService() {
     datasets: [
       {
         label: "사용자 상태",
-        data: [null, deleted, expired],
+        data: [trip, full, half],
         backgroundColor: [
           "rgb(54, 162, 235)",
           "rgb(255, 99, 132)",

@@ -177,18 +177,16 @@ export const CHANNEL_VISIT_URI = ({ channelId, memberId }) =>
 export const CHANNEL_GET_C_UNREAD_COUNT_URI = ({ channelId, userId }) =>
   `${API_SERVER_HOST}/chatting/channel/${channelId}/unreadCount?userId=${userId}`;
 
-// 채팅 설정 금칙어 관리 
+// 채팅 설정 금칙어 관리
 export const FORBIDDEN_WORDS_URI = `${API_SERVER_HOST}/chatting/forbidden-words`; // 금칙어 목록 조회
 export const ADD_FORBIDDEN_WORD_URI = `${API_SERVER_HOST}/chatting/forbidden-words`; // 금칙어 추가
 export const DELETE_FORBIDDEN_WORD_URI = (id) =>
   `${API_SERVER_HOST}/chatting/forbidden-words/${id}`; // 금칙어 삭제
 
-
 // 디엠 관련 URI
 export const DM_CREATE_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 생성
 export const DM_LIST_URI = `${API_SERVER_HOST}/chatting/dm`; // 디엠방 목록 조회
-export const DM_GET_URI = (dmId) =>
-  `${API_SERVER_HOST}/chatting/dm/${dmId}`; // 디엠방 조회
+export const DM_GET_URI = (dmId) => `${API_SERVER_HOST}/chatting/dm/${dmId}`; // 디엠방 조회
 
 export const DM_SEND_MESSAGE_URI = (dmId) =>
   `${API_SERVER_HOST}/chatting/dm/${dmId}/messages`; // 디엠 메시지 보내기
@@ -216,6 +214,7 @@ export const SCHEDULE_UPDATE_URI = `${API_SERVER_HOST}/schedule/update`; // 일�
 export const SCHEDULE_UPDATEDETAIL_URI = `${API_SERVER_HOST}/schedule/update/detail`; // 일정 수정하기
 export const SCHEDULE_DELETE_URI = `${API_SERVER_HOST}/schedule/delete`; // 일정 삭제하기
 export const SCHEDULE_SELECTDEPART_URI = `${API_SERVER_HOST}/schedule/selectDepart`; // 부서원 리스트 조회
+export const CALENDAR_CALENDARLANGUAGE_URI = `${API_SERVER_HOST}/calendar/language`; // 부서원 리스트 조회
 
 // version
 export const VERSION_SELECT_URI = `${API_SERVER_HOST}/version/select`; // 버전 조회

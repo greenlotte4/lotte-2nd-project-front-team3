@@ -115,10 +115,27 @@ export default function SettinngAside({ asideVisible }) {
                     👤&nbsp;&nbsp;나의 정보수정
                   </Link>
                 </li>
-                <li>
-                  <Link to="/antwork/setting/myinfo">
-                    📃&nbsp;&nbsp;나의 활동내역
-                  </Link>
+                <li className="lnb-item">
+                  <div
+                    className="lnb-header !mb-[10px]"
+                    onClick={() => toggleSection("RecentlyUsedList")}
+                  >
+                    <button className="main-cate !text-[16px] text-[#757575]">
+                      📌 최근사용목록
+                    </button>
+                  </div>
+                  {toggles.RecentlyUsedList && (
+                    <ol>
+                      {logs.map((log, index) => (
+                        <li key={index}>
+                          <Link to={log.path}>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{log.icon}&nbsp;&nbsp;
+                            {log.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                 </li>
               </ol>
             )}
@@ -172,32 +189,6 @@ export default function SettinngAside({ asideVisible }) {
                     ☁️&nbsp;&nbsp;드라이브 설정
                   </Link>
                 </li>
-              </ol>
-            )}
-          </li>
-
-          <li className="lnb-item">
-            <div
-              className="lnb-header !mb-[10px]"
-              onClick={() => toggleSection("RecentlyUsedList")}
-            >
-              <img
-                src="/images/ico/menu_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"
-                className="cate-icon !w-[22px] !h-[22px]"
-              />
-              <button className="main-cate !text-[16px] text-[#757575]">
-                최근사용목록
-              </button>
-            </div>
-            {toggles.RecentlyUsedList && (
-              <ol>
-                {logs.map((log, index) => (
-                  <li key={index}>
-                    <Link to={log.path}>
-                      {log.icon}&nbsp;&nbsp;{log.label}
-                    </Link>
-                  </li>
-                ))}
               </ol>
             )}
           </li>

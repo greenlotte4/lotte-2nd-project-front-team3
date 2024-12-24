@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  CALENDAR_CALENDARLANGUAGE_URI,
   CALENDAR_DELETE_URI,
   CALENDAR_DELETESHARE_URI,
   CALENDAR_INSERT_URI,
@@ -266,6 +267,23 @@ export const deleteShare = async (cId, userId) => {
   try {
     const response = await axiosInstance.delete(
       `${CALENDAR_DELETESHARE_URI}/${cId}/${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// 공유멤버 삭제하기
+export const calendarLanguage = async (userId, language) => {
+  try {
+    const response = await axiosInstance.put(
+      `${CALENDAR_CALENDARLANGUAGE_URI}/${userId}/${language}`,
       {
         headers: {
           "Content-Type": "application/json", // JSON 형식으로 전송
