@@ -174,6 +174,42 @@ export default function MyApproval() {
         )}
       </div>
 
+       {/* 페이지네이션 */}
+       <div className="mt-4 flex justify-center items-center gap-2">
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          처음
+        </button>
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          이전
+        </button>
+        <span className="px-4">
+          {page} / {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          다음
+        </button>
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+        >
+          마지막
+        </button>
+      </div>
+
+
       {/* 모달 */}
       {isOpen && <ApprovalModal />}
     </div>

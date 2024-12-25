@@ -139,6 +139,23 @@ export default function AdminNotification() {
           </select>
         )}
 
+        {/* 사용자 선택 (특정 사용자일 경우) */}
+        {targetType === "USER" && selectedDepartment && (
+                  <select
+                    className="w-full p-3 border rounded-md mb-4"
+                    value={selectedUser}
+                    onChange={(e) => setSelectedUser(e.target.value)}
+                  >
+                    <option value="">사용자를 선택하세요</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+
         {/* 메시지 입력 */}
         <textarea
           className="w-full p-4 border rounded-md mb-4"
