@@ -138,6 +138,7 @@ const router = createBrowserRouter([
 
       { path: "board", element: <BoardPage /> },
       { path: "board/list", element: <BoardListPage /> }, // 2024/11/27(수) 김민희 - Board List 추가
+      { path: "board/list/:categoryId", element: <BoardListPage /> }, // 2024/12/26(목) 김민희 - Board categoryId 경로 추가
       { path: "board/write", element: <BoardWritePage /> }, // 2024/11/27(수) 김민희 - Board Write 추가
       { path: "board/view/:id", element: <BoardViewPage /> }, // 2024/11/27(수) 김민희 - Board View 추가
       { path: "board/comment", element: <BoardCommentPage /> }, // 2024/11/27(수) 김민희 - Board View 추가

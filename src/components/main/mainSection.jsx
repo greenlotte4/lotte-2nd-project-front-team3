@@ -99,32 +99,24 @@ export default function MainSection() {
             <section className="w-[390px] h-[380px]">
               <article className="page-list mr-7 !min-h-[340px] h-[380px]">
                 <div className="content-header">
-                  <h1 className="!mb-3 ">🔥 인기급상승 게시물</h1>
-                  <p className="">인기급상승 게시물입니당</p>
+                  <h1 className="!mb-3 ">🔥 인기 게시물</h1>
+                  <p className="">많은 개발자들이 관심을 가진 게시글을 모았습니다.</p>
                 </div>
 
                 <div className="page-grid cursor-pointer h">
                   {/* 인기급상승 게시물  */}
-                  <div className="page-card !bg-slate-50">
+                  <div className="page-card cursor-pointer">
                     <div className="card-content">
                       <div className="user-info">
                         {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
-                        <div className="user-details w-80">
+                        <div className="user-details w-[300px]">
                           <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
-                            인기급상승 게시물 제목입니다. 회사 신입사원 식탐
-                            문제 지적해야할까요?
+                            [공지] 2024 신입 개발자 멘토링 프로그램 참가자 모집
                           </h3>
                           <p className="!mt-3 !text-[12px] line-clamp-2">
-                            인기급상승 게시물 내용입니다. 팀에 신입이 들어왔는데
-                            탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에
-                            가져와서 먹습니다 과자면 이해하는데 진짜 그거는 아닌
-                            것 같아서 작은거 아니고 큰 거입니다 근데 지적하면
-                            사람이 너무 치사해보일것같아서 고민하고 있었습니다
-                            어제 옆팀 사람이 조심스럽게 팀원이 그렇게 먹는거
-                            아냐고 물어보는데 할 말이 없었습니다 이거 제가
-                            말해야하는게 맞을까요? 물론 이거 하나가지고
-                            식탐이라고 할 수 없다면 할 말 없지만 단체 생활의
-                            예의아닐까요?
+                            안녕하세요, (주)AntWork 여러분
+                            올해도 신입 개발자 멘토링 프로그램을 진행합니다.
+                            시니어 개발자분들의 적극적인 참여 부탁드립니다.
                           </p>
                           <ul className="mt-4 flex gap-2">
                             <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
@@ -135,7 +127,7 @@ export default function MainSection() {
                               />
                               <span className="article_create_at w-13]">
                                 {" "}
-                                2024-11-25{" "}
+                                2024-12-20{" "}
                               </span>
                             </li>
 
@@ -145,7 +137,7 @@ export default function MainSection() {
                                 src="/images/ico/eye.svg"
                                 alt="eye views 조회수"
                               />
-                              <span className="view_count"> 1,016 </span>
+                              <span className="view_count"> 628 </span>
                             </li>
 
                             <li className="article_comment w-13 h-7 flex items-center gap-2 ">
@@ -156,7 +148,7 @@ export default function MainSection() {
                               />
                               <span className="article_comment_count">
                                 {" "}
-                                629{" "}
+                                23{" "}
                               </span>
                             </li>
                           </ul>
@@ -168,26 +160,24 @@ export default function MainSection() {
                   {/* 인기게시물 끝 */}
 
                   {/* 인기급상승 게시물  2*/}
-                  <div className="page-card !bg-slate-200">
+                  <div className="page-card ">
                     <div className="card-content">
                       <div className="user-info">
                         {/* <img src="/api/placeholder/32/32" alt="profile" className="avatar bg-slate-500"/> */}
-                        <div className="user-details w-80">
+                        <div className="user-details w-[300px]">
                           <h3 className="!text-[15px] mb-2 truncate text-ellipsis whitespace-nowrap">
-                            인기급상승 게시물 제목입니다. 회사 신입사원 식탐
-                            문제 지적해야할까요?
+                            [기술공유] Spring Security 6.0 마이그레이션 가이드
                           </h3>
                           <p className="!mt-3 !text-[12px] line-clamp-2">
-                            인기급상승 게시물 내용입니다. 팀에 신입이 들어왔는데
-                            탕비실에 있는 콘프라이크를 한 봉지 그냥 본인 자리에
-                            가져와서 먹습니다 과자면 이해하는데 진짜 그거는 아닌
-                            것 같아서 작은거 아니고 큰 거입니다 근데 지적하면
-                            사람이 너무 치사해보일것같아서 고민하고 있었습니다
-                            어제 옆팀 사람이 조심스럽게 팀원이 그렇게 먹는거
-                            아냐고 물어보는데 할 말이 없었습니다 이거 제가
-                            말해야하는게 맞을까요? 물론 이거 하나가지고
-                            식탐이라고 할 수 없다면 할 말 없지만 단체 생활의
-                            예의아닐까요?
+                          최근 진행한 Spring Security 6.0 마이그레이션 경험을 공유합니다.
+                          주요 변경사항과 트러블슈팅 내용입니다.
+
+                          1.WebSecurityConfigurerAdapter 대체 방안
+                          2.SecurityFilterChain 구성 변경점
+                          3.CORS 설정 변경 사항
+                          4.OAuth2 인증 플로우 수정
+                          5.테스트 코드 마이그레이션
+                          자세한 내용은 첨부된 기술문서를 참고해주세요.
                           </p>
                           <ul className="mt-4 flex gap-2">
                             <li className="article_create_date w-13 h-7 flex items-center gap-1.5 ">
@@ -198,7 +188,7 @@ export default function MainSection() {
                               />
                               <span className="article_create_at w-13]">
                                 {" "}
-                                2024-11-25{" "}
+                                2024-12-27{" "}
                               </span>
                             </li>
 
@@ -208,7 +198,7 @@ export default function MainSection() {
                                 src="/images/ico/eye.svg"
                                 alt="eye views 조회수"
                               />
-                              <span className="view_count"> 1,016 </span>
+                              <span className="view_count"> 196 </span>
                             </li>
 
                             <li className="article_comment w-13 h-7 flex items-center gap-2 ">
@@ -219,7 +209,7 @@ export default function MainSection() {
                               />
                               <span className="article_comment_count">
                                 {" "}
-                                629{" "}
+                                7{" "}
                               </span>
                             </li>
                           </ul>
