@@ -238,7 +238,7 @@ export default function BoardView() {
           cate2: updateBoard.cate2,
         }));
         setIsUpdate(false);
-        alert("수정이 완료되었습니다.");
+        alert("수정이 완료되었습니다 ❗️");
       }
     } catch (error) {
       console.error("수정 실패:", error);
@@ -281,12 +281,16 @@ export default function BoardView() {
       <section className="h-auto">
         {/* 게시글 헤더 */}
         <div className="border-gray-200">
-          <div className="flex justify-between items-center">
+
+          <div className="">
             <div className="mb-4">
+              {/* 카테고리 */}
               <div className="text-sm text-gray-600 mr-2 mb-1">
                 {/* {board.cate1} &gt; {board.cate2} */}
                 커뮤니티 &gt; 자유게시판
               </div>
+
+              {/* 제목 영역 */}
               {isUpdate ? (
                 // 수정 모드 - 제목
                 <input
@@ -307,7 +311,7 @@ export default function BoardView() {
             </div>
 
             {/* 작성자 정보 */}
-            <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
+            {/* <div className="text-right text-[14px] text-gray-500 flex items-center mt-4">
               <div className="writer">
                 <strong>작성자&nbsp;:&nbsp;&nbsp;</strong>
 
@@ -317,7 +321,19 @@ export default function BoardView() {
                     : user?.name || "익명" // 없으면 로그인한 사용자의 이름, 그것도 없으면 '익명'
                 }
                 <span className="mx-2 text-slate-300 !text-[10px]">&#124;</span>
-              </div>
+              </div> */}
+
+              {/* 작성자 정보 영역 - 제목 아래로 이동 */}
+              <div className="flex items-center space-x-4 text-sm text-gray-600 pb-4">
+                <div className="writer">
+                  <span>작성자: </span>
+                  <span className="font-medium">
+                    {board.writerName
+                      ? board.writerName
+                      : user?.name || "익명"}
+                  </span>
+                </div>
+
 
               {/* 작성일: 날짜 yyyy-mm-dd */}
               <div className="date">
@@ -366,7 +382,7 @@ export default function BoardView() {
           {/* 파일 다운로드 컴포넌트  */}
           <BoardFileDownload files={fileList} />
 
-          <div className="flex justify-between items-start">
+          <div className="flex  items-start">
             {isUpdate ? (
               // 수정 모드 - 본문
               <div className="w-full">
