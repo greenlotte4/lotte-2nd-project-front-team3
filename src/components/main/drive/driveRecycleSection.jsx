@@ -313,6 +313,9 @@ export default function DriveSection() {
         selectedDriveFileIds
       ); // MyTrashSelectView는 선택된 항목들로 작업을 처리
       console.log("응답 : ", response);
+      setIsLoading(true);
+      await fetchTrashFolderData(driveFolderId);
+      setIsLoading(false);
     } catch (err) {
       console.error("휴지통 폴더 데이터를 가져오는 중 오류 발생:", err);
     }
