@@ -47,12 +47,6 @@ export default function AdminAside({ asideVisible }) {
           label: "전자결제",
           icon: "💻",
         };
-      } else if (item === "조직도 설계") {
-        return {
-          path: "/admin/organizational-design",
-          label: "조직도 설계",
-          icon: "📁",
-        };
       } else if (item === "부서 관리") {
         return {
           path: "/antwork/admin/department",
@@ -64,12 +58,6 @@ export default function AdminAside({ asideVisible }) {
           path: "/antwork/admin/attendance",
           label: "근태관리",
           icon: "🕒",
-        };
-      } else if (item === "접근 제한") {
-        return {
-          path: "/antwork/admin/member",
-          label: "접근 제한",
-          icon: "🚫",
         };
       } else if (item === "멤버접근로그") {
         return {

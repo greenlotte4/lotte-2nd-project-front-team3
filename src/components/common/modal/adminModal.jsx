@@ -443,6 +443,7 @@ const AdminModal = () => {
                       <option value="전무">전무</option>
                       <option value="부사장">부사장</option>
                       <option value="사장">사장</option>
+                      <option value="대표이사">대표이사</option>
                       <option value="연구원">연구원</option>
                       <option value="선임연구원">선임연구원</option>
                       <option value="책임연구원">책임연구원</option>
