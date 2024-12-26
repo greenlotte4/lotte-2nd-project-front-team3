@@ -46,9 +46,10 @@ export default function InviteModal({ closeModal }) {
 
     try {
       console.log("초대 버튼 클릭 - 채널 ID:", channelId); // *** 채널 ID 로그 출력 ***
-
       // 사용자 ID 배열 전송
       const userIds = selectedUsers.map((user) => user.id);
+      console.log(JSON.stringify(selectedUsers))
+      console.log(JSON.stringify(userIds))
       const response = await addChannelMember(channelId, userIds);
       alert("멤버가 성공적으로 추가되었습니다!");
       setSelectedUsers([]); // 선택된 사용자 초기화

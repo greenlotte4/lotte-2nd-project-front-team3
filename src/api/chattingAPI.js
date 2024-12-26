@@ -105,12 +105,12 @@ export const addChannelMember = async (channelId, users) => {
     console.log(`[JS] 채널 멤버 추가 요청: 채널 ID ${channelId}`);
 
     // users 배열에서 ID만 추출
-    const userIds = users.map((user) => user.id);
+    // const userIds = users.map((user) => user.id);
 
     const response = await axiosInstance.post(
       CHANNEL_ADD_MEMBER_URI(channelId),
       {
-        memberIds: userIds, // 서버로 ID만 전송
+        memberIds: users, // 서버로 ID만 전송
       }
     );
 
