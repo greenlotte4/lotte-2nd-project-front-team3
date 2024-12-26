@@ -137,12 +137,12 @@ export default function DriveModal() {
         uid,
         driveFileId,
       });
-
-      if (!response.ok) {
-        throw new Error("폴더 이동에 실패했습니다.");
+      console.log("response ", response);
+      if (response) {
+        alert("선택한 파일(폴더)가 이동되었습니다");
+        closeModal();
+        location.reload();
       }
-      const result = await response.json();
-      console.log("폴더 이동 성공:", result);
 
       // 필요하면 상태 업데이트
       // setCurrentFolderId(folderId); // 상태로 현재 폴더 ID 관리
@@ -150,6 +150,7 @@ export default function DriveModal() {
       console.error("폴더 이동 오류:", error);
     }
   };
+
   // 선택된 작업담당자 관리하기 위한 상태
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
   console.log(
