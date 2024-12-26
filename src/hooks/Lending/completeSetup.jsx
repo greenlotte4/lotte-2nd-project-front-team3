@@ -8,13 +8,6 @@ export const completeSetup = async (state, dispatch) => {
     // 회사 정보 저장
     const companyData = {
       name: state.companyName,
-      description: state.companyDescription,
-      foundationDate: state.foundationDate,
-      startTime: state.startTime,
-      endTime: state.endTime,
-      address: state.address,
-      businessNumber: state.businessNumber,
-      logo: state.logo instanceof File ? null : state.logo,
     };
 
     let companyResponse;
