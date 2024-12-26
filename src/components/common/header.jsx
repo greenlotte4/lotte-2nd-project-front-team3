@@ -38,6 +38,7 @@ export default function Header({ onToggleAside }) {
   };
 
   useEffect(() => {
+    console.log("바뀌나?");
     loadNotifications(); // 컴포넌트 마운트 시 초기 알림 데이터를 가져옵니다.
   }, [user?.id]);
 
