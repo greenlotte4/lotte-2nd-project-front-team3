@@ -10,15 +10,6 @@ import { Link } from "react-router-dom";
   */
 }
 export default function LandingFooter() {
-  const [version, setVersion] = useState();
-  useEffect(() => {
-    const fetchData = async () => {
-      const response3 = await selectVersion();
-      setVersion(response3.version);
-    };
-    fetchData();
-  });
-
   return (
     <footer
       id="footer"
@@ -33,7 +24,7 @@ export default function LandingFooter() {
               alt="Antwork footer logo"
             />
             <span>App Version:</span> <br />
-            <span>3조-{version}</span>
+            <span>3조-v 1.0.0</span>
           </Link>
         </div>
 

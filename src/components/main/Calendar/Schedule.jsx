@@ -170,7 +170,6 @@ export default function Schedule() {
         formData.internalAttendees = selectedAttendees;
         await updateSchedule(formData);
       } else {
-        // 일정 등록일 때 insertSchedule 호출
         await insertSchedule(formData);
       }
     };
